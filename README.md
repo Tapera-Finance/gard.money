@@ -10,7 +10,7 @@ First thing you will need is Node.js with NPM. In case you don'w have it already
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/CorvusCode/Gard.git
+   git clone https://github.com/Tapera-Finance/gard.money.git
    ```
 2. Go inside the project's root file, and install NPM packages
    ```sh
