@@ -16,7 +16,7 @@ export const AUCTIONS_CONTENT_NAMES = {
   MARKET_HISTORY: 'Market History',
 }
 
-export const VERSION = "MAINNET"
+export const VERSION = "TESTNET1"
 // TESTNET1 = initial testnet release
 // TESTNET2 = testnet w/ updated backend code
 // MAINNET = mainnet
