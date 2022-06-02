@@ -1,0 +1,58 @@
+{
+  "name": "gard",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@json-rpc-tools/utils": "^1.7.6",
+    "@randlabs/myalgo-connect": "^1.1.2",
+    "@reduxjs/toolkit": "^1.8.0",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/user-event": "^13.2.1",
+    "@walletconnect/client": "^1.7.7",
+    "algorand-walletconnect-qrcode-modal": "^1.7.4",
+    "algosdk": "^1.15.0",
+    "axios": "^0.26.0",
+    "crypto-browserify": "^3.12.0",
+    "crypto-js": "^4.1.1",
+    "jquery": "^3.6.0",
+    "moment": "^2.29.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
+    "react-router-dom": "^6.2.2",
+    "react-scripts": "5.0.0",
+    "recharts": "^2.1.9",
+    "stream-browserify": "^3.0.0",
+    "styled-components": "^5.3.3",
+    "universal-cookie": "^4.0.4",
+    "web-vitals": "^2.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "prettier": "2.5.1"
+  }
+}
