@@ -191,7 +191,10 @@ export default function RepayContent() {
                 setModalVisible(false)
                 setLoading(true)
                 try {
-                  await mint(transactionValue.id, getNew('more_gard'))
+                  let res = await mint(transactionValue.id, getNew('more_gard'))
+                  if (res.alert) {
+                    dispatch(setAlert(res.text))
+                  }
                 } catch (e) {
                   handleTxError(e, 'Error minting from CDP')
                 }
