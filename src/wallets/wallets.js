@@ -420,7 +420,7 @@ async function sendRawTransaction(txn) {
     })
 }
 
-export async function sendTxn(txn, confirmMessage = null, newAlert=false, commitment=false) {
+export async function sendTxn(txn, confirmMessage = null,  commitment=false) {
   // This works for both grouped and ungrouped txns
   // XXX: We may want a better flow later
   const tx = await sendRawTransaction(txn)
@@ -430,15 +430,8 @@ export async function sendTxn(txn, confirmMessage = null, newAlert=false, commit
   let x = await algosdk.waitForConfirmation(algodClient, tx.txId, 10) // XXX: waitrounds is hardcoded to 10, may want to pick a better value
   if (confirmMessage) {
     console.log(x)
-    if (!newAlert) {
-		alert(
-		  confirmMessage +
-    	  '\nTransaction ID: ' +
-    	  tx.txId +
-    	  '\nConfirmed in round: ' +
-          x['confirmed-round'],
-		)
-    } else if (!commitment) {
+    if (!commitment) {
+      console.log('trig')
     	return {
 			alert: true,
 			text: confirmMessage +
