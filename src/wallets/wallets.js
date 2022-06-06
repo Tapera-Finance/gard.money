@@ -243,14 +243,6 @@ export async function connectWallet(type, address) {
       activeWallet.address = account
       activeWallet.type = 'AlgorandWallet'
       break
-    case 'ReadOnly':
-      // TODO
-      activeWallet = {}
-      activeWallet.type = 'ReadOnly'
-      if (algodClient.isValidAddress(address)) {
-        activeWallet.address = address
-      }
-      break
     default:
       // We should never get here, that's on bad programming
       console.error('Undefined wallet type!')
@@ -361,46 +353,6 @@ export async function signGroup(info, txnarray) {
        return parsedResults
      default:    
        throw 'No wallet selected!';
-  }
-}
-
-export async function signTxn(txn, need_sig = null) {
-  throw "DEPRECATED, use group transaction functionality"
-  // This will be removed once My Algo Connect is fixed
-  let stxn
-  switch (activeWallet.type) {
-    case 'MyAlgoConnect':
-      stxn = await myAlgoConnect.signTransaction(txn.toByte())
-      return stxn
-    case 'AlgoSigner':
-      let base64Txs = txn.map((binary) =>
-        AlgoSigner.encoding.msgpackToBase64(binary.toByte()),
-      )
-      let pack = base64Txs.map((element, idx) =>
-        need_sig[idx]
-          ? {
-              txn: element,
-            }
-          : {
-              txn: element,
-              signers: [],
-            },
-      )
-      console.log(pack)
-      let stxns = await AlgoSigner.signTxn(pack)
-      return stxns.map((elem) =>
-        elem == null ? null : AlgoSigner.encoding.base64ToMsgpack(elem.blob),
-      )
-
-    case 'AlgorandWallet':
-      // TODO
-      return stxn
-    case 'ReadOnly':
-      // TODO
-      return stxn
-    default:
-      // TODO: Add an error, should prompt the user to connect somehow
-      return null
   }
 }
 
