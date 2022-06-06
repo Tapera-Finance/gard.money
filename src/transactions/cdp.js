@@ -189,11 +189,12 @@ async function findOpenID(address) {
 export async function openCDP(openingALGOs, openingGARD) {
 
 	if (openingGARD < 1) {
-		alert(
-			"Opening GARD needs to be above 1.\n" +
+		
+		return {
+			alert: true,
+			text: "Opening GARD needs to be above 1.\n" +
 			"Your opening GARD is is: " +  openingGARD
-		)
-		return null
+		}
 	}
 
 	// Setting up promises
@@ -347,7 +348,7 @@ export async function openCDP(openingALGOs, openingGARD) {
 		
 	let stxns2 = [stxns[start + 2].blob, stxns[start + 3].blob, stxns[start + 4].blob, stxn4.blob]
 	let response = await sendTxn1Promise;
-	response = await sendTxn(stxns2, "Succesfully opened a CDP with ID: " + accountID + ".", true)
+	response = await sendTxn(stxns2, "Successfully opened a CDP with ID: " + accountID + ".")
 	updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
 	return response
 	// XXX: May want to do something else besides this, a promise? loading screen?
@@ -405,7 +406,7 @@ export async function mint(accountID, newGARD) {
 	
 	let stxns = [stxn1.blob, stxn2.blob, stxn3.blob]
 
-	let response = await sendTxn(stxns, "Succesfully minted " + newGARD + " GARD.")
+	let response = await sendTxn(stxns, "Successfully minted " + newGARD + " GARD.")
 
 	checkChainForCDP(info.address, accountID)
 
@@ -419,10 +420,10 @@ export async function addCollateral(accountID, newAlgos) {
 	//		Min amount
 	
 	if (accountID == 'N/A') {
-		alert(
-			"You can only add to existing CDPs"
-		)
-		return null
+		return{
+			alert: true,
+			text: "You can only add to existing CDPs",
+		}
 	}
 
 	// Core info
@@ -454,7 +455,7 @@ export async function addCollateral(accountID, newAlgos) {
 	
 	const stxns = [signedGroup[0].blob]
 
-	const response = await sendTxn(stxns, "Succesfully added " + newAlgos + " ALGOs as collateral.")
+	const response = await sendTxn(stxns, "Successfully added " + newAlgos + " ALGOs as collateral.")
 
 	checkChainForCDP(info.address, accountID)
 
@@ -547,7 +548,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
 	const stxn2 = signedGroup[1];
 	
 	let stxns = [stxn1.blob, stxn2.blob, stxn3.blob, stxn4.blob]
-	let response = await sendTxn(stxns, "Succesfully closed your cdp with ID " + accountID + ".")
+	let response = await sendTxn(stxns, "Successfully closed your cdp with ID " + accountID + ".")
 	removeCDP(info.address, accountID)
 	return response
 	// XXX: May want to do something else besides this, a promise? loading screen?
@@ -639,7 +640,7 @@ export async function commitCDP(account_id, amount) {
 	const stxn1 = signedGroup[0];
 	
 	let stxns = [stxn1.blob, stxn2.blob]
-	let response = await sendTxn(stxns, "Succesfully committed your algos from cdp " + account_id + " to governance! You may verify" + ' <a href="' + 'https://governance.algorand.foundation/governance-period-3/governors/' + cdp.address + '">here</a>.\n', true, true)
+	let response = await sendTxn(stxns, "Successfully committed your algos from cdp " + account_id + " to governance! You may verify" + ' <a href="' + 'https://governance.algorand.foundation/governance-period-3/governors/' + cdp.address + '">here</a>.\n', true)
 	updateCommitment(info.address, account_id, parseInt(amount*1000000))
 	return response
 }
@@ -683,7 +684,7 @@ export async function voteCDP(account_id, option1, option2) {
 	const stxn1 = signedGroup[0];
 	
 	let stxns = [stxn1.blob, stxn2.blob]
-	let response = await sendTxn(stxns, "Succesfully voted for options " + option1 + " and " + option2 + " from CDP #" + account_id)
+	let response = await sendTxn(stxns, "Successfully voted for options " + option1 + " and " + option2 + " from CDP #" + account_id)
 	return response
 }
 
@@ -757,6 +758,6 @@ export async function liquidate(account_id, owner_address, microDebt, microPremi
 	const user_signed = await signTxnsPromise;
 	
 	let stxns = [stxn1.blob, stxn2.blob, user_signed[2].blob, user_signed[3].blob, user_signed[4].blob]
-	let response = await sendTxn(stxns, "Succesfully liquidated CDP #" + account_id + " of " + owner_address)
+	let response = await sendTxn(stxns, "Successfully liquidated CDP #" + account_id + " of " + owner_address, true)
 	return response
 }
