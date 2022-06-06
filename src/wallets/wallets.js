@@ -420,7 +420,7 @@ async function sendRawTransaction(txn) {
     })
 }
 
-export async function sendTxn(txn, confirmMessage = null,  commitment=false) {
+export async function sendTxn(txn, confirmMessage = null, commitment=false) {
   // This works for both grouped and ungrouped txns
   // XXX: We may want a better flow later
   const tx = await sendRawTransaction(txn)
@@ -431,7 +431,6 @@ export async function sendTxn(txn, confirmMessage = null,  commitment=false) {
   if (confirmMessage) {
     console.log(x)
     if (!commitment) {
-      console.log('trig')
     	return {
 			alert: true,
 			text: confirmMessage +
