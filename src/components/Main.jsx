@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import HomeContent from './HomeContent'
 import Drawer from './Drawer'
@@ -22,6 +22,7 @@ import AlertOverlay from './AlertOverlay'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { hide } from '../redux/slices/alertSlice'
+import {ThemeContext} from '../contexts/ThemeContext'
 
 async function googleStuff() {
   const script = document.createElement('script');
@@ -58,6 +59,25 @@ export default function Main(WrappedComponent, title) {
   }, [])
   const dispatch = useDispatch()
   const alertData = useSelector((state) => state.alert)
+  
+  //Dark theme context
+  const {theme} = useContext(ThemeContext)
+  const MainStyle = {
+    light: {
+      backgroundColor: '#ffffff',
+    },
+    dark: {
+      backgroundColor: '#121212', //toggle dark main color
+      color: 'white',
+    },
+    common: {
+      transition: 'all 1s ease',
+    },
+  }
+  const themeStyle = {
+    ...MainStyle.common,
+    ...(theme === 'light' ? MainStyle.light : MainStyle.dark),
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -76,7 +96,7 @@ export default function Main(WrappedComponent, title) {
         toggleOpenStatus={() => setIsOpen(!isOpen)}
         allowAnimate={() => setCanAnimate(true)}
       />
-      <MainContentDiv canAnimate={canAnimate} isOpen={isOpen}>
+      <MainContentDiv style = {themeStyle} canAnimate={canAnimate} isOpen={isOpen}>
         <Topbar
           contentName={title}
           setMainContent={(content) => {
@@ -90,6 +110,7 @@ export default function Main(WrappedComponent, title) {
               paddingLeft: '6.9444444444444vw',
               paddingRight: '6.9444444444444vw',
               paddingTop: 40,
+              paddingBottom: '100%',
               flex: 1,
             }}
           >
@@ -153,7 +174,6 @@ const expandMainContentAnimation = keyframes`
 
 // main styled components
 const MainContentDiv = styled.div`
-  background-color: #ffffff;
   margin-left: ${`${window.innerWidth < 900 ? 0 : 20}vw`};
   width: 100%;
   animation-duration: 0.5s;

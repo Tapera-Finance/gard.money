@@ -1,5 +1,6 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import styled, { css } from 'styled-components'
+import { ThemeContext } from '../contexts/ThemeContext'
 
 /**
  * @prop {string} text - Text to be rendered inside the button
@@ -7,8 +8,10 @@ import styled, { css } from 'styled-components'
  * @param {{text: string, onClick: function}} props
  */
 export default function PrimaryButton({ text, onClick, variant, disabled }) {
+  const {theme} = useContext(ThemeContext)
+  
   return (
-    <Button variant={variant} disabled={disabled}  onClick={() => onClick()}>
+    <Button darkToggle={theme === 'dark'} variant={variant} disabled={disabled}  onClick={() => onClick()}>
       <ButtonText variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
@@ -33,6 +36,15 @@ const Button = styled.button`
     css`
       background-color: transparent;
       border: 1px solid #6941c6;
+      &:hover {
+        background-color: #6941c6;
+      }
+    `}
+    ${(props) =>
+      props.darkToggle &&
+      css`
+      border: 1px solid #8e70d4;
+      background-color: ##8e70d4;
       &:hover {
         background-color: #6941c6;
       }
