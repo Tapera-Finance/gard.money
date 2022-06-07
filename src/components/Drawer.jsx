@@ -53,7 +53,7 @@ export default function Drawer({
       background: 'linear-gradient(45deg, #42307d 0%, #7f56d9 100%)',
     },
     dark: {
-      background: '#3c3c3c', //toggle drawer color
+      background: '#3c3c3c',
     },
     common: {
       transition: 'all 1s ease',

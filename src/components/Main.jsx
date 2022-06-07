@@ -67,7 +67,7 @@ export default function Main(WrappedComponent, title) {
       backgroundColor: '#ffffff',
     },
     dark: {
-      backgroundColor: '#121212', //toggle dark main color
+      backgroundColor: '#121212',
       color: 'white',
     },
     common: {
@@ -148,6 +148,7 @@ export default function Main(WrappedComponent, title) {
         visible={modalVisible}
         animate={modalCanAnimate}
         close={() => setModalVisible(false)}
+        darkToggle = {theme === 'dark'}
       >
         <div
           style={{

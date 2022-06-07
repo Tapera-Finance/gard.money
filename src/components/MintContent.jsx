@@ -297,7 +297,6 @@ const InputNameContainer = styled.div`
     background: #404040;
   `}
 `
-//404040
 const InputNameText = styled.text`
   font-weight: 500;
   font-size: 20px;
