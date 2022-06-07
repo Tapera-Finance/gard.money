@@ -110,7 +110,7 @@ export default function Main(WrappedComponent, title) {
               paddingLeft: '6.9444444444444vw',
               paddingRight: '6.9444444444444vw',
               paddingTop: 40,
-              paddingBottom: '100%',
+              paddingBottom: '43%',
               flex: 1,
             }}
           >

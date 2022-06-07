@@ -32,6 +32,15 @@ const Button = styled.button`
     background-color: #381d77;
   }
   ${(props) =>
+    props.darkToggle &&
+    css`
+    border: 1px solid #c299eb;
+    background-color: #c299eb;
+    &:hover {
+      background-color: #6941c6;
+    }
+  `}
+  ${(props) =>
     props.variant &&
     css`
       background-color: transparent;
@@ -39,16 +48,7 @@ const Button = styled.button`
       &:hover {
         background-color: #6941c6;
       }
-    `}
-    ${(props) =>
-      props.darkToggle &&
-      css`
-      border: 1px solid #8e70d4;
-      background-color: ##8e70d4;
-      &:hover {
-        background-color: #6941c6;
-      }
-    `}
+  `}
   ${(props) =>
     props.disabled &&
     css`
