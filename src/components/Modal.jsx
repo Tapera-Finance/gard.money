@@ -105,6 +105,7 @@ const Title = styled.text`
 `
 const MainContent = styled.div`
   background: #ffffff;
+  color: black;
   height: ${window.innerWidth < 900 ? '450px' : '605px'};
   width: ${`${window.innerWidth < 900 ? '90vw' : '835px'}`};
   position: absolute;
