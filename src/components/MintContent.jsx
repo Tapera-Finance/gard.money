@@ -326,8 +326,8 @@ const Input = styled.input`
   ${(props) =>
     props.darkToggle &&
     css`
-    background: #121212;
     transition: 'all 1s ease';
+    background: #121212;
     color: white;
     &:focus {
       outline-color: white;

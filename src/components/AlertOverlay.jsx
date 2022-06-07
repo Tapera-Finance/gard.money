@@ -26,7 +26,7 @@ const Container = styled.div`
   ${(props) =>
     props.darkToggle &&
     css`
-    background: #606060;
+    background: #484848;
     color: white;
   `}
 `
