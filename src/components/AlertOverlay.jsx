@@ -1,7 +1,8 @@
-import React, { useEffect, useReducer, useState } from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { useEffect, useReducer, useState, useContext } from 'react'
+import styled, { keyframes, css } from 'styled-components'
 import closeIcon from '../assets/icons/close_icon.png'
 import PrimaryButton from './PrimaryButton'
+import { ThemeContext } from '../contexts/ThemeContext'
 
 const Backdrop = styled.div`
   position: fixed;
@@ -22,10 +23,17 @@ const Container = styled.div`
   flex-direction: column;
   border-radius: 25px;
   padding: 10px 20px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    background: #606060;
+    color: white;
+  `}
 `
 
 export default function AlertOverlay({ text, requestClose }) {
   const [content, setContent] = useState(<></>)
+  const {theme} = useContext(ThemeContext)
   useEffect(() => {
     if (!text) return
     setContent(textWithLink(text))
@@ -33,7 +41,7 @@ export default function AlertOverlay({ text, requestClose }) {
   return (
     <div>
       <Backdrop onClick={() => requestClose()}>
-        <Container>
+        <Container darkToggle={theme === 'dark'}>
           <div
             style={{
               display: 'flex',
