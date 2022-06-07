@@ -251,6 +251,7 @@ export default function MintContent() {
         title="Are you sure you want to proceed?"
         subtitle="Review the details of this transaction to the right and
                     click “Confirm Transaction” to proceed."
+        darkToggle={theme === 'dark'}
       >
         <TransactionSummary
           specifics={dummyTrans()}
@@ -272,6 +273,7 @@ export default function MintContent() {
             }
           }}
           cancelCallback={() => setModalVisible(false)}
+          darkToggle={theme === 'dark'}
         />
       </Modal>
     </div>
