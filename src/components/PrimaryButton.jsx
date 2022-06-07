@@ -12,7 +12,7 @@ export default function PrimaryButton({ text, onClick, variant, disabled }) {
   
   return (
     <Button darkToggle={theme === 'dark'} variant={variant} disabled={disabled}  onClick={() => onClick()}>
-      <ButtonText variant={variant} disabled={disabled}>
+      <ButtonText darkToggle={theme === 'dark'} variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
     </Button>
@@ -37,8 +37,8 @@ const Button = styled.button`
     border: 1px solid #c299eb;
     background-color: #c299eb;
     &:hover {
-      background-color: #6941c6;
-      border: 1px solid #6941c6;
+      background-color: #9a71da;
+      border: 1px solid #9a71da;
     }
   `}
   ${(props) =>
@@ -48,6 +48,15 @@ const Button = styled.button`
       border: 1px solid #6941c6;
       &:hover {
         background-color: #6941c6;
+      }
+  `}
+  ${(props) =>
+    props.variant && props.darkToggle &&
+    css`
+      background-color: transparent;
+      border: 1px solid #c299eb;
+      &:hover {
+        background-color: #c299eb;
       }
   `}
   ${(props) =>
@@ -69,6 +78,11 @@ const ButtonText = styled.text`
     props.variant &&
     css`
       color: #6941c6;
+    `}
+    ${(props) =>
+      props.variant && props.darkToggle &&
+      css`
+      color: #c299eb;
     `}
   ${(props) =>
     props.disabled &&
