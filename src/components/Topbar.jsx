@@ -14,7 +14,7 @@ import {
 import { connectWallet } from '../wallets/wallets'
 import AlgoSignerLogo from '../wallets/logos/algosigner.svg'
 import MyAlgoLogo from '../wallets/logos/myalgowallet.png'
-import AlgorandLogo from '../wallets/logos/algo.png'
+import PeraLogo from '../wallets/logos/pera.png'
 import { CONTENT_NAMES } from '../globals'
 import LoadingOverlay from './LoadingOverlay'
 import { useAlert } from '../hooks'
@@ -69,10 +69,7 @@ export default function Topbar({ contentName, setMainContent }) {
           body: (
             <WalletOptions
               onClick={async (type) => {
-                if (type === 'ReadOnly') {
-                  setModalCanAnimate(false)
-                  reduceModalContent('form')
-                } else if (type === 'AlgorandWallet') {
+                if (type === 'AlgorandWallet') {
                   // Worse logic than all the other wallets
                   try {
                     const wallet = await connectWallet(type)
@@ -104,20 +101,6 @@ export default function Topbar({ contentName, setMainContent }) {
                   setModalCanAnimate(false)
                   setLoading(false)
                 }
-              }}
-            />
-          ),
-        }
-      else if (action === 'form')
-        return {
-          title: 'Connect your account',
-          subtitle:
-            'Enter your wallet address key in the field provided to connect your wallet',
-          body: (
-            <WalletForm
-              closeModal={() => {
-                setModalCanAnimate(true)
-                setModalVisible(false)
               }}
             />
           ),
@@ -295,21 +278,10 @@ function WalletOptions({ onClick }) {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img src={AlgorandLogo} style={{ width: 40 }} />
+          <img src={PeraLogo} style={{ width: 40 }} />
         </div>
         <div>
           <WalletOptionText>Pera Wallet</WalletOptionText>
-        </div>
-        <div>
-          <img src={arrow} />
-        </div>
-      </WalletOption>
-      <WalletOption onClick={() => onClick('ReadOnly')}>
-        <div>
-          <IconBox />
-        </div>
-        <div>
-          <WalletOptionText>Other Wallets</WalletOptionText>
         </div>
         <div>
           <img src={arrow} />
@@ -333,78 +305,12 @@ const WalletOption = styled.button`
   padding: 0px 20px;
   border-radius: 6px;
 `
-const IconBox = styled.div`
-  border: 1px solid #000000;
-  width: 33px;
-  height: 27px;
-`
 const WalletOptionText = styled.text`
   font-weight: bold;
   font-size: 20px;
 `
 
-/**
- * Renders a form inside a modal after selecting a wallet option
- */
-function WalletForm({ closeModal }) {
-  const [address, setAddress] = useState('')
-  const dispatch = useDispatch()
-  async function handle_readonly(address) {
-    // wait for the button on secondary pop-up (near line 272) to be clicked
-    // const temp = await secondaryButtonClick()
-    const wallet = await connectWallet('ReadOnly', address)
-    dispatch(setWallet({ address: displayWallet() }))
-    return wallet.address
-  }
-  return (
-    <div>
-      <div style={{ marginBottom: 26 }}>
-        <div style={{ marginBottom: 8 }}>
-          <InputTitle>Enter Your Wallet Address</InputTitle>
-        </div>
-        <div style={{ marginBottom: 8 }}>
-          <Input
-            placeholder="e.g. 0z3...4b99"
-            value={address}
-            //TODO basic validation
-            onChange={(e) => setAddress(e.target.value)}
-          ></Input>
-        </div>
-        <div>
-          <InputSubtitle>Enter or copy your wallet address here.</InputSubtitle>
-        </div>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <PrimaryButton
-          text="Connect Wallet"
-          onClick={async () => {
-            const temp = await handle_readonly(address)
-            closeModal()
-          }}
-        />
-        <CancelButton style={{ marginLeft: 30 }} onClick={() => closeModal()}>
-          <CancelButtonText>Cancel</CancelButtonText>
-        </CancelButton>
-      </div>
-    </div>
-  )
-}
-
 // styled components for wallet form
-const InputTitle = styled.text`
-  font-weight: bold;
-  font-size: 16px;
-`
-const Input = styled.input`
-  height: 44px;
-  width: 80%;
-  border: 1px solid #dce1e6;
-  padding-left: 12px;
-`
-const InputSubtitle = styled.text`
-  font-weight: normal;
-  font-size: 12px;
-`
 const CancelButton = styled.button`
   border: 0px;
   background: transparent;

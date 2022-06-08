@@ -243,14 +243,6 @@ export async function connectWallet(type, address) {
       activeWallet.address = account
       activeWallet.type = 'AlgorandWallet'
       break
-    case 'ReadOnly':
-      // TODO
-      activeWallet = {}
-      activeWallet.type = 'ReadOnly'
-      if (algodClient.isValidAddress(address)) {
-        activeWallet.address = address
-      }
-      break
     default:
       // We should never get here, that's on bad programming
       console.error('Undefined wallet type!')
@@ -364,46 +356,6 @@ export async function signGroup(info, txnarray) {
   }
 }
 
-export async function signTxn(txn, need_sig = null) {
-  throw "DEPRECATED, use group transaction functionality"
-  // This will be removed once My Algo Connect is fixed
-  let stxn
-  switch (activeWallet.type) {
-    case 'MyAlgoConnect':
-      stxn = await myAlgoConnect.signTransaction(txn.toByte())
-      return stxn
-    case 'AlgoSigner':
-      let base64Txs = txn.map((binary) =>
-        AlgoSigner.encoding.msgpackToBase64(binary.toByte()),
-      )
-      let pack = base64Txs.map((element, idx) =>
-        need_sig[idx]
-          ? {
-              txn: element,
-            }
-          : {
-              txn: element,
-              signers: [],
-            },
-      )
-      console.log(pack)
-      let stxns = await AlgoSigner.signTxn(pack)
-      return stxns.map((elem) =>
-        elem == null ? null : AlgoSigner.encoding.base64ToMsgpack(elem.blob),
-      )
-
-    case 'AlgorandWallet':
-      // TODO
-      return stxn
-    case 'ReadOnly':
-      // TODO
-      return stxn
-    default:
-      // TODO: Add an error, should prompt the user to connect somehow
-      return null
-  }
-}
-
 let _explorer = 'https://testnet.algoexplorer.io/tx/'
 if (!testnet) {
 	_explorer = 'https://algoexplorer.io/tx/'
@@ -420,7 +372,7 @@ async function sendRawTransaction(txn) {
     })
 }
 
-export async function sendTxn(txn, confirmMessage = null, newAlert=false, commitment=false) {
+export async function sendTxn(txn, confirmMessage = null, commitment=false) {
   // This works for both grouped and ungrouped txns
   // XXX: We may want a better flow later
   const tx = await sendRawTransaction(txn)
@@ -430,15 +382,7 @@ export async function sendTxn(txn, confirmMessage = null, newAlert=false, commit
   let x = await algosdk.waitForConfirmation(algodClient, tx.txId, 10) // XXX: waitrounds is hardcoded to 10, may want to pick a better value
   if (confirmMessage) {
     console.log(x)
-    if (!newAlert) {
-		alert(
-		  confirmMessage +
-    	  '\nTransaction ID: ' +
-    	  tx.txId +
-    	  '\nConfirmed in round: ' +
-          x['confirmed-round'],
-		)
-    } else if (!commitment) {
+    if (!commitment) {
     	return {
 			alert: true,
 			text: confirmMessage +

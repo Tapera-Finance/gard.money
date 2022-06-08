@@ -8,6 +8,7 @@ import { getWallet, getWalletInfo, handleTxError } from '../wallets/wallets'
 import { calcDevFees, getPrice, calcRatio } from '../transactions/cdp.js'
 import { openCDP } from '../transactions/cdp'
 import { useAlert } from '../hooks'
+import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setAlert } from '../redux/slices/alertSlice'
 import { ThemeContext } from '../contexts/ThemeContext'
@@ -58,6 +59,7 @@ export default function MintContent() {
   const [modalVisible, setModalVisible] = useState(false)
   const [canAnimate, setCanAnimate] = useState(false)
   const {theme} = useContext(ThemeContext)
+  const navigate = useNavigate()
 
   const [fields, reduceFields] = useReducer(
     (state, action) => {
@@ -263,6 +265,7 @@ export default function MintContent() {
               try {
                 const res = await openCDP(getCollateral(), getMinted())
                 if (res.alert) {
+                  navigate('/manage')
                   dispatch(setAlert(res.text))
                 }
               } catch (e) {
