@@ -159,7 +159,7 @@ export default function Main(WrappedComponent, title) {
         >
           <ContactUsText>
             {'Please let us know via email at'}
-            <Link href="mailto:hello@algogard.com"> hello@algogard.com</Link>
+            <Link darkToggle={theme === 'dark'} href="mailto:hello@algogard.com"> hello@algogard.com</Link>
           </ContactUsText>
         </div>
       </Modal>
@@ -198,6 +198,11 @@ const Link = styled.a`
   text-decoration: none;
   font-weight: 500;
   color: #1849f8;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: #99b2ff;
+  `}
 `
 
 /**
