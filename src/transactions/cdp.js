@@ -301,7 +301,7 @@ export async function openCDP(openingALGOs, openingGARD) {
   let optedInGard = verifyOptIn(info, gardID);
   let optedInGain = verifyOptIn(info, gainID);
   let optedInGardian =
-    VERSION != "TESTNET1" ? verifyOptIn(info, gardianID) : false; //no testnet id for Gardian so this should only verify opt in if hit on mainnet
+    VERSION != "TESTNET1" ? verifyOptIn(info, gardianID) : true; //no testnet id for Gardian so this should only verify opt in if hit on mainnet
   const accountID = await accountIDPromise;
   const cdp = cdpGen(info.address, accountID);
 
@@ -320,21 +320,19 @@ export async function openCDP(openingALGOs, openingGARD) {
     appIndex: validatorID,
   });
   let r1_txns = [txn1, txn2];
+  params.fee = 1000;
   let txn3;
   if (!optedInGard) {
-    params.fee = 1000;
     txn3 = createOptInTxn(params, info, gardID);
     r1_txns.push(txn3);
   }
   let txn5;
   if (!optedInGain) {
-    params.fee = 1000;
     txn5 = createOptInTxn(params, info, gainID);
     r1_txns.push(txn5);
   }
   let txn6;
-  if (VERSION != "TESTNET1" && !optedInGardian) {
-    params.fee = 1000;
+  if (!optedInGardian) {
     txn6 = createOptInTxn(params, info, gardianID);
     r1_txns.push(txn6);
   }
@@ -365,7 +363,7 @@ export async function openCDP(openingALGOs, openingGARD) {
     suggestedParams: params,
   });
   params.fee = 4000;
-  // console.log(typeof openingMicroALGOs);
+  
   txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: cdp.address,
@@ -399,16 +397,16 @@ export async function openCDP(openingALGOs, openingGARD) {
   // txn3
   let start = 0;
   if (!optedInGard) {
-    r1_stxns.push(stxns[2].blob);
-    start = 1;
+    r1_stxns.push(stxns[2+start].blob);
+    start += 1;
   }
   if (!optedInGain) {
-    r1_stxns.push(stxns[3].blob);
-    start = 2;
+    r1_stxns.push(stxns[2+start].blob);
+    start += 1;
   }
-  if (VERSION != "TESTNET1" && !optedInGardian) {
-    r1_stxns.push(stxns[4].blob);
-    start = 3;
+  if (!optedInGardian) {
+    r1_stxns.push(stxns[2+start].blob);
+    start += 1;
   }
   if ((await getCurrentUnix()) - start_time > 30) {
     return {
