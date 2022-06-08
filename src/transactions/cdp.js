@@ -280,7 +280,7 @@ export async function openCDP(openingALGOs, openingGARD) {
   if (
     307000 +
       openingMicroALGOs +
-      100000 * (info["assets"].length + 1) +
+      100000 * (info["assets"].length + 4) +
       devFees >
     info["amount"]
   ) {
@@ -292,12 +292,12 @@ export async function openCDP(openingALGOs, openingGARD) {
         (info["amount"] -
           devFees -
           307000 -
-          100000 * (info["assets"].length + 1)) /
+          100000 * (info["assets"].length + 4)) /
           1000000 +
         " Algos",
     };
   }
-  let optedIn = false;
+
   let optedInGard = verifyOptIn(info, gardID);
   let optedInGain = verifyOptIn(info, gainID);
   let optedInGardian =
@@ -343,7 +343,7 @@ export async function openCDP(openingALGOs, openingGARD) {
   // txn 2
   let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(4)]);
   let stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
-  optedIn = optedInGard && optedInGain;
+
   // Part 2: Actually issuing the $
 
   let collateral = openingMicroALGOs;
@@ -398,9 +398,17 @@ export async function openCDP(openingALGOs, openingGARD) {
   let r1_stxns = [stxns[0].blob, stxn2.blob];
   // txn3
   let start = 0;
-  if (!optedIn) {
+  if (!optedInGard) {
     r1_stxns.push(stxns[2].blob);
     start = 1;
+  }
+  if (!optedInGain) {
+    r1_stxns.push(stxns[3].blob);
+    start = 2;
+  }
+  if (VERSION != "TESTNET1" && !optedInGardian) {
+    r1_stxns.push(stxns[4].blob);
+    start = 3;
   }
   if ((await getCurrentUnix()) - start_time > 30) {
     return {
