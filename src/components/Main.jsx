@@ -62,6 +62,13 @@ export default function Main(WrappedComponent, title) {
   
   //Dark theme context
   const {theme} = useContext(ThemeContext)
+
+  
+  const body = document.querySelector('body')
+  console.log('this bod', body)
+  theme === 'dark' ? body.style.trasnsition = 'all 1s ease' : body.style.transition = 'all 1s ease'
+  theme === 'dark' ? body.style.backgroundColor = '#121212' : body.style.backgroundColor = '#ffffff'
+
   const MainStyle = {
     light: {
       backgroundColor: '#ffffff',
@@ -110,7 +117,7 @@ export default function Main(WrappedComponent, title) {
               paddingLeft: '6.9444444444444vw',
               paddingRight: '6.9444444444444vw',
               paddingTop: 40,
-              paddingBottom: '43%',
+              
               flex: 1,
             }}
           >
