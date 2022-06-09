@@ -242,7 +242,7 @@ export function createOptInTxn(params, info, assetID) {
 export async function openCDP(openingALGOs, openingGARD) {
   if (openingGARD <= 1) {
     return {
-      alert: true.
+      alert: true,
       text: "Opening GARD needs to be above 1.\n" +
         "Your opening GARD is is: " +
         openingGARD
