@@ -240,13 +240,13 @@ export function createOptInTxn(params, info, assetID) {
 }
 
 export async function openCDP(openingALGOs, openingGARD) {
-  if (openingGARD < 1) {
-    alert(
-      "Opening GARD needs to be above 1.\n" +
+  if (openingGARD <= 1) {
+    return {
+      alert: true.
+      text: "Opening GARD needs to be above 1.\n" +
         "Your opening GARD is is: " +
-        openingGARD,
-    );
-    return null;
+        openingGARD
+    }
   }
 
   // Setting up promises
@@ -429,8 +429,7 @@ export async function openCDP(openingALGOs, openingGARD) {
   let response = await sendTxn1Promise;
   response = await sendTxn(
     stxns2,
-    "Succesfully opened a CDP with ID: " + accountID + ".",
-    true,
+    "Successfully opened a CDP with ID: " + accountID + ".",
   );
   updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
   return response;
@@ -492,7 +491,7 @@ export async function mint(accountID, newGARD) {
 
   let response = await sendTxn(
     stxns,
-    "Succesfully minted " + newGARD + " GARD.",
+    "Successfully minted " + newGARD + " GARD.",
   );
 
   checkChainForCDP(info.address, accountID);
@@ -506,8 +505,10 @@ export async function addCollateral(accountID, newAlgos) {
   //		Min amount
 
   if (accountID == "N/A") {
-    alert("You can only add to existing CDPs");
-    return null;
+    return{
+      alert: true,
+      text: "You can only add to existing CDPs"
+    }
   }
 
   // Core info
@@ -543,7 +544,7 @@ export async function addCollateral(accountID, newAlgos) {
 
   const response = await sendTxn(
     stxns,
-    "Succesfully added " + newAlgos + " ALGOs as collateral.",
+    "Successfully added " + newAlgos + " ALGOs as collateral.",
   );
 
   checkChainForCDP(info.address, accountID);
@@ -642,7 +643,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   let stxns = [stxn1.blob, stxn2.blob, stxn3.blob, stxn4.blob];
   let response = await sendTxn(
     stxns,
-    "Succesfully closed your cdp with ID " + accountID + ".",
+    "Successfully closed your cdp with ID " + accountID + ".",
   );
   removeCDP(info.address, accountID);
   return response;
@@ -798,7 +799,7 @@ export async function voteCDP(account_id, option1, option2) {
   let stxns = [stxn1.blob, stxn2.blob];
   let response = await sendTxn(
     stxns,
-    "Succesfully voted for options " +
+    "Successfully voted for options " +
       option1 +
       " and " +
       option2 +
@@ -894,7 +895,7 @@ export async function liquidate(
   ];
   let response = await sendTxn(
     stxns,
-    "Succesfully liquidated CDP #" + account_id + " of " + owner_address,
+    "Successfully liquidated CDP #" + account_id + " of " + owner_address,
   );
   return response;
 }
