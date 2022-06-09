@@ -198,9 +198,7 @@ export default function Topbar({ contentName, setMainContent }) {
           ) : (
             <></>
           )}
-          <div style={{paddingLeft: 8, paddingTop: 4}}>
           <ThemeToggle />
-          </div>
         </div>
       </TopBar>
       <Modal
