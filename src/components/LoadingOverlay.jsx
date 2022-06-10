@@ -9,6 +9,9 @@ export default function LoadingOverlay({ text }) {
           <div>
             <LoadingText>{text || 'Loading...'}</LoadingText>
           </div>
+          <div>
+            <LoadingSubText>{'\n-- Confirm the transaction on your Algorand Wallet --'}</LoadingSubText>
+          </div>
         </TextContainer>
       </Backdrop>
     </div>
@@ -24,6 +27,15 @@ const TextAnimation = keyframes`
 const LoadingText = styled.text`
     font-weight: 900;
     font-size: 24px;
+    animation-name: ${TextAnimation};
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
+    animation-direction: ${'alternate'};
+  `
+  const LoadingSubText = styled.text`
+    font-weight: 900;
+    font-size: 16px;
     animation-name: ${TextAnimation};
     animation-duration: 1s;
     animation-iteration-count: infinite;
@@ -47,6 +59,7 @@ const TextContainer = styled.div`
   height: 100px;
   background: #ffffff;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   border-radius: 25px;
