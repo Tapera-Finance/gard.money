@@ -240,10 +240,10 @@ export function createOptInTxn(params, info, assetID) {
 }
 
 export async function openCDP(openingALGOs, openingGARD) {
-  if (openingGARD <= 1) {
+  if (openingGARD < 1) {
     return {
       alert: true,
-      text: "Opening GARD needs to be above 1.\n" +
+      text: "Opening GARD needs to be at least 1.\n" +
         "Your opening GARD is is: " +
         openingGARD
     }
@@ -427,10 +427,7 @@ export async function openCDP(openingALGOs, openingGARD) {
     stxn4.blob,
   ];
   let response = await sendTxn1Promise;
-  response = await sendTxn(
-    stxns2,
-    "Successfully opened a CDP with ID: " + accountID + ".",
-  );
+  response = await sendTxn(stxns2, "Successfully opened a CDP with ID: " + accountID + ".");
   updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
@@ -489,10 +486,7 @@ export async function mint(accountID, newGARD) {
 
   let stxns = [stxn1.blob, stxn2.blob, stxn3.blob];
 
-  let response = await sendTxn(
-    stxns,
-    "Successfully minted " + newGARD + " GARD.",
-  );
+  let response = await sendTxn(stxns, "Successfully minted " + newGARD + " GARD.");
 
   checkChainForCDP(info.address, accountID);
 
@@ -503,11 +497,22 @@ export async function mint(accountID, newGARD) {
 export async function addCollateral(accountID, newAlgos) {
   // TODO: Add catches
   //		Min amount
-
-  if (accountID == "N/A") {
+  if (accountID == 'N/A') {
     return{
       alert: true,
-      text: "You can only add to existing CDPs"
+      text: "You can only add to existing CDPs",
+    }
+  }
+  else if (newAlgos == null) {
+    return{
+      alert: true,
+      text: "Cannot add 'null' ALGOS to a CDP!"
+    }
+  }
+  else if (newAlgos <= 0) {
+    return{
+      alert: true,
+      text: "Value needs to be greater than 0!"
     }
   }
 
@@ -519,10 +524,10 @@ export async function addCollateral(accountID, newAlgos) {
       alert: true,
       text:
         "Depositing this much collateral will put you below your minimum balance.\n" +
-        "Your Maximum deposit is: " +
+        "Your Maximum deposit is: " + 
         (newAlgos + 100000 * (info["assets"].length + 1)) / 1000000 +
         " Algos",
-    };
+      };
   }
   let cdp = cdpGen(info.address, accountID);
   let microNewAlgos = parseInt(newAlgos * 1000000);
@@ -542,10 +547,7 @@ export async function addCollateral(accountID, newAlgos) {
 
   const stxns = [signedGroup[0].blob];
 
-  const response = await sendTxn(
-    stxns,
-    "Successfully added " + newAlgos + " ALGOs as collateral.",
-  );
+  const response = await sendTxn(stxns, "Successfully added " + newAlgos + " ALGOs as collateral.",);
 
   checkChainForCDP(info.address, accountID);
 
@@ -575,12 +577,8 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   if (gard_bal == null || gard_bal < microRepayGARD) {
     return {
       alert: true,
-      text:
-        "Insufficient GARD for transaction. Balance: " +
-        (gard_bal / 1000000).toFixed(2).toString() +
-        "\n" +
-        "Required: " +
-        (microRepayGARD / 1000000).toFixed(2).toString(),
+      text: "Insufficient GARD for transaction. Balance: " + (gard_bal / 1000000).toFixed(2).toString() + '\n' +
+        "Required: " + (microRepayGARD / 1000000).toFixed(2).toString()
     };
   }
 
@@ -641,10 +639,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   const stxn2 = signedGroup[1];
 
   let stxns = [stxn1.blob, stxn2.blob, stxn3.blob, stxn4.blob];
-  let response = await sendTxn(
-    stxns,
-    "Successfully closed your cdp with ID " + accountID + ".",
-  );
+  let response = await sendTxn(stxns, "Successfully closed your cdp with ID " + accountID + ".",);
   removeCDP(info.address, accountID);
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
@@ -752,9 +747,7 @@ export async function commitCDP(account_id, amount) {
       "https://governance.algorand.foundation/governance-period-3/governors/" +
       cdp.address +
       '">here</a>.\n',
-    true,
-    true,
-  );
+     true);
   updateCommitment(info.address, account_id, parseInt(amount * 1000000));
   return response;
 }
@@ -834,7 +827,7 @@ export async function liquidate(
       text:
         "Insufficient GARD for transaction. Balance: " +
         (gard_bal / 1000000).toFixed(2).toString() +
-        "\n" +
+        '\n' +
         "Required: " +
         ((microDebt + to_user + liquid_fee) / 1000000).toFixed(2).toString(),
     };
@@ -895,7 +888,6 @@ export async function liquidate(
   ];
   let response = await sendTxn(
     stxns,
-    "Successfully liquidated CDP #" + account_id + " of " + owner_address,
-  );
+    "Successfully liquidated CDP #" + account_id + " of " + owner_address, true);
   return response;
 }
