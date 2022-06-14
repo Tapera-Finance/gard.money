@@ -98,7 +98,6 @@ export default function MintContent() {
   const dispatch = useDispatch()
   useEffect(async () => {
     await getPrice()
-    console.log('mint useEffect called');
     await updateWalletInfo();
     getWallet();
     console.log('balance',(getWalletInfo()['amount'] / 1000000).toFixed(3));
