@@ -117,7 +117,7 @@ export default function RepayContent() {
               }}
               cancelCallback={() => setModalVisible(false)}
             >
-              <WrappedSummary transactionData={transactionValue}></WrappedSummary>
+              <WrappedSummary context="add_collateral" transactionData={transactionValue}></WrappedSummary>
             </TransactionSummary>
           ),
         }
@@ -130,20 +130,7 @@ export default function RepayContent() {
             'Complete the details of this transaction to the right and click “Confirm Transaction” to create a new mint order.',
           children: (
             <TransactionSummary
-              specifics={[
-                {
-                  title: 'New Collateralization Ratio',
-                  value: getNew('more_gard') == null ? '...' : '100%',
-                },
-                {
-                  title: 'New Liquidation Price',
-                  value: getNew('more_gard') == null ? '...' : '$69.01',
-                },
-                {
-                  title: 'Transaction Fees',
-                  value: getNew('more_gard') == null ? '...' : '0.001 Algos',
-                },
-              ]}
+              specifics={[]}
               transactionFunc={async () => {
                 setModalCanAnimate(true)
                 setModalVisible(false)
@@ -184,37 +171,7 @@ export default function RepayContent() {
                   <TransactionField>{maxGard}</TransactionField>
                 </div>
               </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  marginTop: 20,
-                  marginBottom: 0,
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <SpecificsTitle>{'Mint Amount'}</SpecificsTitle>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flex: 1,
-                  }}
-                >
-                  <TransactionInput
-                    placeholder="Enter Value Here"
-                    id="more_gard"
-                  />
-                </div>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flex: 1,
-                }}
-              ></div>
+              <WrappedSummary context="mint_gard" transactionData={transactionValue}></WrappedSummary>
             </TransactionSummary>
           ),
         }
