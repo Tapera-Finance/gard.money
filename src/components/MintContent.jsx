@@ -93,13 +93,23 @@ export default function MintContent() {
     },
   )
   const [loading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState(null)
+  console.log(loadingText)
   const dispatch = useDispatch()
   useEffect(async () => {
     await getPrice()
   }, [])
+  
+  var sessionStorageSetHandler = function(e) {
+    console.log('sessionStorage.set("' + e.key + '", "' + e.value + '") was called');
+    setLoadingText(JSON.parse(e.value))
+  };
+  
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+  
   return (
     <div>
-      {loading ? <LoadingOverlay text={'Minting your CDP...'} /> : <></>}
+      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
       <div style={{ marginBottom: 40 }}>
         <div
           style={{
