@@ -786,7 +786,7 @@ export async function commitCDP(account_id, amount) {
   const signedGroup = await signedGroupPromise;
   const stxn1 = signedGroup[0];
 
-  setLoadingStage('Commiting ALGOs...');
+  setLoadingStage('Committing ALGOs...');
 
   let stxns = [stxn1.blob, stxn2.blob];
   let response = await sendTxn(
@@ -867,6 +867,8 @@ export async function liquidate(
   microPremium,
 ) {
   // Setting up promises
+  setLoadingStage('Loading...');
+
   const infoPromise = accountInfo();
   const paramsPromise = getParams(0);
 
@@ -932,11 +934,12 @@ export async function liquidate(
   algosdk.assignGroupID(txns);
 
   const signTxnsPromise = signGroup(info, txns);
+  setLoadingStage('Awaiting Signature from Algorand Wallet...');
   let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
   const stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
   const user_signed = await signTxnsPromise;
-
+  setLoadingStage('Liquidating CDP...');
   let stxns = [
     stxn1.blob,
     stxn2.blob,
@@ -947,5 +950,6 @@ export async function liquidate(
   let response = await sendTxn(
     stxns,
     "Successfully liquidated CDP #" + account_id + " of " + owner_address, true);
+    setLoadingStage(null)
   return response;
 }
