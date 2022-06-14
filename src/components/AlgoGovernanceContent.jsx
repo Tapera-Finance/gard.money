@@ -31,7 +31,6 @@ export default function AlgoGovernanceContent() {
   const [measure2Vote, setM2Vote] = useState("Approve the mechanism for community proposals");
 
   var sessionStorageSetHandler = function(e) {
-    console.log('sessionStorage.set("' + e.key + '", "' + e.value + '") was called');
     setLoadingText(JSON.parse(e.value))
   };
   

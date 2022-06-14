@@ -106,7 +106,6 @@ export default function MintContent() {
   }, [])
   
   var sessionStorageSetHandler = function(e) {
-    console.log('sessionStorage.set("' + e.key + '", "' + e.value + '") was called');
     setLoadingText(JSON.parse(e.value))
   };
   
