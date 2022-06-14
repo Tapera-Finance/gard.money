@@ -243,8 +243,8 @@ var originalSetItem = sessionStorage.setItem;
 sessionStorage.setItem = function(key, value) {
   var event = new Event('itemInserted');
 
-  event.value = value; // Optional..
-  event.key = key; // Optional..
+  event.value = value; 
+  event.key = key; 
 
   document.dispatchEvent(event);
 
