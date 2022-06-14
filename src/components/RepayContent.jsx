@@ -6,7 +6,7 @@ import PrimaryButton from './PrimaryButton'
 import Table from './Table'
 import TransactionSummary from './TransactionSummary'
 import LoadingOverlay from './LoadingOverlay'
-import { mint, closeCDP, getCDPs, addCollateral } from '../transactions/cdp'
+import { mint, closeCDP, getCDPs, updateCDPs, addCollateral } from '../transactions/cdp'
 import { getWalletInfo, handleTxError } from '../wallets/wallets'
 import { useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
@@ -39,7 +39,9 @@ export default function RepayContent() {
   const dispatch = useDispatch()
 
   useEffect(async () => {
+    const updatePromise = updateCDPs()
     let currentPriceResponse = await getCurrentAlgoUsd()
+    await updatePromise
     setCurrentPrice(currentPriceResponse)
   }, [])
   var sessionStorageSetHandler = function(e) {
