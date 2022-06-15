@@ -92,6 +92,7 @@ async function loadDefaulted() {
 export default function AuctionsContent() {
   const [selected, setSelected] = useState(OPTIONS.LIVE_AUCTIONS)
   const [loading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [transInfo, setTransInfo] = useState([])
   const [transPremium, setTransPremium] = useState([])
@@ -106,6 +107,10 @@ export default function AuctionsContent() {
     curr_price = await getCurrentAlgoUsd();
     cdp_data = await loadDefaulted()
   }, [])
+  var sessionStorageSetHandler = function(e) {
+    setLoadingText(JSON.parse(e.value))
+  };
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
   let addresses = chainDataResponse["defaulted-cdps"]
   let defaulted = addresses.map((value, idx) => {

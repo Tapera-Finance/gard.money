@@ -4,7 +4,7 @@ import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
 import TransactionSummary from './TransactionSummary'
 import LoadingOverlay from './LoadingOverlay'
-import { getWallet, getWalletInfo, handleTxError } from '../wallets/wallets'
+import { getWallet, getWalletInfo, handleTxError, updateWalletInfo } from '../wallets/wallets'
 import { calcDevFees, getPrice, calcRatio } from '../transactions/cdp.js'
 import { openCDP } from '../transactions/cdp'
 import { useAlert } from '../hooks'
@@ -95,13 +95,26 @@ export default function MintContent() {
     },
   )
   const [loading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState(null)
+  const [balance, setBalance] = useState('...')
   const dispatch = useDispatch()
   useEffect(async () => {
     await getPrice()
+    await updateWalletInfo();
+    getWallet();
+    console.log('balance',(getWalletInfo()['amount'] / 1000000).toFixed(3));
+    setBalance((getWalletInfo()['amount'] / 1000000).toFixed(3));
   }, [])
+  
+  var sessionStorageSetHandler = function(e) {
+    setLoadingText(JSON.parse(e.value))
+  };
+  
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+  
   return (
     <div>
-      {loading ? <LoadingOverlay text={'Minting your CDP...'} /> : <></>}
+      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
       <div style={{ marginBottom: 40 }}>
         <div
           style={{
@@ -116,8 +129,8 @@ export default function MintContent() {
           <InputContainer darkToggle={theme === 'dark'}>
             <InputNameText>
               {getWallet() == null
-                ? 'N/A'
-                : mAlgosToAlgos(getWalletInfo()['amount'])}
+                  ? 'N/A'
+                  : `${balance}`}
             </InputNameText>
           </InputContainer>
         </div>

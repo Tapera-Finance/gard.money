@@ -22,6 +22,7 @@ export default function AlgoGovernanceContent() {
   const [modalVisible, setModalVisible] = useState(false)
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState(null)
   const [modalContent, setModalContent] = useState('vote')
   const [selectedAccount, setSelectedAccount] = useState('')
   const [maxBal, setMaxBal] = useState('')
@@ -31,7 +32,12 @@ export default function AlgoGovernanceContent() {
   const [measure1Vote, setM1Vote] = useState("Granting governor status and twice the voting power to qualified DeFi projects");
   const [measure2Vote, setM2Vote] = useState("Approve the mechanism for community proposals");
 
-
+  var sessionStorageSetHandler = function(e) {
+    setLoadingText(JSON.parse(e.value))
+  };
+  
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+  
   const handleChangeMeasure1 = (event) => {
     setM1Vote(event.target.value);
   };
@@ -123,7 +129,7 @@ export default function AlgoGovernanceContent() {
   })
   return (
     <div>
-      {loading ? <LoadingOverlay text={'Committing to governance...'} /> : <></>}
+      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
       <Table
         title="Algorand CDPs"
         countSubtitle={`${loadedCDPs == dummyCdps ? 0 : adjusted.length} CDPs`}
