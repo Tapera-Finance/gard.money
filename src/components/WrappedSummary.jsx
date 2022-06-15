@@ -124,7 +124,7 @@ export default class WrappedSummary extends React.Component {
                     <div>
                       <SpecificsValue>{
                        !isValidInput(this.props.someVar) ?
-                        "..." : '$' + (((1.15 * this.props.transactionData.debt ) / this.props.transactionData.collateral+this.props.someVar/1e6).toFixed(4))
+                        "..." : '$' + (((1.15 * this.props.transactionData.debt/1e6 ) / (this.props.transactionData.collateral/1e6 + this.props.someVar)).toFixed(4))
                       }</SpecificsValue>
                     </div>
                     </div>
