@@ -12,6 +12,9 @@ function getNew(id) {
     return parseFloat(document.getElementById(id).value)
   }
 
+const isValidInput = (val) => (!isNaN(val) && val > 0 && val !== null)
+
+
 export default class WrappedSummary extends React.Component {
     constructor(props) {
       super(props)
@@ -27,6 +30,10 @@ export default class WrappedSummary extends React.Component {
       this.setState({
         someVar: getNew("more_collateral")
       })
+    } else {
+      this.setState({
+        someVar: 0
+      })
     }
     }
 
@@ -35,7 +42,11 @@ export default class WrappedSummary extends React.Component {
         this.setState({
           someVar: getNew("more_gard")
         })
-      }
+      } else {
+      this.setState({
+        someVar: 0
+      })
+    }
     }
 
     render() {
@@ -81,7 +92,7 @@ export default class WrappedSummary extends React.Component {
                 <div
                     style={{
                     display: 'flex',
-                    flexDirection: 'row',
+                    flexDirection: 'column',
                     marginTop: 20,
                     marginBottom: 20,
                     justifyContent: 'space-between',
@@ -91,15 +102,17 @@ export default class WrappedSummary extends React.Component {
                       <SpecificsTitle>{'New Collateralization Ratio'}</SpecificsTitle>
                     </div>
                     <div>
-                      <SpecificsValue>{calcRatio(this.props.transactionData.collateral+this.props.someVar, this.props.transactionData.debt/1e6, true)}</SpecificsValue>
+                      <SpecificsValue>{
+                      !isValidInput(this.props.someVar) ? "..." :
+                      calcRatio(this.props.transactionData.collateral + (this.props.someVar * 1e6), this.props.transactionData.debt/1e6, true)}</SpecificsValue>
                     </div>
                     <div>
                       <SpecificsTitle>{'New Liquidation Price'}</SpecificsTitle>
                     </div>
                     <div>
                       <SpecificsValue>{
-                      // '$' + ((1.15 * this.props.transactionData.debt/1e6 ) / this.props.transactionData.collateral+this.props.someVar).toFixed(4)
-                      "..."
+                       !isValidInput(this.props.someVar) ?
+                        "..." : '$' + (((1.15 * this.props.transactionData.debt ) / this.props.transactionData.collateral+this.props.someVar/1e6).toFixed(4))
                       }</SpecificsValue>
                     </div>
                     <div>
@@ -142,7 +155,7 @@ export default class WrappedSummary extends React.Component {
                 <div
                     style={{
                     display: 'flex',
-                    flexDirection: 'row',
+                    flexDirection: 'column',
                     marginTop: 20,
                     marginBottom: 20,
                     justifyContent: 'space-between',
@@ -152,15 +165,16 @@ export default class WrappedSummary extends React.Component {
                       <SpecificsTitle>{'New Collateralization Ratio'}</SpecificsTitle>
                     </div>
                     <div>
-                      <SpecificsValue>{calcRatio(this.props.transactionData.collateral, (this.props.transactionData.debt+this.props.someVar)/1e6, true)}</SpecificsValue>
+                      <SpecificsValue>{
+                       !isValidInput(this.props.someVar) ? "..." : calcRatio(this.props.transactionData.collateral, (this.props.transactionData.debt+(this.props.someVar*1e6))/1e6, true)
+                       }</SpecificsValue>
                     </div>
                     <div>
                       <SpecificsTitle>{'New Liquidation Price'}</SpecificsTitle>
                     </div>
                     <div>
                       <SpecificsValue>{
-                      // '$' + ((1.15 * (this.props.someVar+this.props.transactionData.debt) ) / this.props.transactionData.collateral).toFixed(4)
-                      "..."
+                        !isValidInput(this.props.someVar) ? "..." : '$' + (((1.15 * ((this.props.someVar*1e6)+this.props.transactionData.debt) ) / this.props.transactionData.collateral).toFixed(4))
                       }</SpecificsValue>
                     </div>
                     <div>
@@ -179,6 +193,8 @@ export default class WrappedSummary extends React.Component {
 const SpecificsValue = styled.text`
   font-weight: bold;
   font-size: 16px;
+  align-items: right;
+  margin-top: 10px
 `
 
 const SpecificsTitle = styled.text`
