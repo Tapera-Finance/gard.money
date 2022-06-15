@@ -1,6 +1,5 @@
 import React, {useContext, useState, useEffect} from "react";
 import styled, {css} from "styled-components";
-import Switch from "react-switch";
 import { ThemeContext } from "../contexts/ThemeContext";
 import toggleDark from '../assets/icons/toggleDark.png'
 import toggleLight from '../assets/icons/toggleLight.png'
