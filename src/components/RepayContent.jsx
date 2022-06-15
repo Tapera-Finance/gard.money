@@ -35,6 +35,7 @@ export default function RepayContent() {
   const [currentPrice, setCurrentPrice] = useState()
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState(null)
   const walletAddress = useSelector((state) => state.wallet.address)
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -48,6 +49,11 @@ export default function RepayContent() {
       setCurrentPrice(currentPriceResponse.value)
     }
   }, [])
+  var sessionStorageSetHandler = function(e) {
+    setLoadingText(JSON.parse(e.value))
+  };
+
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
@@ -257,7 +263,7 @@ export default function RepayContent() {
   return (
     <div>
       {loading ? (
-        <LoadingOverlay text={'Sending your transaction...'} />
+        <LoadingOverlay text={loadingText} />
       ) : (
         <></>
       )}
