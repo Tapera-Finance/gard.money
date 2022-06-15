@@ -146,12 +146,6 @@ export default class WrappedSummary extends React.Component {
                     onChange={this.props.handler}
                   />
                   </div>
-                <div>
-                    <SpecificsTitle>{'Collateral'}</SpecificsTitle>
-                </div>
-                <div>
-                      <SpecificsValue>{this.props.transactionData.collateral/1000000}</SpecificsValue>
-                </div>
                 <div
                     style={{
                     display: 'flex',

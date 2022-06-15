@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCurrentAlgoUsd } from '../prices/prices'
 import { setAlert } from '../redux/slices/alertSlice'
-import { useStore } from 'react-redux'
 
 // TODO: Replace value.liquidationPrice with the proper liquidation price
 /**
@@ -30,24 +29,23 @@ function getNew(id) {
   return parseFloat(document.getElementById(id).value)
 }
 
+const temp = await getCurrentAlgoUsd()
+
 export default function RepayContent() {
   const [modalVisible, setModalVisible] = useState(false)
-  const [currentPrice, setCurrentPrice] = useState()
+  const [currentPrice, setCurrentPrice] = useState(temp)
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingText, setLoadingText] = useState(null)
   const walletAddress = useSelector((state) => state.wallet.address)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const store = useStore()
 
   useEffect(async () => {
     const updatePromise = updateCDPs()
     let currentPriceResponse = await getCurrentAlgoUsd()
     await updatePromise
-    if (currentPriceResponse) {
-      setCurrentPrice(currentPriceResponse.value)
-    }
+    setCurrentPrice(currentPriceResponse)
   }, [])
   var sessionStorageSetHandler = function(e) {
     setLoadingText(JSON.parse(e.value))
@@ -136,9 +134,7 @@ export default function RepayContent() {
         }
       }
       else {
-        // use globally saved current price if modal is opened before currentPrice promise resolves
-        const readOnlyState = store.getState()
-        const maxGard = Math.max(0, Math.trunc(100*(!isNaN(currentPrice) ? currentPrice : readOnlyState.current.price * transactionValue.collateral / 1000000) / 1.4 - 100 * transactionValue.debt / 1000000)/100)
+        const maxGard = Math.max(0, Math.trunc(100*(currentPrice * transactionValue.collateral / 1000000) / 1.4 - 100 * transactionValue.debt / 1000000)/100)
         return {
           title: 'Create a Mint Order',
           subtitle:
