@@ -148,10 +148,11 @@ export default class WrappedSummary extends React.Component {
           )
         case "mint_gard":
           return(
+            <SpecificsContainer>
              <div
                     style={{
                       display: 'flex',
-                      flexDirection: 'column',
+                      flexDirection: 'row',
                       marginTop: 20,
                       marginBottom: 0,
                       justifyContent: 'space-between',
@@ -168,11 +169,11 @@ export default class WrappedSummary extends React.Component {
                     onChange={this.props.handler}
                   />
                   </div>
-                  <SpecificsContainer>
+                  </div>
                 <div
                     style={{
                     display: 'flex',
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     marginTop: 20,
                     marginBottom: 20,
                     justifyContent: 'space-between',
@@ -186,6 +187,15 @@ export default class WrappedSummary extends React.Component {
                        !isValidInput(this.props.someVar) ? "..." : calcRatio(this.props.transactionData.collateral, (this.props.transactionData.debt+(this.props.someVar*1e6))/1e6, true)
                        }</SpecificsValue>
                     </div>
+                    </div>
+                    <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    marginTop: 20,
+                    marginBottom: 20,
+                    justifyContent: 'space-between',
+                    }}
+                    >
                     <div>
                       <SpecificsTitle>{'New Liquidation Price'}</SpecificsTitle>
                     </div>
@@ -194,6 +204,15 @@ export default class WrappedSummary extends React.Component {
                         !isValidInput(this.props.someVar) ? "..." : '$' + (((1.15 * ((this.props.someVar*1e6)+this.props.transactionData.debt) ) / this.props.transactionData.collateral).toFixed(4))
                       }</SpecificsValue>
                     </div>
+                    </div>
+                    <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    marginTop: 20,
+                    marginBottom: 20,
+                    justifyContent: 'space-between',
+                    }}
+                    >
                     <div>
                       <SpecificsTitle>{'Transaction Fees'}</SpecificsTitle>
                     </div>
@@ -201,8 +220,7 @@ export default class WrappedSummary extends React.Component {
                       <SpecificsValue>{'0.001 Algos'}</SpecificsValue>
                     </div>
                 </div>
-                </SpecificsContainer>
-            </div>
+              </SpecificsContainer>
           )
       }
     }

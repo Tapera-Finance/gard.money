@@ -162,7 +162,7 @@ export default function RepayContent() {
               <div
                 style={{
                   display: 'flex',
-                  flexDirection: 'column',
+                  flexDirection: 'row',
                   marginTop: 20,
                   marginBottom: 20,
                   justifyContent: 'space-between',
