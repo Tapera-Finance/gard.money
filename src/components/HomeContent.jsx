@@ -1,8 +1,9 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, {useContext} from 'react'
+import styled, {css} from 'styled-components'
 import linkIcon from '../assets/icons/link_icon.png'
 import pinnedIcon from '../assets/icons/pinned_icon.png'
 import arrowIcon from '../assets/icons/arrow_icon.png'
+import { ThemeContext } from '../contexts/ThemeContext'
 
 const axios = require('axios')
 
@@ -42,6 +43,7 @@ async function getArticleMetadata() {
  * Content found on home
  */
 export default function HomeContent() {
+  const {theme} = useContext(ThemeContext)
   return (
     <div style={{}}>
       <div style={{ paddingBottom: 40 }}>
@@ -68,7 +70,7 @@ export default function HomeContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText>View Website</LinkButtonText>
+                <LinkButtonText darkToggle={theme === 'dark'}>View Website</LinkButtonText>
               </div>
               <div>
                 <img src={linkIcon} alt="link-icon" />
@@ -88,7 +90,7 @@ export default function HomeContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText>Read White Paper</LinkButtonText>
+                <LinkButtonText darkToggle={theme === 'dark'}>Read White Paper</LinkButtonText>
               </div>
               <div>
                 <img src={linkIcon} alt="link-icon" />
@@ -152,6 +154,7 @@ export default function HomeContent() {
                       >
                         <div style={{ paddingRight: 15 }}>
                           <LinkButtonTextBold
+                            darkToggle={theme === 'dark'}
                             onClick={() => window.open(v.link)}
                           >
                             Read More
@@ -204,6 +207,11 @@ const LinkButton = styled.button`
 const LinkButtonText = styled.text`
   font-weight: normal;
   font-size: 14px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: #99b2ff;
+  `}
   ${LinkButton}:hover & {
     text-decoration: underline;
   }
@@ -227,6 +235,11 @@ const NewsHeadline = styled.text`
 const LinkButtonTextBold = styled.text`
   font-weight: bold;
   font-size: 14px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: #99b2ff;
+  `}
 `
 
 // dummy data for news headlines

@@ -5,12 +5,15 @@ import Main from './components/Main'
 import WalletContent from './components/WalletContent'
 import store from './redux/store'
 import Routes from './components/Routes'
+import ThemeContext from './contexts/ThemeContext'
 
 function App() {
   return (
-    <Provider store={store}>
+    <ThemeContext>
+      <Provider store={store}>
       <Routes />
     </Provider>
+    </ThemeContext>
   )
 }
 
