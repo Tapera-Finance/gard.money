@@ -217,14 +217,6 @@ export default function MintContent() {
               </Grid>
             </Grid>
           </Box>
-            {/* <Input
-              placeholder="Algos sent to CDP"
-              id="collateral"
-              value={fields.collateral}
-              onChange={(e) =>
-                reduceFields({ type: 'collateral', value: e.target.value })
-              }
-            /> */}
           </div>
         </div>
         <div
