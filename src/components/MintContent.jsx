@@ -121,7 +121,7 @@ export default function MintContent() {
 
   const handleSliderChange1 = (event, newValue) => {
     setCollateral(newValue);
-    let max = (newValue * 100 * price / 140).toFixed(3)
+    let max = Math.trunc(100*(algosToMAlgos(price) * algosToMAlgos(newValue) / 1000000) / 1.4  / 1000000)/100
     setMaxGARD(max)
     if (mGARD > max) {
       setGARD(max)
