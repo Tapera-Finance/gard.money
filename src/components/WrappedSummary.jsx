@@ -153,7 +153,7 @@ export default class WrappedSummary extends React.Component {
                       <SpecificsTitle>{'Transaction Fees'}</SpecificsTitle>
                     </div>
                     <div>
-                      <SpecificsValue>{!isValidInput(this.props.someVar) ? ".001 Algos" : displayFees(mAlgosToAlgos(this.props.transactionData.debt) )}</SpecificsValue>
+                      <SpecificsValue>{"0.002 Algos"}</SpecificsValue>
                     </div>
                     </div>
                     </SpecificsContainer>
@@ -229,7 +229,7 @@ export default class WrappedSummary extends React.Component {
                       <SpecificsTitle>{'Transaction Fees'}</SpecificsTitle>
                     </div>
                     <div>
-                      <SpecificsValue>{!isValidInput(this.props.someVar) ? ".001 Algos" : displayFees(mAlgosToAlgos(this.props.transactionData.debt+(this.props.someVar*1e6)))}</SpecificsValue>
+                      <SpecificsValue>{!isValidInput(this.props.someVar) ? "..." : displayFees(this.props.someVar)}</SpecificsValue>
                     </div>
                 </div>
               </SpecificsContainer>
