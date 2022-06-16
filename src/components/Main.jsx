@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import HomeContent from './HomeContent'
 import Drawer from './Drawer'
@@ -22,6 +22,7 @@ import AlertOverlay from './AlertOverlay'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { hide } from '../redux/slices/alertSlice'
+import {ThemeContext} from '../contexts/ThemeContext'
 
 async function googleStuff() {
   const script = document.createElement('script');
@@ -58,6 +59,31 @@ export default function Main(WrappedComponent, title) {
   }, [])
   const dispatch = useDispatch()
   const alertData = useSelector((state) => state.alert)
+  
+  //Dark theme context
+  const {theme} = useContext(ThemeContext)
+
+  
+  const body = document.querySelector('body')
+  body.style.transition = 'all 1s ease'
+  theme === 'dark' ? body.style.backgroundColor = '#121212' : body.style.backgroundColor = '#ffffff'
+
+  const MainStyle = {
+    light: {
+      backgroundColor: '#ffffff',
+    },
+    dark: {
+      backgroundColor: '#121212',
+      color: 'white',
+    },
+    common: {
+      transition: 'all 1s ease',
+    },
+  }
+  const themeStyle = {
+    ...MainStyle.common,
+    ...(theme === 'light' ? MainStyle.light : MainStyle.dark),
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -76,7 +102,7 @@ export default function Main(WrappedComponent, title) {
         toggleOpenStatus={() => setIsOpen(!isOpen)}
         allowAnimate={() => setCanAnimate(true)}
       />
-      <MainContentDiv canAnimate={canAnimate} isOpen={isOpen}>
+      <MainContentDiv style = {themeStyle} canAnimate={canAnimate} isOpen={isOpen}>
         <Topbar
           contentName={title}
           setMainContent={(content) => {
@@ -127,6 +153,7 @@ export default function Main(WrappedComponent, title) {
         visible={modalVisible}
         animate={modalCanAnimate}
         close={() => setModalVisible(false)}
+        darkToggle = {theme === 'dark'}
       >
         <div
           style={{
@@ -137,7 +164,7 @@ export default function Main(WrappedComponent, title) {
         >
           <ContactUsText>
             {'Please let us know via email at'}
-            <Link href="mailto:hello@algogard.com"> hello@algogard.com</Link>
+            <Link darkToggle={theme === 'dark'} href="mailto:hello@algogard.com"> hello@algogard.com</Link>
           </ContactUsText>
         </div>
       </Modal>
@@ -153,7 +180,6 @@ const expandMainContentAnimation = keyframes`
 
 // main styled components
 const MainContentDiv = styled.div`
-  background-color: #ffffff;
   margin-left: ${`${window.innerWidth < 900 ? 0 : 20}vw`};
   width: 100%;
   animation-duration: 0.5s;
@@ -177,6 +203,11 @@ const Link = styled.a`
   text-decoration: none;
   font-weight: 500;
   color: #1849f8;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: #99b2ff;
+  `}
 `
 
 /**

@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useReducer } from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { useEffect, useState, useReducer, useContext } from 'react'
+import styled, { keyframes, css } from 'styled-components'
 import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
 import TransactionSummary from './TransactionSummary'
@@ -11,6 +11,7 @@ import { useAlert } from '../hooks'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setAlert } from '../redux/slices/alertSlice'
+import { ThemeContext } from '../contexts/ThemeContext'
 
 function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true)
@@ -57,6 +58,7 @@ function getCollateral() {
 export default function MintContent() {
   const [modalVisible, setModalVisible] = useState(false)
   const [canAnimate, setCanAnimate] = useState(false)
+  const {theme} = useContext(ThemeContext)
   const navigate = useNavigate()
 
   const [fields, reduceFields] = useReducer(
@@ -121,10 +123,10 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Current Balance (Algos)</InputNameText>
           </InputNameContainer>
-          <InputContainer>
+          <InputContainer darkToggle={theme === 'dark'}>
             <InputNameText>
               {getWallet() == null
                   ? 'N/A'
@@ -139,11 +141,12 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Collateral (Algos)</InputNameText>
           </InputNameContainer>
           <div>
             <Input
+              darkToggle={theme === 'dark'}
               placeholder="Algos sent to CDP"
               id="collateral"
               value={fields.collateral}
@@ -160,11 +163,12 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Minted GARD</InputNameText>
           </InputNameContainer>
           <div>
             <Input
+              darkToggle={theme === 'dark'}
               placeholder="Min. 1"
               id="minted"
               value={fields.minted}
@@ -181,7 +185,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Collateralization Ratio</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -199,7 +203,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Liquidation Price (in ALGO/USD)</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -216,7 +220,7 @@ export default function MintContent() {
             flexDirection: window.innerWidth < 900 ? 'column' : 'row',
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Protocol Fees</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -262,6 +266,7 @@ export default function MintContent() {
         title="Are you sure you want to proceed?"
         subtitle="Review the details of this transaction to the right and
                     click “Confirm Transaction” to proceed."
+        darkToggle={theme === 'dark'}
       >
         <TransactionSummary
           specifics={dummyTrans()}
@@ -284,6 +289,7 @@ export default function MintContent() {
             }
           }}
           cancelCallback={() => setModalVisible(false)}
+          darkToggle={theme === 'dark'}
         />
       </Modal>
     </div>
@@ -301,6 +307,11 @@ const InputNameContainer = styled.div`
   display: flex;
   align-items: center;
   margin-right: 2.5px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    background: #404040;
+  `}
 `
 const InputNameText = styled.text`
   font-weight: 500;
@@ -329,6 +340,19 @@ const Input = styled.input`
   &:focus::placeholder {
     color: transparent;
   }
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    transition: 'all 1s ease';
+    background: #121212;
+    color: white;
+    &:focus {
+      outline-color: white;
+    }
+    &:focus::placeholder {
+      color: transparent;
+    }
+  `}
 `
 // Why don't these refresh right away?
 // dummy info for the transaction
