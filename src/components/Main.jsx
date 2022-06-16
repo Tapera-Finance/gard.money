@@ -65,7 +65,7 @@ export default function Main(WrappedComponent, title) {
 
   
   const body = document.querySelector('body')
-  theme === 'dark' ? body.style.transition = 'all 1s ease' : body.style.transition = 'all 1s ease'
+  body.style.transition = 'all 1s ease'
   theme === 'dark' ? body.style.backgroundColor = '#121212' : body.style.backgroundColor = '#ffffff'
 
   const MainStyle = {
