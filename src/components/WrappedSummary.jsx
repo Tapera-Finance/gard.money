@@ -1,6 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
-import { calcRatio } from '../transactions/cdp.js'
+import { calcRatio, calcDevFees } from '../transactions/cdp.js'
+
+function mAlgosToAlgos(num) {
+  return num / 1000000
+}
+function algosToMAlgos(num) {
+  return num * 1000000
+}
+
+function displayFees(minted) {
+  const fees = mAlgosToAlgos(calcDevFees(algosToMAlgos(minted)))
+  return fees + " Algos"
+}
 
 function getNew(id) {
     if (
@@ -141,7 +153,7 @@ export default class WrappedSummary extends React.Component {
                       <SpecificsTitle>{'Transaction Fees'}</SpecificsTitle>
                     </div>
                     <div>
-                      <SpecificsValue>{'0.001 Algos'}</SpecificsValue>
+                      <SpecificsValue>{!isValidInput(this.props.someVar) ? ".001 Algos" : displayFees(mAlgosToAlgos(this.props.transactionData.debt) )}</SpecificsValue>
                     </div>
                     </div>
                     </SpecificsContainer>
@@ -217,7 +229,7 @@ export default class WrappedSummary extends React.Component {
                       <SpecificsTitle>{'Transaction Fees'}</SpecificsTitle>
                     </div>
                     <div>
-                      <SpecificsValue>{'0.001 Algos'}</SpecificsValue>
+                      <SpecificsValue>{!isValidInput(this.props.someVar) ? ".001 Algos" : displayFees(mAlgosToAlgos(this.props.transactionData.debt+(this.props.someVar*1e6)))}</SpecificsValue>
                     </div>
                 </div>
               </SpecificsContainer>
