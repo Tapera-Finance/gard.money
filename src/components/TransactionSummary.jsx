@@ -66,7 +66,7 @@ const SpecificsContainer = styled.div`
   border: solid;
   border-width: 1px 0px;
   margin-bottom: 32px;
-  padding: 0px 28px 0px 0px;
+  padding: 0px 0px 0px 0px;
 `
 const TTitle = styled.text`
   font-weight: normal;

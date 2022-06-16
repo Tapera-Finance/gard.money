@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 import { calcRatio, calcDevFees } from '../transactions/cdp.js'
+import { ThemeContext } from '../contexts/ThemeContext'
+import { useContext } from 'react'
 
 function mAlgosToAlgos(num) {
   return num / 1000000
@@ -26,16 +28,15 @@ function getNew(id) {
 
 const isValidInput = (val) => (!isNaN(val) && val > 0 && val !== null)
 
-
 export default class WrappedSummary extends React.Component {
-    constructor(props) {
-      super(props)
-      this.state = {
-        someVar: '...'
-      };
-      this.handleCollateral = this.handleCollateral.bind(this)
-      this.handleMinting = this.handleMinting.bind(this)
-    }
+  constructor(props) {
+    super(props)
+    this.state = {
+      someVar: '...'
+    };
+    this.handleCollateral = this.handleCollateral.bind(this)
+    this.handleMinting = this.handleMinting.bind(this)
+  }
 
     handleCollateral() {
     if (getNew("more_collateral") !== null ) {
@@ -71,9 +72,9 @@ export default class WrappedSummary extends React.Component {
     }
   }
 
-  class Child extends React.Component {
-    render() {
-      switch (this.props.context) {
+  export function Child(props) {
+    const theme = useContext(ThemeContext);
+      switch (props.context) {
         case 'add_collateral':
           return (
             <SpecificsContainer>
@@ -99,7 +100,8 @@ export default class WrappedSummary extends React.Component {
                 <TransactionInput
                     placeholder="Enter Value Here"
                     id="more_collateral"
-                    onChange={this.props.handler}
+                    darkToggle={theme === 'dark'}
+                    onChange={props.handler}
                   />
                 </div>
               </div>
@@ -117,8 +119,8 @@ export default class WrappedSummary extends React.Component {
                     </div>
                     <div>
                       <SpecificsValue>{
-                      !isValidInput(this.props.someVar) ? "..." :
-                      calcRatio(this.props.transactionData.collateral + (this.props.someVar * 1e6), this.props.transactionData.debt/1e6, true)}</SpecificsValue>
+                      !isValidInput(props.someVar) ? "..." :
+                      calcRatio(props.transactionData.collateral + (props.someVar * 1e6), props.transactionData.debt/1e6, true)}</SpecificsValue>
                     </div>
                     </div>
                     <div
@@ -135,8 +137,8 @@ export default class WrappedSummary extends React.Component {
                     </div>
                     <div>
                       <SpecificsValue>{
-                       !isValidInput(this.props.someVar) ?
-                        "..." : '$' + (((1.15 * this.props.transactionData.debt/1e6 ) / (this.props.transactionData.collateral/1e6 + this.props.someVar)).toFixed(4))
+                       !isValidInput(props.someVar) ?
+                        "..." : '$' + (((1.15 * props.transactionData.debt/1e6 ) / (props.transactionData.collateral/1e6 + props.someVar)).toFixed(4))
                       }</SpecificsValue>
                     </div>
                     </div>
@@ -178,7 +180,8 @@ export default class WrappedSummary extends React.Component {
                     <TransactionInput
                     placeholder="Enter Value Here"
                     id="more_gard"
-                    onChange={this.props.handler}
+                    darkToggle={theme === "dark"}
+                    onChange={props.handler}
                   />
                   </div>
                   </div>
@@ -196,7 +199,7 @@ export default class WrappedSummary extends React.Component {
                     </div>
                     <div>
                       <SpecificsValue>{
-                       !isValidInput(this.props.someVar) ? "..." : calcRatio(this.props.transactionData.collateral, (this.props.transactionData.debt+(this.props.someVar*1e6))/1e6, true)
+                       !isValidInput(props.someVar) ? "..." : calcRatio(props.transactionData.collateral, (props.transactionData.debt+(props.someVar*1e6))/1e6, true)
                        }</SpecificsValue>
                     </div>
                     </div>
@@ -213,7 +216,7 @@ export default class WrappedSummary extends React.Component {
                     </div>
                     <div>
                       <SpecificsValue>{
-                        !isValidInput(this.props.someVar) ? "..." : '$' + (((1.15 * ((this.props.someVar*1e6)+this.props.transactionData.debt) ) / this.props.transactionData.collateral).toFixed(4))
+                        !isValidInput(props.someVar) ? "..." : '$' + (((1.15 * ((props.someVar*1e6)+props.transactionData.debt) ) / props.transactionData.collateral).toFixed(4))
                       }</SpecificsValue>
                     </div>
                     </div>
@@ -229,18 +232,19 @@ export default class WrappedSummary extends React.Component {
                       <SpecificsTitle>{'Transaction Fees'}</SpecificsTitle>
                     </div>
                     <div>
-                      <SpecificsValue>{!isValidInput(this.props.someVar) ? "..." : displayFees(this.props.someVar)}</SpecificsValue>
+                      <SpecificsValue>{!isValidInput(props.someVar) ? "..." : displayFees(props.someVar)}</SpecificsValue>
                     </div>
                 </div>
               </SpecificsContainer>
           )
       }
-    }
+
   }
 
 const SpecificsContainer = styled.div`
   margin-bottom: 32px;
   padding: 0px 28px 0px 0px;
+  min-width: 22.5em;
 `
 
 const SpecificsValue = styled.text`
