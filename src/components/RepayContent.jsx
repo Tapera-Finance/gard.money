@@ -1,5 +1,5 @@
-import React, { useEffect, useReducer, useState } from 'react'
-import styled from 'styled-components'
+import React, { useEffect, useReducer, useState, useContext } from 'react'
+import styled, {css} from 'styled-components'
 import { formatToDollars, formatTo } from '../utils'
 import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCurrentAlgoUsd } from '../prices/prices'
 import { setAlert } from '../redux/slices/alertSlice'
+import { ThemeContext } from '../contexts/ThemeContext'
 
 // TODO: Replace value.liquidationPrice with the proper liquidation price
 /**
@@ -33,9 +34,11 @@ export default function RepayContent() {
   const [currentPrice, setCurrentPrice] = useState()
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState(null)
   const walletAddress = useSelector((state) => state.wallet.address)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const {theme} = useContext(ThemeContext)
 
   useEffect(async () => {
     const updatePromise = updateCDPs()
@@ -43,6 +46,12 @@ export default function RepayContent() {
     await updatePromise
     setCurrentPrice(currentPriceResponse)
   }, [])
+  var sessionStorageSetHandler = function(e) {
+    setLoadingText(JSON.parse(e.value))
+  };
+  
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+  
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
       const { type, transactionValue } = action
@@ -87,6 +96,7 @@ export default function RepayContent() {
                 setLoading(false)
               }}
               cancelCallback={() => setModalVisible(false)}
+              darkToggle={theme === 'dark'}
             />
           ),
         }
@@ -130,6 +140,7 @@ export default function RepayContent() {
                 setLoading(false)
               }}
               cancelCallback={() => setModalVisible(false)}
+              darkToggle={theme === 'dark'}
             >
               <div
                 style={{
@@ -153,6 +164,7 @@ export default function RepayContent() {
                   <TransactionInput
                     placeholder="Enter Value Here"
                     id="more_collateral"
+                    darkToggle={theme === 'dark'}
                   />
                 </div>
               </div>
@@ -204,6 +216,7 @@ export default function RepayContent() {
                 setLoading(false)
               }}
               cancelCallback={() => setModalVisible(false)}
+              darkToggle={theme === 'dark'}
             >
               <div
                 style={{
@@ -250,6 +263,7 @@ export default function RepayContent() {
                   <TransactionInput
                     placeholder="Enter Value Here"
                     id="more_gard"
+                    darkToggle={theme === 'dark'}
                   />
                 </div>
               </div>
@@ -273,6 +287,7 @@ export default function RepayContent() {
           specifics={[]}
           transactionFunc={() => {}}
           cancelCallback={() => setModalVisible(false)}
+          darkToggle={theme === 'dark'}
         />
       ),
     },
@@ -335,7 +350,7 @@ export default function RepayContent() {
   return (
     <div>
       {loading ? (
-        <LoadingOverlay text={'Sending your transaction...'} />
+        <LoadingOverlay text={loadingText} />
       ) : (
         <></>
       )}
@@ -357,6 +372,7 @@ export default function RepayContent() {
         animate={modalCanAnimate}
         visible={modalVisible}
         close={() => setModalVisible(false)}
+        darkToggle={theme === 'dark'}
       >
         {modalContent.children}
       </Modal>
@@ -396,6 +412,13 @@ const TransactionInput = styled.input`
   &:focus::placeholder {
     color: transparent;
   }
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    transition: 'all 1s ease';
+    background: #484848;
+    color: white;
+  `}
 `
 const InputNameContainer = styled.div`
   height: 96px;

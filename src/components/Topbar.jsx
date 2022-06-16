@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react'
+import React, { useReducer, useState, useContext } from 'react'
 import styled from 'styled-components'
 import syncIcon from '../assets/icons/sync_icon.png'
 import Modal from './Modal'
@@ -21,7 +21,8 @@ import { useAlert } from '../hooks'
 import { useDispatch, useSelector } from 'react-redux'
 import { setAlert } from '../redux/slices/alertSlice'
 import { setWallet } from '../redux/slices/walletSlice'
-
+import ThemeToggle from './ThemeToggle'
+import { ThemeContext } from '../contexts/ThemeContext'
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -29,6 +30,31 @@ import { setWallet } from '../redux/slices/walletSlice'
  */
 
 export default function Topbar({ contentName, setMainContent }) {
+  const {theme} = useContext(ThemeContext)
+  const TopbarStyle = {
+    light: {
+      height: 96,
+      backgroundColor: '#f9fafb',
+    },
+    dark: {
+      height: 96,
+      backgroundColor: '#333333',
+      color: 'white',
+    },
+    common: {
+      transition: 'all 1s ease',
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingLeft: 36,
+      paddingRight: window.innerWidth * 0.077,
+    },
+  }
+  const themeStyle = {
+    ...TopbarStyle.common,
+    ...(theme === 'light' ? TopbarStyle.light : TopbarStyle.dark),
+  }
   const [modalVisible, setModalVisible] = useState(false)
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -119,14 +145,7 @@ export default function Topbar({ contentName, setMainContent }) {
         <></>
       )}
       <TopBar
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingLeft: 36,
-          paddingRight: window.innerWidth * 0.077,
-        }}
+        style={themeStyle}
       >
         <div
           style={{
@@ -179,6 +198,7 @@ export default function Topbar({ contentName, setMainContent }) {
           ) : (
             <></>
           )}
+          <ThemeToggle />
         </div>
       </TopBar>
       <Modal

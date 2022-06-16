@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useReducer } from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { useEffect, useState, useReducer, useContext } from 'react'
+import styled, { keyframes, css } from 'styled-components'
 import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
 import TransactionSummary from './TransactionSummary'
@@ -14,6 +14,8 @@ import { setAlert } from '../redux/slices/alertSlice'
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Slider from '@mui/material/Slider';
+import { ThemeContext } from '../contexts/ThemeContext'
+
 
 function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true)
@@ -60,6 +62,7 @@ function getCollateral() {
 export default function MintContent() {
   const [modalVisible, setModalVisible] = useState(false)
   const [canAnimate, setCanAnimate] = useState(false)
+  const {theme} = useContext(ThemeContext)
   const navigate = useNavigate()
 
   const [fields, reduceFields] = useReducer(
@@ -97,6 +100,7 @@ export default function MintContent() {
   )
   const [price, setPrice] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState(null)
   const [balance, setBalance] = useState('...')
   const [cAlgos, setCollateral] = useState(null)
   const [maxCollateral, setMaxCollateral] = useState(0)
@@ -105,7 +109,6 @@ export default function MintContent() {
   const [minted, setMinted] = useState(1)
   const dispatch = useDispatch()
   useEffect(async () => {
-    await getPrice()
     setPrice(await getPrice())
     await updateWalletInfo();
     getWallet();
@@ -114,11 +117,6 @@ export default function MintContent() {
     setMaxCollateral(((getWalletInfo()['amount'] -  calcDevFees(algosToMAlgos(mGARD || 1)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3))
   }, [])
   
-  // useEffect(() => {
-  //   set minted
-  // }, [mGARD])
-
-
   const handleSliderChange1 = (event, newValue) => {
     setCollateral(newValue);
     let max = Math.trunc(100*(algosToMAlgos(price) * algosToMAlgos(newValue) / 1000000) / 1.4  / 1000000)/100
@@ -148,9 +146,15 @@ export default function MintContent() {
   const handleInputChange2 = (event) => {
     setGARD(event.target.value === '' ? '' : Number(event.target.value));
   };
+  
+  var sessionStorageSetHandler = function(e) {
+    setLoadingText(JSON.parse(e.value))
+  };
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+  
   return (
     <div>
-      {loading ? <LoadingOverlay text={'Minting your CDP...'} /> : <></>}
+      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
       <div style={{ marginBottom: 40 }}>
         <div
           style={{
@@ -159,10 +163,10 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Current Balance (Algos)</InputNameText>
           </InputNameContainer>
-          <InputContainer>
+          <InputContainer darkToggle={theme === 'dark'}>
             <InputNameText>
               {getWallet() == null
                   ? 'N/A'
@@ -177,7 +181,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Collateral (Algos)</InputNameText>
           </InputNameContainer>
           <div>
@@ -187,6 +191,7 @@ export default function MintContent() {
             <Grid container spacing={0} justifyContent="center" alignItems="center" marginLeft={0} borderBottom= '1px solid #e9ecfb' >
             <Grid item xs={12}>
                 <Input
+                  darkToggle={theme === 'dark'}
                   type='number'
                   min="0.00"
                   step="0.001"
@@ -226,7 +231,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Minted GARD</InputNameText>
           </InputNameContainer>
           <div>
@@ -236,6 +241,7 @@ export default function MintContent() {
             <Grid container spacing={0} justifyContent="center" alignItems="center" marginLeft={0} borderBottom= '1px solid #e9ecfb' >
             <Grid item xs={12}>
                 <Input
+                  darkToggle={theme === 'dark'}
                   type='number'
                   min="1.00"
                   step="0.001"
@@ -267,6 +273,15 @@ export default function MintContent() {
               </Grid>
             </Grid>
           </Box>
+            <Input
+              darkToggle={theme === 'dark'}
+              placeholder="Min. 1"
+              id="minted"
+              value={fields.minted}
+              onChange={(e) =>
+                reduceFields({ type: 'minted', value: e.target.value })
+              }
+            />
           </div>
         </div>
         <div
@@ -276,7 +291,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Collateralization Ratio</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -294,7 +309,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Liquidation Price (in ALGO/USD)</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -311,7 +326,7 @@ export default function MintContent() {
             flexDirection: window.innerWidth < 900 ? 'column' : 'row',
           }}
         >
-          <InputNameContainer>
+          <InputNameContainer darkToggle={theme === 'dark'}>
             <InputNameText>Protocol Fees</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -357,6 +372,7 @@ export default function MintContent() {
         title="Are you sure you want to proceed?"
         subtitle="Review the details of this transaction to the right and
                     click “Confirm Transaction” to proceed."
+        darkToggle={theme === 'dark'}
       >
         <TransactionSummary
           specifics={dummyTrans()}
@@ -379,6 +395,7 @@ export default function MintContent() {
             }
           }}
           cancelCallback={() => setModalVisible(false)}
+          darkToggle={theme === 'dark'}
         />
       </Modal>
     </div>
@@ -396,6 +413,11 @@ const InputNameContainer = styled.div`
   display: flex;
   align-items: center;
   margin-right: 2.5px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    background: #404040;
+  `}
 `
 const InputNameText = styled.text`
   font-weight: 500;
@@ -422,6 +444,19 @@ const Input = styled.input`
   &:focus::placeholder {
     color: transparent;
   }
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    transition: 'all 1s ease';
+    background: #121212;
+    color: white;
+    &:focus {
+      outline-color: white;
+    }
+    &:focus::placeholder {
+      color: transparent;
+    }
+  `}
 `
 // Why don't these refresh right away?
 // dummy info for the transaction
