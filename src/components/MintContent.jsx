@@ -273,15 +273,6 @@ export default function MintContent() {
               </Grid>
             </Grid>
           </Box>
-            <Input
-              darkToggle={theme === 'dark'}
-              placeholder="Min. 1"
-              id="minted"
-              value={fields.minted}
-              onChange={(e) =>
-                reduceFields({ type: 'minted', value: e.target.value })
-              }
-            />
           </div>
         </div>
         <div
