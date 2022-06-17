@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import PrimaryButton from './PrimaryButton'
 
 /**
@@ -12,11 +12,12 @@ export default function TransactionSummary({
   transactionFunc,
   children,
   cancelCallback,
+  darkToggle,
 }) {
   return (
     <div style={{}}>
       <div style={{ marginLeft: 16, marginBottom: 8 }}>
-        <TTitle>Transaction Summary</TTitle>
+        <TTitle darkToggle={darkToggle}>Transaction Summary</TTitle>
       </div>
       <SpecificsContainer>
         {children}
@@ -53,7 +54,7 @@ export default function TransactionSummary({
           style={{ marginLeft: 30 }}
           onClick={() => cancelCallback()}
         >
-          <CancelButtonText>Cancel</CancelButtonText>
+          <CancelButtonText darkToggle={darkToggle}>Cancel</CancelButtonText>
         </CancelButton>
       </div>
     </div>
@@ -65,12 +66,17 @@ const SpecificsContainer = styled.div`
   border: solid;
   border-width: 1px 0px;
   margin-bottom: 32px;
-  padding: 0px 28px 0px 0px;
+  padding: 0px 0px 0px 0px;
 `
 const TTitle = styled.text`
   font-weight: normal;
   font-size: 14px;
   color: #7a7a7a;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: white;
+  `}
 `
 const CancelButton = styled.button`
   border: 0px;
@@ -83,6 +89,11 @@ const CancelButton = styled.button`
 const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: white;
+  `}
 `
 const SpecificsTitle = styled.text`
   font-weight: normal;

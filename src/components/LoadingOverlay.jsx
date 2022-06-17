@@ -1,13 +1,15 @@
-import React, { useReducer, useState } from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { useReducer, useState, useContext } from 'react'
+import styled, { keyframes, css } from 'styled-components'
+import { ThemeContext } from '../contexts/ThemeContext'
 
 export default function LoadingOverlay({ text }) {
+  const {theme} = useContext(ThemeContext)
   return (
     <div>
-      <Backdrop>
-        <TextContainer>
+      <Backdrop darkToggle ={theme === 'dark'}>
+        <TextContainer darkToggle ={theme === 'dark'}>
           <div>
-            <LoadingText>{text || 'Loading...'}</LoadingText>
+            <LoadingText >{text || 'Loading...'}</LoadingText>
           </div>
         </TextContainer>
       </Backdrop>
@@ -51,4 +53,9 @@ const TextContainer = styled.div`
   align-items: center;
   border-radius: 25px;
   padding: 0px 40px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    background: #484848;
+  `}
 `

@@ -1,5 +1,5 @@
 import { get } from 'jquery'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import styled, { keyframes } from 'styled-components'
@@ -7,6 +7,8 @@ import copyIcon from '../assets/icons/copy_icon.png'
 import copyIconSmall from '../assets/icons/copy_icon_small.png'
 import { getWallet, getWalletInfo, updateWalletInfo } from '../wallets/wallets'
 import Table from './Table'
+import { ThemeContext } from '../contexts/ThemeContext'
+import { css } from 'styled-components'
 
 function getAssets() {
   var assets = []
@@ -44,6 +46,8 @@ export default function WalletContent() {
   const [balance, setBalance] = useState('...');
   const [rewards, setRewards] = useState('...');
   const [pendingRewards, setPendingRewards] = useState('...');
+
+  const {theme} = useContext(ThemeContext)
 
   useEffect(async () => {
     console.log('useEffect called');
@@ -90,7 +94,7 @@ export default function WalletContent() {
   if (!walletAddress) return <div></div>
   return (
     <div>
-      <AccountContainer>
+      <AccountContainer darkToggle = {theme === 'dark'}>
         <div
           style={{
             display: 'flex',
@@ -194,6 +198,11 @@ const AccountContainer = styled.div`
   background: #f4ebff;
   padding: 5vw 4vw;
   margin-bottom: 56px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    background: #404040;
+    `}
 `
 const AccountTitle = styled.text`
   font-weight: 500;

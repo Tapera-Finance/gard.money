@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
+import React, { useEffect, useState, useContext } from 'react'
+import styled, { css } from 'styled-components'
 import copyIconSmall from '../assets/icons/copy_icon_small.png'
 import { camelToWords } from '../utils'
 import PrimaryButton from './PrimaryButton'
 import chevron from '../assets/icons/tablePag_icon.png'
+import { ThemeContext } from '../contexts/ThemeContext'
 
 /**
  * This renders a table with the given data
@@ -27,6 +28,8 @@ export default function Table({
   const [shownRows, setShownRows] = useState(data.slice(0, 10))
   const [currentPageStart, setCurrentPageStart] = useState(1)
   const keys = Object.keys(data[0])
+
+  const {theme} = useContext(ThemeContext)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -62,8 +65,8 @@ export default function Table({
           <div style={{ marginRight: 8 }}>
             <Title>{title}</Title>
           </div>
-          <CountContainer>
-            <CountText>{countSubtitle || `${data.length} ${title}`}</CountText>
+          <CountContainer darkToggle={theme === 'dark'}>
+            <CountText darkToggle={theme === 'dark'}>{countSubtitle || `${data.length} ${title}`}</CountText>
           </CountContainer>
         </div>
       ) : (
@@ -71,15 +74,15 @@ export default function Table({
       )}
       <div style={{ marginBottom: 64 }}>
         <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-          <HeaderRow style={{ background: headerColor }}>
+          <HeaderRow darkToggle = {theme === 'dark'} style={{ background: headerColor }}>
             {columns
               ? columns.map((value, index) => {
-                  return <HeaderElement key={index}>{value}</HeaderElement>
+                  return <HeaderElement darkToggle={theme === 'dark'} key={index}>{value}</HeaderElement>
                 })
               : keys.map((value, index) => {
                   if (value === 'button') return
                   return (
-                    <HeaderElement key={index}>
+                    <HeaderElement darkToggle={theme === 'dark'} key={index}>
                       {camelToWords(value)}
                     </HeaderElement>
                   )
@@ -193,17 +196,32 @@ const CountContainer = styled.div`
   background: #f9f5ff;
   border-radius: 16px;
   padding: 2px 8px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #404040;
+  `}
 `
 
 const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: #6941c6;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: white;
+  `}
 `
 
 const HeaderRow = styled.tr`
   background: #f9fafb;
   height: 44px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #404040;
+  `}
 `
 const HeaderElement = styled.th`
   font-weight: 500;
@@ -212,6 +230,11 @@ const HeaderElement = styled.th`
   height: 44px;
   padding-left: 16px;
   text-align: left;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: white;
+  `}
 `
 const TableRow = styled.tr`
   height: 60px;
