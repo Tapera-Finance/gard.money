@@ -45,7 +45,7 @@ export default function Drawer({
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const walletAddress = useSelector((state) => state.wallet.address)
-  
+
 
   const {theme} = useContext(ThemeContext)
   const DrawerStyle = {
@@ -148,8 +148,8 @@ export default function Drawer({
                             'You cannot enter without first connecting a Wallet',
                           ),
                         )
-                      else if (['Swap', 'DAO'].includes(v.name))
-                        dispatch(setAlert('This page is under construction!'))
+                      // else if (['Swap', 'DAO'].includes(v.name))
+                      //   dispatch(setAlert('This page is under construction!'))
                       else {
                         if (window.innerWidth < 900) toggleOpenStatus()
                         navigate(v.route)
@@ -283,7 +283,7 @@ export default function Drawer({
 // animation for closing and opening drawer
 const closeDrawerAnimation = keyframes`
   0% {left: 0vw;}
-  100% {left: ${`${window.innerWidth < 900 ? -101 : -20}vw`}} 
+  100% {left: ${`${window.innerWidth < 900 ? -101 : -20}vw`}}
 `
 
 const DrawerDiv = styled.div`

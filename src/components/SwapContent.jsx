@@ -1,10 +1,11 @@
-import React, { useReducer, useState } from 'react'
+import React, { useReducer, useState, useContext } from 'react'
 import styled, { css } from 'styled-components'
 import chevron from '../assets/chevron_black.png'
 import swapIcon from '../assets/icons/swapExpanded_icon.png'
 import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
 import TransactionSummary from './TransactionSummary'
+import {ThemeContext} from '../contexts/ThemeContext'
 
 /**
  * Content for Swap option in drawer
@@ -13,12 +14,14 @@ export default function SwapContent() {
   const [modalVisible, setModalVisible] = useState(false)
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [transaction, setTransaction] = useState([])
+  const {theme} = useContext(ThemeContext);
   return (
     <div style={{ marginBottom: 50 }}>
       {titles.map((value, index) => {
         return (
           <Section
             title={value.title}
+            darkToggle={theme === 'dark'}
             transactionCallback={(transaction) => {
               setModalCanAnimate(true)
               setTransaction([
@@ -63,6 +66,7 @@ export default function SwapContent() {
  */
 function Section({ title, transactionCallback }) {
   const [expanded, setExpanded] = useState(false)
+  const {theme} = useContext(ThemeContext)
   const [transaction, reduceTransaction] = useReducer(
     (state, action) => {
       switch (action.type) {
@@ -115,6 +119,7 @@ function Section({ title, transactionCallback }) {
   return (
     <div style={{ marginBottom: 10 }}>
       <SectionButton
+        darkToggle={theme === 'dark'}
         onClick={() => {
           setExpanded(!expanded)
         }}
@@ -122,19 +127,23 @@ function Section({ title, transactionCallback }) {
         <TitleContainer
           expanded={expanded}
           style={{ paddingTop: 44, paddingLeft: 16 }}
+          darkToggle={theme === 'dark'}
         >
           <div style={{ marginRight: 8 }}>
-            <img
+            <Image
               src={chevron}
-              style={expanded ? { transform: 'rotate(90deg)' } : {}}
+              style={expanded ? { transform: 'rotate(90deg)', background: ''} : {}}
+              darkToggle={theme === 'dark'}
             />
           </div>
           <div>
-            <TitleText>{title}</TitleText>
+            <TitleText darkToggle={theme === 'dark'} >{title}</TitleText>
           </div>
         </TitleContainer>
         <RelationsContainer>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1 }}
+          darkToggle={theme === 'dark'}
+          >
             <RelationsSpecificsContainer
               style={{
                 display: 'flex',
@@ -158,15 +167,15 @@ function Section({ title, transactionCallback }) {
               </div>
             </RelationsSpecificsContainer>
           </div>
-          <div style={{ flex: 1 }}>
+          {/* <div style={{ flex: 1 }}>
             <RelationsSpecificsContainer
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
-            >
-              <div>
+            > */}
+              {/* <div>
                 <RelationsTitle>Tether/GARD</RelationsTitle>
               </div>
             </RelationsSpecificsContainer>
@@ -181,8 +190,8 @@ function Section({ title, transactionCallback }) {
                 <RelationsValue>1.1</RelationsValue>
               </div>
             </RelationsSpecificsContainer>
-          </div>
-          <div style={{ flex: 1 }}>
+          </div> */}
+          {/* <div style={{ flex: 1 }}>
             <RelationsSpecificsContainer
               style={{
                 display: 'flex',
@@ -205,7 +214,7 @@ function Section({ title, transactionCallback }) {
                 <RelationsValue>1.1</RelationsValue>
               </div>
             </RelationsSpecificsContainer>
-          </div>
+          </div> */}
         </RelationsContainer>
       </SectionButton>
       {expanded ? (
@@ -214,6 +223,7 @@ function Section({ title, transactionCallback }) {
             display: 'flex',
             flexDirection: 'column',
           }}
+          darkToggle={theme === 'dark'}
         >
           <div
             style={{
@@ -245,11 +255,12 @@ function Section({ title, transactionCallback }) {
                         value: e.target.value,
                       })
                     }
+                    darkToggle={theme === 'dark'}
                   >
                     <option>ALGO</option>
                     <option>GARD</option>
-                    <option>Tether</option>
-                    <option>USDC</option>
+                    {/* <option>Tether</option>
+                    <option>USDC</option> */}
                   </Select>
                 </div>
                 <div>
@@ -270,6 +281,7 @@ function Section({ title, transactionCallback }) {
                       })
                     }
                     placeholder={'Max 123.4'}
+                    darkToggle={theme === 'dark'}
                   />
                 </div>
               </div>
@@ -305,11 +317,12 @@ function Section({ title, transactionCallback }) {
                         value: e.target.value,
                       })
                     }
+                    darkToggle={theme === 'dark'}
                   >
                     <option>GARD</option>
                     <option>ALGO</option>
-                    <option>Tether</option>
-                    <option>USDC</option>
+                    {/* <option>Tether</option>
+                    <option>USDC</option> */}
                   </Select>
                 </div>
                 <div>
@@ -330,6 +343,7 @@ function Section({ title, transactionCallback }) {
                       })
                     }
                     placeholder={'Max 123.4'}
+                    darkToggle={theme === 'dark'}
                   />
                 </div>
               </div>
@@ -339,6 +353,7 @@ function Section({ title, transactionCallback }) {
             <PrimaryButton
               text={'Execute Transaction'}
               onClick={() => transactionCallback(transaction)}
+              darkToggle={theme === 'dark'}
             />
           </div>
         </ExpandedContainer>
@@ -356,11 +371,22 @@ const TitleContainer = styled.div`
   flex: 2;
   display: flex;
   flex-direction: row;
-  ${(props) =>
-    props.expanded &&
-    css`
-      background: #fcfcfd;
-    `}
+  ${(props) => props.darkToggle &&
+  css `
+    background: #404040;
+  `
+  }
+  ${(props) => props.expanded &&
+  css `
+    background: #fcfcfd;
+  `
+  }
+  ${(props) => props.expanded && props.darkToggle &&
+  css `
+    background: #1c1c1c;
+  `
+  }
+
 `
 
 const SectionButton = styled.div`
@@ -368,6 +394,7 @@ const SectionButton = styled.div`
   cursor: pointer;
   display: flex;
   flex-direction: row;
+
 `
 
 const RelationsContainer = styled.div`
@@ -378,6 +405,13 @@ const RelationsContainer = styled.div`
 const TitleText = styled.text`
   font-weight: 500;
   font-size: 20px;
+  ${(props) => props.darkToggle ?
+  `
+    background: #2c2c2c
+    color: #f4ebff
+  ` :
+  ``
+  }
 `
 const RelationsSpecificsContainer = styled.div`
   border-bottom: 1px solid #f9f9f9;
@@ -395,11 +429,21 @@ const ExpandedContainer = styled.div`
   height: 207px;
   background: #f4ebff;
   padding: 0px 3vw;
+  ${(props) => props.darkToggle &&
+  css `
+    background: #404040;
+  `
+  }
 `
 const InputTitle = styled.text`
   font-weight: normal;
   font-size: 14px;
   color: #7a7a7a;
+   ${(props) => props.darkToggle &&
+  css`
+    color:#ffffff;
+    `
+  }
 `
 const Select = styled.select`
   height: 40px;
@@ -408,6 +452,12 @@ const Select = styled.select`
   border-radius: 4px;
   width: 11.5972222222222vw;
   padding: 0px 0px 0px 12px;
+  ${(props) => props.darkToggle &&
+  css`
+    background:#525252;
+    color:#ffffff;
+    `
+  }
 `
 const Input = styled.input`
   height: 40px;
@@ -416,20 +466,31 @@ const Input = styled.input`
   border-radius: 4px;
   width: 11.5972222222222vw;
   padding: 0px 0px 0px 12px;
+  ${(props) => props.darkToggle &&
+  css`
+    background:#525252;
+  `
+  }
 `
+
+const Image = styled.img`
+  ${(props) => props.darkToggle &&
+  css`
+    filter:invert();
+  `
+  }
+`
+
 
 // Titles of each section
 const titles = [
   {
-    title: 'Algofi',
+    title: 'Pact',
   },
-  {
-    title: 'Tinyman',
-  },
-  {
-    title: 'Yieldly',
-  },
-  {
-    title: 'HumbleSwap',
-  },
+  // {
+  //   title: 'Tinyman',
+  // },
+  // {
+  //   title: 'HumbleSwap',
+  // },
 ]
