@@ -4,6 +4,7 @@ import { formatToDollars, formatTo } from '../utils'
 import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
 import Table from './Table'
+import WrappedSummary from './WrappedSummary'
 import TransactionSummary from './TransactionSummary'
 import LoadingOverlay from './LoadingOverlay'
 import { mint, closeCDP, getCDPs, updateCDPs, addCollateral } from '../transactions/cdp'
@@ -29,9 +30,11 @@ function getNew(id) {
   return parseFloat(document.getElementById(id).value)
 }
 
+const temp = await getCurrentAlgoUsd()
+
 export default function RepayContent() {
   const [modalVisible, setModalVisible] = useState(false)
-  const [currentPrice, setCurrentPrice] = useState()
+  const [currentPrice, setCurrentPrice] = useState(temp)
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingText, setLoadingText] = useState(null)
@@ -49,9 +52,9 @@ export default function RepayContent() {
   var sessionStorageSetHandler = function(e) {
     setLoadingText(JSON.parse(e.value))
   };
-  
+
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
-  
+
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
       const { type, transactionValue } = action
@@ -107,20 +110,7 @@ export default function RepayContent() {
             'Complete the details of this transaction to the right and click “Confirm Transaction” to add collateral.',
           children: (
             <TransactionSummary
-              specifics={[
-                {
-                  title: 'New Collateralization Ratio',
-                  value: getNew('more_collateral') == null ? '...' : '100%',
-                },
-                {
-                  title: 'New Liquidation Price',
-                  value: getNew('more_collateral') == null ? '...' : '$69.01',
-                },
-                {
-                  title: 'Transaction Fees',
-                  value: '0.001 Algos',
-                },
-              ]}
+              specifics={[]}
               transactionFunc={async () => {
                 setModalCanAnimate(true)
                 setModalVisible(false)
@@ -142,64 +132,21 @@ export default function RepayContent() {
               cancelCallback={() => setModalVisible(false)}
               darkToggle={theme === 'dark'}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  marginTop: 20,
-                  marginBottom: 0,
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <SpecificsTitle>{'New collateral added'}</SpecificsTitle>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flex: 1,
-                  }}
-                >
-                  <TransactionInput
-                    placeholder="Enter Value Here"
-                    id="more_collateral"
-                    darkToggle={theme === 'dark'}
-                  />
-                </div>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flex: 1,
-                }}
-              ></div>
+              <WrappedSummary context="add_collateral" transactionData={transactionValue}></WrappedSummary>
+
             </TransactionSummary>
           ),
         }
       }
       else {
-      	const maxGard = Math.trunc(100*(currentPrice * transactionValue.collateral / 1000000) / 1.4 - 100 * transactionValue.debt / 1000000)/100
+        const maxGard = Math.max(0, Math.trunc(100*(currentPrice * transactionValue.collateral / 1000000) / 1.4 - 100 * transactionValue.debt / 1000000)/100)
         return {
           title: 'Create a Mint Order',
           subtitle:
             'Complete the details of this transaction to the right and click “Confirm Transaction” to create a new mint order.',
           children: (
             <TransactionSummary
-              specifics={[
-                {
-                  title: 'New Collateralization Ratio',
-                  value: getNew('more_gard') == null ? '...' : '100%',
-                },
-                {
-                  title: 'New Liquidation Price',
-                  value: getNew('more_gard') == null ? '...' : '$69.01',
-                },
-                {
-                  title: 'Transaction Fees',
-                  value: getNew('more_gard') == null ? '...' : '0.001 Algos',
-                },
-              ]}
+              specifics={[]}
               transactionFunc={async () => {
                 setModalCanAnimate(true)
                 setModalVisible(false)
@@ -241,38 +188,7 @@ export default function RepayContent() {
                   <TransactionField>{maxGard}</TransactionField>
                 </div>
               </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  marginTop: 20,
-                  marginBottom: 0,
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <SpecificsTitle>{'Mint Amount'}</SpecificsTitle>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flex: 1,
-                  }}
-                >
-                  <TransactionInput
-                    placeholder="Enter Value Here"
-                    id="more_gard"
-                    darkToggle={theme === 'dark'}
-                  />
-                </div>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flex: 1,
-                }}
-              ></div>
+              <WrappedSummary context="mint_gard" transactionData={transactionValue}></WrappedSummary>
             </TransactionSummary>
           ),
         }
@@ -381,10 +297,6 @@ export default function RepayContent() {
 }
 
 // styled components
-const SpecificsTitle = styled.text`
-  font-weight: normal;
-  font-size: 16px;
-`
 const TransactionField = styled.text`
   font-weight: normal;
   font-size: 16px;
@@ -397,28 +309,6 @@ const TransactionField = styled.text`
   &:focus {
     outline-width: 0;
   }
-`
-const TransactionInput = styled.input`
-  font-weight: normal;
-  font-size: 16px;
-  border: 0px;
-  height: 16px;
-  display: flex;
-  flex: 1;
-  text-align: right;
-  &:focus {
-    outline-width: 0;
-  }
-  &:focus::placeholder {
-    color: transparent;
-  }
-  ${(props) =>
-    props.darkToggle &&
-    css`
-    transition: 'all 1s ease';
-    background: #484848;
-    color: white;
-  `}
 `
 const InputNameContainer = styled.div`
   height: 96px;
@@ -440,6 +330,10 @@ const InputContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`
+const SpecificsTitle = styled.text`
+  font-weight: normal;
+  font-size: 16px;
 `
 // TODO: load in CDPs from cache
 export function CDPsToList() {
