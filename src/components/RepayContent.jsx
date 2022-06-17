@@ -310,28 +310,6 @@ const TransactionField = styled.text`
     outline-width: 0;
   }
 `
-const TransactionInput = styled.input`
-  font-weight: normal;
-  font-size: 16px;
-  border: 0px;
-  height: 16px;
-  display: flex;
-  flex: 1;
-  text-align: right;
-  &:focus {
-    outline-width: 0;
-  }
-  &:focus::placeholder {
-    color: transparent;
-  }
-  ${(props) =>
-    props.darkToggle &&
-    css`
-    transition: 'all 1s ease';
-    background: #484848;
-    color: white;
-  `}
-`
 const InputNameContainer = styled.div`
   height: 96px;
   width: 31vw;
