@@ -11,7 +11,11 @@ import { useAlert } from '../hooks'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setAlert } from '../redux/slices/alertSlice'
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Slider from '@mui/material/Slider';
 import { ThemeContext } from '../contexts/ThemeContext'
+
 
 function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true)
@@ -94,22 +98,58 @@ export default function MintContent() {
       fees: '',
     },
   )
+  const [price, setPrice] = useState(0)
   const [loading, setLoading] = useState(false)
   const [loadingText, setLoadingText] = useState(null)
   const [balance, setBalance] = useState('...')
+  const [cAlgos, setCollateral] = useState(null)
+  const [maxCollateral, setMaxCollateral] = useState(0)
+  const [mGARD, setGARD] = useState(false)
+  const [maxGARD, setMaxGARD] = useState(0)
+  const [minted, setMinted] = useState(1)
   const dispatch = useDispatch()
   useEffect(async () => {
-    await getPrice()
+    setPrice(await getPrice())
     await updateWalletInfo();
     getWallet();
     console.log('balance',(getWalletInfo()['amount'] / 1000000).toFixed(3));
     setBalance((getWalletInfo()['amount'] / 1000000).toFixed(3));
+    setMaxCollateral(((getWalletInfo()['amount'] -  calcDevFees(algosToMAlgos(mGARD || 1)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3))
   }, [])
+  
+  const handleSliderChange1 = (event, newValue) => {
+    setCollateral(newValue);
+    let max = Math.trunc(100*(algosToMAlgos(price) * algosToMAlgos(newValue) / 1000000) / 1.4  / 1000000)/100
+    setMaxGARD(max)
+    if (mGARD > max) {
+      setGARD(max)
+    } 
+  };
+
+  const handleInputChange1 = (event) => {
+    setCollateral(event.target.value === '' ? '' : Number(event.target.value));
+  };
+
+  const handleSliderChange2 = (event, newValue) => {
+    setGARD(newValue);
+    let max = ((getWalletInfo()['amount'] -  calcDevFees(algosToMAlgos(mGARD)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3)
+    setMaxCollateral(max)
+    if (isNaN(cAlgos)){
+      console.log('heyy')
+      return
+    }
+    if (cAlgos > max) {
+      setCollateral(max)
+    }
+  };
+
+  const handleInputChange2 = (event) => {
+    setGARD(event.target.value === '' ? '' : Number(event.target.value));
+  };
   
   var sessionStorageSetHandler = function(e) {
     setLoadingText(JSON.parse(e.value))
   };
-  
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
   
   return (
@@ -145,15 +185,43 @@ export default function MintContent() {
             <InputNameText>Collateral (Algos)</InputNameText>
           </InputNameContainer>
           <div>
-            <Input
-              darkToggle={theme === 'dark'}
-              placeholder="Algos sent to CDP"
-              id="collateral"
-              value={fields.collateral}
-              onChange={(e) =>
-                reduceFields({ type: 'collateral', value: e.target.value })
-              }
-            />
+          <Box sx={{
+            width: window.innerWidth < 900 ? '80vw' : '31vw',
+            } }>
+            <Grid container spacing={0} justifyContent="center" alignItems="center" marginLeft={0} borderBottom= '1px solid #e9ecfb' >
+            <Grid item xs={12}>
+                <Input
+                  darkToggle={theme === 'dark'}
+                  type='number'
+                  min="0.00"
+                  step="0.001"
+                  id="collateral"
+                  placeholder="Algos sent to CDP"
+                  value={cAlgos}
+                  size="small"
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      if(event.key === '.'){
+                        return
+                      }
+                      event.preventDefault();
+                    }
+                  }}
+                  onChange={handleInputChange1}
+                />
+              </Grid>
+              <Grid item xs={10}>
+                <Slider
+                  value={cAlgos}
+                  color="secondary"
+                  onChange={handleSliderChange1}
+                  aria-labelledby="input-slider"
+                  max={maxCollateral}
+                  step={.001}
+                />
+              </Grid>
+            </Grid>
+          </Box>
           </div>
         </div>
         <div
@@ -167,15 +235,44 @@ export default function MintContent() {
             <InputNameText>Minted GARD</InputNameText>
           </InputNameContainer>
           <div>
-            <Input
-              darkToggle={theme === 'dark'}
-              placeholder="Min. 1"
-              id="minted"
-              value={fields.minted}
-              onChange={(e) =>
-                reduceFields({ type: 'minted', value: e.target.value })
-              }
-            />
+          <Box sx={{
+            width: window.innerWidth < 900 ? '80vw' : '31vw',
+            } }>
+            <Grid container spacing={0} justifyContent="center" alignItems="center" marginLeft={0} borderBottom= '1px solid #e9ecfb' >
+            <Grid item xs={12}>
+                <Input
+                  darkToggle={theme === 'dark'}
+                  type='number'
+                  min="1.00"
+                  step="0.001"
+                  id="minted"
+                  placeholder="Min. 1"
+                  value={mGARD}
+                  size="small"
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      if(event.key === '.'){
+                        return
+                      }
+                      event.preventDefault();
+                    }
+                  }}
+                  onChange={handleInputChange2}
+                />
+              </Grid>
+              <Grid item xs={10}>
+                <Slider
+                  value={mGARD}
+                  color="secondary"
+                  onChange={handleSliderChange2}
+                  aria-labelledby="input-slider"
+                  min={1}
+                  max={maxGARD}
+                  step={.001}
+                />
+              </Grid>
+            </Grid>
+          </Box>
           </div>
         </div>
         <div
@@ -300,7 +397,7 @@ export default function MintContent() {
 
 // styled components
 const InputNameContainer = styled.div`
-  height: 96px;
+  height: 132.31px;
   width: ${window.innerWidth < 900 ? '80vw' : '31vw'};
   background: #e9d7fe;
   padding-left: 16px;
@@ -318,7 +415,7 @@ const InputNameText = styled.text`
   font-size: 20px;
 `
 const InputContainer = styled.div`
-  height: 96px;
+  height: 132.31px;
   width: ${window.innerWidth < 900 ? '80vw' : '31vw'};
   border-bottom: 1px solid #e9ecfb;
   display: flex;
@@ -331,8 +428,6 @@ const Input = styled.input`
   width: 100%;
   border: 0px;
   height: 96px;
-  width: ${window.innerWidth < 900 ? '80vw' : '31vw'};
-  border-bottom: 1px solid #e9ecfb;
   text-align: center;
   &:focus {
     outline-color: #bc82ff;
