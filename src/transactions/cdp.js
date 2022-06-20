@@ -166,14 +166,15 @@ async function checkChainForCDP(address, id) {
   return false;
 }
 
-// Sets the frequency to double check CDPs
-const mins_to_refresh = 15;
-
 export async function updateCDPs(address) {
   // Checks all CDPs by an address
   const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
   let webcalls = 0;
+  const MINID = 7;
+  const MAXID = 127;
+  // Sets the frequency to double check CDPs
+  const mins_to_refresh = 15;
   for (const x of Array(MAXID - MINID)
     .fill()
     .map((_, i) => i + MINID)) {

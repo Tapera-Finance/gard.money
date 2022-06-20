@@ -8,7 +8,7 @@ import WrappedSummary from './WrappedSummary'
 import TransactionSummary from './TransactionSummary'
 import LoadingOverlay from './LoadingOverlay'
 import { mint, closeCDP, getCDPs, updateCDPs, addCollateral } from '../transactions/cdp'
-import { getWalletInfo, handleTxError } from '../wallets/wallets'
+import { getWalletInfo, handleTxError, getWallet } from '../wallets/wallets'
 import { useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCurrentAlgoUsd } from '../prices/prices'
@@ -44,7 +44,7 @@ export default function RepayContent() {
   const {theme} = useContext(ThemeContext)
 
   useEffect(async () => {
-    const updatePromise = updateCDPs()
+    const updatePromise = updateCDPs(getWallet()["address"])
     let currentPriceResponse = await getCurrentAlgoUsd()
     await updatePromise
     setCurrentPrice(currentPriceResponse)

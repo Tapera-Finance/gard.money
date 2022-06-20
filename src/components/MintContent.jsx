@@ -112,7 +112,6 @@ export default function MintContent() {
     setPrice(await getPrice())
     await updateWalletInfo();
     getWallet();
-    console.log('balance',(getWalletInfo()['amount'] / 1000000).toFixed(3));
     setBalance((getWalletInfo()['amount'] / 1000000).toFixed(3));
     setMaxCollateral(((getWalletInfo()['amount'] -  calcDevFees(algosToMAlgos(mGARD || 1)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3))
   }, [])
@@ -132,7 +131,7 @@ export default function MintContent() {
 
   const handleSliderChange2 = (event, newValue) => {
     setGARD(newValue);
-    let max = ((getWalletInfo()['amount'] -  calcDevFees(algosToMAlgos(mGARD)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3)
+    let max = ((getWalletInfo()['amount'] - calcDevFees(algosToMAlgos(mGARD)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3)
     setMaxCollateral(max)
     if (isNaN(cAlgos)){
       console.log('heyy')
