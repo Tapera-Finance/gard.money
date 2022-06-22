@@ -19,6 +19,33 @@ import {
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
 import { VERSION } from "../globals";
+import { initializeApp } from "firebase/app";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  query,
+  where,
+  deleteDoc,
+  FieldPath
+} from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD4x024OYPM1Zxh2QNklzw3sXfYTV15f30",
+  authDomain: "gard-money-testing.firebaseapp.com",
+  projectId: "gard-money-testing",
+  storageBucket: "gard-money-testing.appspot.com",
+  messagingSenderId: "564363590339",
+  appId: "1:564363590339:web:8b5e50a902164a03770076",
+  measurementId: "G-6SMVCFC990"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// get the firestore database instance
+export const db = getFirestore(app);
 
 var $ = require("jquery");
 
@@ -952,4 +979,30 @@ export async function liquidate(
     "Successfully liquidated CDP #" + account_id + " of " + owner_address, true);
     setLoadingStage(null)
   return response;
+}
+
+export async function addUserToFireStore(user) {
+  try {
+    const usersRef = collection(db, "users");
+    const docRef = await addDoc(usersRef, user);
+    console.log("Document written with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+
+export async function userInDB(walletID) {
+  // get users collection
+  const usersRef = collection(db, "users");
+  console.log('usersRef', usersRef)
+  // query the collection to find the user with the walletID address
+  const q = query(usersRef, where('id', "==", walletID));
+  console.log('query', q)
+  // execute the query using getDocs
+  const querySnapshot = await getDocs(q);
+
+  // get the wallet id from the first document (there should be one matched user)
+  const userId = querySnapshot.docs[0].data().id;
+  console.log('id', userId)
+  return userId == walletID
 }
