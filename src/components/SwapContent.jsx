@@ -5,7 +5,24 @@ import swapIcon from '../assets/icons/swapExpanded_icon.png'
 import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
 import TransactionSummary from './TransactionSummary'
+import { gainID, gardID, gardianID, pactGARDID, pactRecipient } from '../transactions/ids'
 import {ThemeContext} from '../contexts/ThemeContext'
+import { PactSwap, showPactSwapObject } from '../transactions/swap'
+
+const pactController = new PactSwap("pact", pactRecipient, [
+  {
+    name: "gain",
+    id: gainID,
+  },
+  {
+    name: "gard",
+    id: gardID,
+  },
+  {
+    name: "gardian",
+    id: gardianID,
+  },
+]);
 
 /**
  * Content for Swap option in drawer
@@ -15,6 +32,7 @@ export default function SwapContent() {
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [transaction, setTransaction] = useState([])
   const {theme} = useContext(ThemeContext);
+
   return (
     <div style={{ marginBottom: 50 }}>
       {titles.map((value, index) => {
@@ -52,6 +70,15 @@ export default function SwapContent() {
       >
         <TransactionSummary
           specifics={transaction}
+          transactionFunc={() => {
+            // console.log("sending transaction to console", transaction);
+            // console.log("heres the instance of the PactSwap Object", pactController);
+            // pactController.algoToGard();
+            // pactController.gardToAlgo();
+            // pactController.showMeTheDeets();
+
+            console.log(showPactSwapObject());
+          }}
           cancelCallback={() => setModalVisible(false)}
         />
       </Modal>
@@ -357,6 +384,7 @@ function Section({ title, transactionCallback }) {
             />
           </div>
         </ExpandedContainer>
+
       ) : (
         <></>
       )}
