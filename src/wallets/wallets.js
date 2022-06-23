@@ -60,7 +60,7 @@ export async function accountInfo(address = null) {
 export async function updateWalletInfo() {
   let info = await accountInfo()
   activeWalletInfo = info
-  updateCDPs(activeWalletInfo.address)
+  updateCDPs(activeWallet.address)
   let idx = -1;
   let promises = []
   for (let i = 0; i < info['assets'].length; i++) {
