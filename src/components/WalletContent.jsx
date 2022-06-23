@@ -50,10 +50,8 @@ export default function WalletContent() {
   const {theme} = useContext(ThemeContext)
 
   useEffect(async () => {
-    console.log('useEffect called');
     await updateWalletInfo();
     getWallet();
-    console.log('balance',(getWalletInfo()['amount'] / 1000000).toFixed(3));
     setBalance((getWalletInfo()['amount'] / 1000000).toFixed(3));
     setRewards((getWalletInfo()['rewards'] / 1000000).toFixed(3))
     setPendingRewards((getWalletInfo()['pending-rewards'] / 1000000).toFixed(3))

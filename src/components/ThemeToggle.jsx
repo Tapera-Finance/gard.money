@@ -14,7 +14,7 @@ export default function ThemeToggle() {
         setTheme(theme === 'light' ? 'dark': 'light')
     }
 
-    return <button class='toggle' style={{paddingBottom: 5, border:0, background: 'none', width: '45px'}}>
+    return <button className='toggle' style={{paddingBottom: 5, border:0, background: 'none', width: '45px'}}>
             {theme === 'light'?
             <Img src={toggleDark} alt="toggle dark" onClick={handleThemeToggle} darkToggle={theme === 'dark'}/>
             :<Img src={toggleLight} alt="toggle light" onClick={handleThemeToggle} darkToggle={theme === 'dark'}/>
