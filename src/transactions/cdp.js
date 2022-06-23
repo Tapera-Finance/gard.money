@@ -25,10 +25,13 @@ import {
   collection,
   getDocs,
   addDoc,
+  setDoc,
+  updateDoc,
   query,
   where,
   deleteDoc,
-  FieldPath
+  FieldPath,
+  doc
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -45,7 +48,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // get the firestore database instance
-export const db = getFirestore(app);
+const db = getFirestore(app);
 
 var $ = require("jquery");
 
@@ -748,6 +751,23 @@ function updateCDP(
 }
 
 function updateCommitment(address, id, commitment) {
+  const currID = getWallet().address
+  const key1 = `Opened CDPs.${address}.Last Commitment`
+  const key2 = `Opened CDPs.${address}.Commitment Timestamp`
+  const newCommit = {
+    [key1]: commitment,
+    [key2]: new Date().toISOString(),
+  }
+  async function updateCommitmentFirestore(newCommit) {
+    try {
+      const walletRef = doc(db, "users", id);
+      const docRef = await updateDoc(walletRef, currID);
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+  updateCommitmentFirestore(newCommit)
   let CDPs = getCDPs();
   CDPs[address][id]["committed"] = commitment;
   localStorage.setItem("CDPs", JSON.stringify(CDPs));
@@ -981,11 +1001,10 @@ export async function liquidate(
   return response;
 }
 
-export async function addUserToFireStore(user) {
+export async function addUserToFireStore(user, walletID) {
   try {
-    const usersRef = collection(db, "users");
-    const docRef = await addDoc(usersRef, user);
-    console.log("Document written with ID: ", docRef.id);
+    const walletRef = doc(db, "users", walletID);
+    const docRef = await setDoc(walletRef, user);
   } catch (e) {
     console.error("Error adding document: ", e);
   }
@@ -994,15 +1013,10 @@ export async function addUserToFireStore(user) {
 export async function userInDB(walletID) {
   // get users collection
   const usersRef = collection(db, "users");
-  console.log('usersRef', usersRef)
   // query the collection to find the user with the walletID address
   const q = query(usersRef, where('id', "==", walletID));
-  console.log('query', q)
   // execute the query using getDocs
   const querySnapshot = await getDocs(q);
-
-  // get the wallet id from the first document (there should be one matched user)
-  const userId = querySnapshot.docs[0].data().id;
-  console.log('id', userId)
-  return userId == walletID
+  // returns true if there is a document that matches the walletId and false if there isn't (there should be one matched user)
+  return querySnapshot.docs.length >= 1
 }
