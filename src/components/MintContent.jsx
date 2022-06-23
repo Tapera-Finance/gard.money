@@ -102,9 +102,9 @@ export default function MintContent() {
   const [loading, setLoading] = useState(false)
   const [loadingText, setLoadingText] = useState(null)
   const [balance, setBalance] = useState('...')
-  const [cAlgos, setCollateral] = useState(null)
+  const [cAlgos, setCollateral] = useState(0)
   const [maxCollateral, setMaxCollateral] = useState(0)
-  const [mGARD, setGARD] = useState(false)
+  const [mGARD, setGARD] = useState(0)
   const [maxGARD, setMaxGARD] = useState(0)
   const [minted, setMinted] = useState(1)
   const dispatch = useDispatch()
@@ -215,7 +215,7 @@ export default function MintContent() {
                   color="secondary"
                   onChange={handleSliderChange1}
                   aria-labelledby="input-slider"
-                  max={maxCollateral}
+                  max={typeof maxCollateral === 'string' || maxCollateral instanceof String ? parseFloat(maxCollateral) : maxCollateral}
                   step={.001}
                 />
               </Grid>
