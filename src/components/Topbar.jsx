@@ -24,7 +24,7 @@ import { setAlert } from '../redux/slices/alertSlice'
 import { setWallet } from '../redux/slices/walletSlice'
 import ThemeToggle from './ThemeToggle'
 import { ThemeContext } from '../contexts/ThemeContext'
-import { userInDB, addUserToFireStore } from '../transactions/cdp'
+import { userInDB, addUserToFireStore, updateCDPs } from '../transactions/cdp'
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -82,10 +82,20 @@ export default function Topbar({ contentName, setMainContent }) {
                       let in_DB = await userInDB(owner_address)
                       console.log('inDB?:', in_DB)
                       if (!in_DB){
+                        let temp = await updateCDPs()
+                        let addrs = getCDPs().keys()
+                        let owned = {}
+                        for (var i = 0; i < addrs.length; i++) {
+                          owned[addrs[i]] = {
+                          "Last Commitment": 19012922,
+		                      "Commitment Timestamp": 1654264937,
+		                      "Liquidated Timestamp": [-1]
+                        }
+                        }
                         const user = {
                           "id": owner_address,
                           "WebApp Actions": [],
-                          "Owned CDPs": {},
+                          "Owned CDPs": owned,
                           "systemAssetVal": [0, 0],
                           "systemDebtVal": [0, 0]
                         }
