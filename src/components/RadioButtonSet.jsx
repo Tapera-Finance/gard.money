@@ -7,9 +7,9 @@ export default function RadioButtonSet({ titles, selected, callback }) {
     <div style={{ display: 'flex', flexDirection: 'row' }}>
       {titles.map((value, index) => {
         return (
-          <div>
+          <div key={index}>
             {value === selected ? (
-              <PrimaryButton text={value} />
+              <PrimaryButton text={value}/>
             ) : (
               <InactiveRadio
                 onClick={() => {
