@@ -19,14 +19,11 @@ import {
   signGroup,
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
-import { VERSION } from "../globals";
+import { VERSION, MINID, MAXID } from "../globals";
 
 var $ = require("jquery");
 
 const enc = new TextEncoder();
-
-const MINID = 7;
-const MAXID = 127;
 const MINRATIO = 140;
 const fundingAmount = 300000;
 let currentBigPrice = 816;
