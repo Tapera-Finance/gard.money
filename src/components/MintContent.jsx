@@ -6,7 +6,7 @@ import TransactionSummary from './TransactionSummary'
 import LoadingOverlay from './LoadingOverlay'
 import { getWallet, getWalletInfo, handleTxError, updateWalletInfo } from '../wallets/wallets'
 import { calcDevFees, getPrice, calcRatio } from '../transactions/cdp.js'
-import { openCDP} from '../transactions/cdp'
+import { openCDP } from '../transactions/cdp'
 import { useAlert } from '../hooks'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
@@ -152,20 +152,6 @@ export default function MintContent() {
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
   
-  const owner_address = getWallet().address
-  console.log('owneraddy', owner_address)
-  let in_DB = userInDB(owner_address)
-  if (!in_DB){
-    const user = {
-      owner_address: {
-          "WebApp Actions": [],
-          "Owned CDPs": {},
-          "systemAssetVal": [0, 0],
-          "systemDebtVal": [0, 0]
-      }
-    }
-    addUserToFireStore(user)
-  }
   return (
     <div>
       {loading ? <LoadingOverlay text={loadingText} /> : <></>}

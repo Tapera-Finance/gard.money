@@ -9,6 +9,7 @@ import {
   displayWallet,
   accountInfo,
   disconnectWallet,
+  getWallet
 } from '../wallets/wallets'
 
 import { connectWallet } from '../wallets/wallets'
@@ -23,6 +24,7 @@ import { setAlert } from '../redux/slices/alertSlice'
 import { setWallet } from '../redux/slices/walletSlice'
 import ThemeToggle from './ThemeToggle'
 import { ThemeContext } from '../contexts/ThemeContext'
+import { userInDB, addUserToFireStore } from '../transactions/cdp'
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -75,6 +77,21 @@ export default function Topbar({ contentName, setMainContent }) {
                     const wallet = await connectWallet(type)
                     if (!wallet.alert) {
                       dispatch(setWallet({ address: displayWallet() }))
+                      const owner_address = getWallet().address
+                      console.log('owneraddr', owner_address)
+                      let in_DB = await userInDB(owner_address)
+                      console.log('inDB?:', in_DB)
+                      if (!in_DB){
+                        const user = {
+                          "id": owner_address,
+                          "WebApp Actions": [],
+                          "Owned CDPs": {},
+                          "systemAssetVal": [0, 0],
+                          "systemDebtVal": [0, 0]
+                        }
+                        console.log('im here')
+                        addUserToFireStore(user, owner_address)
+                    }
                     } else {
                       dispatch(setAlert(wallet.text))
                     }
