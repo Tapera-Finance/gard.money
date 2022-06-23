@@ -1,8 +1,10 @@
 import React, {useContext} from 'react'
 import styled, {css} from 'styled-components'
 import linkIcon from '../assets/icons/link_icon.png'
+import linkIconWhite from '../assets/icons/link_icon_white.png'
 import pinnedIcon from '../assets/icons/pinned_icon.png'
 import arrowIcon from '../assets/icons/arrow_icon.png'
+import arrowIconWhite from '../assets/icons/arrow_icon_white.png'
 import { ThemeContext } from '../contexts/ThemeContext'
 
 const axios = require('axios')
@@ -73,7 +75,7 @@ export default function HomeContent() {
                 <LinkButtonText darkToggle={theme === 'dark'}>View Website</LinkButtonText>
               </div>
               <div>
-                <img src={linkIcon} alt="link-icon" />
+                {theme === 'light' ? <img src={linkIcon} alt="link-icon" />: <img src={linkIconWhite} alt="link-icon-white" /> }
               </div>
             </LinkButton>
           </div>
@@ -93,7 +95,7 @@ export default function HomeContent() {
                 <LinkButtonText darkToggle={theme === 'dark'}>Read White Paper</LinkButtonText>
               </div>
               <div>
-                <img src={linkIcon} alt="link-icon" />
+                {theme === 'light' ? <img src={linkIcon} alt="link-icon" />: <img src={linkIconWhite} alt="link-icon-white" /> }
               </div>
             </LinkButton>
           </div>
@@ -161,7 +163,7 @@ export default function HomeContent() {
                           </LinkButtonTextBold>
                         </div>
                         <div>
-                          <img src={arrowIcon} alt="arrow-icon" />
+                        {theme === 'light' ? <img src={arrowIcon} alt="arrow-icon" />: <img src={arrowIconWhite} alt="arrow-icon-white" /> }
                         </div>
                       </LinkButton>
                     </div>
