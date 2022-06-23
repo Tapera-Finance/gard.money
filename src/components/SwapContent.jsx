@@ -7,9 +7,9 @@ import PrimaryButton from './PrimaryButton'
 import TransactionSummary from './TransactionSummary'
 import { gainID, gardID, gardianID, pactGARDID, pactRecipient } from '../transactions/ids'
 import {ThemeContext} from '../contexts/ThemeContext'
-import { PactSwap, showPactSwapObject } from '../transactions/swap'
+import { PactController, swapAlgoToGard, queryObject, estimateReturn, showMeTheDeets } from '../transactions/swap'
 
-const pactController = new PactSwap("pact", pactRecipient, [
+const pactController = new PactController("pact", pactRecipient, [
   {
     name: "gain",
     id: gainID,
@@ -71,13 +71,15 @@ export default function SwapContent() {
         <TransactionSummary
           specifics={transaction}
           transactionFunc={() => {
-            // console.log("sending transaction to console", transaction);
+            console.log("sending transaction to console", transaction);
+            console.log("queryToBlockchain.getGardInPactAlgoGardPool === ", queryObject.getGardInPactAlgoGardPool());
+            console.log("queryToBlockchain.getPactAlgoGardLP === ", queryObject.getPactAlgoGardLP());
+            // console.log("swapping 35 ->",swap(35, .0003));
             // console.log("heres the instance of the PactSwap Object", pactController);
             // pactController.algoToGard();
             // pactController.gardToAlgo();
             // pactController.showMeTheDeets();
 
-            console.log(showPactSwapObject());
           }}
           cancelCallback={() => setModalVisible(false)}
         />

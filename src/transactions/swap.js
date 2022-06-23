@@ -21,6 +21,8 @@ import {
 import { getCurrentUnix } from "../prices/prices";
 import { VERSION } from "../globals";
 
+const axios = require("axios");
+
 /**
  ********** Swap & Exchange **********
  * Exchange Algos / Gard w/ DEX:
@@ -41,27 +43,46 @@ export const parseValFromAppState = (appState, idx) =>
  * Global Helpers
  */
 
+export function showMeTheDeets(txn) {
+  // console.log("this id", this.id);
+  // console.log("this recipient", this.recipient);
+  // console.log("this assets", this.assets);
+  console.log(
+    "printing transaction result invoked by swap function --->>>",
+    txn,
+  );
+}
+
+export function estimateReturn(algo, totalAlgoInPool, totalGardInPool, fee) {
+  let receivedAmount =
+    ((algo * totalGardInPool) / (totalAlgoInPool + algo)) * (1 - fee); // compare this to what actual transaction returns?
+  return receivedAmount;
+}
+
 /**
- *
- * @constructor SwapController - prototype for creating DeXControllers
- * @param {dexId} {String} - name of dex to create SwapController for
- * @param {recipient} {String} - Asset Pool address
- * @param {assetsToOptInto} {Object[]} - array of ASA names and IDs to store on instance
- * @note - as we work out the differences in exchanges and the way transactions vary per pool, this could be built out with dynamic methods per asset. For now it's a base "class" in one of the weird JS ways of utilizing inheritance
+ * Use to get and set exchange rate, estimate slippage and use in component functions to impose accurate transaction limits
  */
 
-export function SwapController(dexId, recipient, assetsToOptInto) {
-  this.id = dexId;
-  this.recipient = recipient;
-  this.assets = assetsToOptInto;
-  assetsToOptInto.forEach((asset) => {
-    this[`${asset.name}ID`] = asset.id;
-  });
-}
-SwapController.prototype = {
-  constructor: SwapController,
-  execute: function () {
-    console.log(this.id);
+export const queryObject = {
+  getGardInPactAlgoGardPool: async () => {
+    try {
+      const response = await axios.get(
+        `https://node.algoexplorerapi.io/v2/accounts/${pactRecipient}/assets/${pactGARDID}`,
+      );
+      return response.data;
+    } catch (e) {
+      console.log("can't fetch algo/gard pool", e);
+    }
+  },
+  getPactAlgoGardLP: async () => {
+    try {
+      const response = await axios.get(
+        `https://node.algoexplorerapi.io/v2/accounts/${pactRecipient}`,
+      );
+      return response.data;
+    } catch (e) {
+      console.log("can't fetch algo/gard Pact LP info");
+    }
   },
 };
 
@@ -90,83 +111,96 @@ SwapController.prototype = {
  *
  *************/
 
-export function PactSwap(dexId, recipient, assetsToOptInto) {
-  SwapController.call(this, dexId, recipient, assetsToOptInto);
-  this.pactTime = "pact time!";
+export function PactController(assetsToOptInto, fee) {
+  this.dexId = "PACT";
+  this.address = pactRecipient;
+  this.appId = pactGARDID;
+  this.fee = fee;
+  this.assets = assetsToOptInto;
+  assetsToOptInto.forEach((asset) => {
+    this[`${asset.name}ID`] = asset.id;
+  });
 }
 
-PactSwap.prototype.constructor = PactSwap;
+PactController.prototype.constructor = PactController;
 
-export const testObj = new PactSwap("pact", pactRecipient, [
-  {
-    name: "gain",
-    id: gainID,
-  },
-  {
-    name: "gard",
-    id: gardID,
-  },
-  {
-    name: "gardian",
-    id: gardianID,
-  },
-]);
+// use pact controller's prototype methods
+// to call function that builds and sends txn based on user input [ input, select ]
 
-PactSwap.prototype = {
-  constructor: SwapController,
-  algoToGard: () => {
+PactController.prototype = {
+  algoToGard: (algo, totalAlgo, totalGard) => {
     console.log("algo to gard!");
+    // call swapAlgoToGard (algo, totalAlgo, totalGard, this.fee)
   },
-  gardToAlgo: () => {
-    console.log("gard to algo");
+  gardToAlgo: (gard, totalAlgo, totalGard) => {
+    console.log("gard to algo!");
+    // call swapGardToAlgo (gard, totalAlgo, totalGard, this.fee)
   },
-  showMeTheDeets: () => {
-    console.log("this id", this.id);
-    console.log("this recipient", this.recipient);
-    console.log("this assets", this.assets);
+  algoToUSDC: () => {
+    //
+  },
+  USDCToAlgo: () => {
+    //
   },
 };
 
-// export function showPactSwapObject() {
-//   const result = new PactSwap("pact", pactRecipient, [
-//     {
-//       name: "gain",
-//       id: gainID,
-//     },
-//     {
-//       name: "gard",
-//       id: gardID,
-//     },
-//     {
-//       name: "gardian",
-//       id: gardianID,
-//     },
-//   ]);
-//   return result;
+// PACT Exchange rate formulas
+// rcv = a * B / (A + a)
+// rcv_net = rcv * (1 - fee)
+// exchange rate ~= lim a -> 0(rcv/a)
+// exchange rate = limit of a approaching 0 times received value divided by a
+
+// this should allow us to see an estimated result of this transaction on front end
+
+export async function swapAlgoToGard(algo, totalAlgo, totalGard, fee) {
+  const infoPromise = accountInfo();
+  const paramsPromise = getParams(0);
+  const info = await infoPromise;
+  const params = await paramsPromise;
+
+  let totalAlgoInPool = totalAlgo;
+  let totalGardInPool = totalGard;
+
+  console.log("recipient from transactionFunc being called", recipient);
+
+  /**
+   * create transaction logic:
+   */
+
+  // let txn1 = makePaymentTxnWithSuggestedParams({
+  //   from: info.address,
+  //   to: recipient,
+  //   params: params,
+  // });
+
+  // let txn2 = makeApplicationNoOpTxn(
+  //   info.address,
+  //   params,
+  //   pactRecipient,
+  //   ["SWAP", 38,],
+  //   f_a,
+  // );
+
+  // let gid = computeGroupID([txn1, txn2]);
+  // txn1.group = gid;
+  // txn2.group = gid;
+  // let stxn1 = txn1.signTxn(key);
+  // let stxn2 = txn2.signTxn(key);
+  // let txnResult = await sendTxn([stxn1, stxn2]);
+  // return showMeTheDeets(txnResult);
+}
+
+// removing soon //
+
+// let id = openFeeID;
+// if (close) {
+//   id = closeFeeID;
 // }
-
-// export function pactSwap(
-//   asset1,
-//   asset2,
-//   recipient,
-//   close = false
-//   ) {
-//   const infoPromise = accountInfo();
-//   const paramsPromise = getParams(0);
-//   const info = await infoPromise;
-//   const params = await paramsPromise;
-
-//   console.log("recipient from transactionFunc being called", recipient);
-
-//   let id = openFeeID;
-//   if (close) {
-//     id = closeFeeID;
-//   }
-//   const app = await getAppByID(id);
-//   // const state = app["params"]["global-state"];
-//   console.log("app: -> ", app);
-//   const gardBalance = getGardBalance(info);
-//   console.log(gardBalance);
+// const app = await getAppByID(id);
+// // const state = app["params"]["global-state"];
+// console.log("app: -> ", app);
+// const gardBalance = getGardBalance(info);
+// console.log(gardBalance);
 
 // console.log("state: ->", state);
 
@@ -176,25 +210,3 @@ PactSwap.prototype = {
 // }
 // let phrase = "";
 // let f_a = [0, 31566704];
-
-// let txn1 = makePaymentTxnWithSuggestedParams({
-//   from: info.address,
-//   to: recipient,
-//   params: params,
-// });
-
-// let txn2 = makeApplicationNoOpTxn(
-//   info.address,
-//   params,
-//   pactRecipient,
-//   ["SWAP", 38, "GHOST"],
-//   f_a,
-// );
-// let gid = computeGroupID([txn1, txn2]);
-// txn1.group = gid;
-// txn2.group = gid;
-// let stxn1 = txn1.signTxn(key);
-// let stxn2 = txn2.signTxn(key);
-// let txid = await sendTxn([stxn1, stxn2]);
-// return txid;
-// }
