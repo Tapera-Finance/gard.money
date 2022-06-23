@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import { calcRatio, calcDevFees } from '../transactions/cdp.js'
 import { ThemeContext } from '../contexts/ThemeContext'
 import { useContext } from 'react'
@@ -73,7 +73,7 @@ export default class WrappedSummary extends React.Component {
   }
 
   export function Child(props) {
-    const theme = useContext(ThemeContext);
+    const {theme} = useContext(ThemeContext);
       switch (props.context) {
         case 'add_collateral':
           return (
@@ -273,4 +273,11 @@ const TransactionInput = styled.input`
   &:focus::placeholder {
     color: transparent;
   }
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    transition: 'all 1s ease';
+    background: #484848;
+    color: white;
+  `}
 `
