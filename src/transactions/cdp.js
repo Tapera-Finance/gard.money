@@ -7,6 +7,7 @@ import {
   oracleID,
   openFeeID,
   closeFeeID,
+  checkerID,
 } from "./ids";
 import { reserve, treasury, cdpGen } from "./contracts";
 import {
@@ -574,7 +575,7 @@ export async function addCollateral(accountID, newAlgos) {
   });
   let txn2 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
-    appIndex: , // needs to be added
+    appIndex: checkerID, // needs to be added
     onComplete: 0,
     appArgs: [enc.encode("CDP_Check")],
     accounts: [cdp.address],

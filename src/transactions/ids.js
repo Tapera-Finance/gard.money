@@ -13,6 +13,7 @@ let _managerID;
 let _validatorID;
 let _treasuryID;
 let _oracleID;
+let _checkerID;
 
 if (VERSION == "MAINNET") {
   // ASAs
@@ -28,6 +29,7 @@ if (VERSION == "MAINNET") {
   _validatorID = 684650147;
   _treasuryID = 684650318;
   _oracleID = 673925841;
+  _checkerID = 787191335;
 } else if (VERSION == "TESTNET1") {
   // ASAs
   _gainID = 73680771;
@@ -42,6 +44,7 @@ if (VERSION == "MAINNET") {
   _validatorID = 73680824;
   _treasuryID = 73680850;
   _oracleID = 53083112;
+  _checkerID = 96679309;
 }
 
 // ASAs
@@ -57,3 +60,4 @@ export const managerID = _managerID;
 export const validatorID = _validatorID;
 export const treasuryID = _treasuryID;
 export const oracleID = _oracleID;
+export const checkerID = _checkerID;
