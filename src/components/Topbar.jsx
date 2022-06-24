@@ -1,4 +1,4 @@
-import React, { useReducer, useState, useContext } from 'react'
+import React, { useReducer, useState, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import syncIcon from '../assets/icons/sync_icon.png'
 import Modal from './Modal'
@@ -11,6 +11,8 @@ import {
   disconnectWallet,
   getWallet
 } from '../wallets/wallets'
+import { updateCDPs, getCDPs } from '../transactions/cdp'
+import { cdpGen } from '../transactions/contracts'
 
 import { connectWallet } from '../wallets/wallets'
 import AlgoSignerLogo from '../wallets/logos/algosigner.svg'
@@ -24,7 +26,7 @@ import { setAlert } from '../redux/slices/alertSlice'
 import { setWallet } from '../redux/slices/walletSlice'
 import ThemeToggle from './ThemeToggle'
 import { ThemeContext } from '../contexts/ThemeContext'
-import { userInDB, addUserToFireStore, updateCDPs } from '../transactions/cdp'
+import { userInDB, addUserToFireStore } from '../components/firebase'
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -57,6 +59,11 @@ export default function Topbar({ contentName, setMainContent }) {
     ...TopbarStyle.common,
     ...(theme === 'light' ? TopbarStyle.light : TopbarStyle.dark),
   }
+  useEffect(async () => {
+    const updatePromise = updateCDPs()
+    await updatePromise
+  }, [])
+  const [cdps, setCDPs] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -82,24 +89,27 @@ export default function Topbar({ contentName, setMainContent }) {
                       let in_DB = await userInDB(owner_address)
                       console.log('inDB?:', in_DB)
                       if (!in_DB){
-                        let temp = await updateCDPs()
-                        let addrs = getCDPs().keys()
+                        let accountCDPs = getCDPs()[owner_address]
+                        let addrs = Object.keys(getCDPs()[owner_address])
                         let owned = {}
                         for (var i = 0; i < addrs.length; i++) {
-                          owned[addrs[i]] = {
-                          "Last Commitment": 19012922,
-		                      "Commitment Timestamp": 1654264937,
-		                      "Liquidated Timestamp": [-1]
-                        }
+                          if (accountCDPs[addrs[i]].state == 'open'){
+                            //console.log(addrs[i])
+                            let cdp_address = cdpGen(owner_address, addrs[i]).address
+                            Object.assign(owned, {[cdp_address]: {
+                            "lastCommitment": -1,
+                            "commitmentTimestamp": -1,
+                            "liquidatedTimestamp": [-1]
+                          }})
+                          }
                         }
                         const user = {
                           "id": owner_address,
-                          "WebApp Actions": [],
-                          "Owned CDPs": owned,
+                          "webappActions": [],
+                          "ownedCDPs": owned,
                           "systemAssetVal": [0, 0],
                           "systemDebtVal": [0, 0]
                         }
-                        console.log('im here')
                         addUserToFireStore(user, owner_address)
                     }
                     } else {
