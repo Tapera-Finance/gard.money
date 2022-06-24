@@ -4,7 +4,9 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import styled, { keyframes } from 'styled-components'
 import copyIcon from '../assets/icons/copy_icon.png'
+import copyIconDark from '../assets/icons/copy_icon_dark.png'
 import copyIconSmall from '../assets/icons/copy_icon_small.png'
+import copyIconSmallDark from '../assets/icons/copy_icon_small_dark.png'
 import { getWallet, getWalletInfo, updateWalletInfo } from '../wallets/wallets'
 import Table from './Table'
 import { ThemeContext } from '../contexts/ThemeContext'
@@ -50,10 +52,8 @@ export default function WalletContent() {
   const {theme} = useContext(ThemeContext)
 
   useEffect(async () => {
-    console.log('useEffect called');
     await updateWalletInfo();
     getWallet();
-    console.log('balance',(getWalletInfo()['amount'] / 1000000).toFixed(3));
     setBalance((getWalletInfo()['amount'] / 1000000).toFixed(3));
     setRewards((getWalletInfo()['rewards'] / 1000000).toFixed(3))
     setPendingRewards((getWalletInfo()['pending-rewards'] / 1000000).toFixed(3))
@@ -72,7 +72,7 @@ export default function WalletContent() {
             <text>{value.id}</text>
           </div>
           <CopyButton onClick={() => navigator.clipboard.writeText(value.id)}>
-            <img src={copyIconSmall} />
+            {theme === 'light' ? <img src={copyIconSmall} /> : <img src={copyIconSmallDark} />}
           </CopyButton>
         </div>
       ),
@@ -84,7 +84,7 @@ export default function WalletContent() {
           <CopyButton
             onClick={() => navigator.clipboard.writeText(value.creator)}
           >
-            <img src={copyIconSmall} />
+            {theme === 'light' ? <img src={copyIconSmall} /> : <img src={copyIconSmallDark} />}
           </CopyButton>
         </div>
       ),
@@ -123,7 +123,7 @@ export default function WalletContent() {
             <AccountButton
               onClick={() => navigator.clipboard.writeText(getWallet().address)}
             >
-              <img src={copyIcon} />
+              {theme === 'light' ? <img src={copyIcon} /> : <img src={copyIconDark} />}
             </AccountButton>
           </div>
         </div>
