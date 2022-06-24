@@ -19,36 +19,7 @@ import {
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
 import { VERSION } from "../globals";
-import { initializeApp } from "firebase/app";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  addDoc,
-  setDoc,
-  updateDoc,
-  query,
-  where,
-  deleteDoc,
-  FieldPath,
-  doc
-} from "firebase/firestore";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyD4x024OYPM1Zxh2QNklzw3sXfYTV15f30",
-  authDomain: "gard-money-testing.firebaseapp.com",
-  projectId: "gard-money-testing",
-  storageBucket: "gard-money-testing.appspot.com",
-  messagingSenderId: "564363590339",
-  appId: "1:564363590339:web:8b5e50a902164a03770076",
-  measurementId: "G-6SMVCFC990"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// get the firestore database instance
-const db = getFirestore(app);
+import { updateCommitmentFirestore } from "../components/firebase";
 
 var $ = require("jquery");
 
@@ -751,26 +722,10 @@ function updateCDP(
 }
 
 function updateCommitment(address, id, commitment) {
-  const currID = getWallet().address
-  const key1 = `Opened CDPs.${address}.Last Commitment`
-  const key2 = `Opened CDPs.${address}.Commitment Timestamp`
-  const newCommit = {
-    [key1]: commitment,
-    [key2]: new Date().toISOString(),
-  }
-  async function updateCommitmentFirestore(newCommit) {
-    try {
-      const walletRef = doc(db, "users", id);
-      const docRef = await updateDoc(walletRef, currID);
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  }
-  updateCommitmentFirestore(newCommit)
   let CDPs = getCDPs();
   CDPs[address][id]["committed"] = commitment;
   localStorage.setItem("CDPs", JSON.stringify(CDPs));
+  updateCommitmentFirestore(address, id, commitment)
 }
 
 function removeCDP(address, id) {
@@ -999,24 +954,4 @@ export async function liquidate(
     "Successfully liquidated CDP #" + account_id + " of " + owner_address, true);
     setLoadingStage(null)
   return response;
-}
-
-export async function addUserToFireStore(user, walletID) {
-  try {
-    const walletRef = doc(db, "users", walletID);
-    const docRef = await setDoc(walletRef, user);
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-}
-
-export async function userInDB(walletID) {
-  // get users collection
-  const usersRef = collection(db, "users");
-  // query the collection to find the user with the walletID address
-  const q = query(usersRef, where('id', "==", walletID));
-  // execute the query using getDocs
-  const querySnapshot = await getDocs(q);
-  // returns true if there is a document that matches the walletId and false if there isn't (there should be one matched user)
-  return querySnapshot.docs.length >= 1
 }
