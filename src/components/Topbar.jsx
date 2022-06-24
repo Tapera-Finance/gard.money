@@ -59,11 +59,6 @@ export default function Topbar({ contentName, setMainContent }) {
     ...TopbarStyle.common,
     ...(theme === 'light' ? TopbarStyle.light : TopbarStyle.dark),
   }
-  useEffect(async () => {
-    const updatePromise = updateCDPs()
-    await updatePromise
-  }, [])
-  const [cdps, setCDPs] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
