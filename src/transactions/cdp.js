@@ -19,7 +19,7 @@ import {
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
 import { VERSION } from "../globals";
-import { updateCommitmentFirestore } from "../components/firebase";
+import { updateCommitmentFirestore, updateLiquidationFirestore } from "../components/firebase";
 
 var $ = require("jquery");
 
@@ -730,6 +730,7 @@ function updateCommitment(address, id, commitment) {
 
 function removeCDP(address, id) {
   updateCDP(address, id, 0, 0, "closed");
+  updateLiquidationFirestore(address, id)
 }
 
 export function getCDPs() {
