@@ -8,7 +8,7 @@ import {
   openFeeID,
   closeFeeID,
   pactGARDID,
-  pactRecipient,
+  pactAlgoGardPoolAddress,
 } from "./ids";
 import {
   accountInfo,
@@ -26,9 +26,19 @@ const axios = require("axios");
 /**
  ********** Swap & Exchange **********
  * Exchange Algos / Gard w/ DEX:
- * - 1 - Pact [ ]
- * - 2 - Tinyman [ ]
- * - 3 - HumbleExchange [ ]
+ * todo:
+ * - live display exchange rate [ √ ]
+ *
+ * - code out and verify function to swap:
+ *  - algoToGard [ 1 / 2 ]
+ *  - gardToAlgo [ 0 / 2 ]
+ * - connect to component [ √ ]
+ *  - add helpers to component:
+ *    - recalculateRatioAtInterval [ ]
+ *    - limitUsrMaxInput [ ]
+ * - smoke test testnet [ ]
+ * - smoke test main [ ]
+ * - PR open [ ]
  *
  */
 
@@ -36,7 +46,7 @@ const axios = require("axios");
  * Local Helpers
  */
 
-export const parseValFromAppState = (appState, idx) =>
+const parseValFromAppState = (appState, idx) =>
   parseFloat(appState[idx]["value"]["uint"]);
 
 /**
@@ -59,6 +69,18 @@ export function estimateReturn(algo, totalAlgoInPool, totalGardInPool, fee) {
   return receivedAmount;
 }
 
+export async function queryAndConvertTotals() {
+  let result;
+  const algoInPool = await queryObject.getAlgoInPactAlgoGardPool();
+  const gardInPool = await queryObject.getGardInPactAlgoGardPool();
+  // result = algoInPool.amount / gardInPool["asset-holding"].amount;
+  result = {
+    algo: algoInPool.amount,
+    gard: gardInPool["asset-holding"].amount,
+  };
+  return result;
+}
+
 /**
  * Use to get and set exchange rate, estimate slippage and use in component functions to impose accurate transaction limits
  */
@@ -67,17 +89,17 @@ export const queryObject = {
   getGardInPactAlgoGardPool: async () => {
     try {
       const response = await axios.get(
-        `https://node.algoexplorerapi.io/v2/accounts/${pactRecipient}/assets/${pactGARDID}`,
+        `https://node.algoexplorerapi.io/v2/accounts/${pactAlgoGardPoolAddress}/assets/${gardID}`,
       );
       return response.data;
     } catch (e) {
       console.log("can't fetch algo/gard pool", e);
     }
   },
-  getPactAlgoGardLP: async () => {
+  getAlgoInPactAlgoGardPool: async () => {
     try {
       const response = await axios.get(
-        `https://node.algoexplorerapi.io/v2/accounts/${pactRecipient}`,
+        `https://node.algoexplorerapi.io/v2/accounts/${pactAlgoGardPoolAddress}`,
       );
       return response.data;
     } catch (e) {
@@ -113,13 +135,17 @@ export const queryObject = {
 
 export function PactController(assetsToOptInto, fee) {
   this.dexId = "PACT";
-  this.address = pactRecipient;
+  this.address = pactAlgoGardPoolAddress;
   this.appId = pactGARDID;
   this.fee = fee;
   this.assets = assetsToOptInto;
-  assetsToOptInto.forEach((asset) => {
+  for (var i = 0; i < assetsToOptInto.length; i++) {
+    let asset = assetsToOptInto[i];
     this[`${asset.name}ID`] = asset.id;
-  });
+  }
+  // assetsToOptInto.forEach((asset) => {
+  //   this[`${asset.name}ID`] = asset.id;
+  // });
 }
 
 PactController.prototype.constructor = PactController;
@@ -161,7 +187,7 @@ export async function swapAlgoToGard(algo, totalAlgo, totalGard, fee) {
   let totalAlgoInPool = totalAlgo;
   let totalGardInPool = totalGard;
 
-  console.log("recipient from transactionFunc being called", recipient);
+  // console.log("recipient from transactionFunc being called", recipient);
 
   /**
    * create transaction logic:
@@ -176,7 +202,7 @@ export async function swapAlgoToGard(algo, totalAlgo, totalGard, fee) {
   // let txn2 = makeApplicationNoOpTxn(
   //   info.address,
   //   params,
-  //   pactRecipient,
+  //   pactAlgoGardPoolAddress,
   //   ["SWAP", 38,],
   //   f_a,
   // );
