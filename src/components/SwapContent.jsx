@@ -5,11 +5,12 @@ import swapIcon from '../assets/icons/swapExpanded_icon.png'
 import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
 import TransactionSummary from './TransactionSummary'
-import { gainID, gardID, gardianID, pactGARDID, pactRecipient } from '../transactions/ids'
+import { gainID, gardID, gardianID, pactGARDID, pactAlgoGardPoolAddress } from '../transactions/ids'
 import {ThemeContext} from '../contexts/ThemeContext'
-import { PactController, swapAlgoToGard, queryObject, estimateReturn, showMeTheDeets } from '../transactions/swap'
+import { PactController, swapAlgoToGard, queryObject, estimateReturn, showMeTheDeets, queryAndConvertTotals } from '../transactions/swap'
+import { useEffect } from 'react'
 
-const pactController = new PactController("pact", pactRecipient, [
+const pactController = new PactController("pact", pactAlgoGardPoolAddress, [
   {
     name: "gain",
     id: gainID,
@@ -24,6 +25,35 @@ const pactController = new PactController("pact", pactRecipient, [
   },
 ]);
 
+const mAlgosToAlgos = (num) => {
+    return num / 1000000;
+  }
+const algosToMAlgos = (num) => {
+    return num * 1000000;
+  }
+const mGardToGard = (num) => {
+  return num / 1000000;
+}
+const gardToMGard = (num) => {
+  return parseFloat(num * 1000000).toFixed(3)
+}
+
+const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
+  return parseFloat(assetX / assetY).toFixed(4);
+}
+
+function calcTransResult(state) {
+  if (state.offering.from === "ALGO" && state.receiving.to === "GARD") {
+    if (state.offering.amount > 0) {
+      let poolTotals = queryAndConvertTotals();
+      let algoInPool = poolTotals.algo;
+      let gardInPool = poolTotals.gard;
+      let receivedAmount = estimateReturn(state.offering.amount, algoInPool, gardInPool, .003);
+      return receivedAmount
+    }
+  }
+}
+
 /**
  * Content for Swap option in drawer
  */
@@ -32,6 +62,7 @@ export default function SwapContent() {
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [transaction, setTransaction] = useState([])
   const {theme} = useContext(ThemeContext);
+  // const initialExchangeRateALGOtoGARD =
 
   return (
     <div style={{ marginBottom: 50 }}>
@@ -70,11 +101,22 @@ export default function SwapContent() {
       >
         <TransactionSummary
           specifics={transaction}
-          transactionFunc={() => {
-            console.log("sending transaction to console", transaction);
-            console.log("queryToBlockchain.getGardInPactAlgoGardPool === ", queryObject.getGardInPactAlgoGardPool());
-            console.log("queryToBlockchain.getPactAlgoGardLP === ", queryObject.getPactAlgoGardLP());
-            // console.log("swapping 35 ->",swap(35, .0003));
+          transactionFunc={async () => {
+            // console.log("sending transaction to console", transaction);
+            // console.log("queryToBlockchain.getGardInPactAlgoGardPool === ", queryObject.getGardInPactAlgoGardPool());
+            // console.log("queryToBlockchain.getAlgoInPactAlgoGardPool === ", queryObject.getAlgoInPactAlgoGardPool());
+            const resultsOfQuery = await queryAndConvertTotals();
+
+            console.log("showing algo in pool raw ->", resultsOfQuery.algo);
+            console.log("showing gard in pool raw ->", resultsOfQuery.gard);
+            console.log("showing algo in pool clean ->", mAlgosToAlgos(resultsOfQuery.algo))
+            console.log("showing gard in pool clean ->", mGardToGard (resultsOfQuery.gard))
+
+
+            console.log("ratio! (algo to gard) -> ", exchangeRatioAssetXtoAssetY(mAlgosToAlgos(resultsOfQuery.algo), mGardToGard (resultsOfQuery.gard)))
+            let ratio = exchangeRatioAssetXtoAssetY(mAlgosToAlgos(resultsOfQuery.algo), mGardToGard(resultsOfQuery.gard));
+
+            // setAlgoToGardRatio(ratio)
             // console.log("heres the instance of the PactSwap Object", pactController);
             // pactController.algoToGard();
             // pactController.gardToAlgo();
@@ -95,11 +137,22 @@ export default function SwapContent() {
  */
 function Section({ title, transactionCallback }) {
   const [expanded, setExpanded] = useState(false)
+  const [amountToExchange, setAmountToExchange] = useState(0);
+  const [algoToGardRatio, setAlgoToGardRatio] = useState(1.1)
   const {theme} = useContext(ThemeContext)
+
+  // useEffect(() => {
+
+  // })
+
   const [transaction, reduceTransaction] = useReducer(
     (state, action) => {
       switch (action.type) {
         case 'offering-amount':
+          console.log("offering amount state -> ", state);
+          console.log("offering amount action -> ", action);
+
+
           return {
             ...state,
             offering: {
@@ -108,14 +161,20 @@ function Section({ title, transactionCallback }) {
             },
           }
         case 'offering-from':
+          console.log("offering from state -> ", state)
+          console.log("offering from action -> ", action);
+
           return {
             ...state,
             offering: {
               ...state.offering,
               from: action.value,
             },
+            // set from
           }
         case 'receiving-amount':
+          console.log("receiving amount state -> ", state);
+          console.log("receiving amount action -> ", action);
           return {
             ...state,
             receiving: {
@@ -124,6 +183,9 @@ function Section({ title, transactionCallback }) {
             },
           }
         case 'receiving-to':
+          calcTransResult(state);
+          console.log("receiving to state -> ", state);
+          console.log("receiving to action -> ", action);
           return {
             ...state,
             receiving: {
@@ -131,6 +193,7 @@ function Section({ title, transactionCallback }) {
               to: action.value,
             },
           }
+        // where to call calculation ?
       }
     },
     {
@@ -144,6 +207,13 @@ function Section({ title, transactionCallback }) {
       },
     },
   )
+  useEffect(async () => {
+    const resultsOfQuery = await queryAndConvertTotals();
+    let ratio = exchangeRatioAssetXtoAssetY(mAlgosToAlgos(resultsOfQuery.algo), mGardToGard(resultsOfQuery.gard));
+    if (ratio) {
+      setAlgoToGardRatio(ratio)
+    }
+  }, [])
 
   return (
     <div style={{ marginBottom: 10 }}>
@@ -173,6 +243,7 @@ function Section({ title, transactionCallback }) {
           <div style={{ flex: 1 }}
           darkToggle={theme === 'dark'}
           >
+
             <RelationsSpecificsContainer
               style={{
                 display: 'flex',
@@ -191,8 +262,11 @@ function Section({ title, transactionCallback }) {
                 justifyContent: 'center',
               }}
             >
+
               <div>
-                <RelationsValue>1.1</RelationsValue>
+
+                <RelationsValue> {algoToGardRatio !== null ? algoToGardRatio : 1.1 }
+                  </RelationsValue>
               </div>
             </RelationsSpecificsContainer>
           </div>
@@ -278,11 +352,13 @@ function Section({ title, transactionCallback }) {
                 <div style={{ marginBottom: 8 }}>
                   <Select
                     value={transaction.offering.from}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       reduceTransaction({
                         type: 'offering-from',
                         value: e.target.value,
+                        // action:
                       })
+                    }
                     }
                     darkToggle={theme === 'dark'}
                   >
