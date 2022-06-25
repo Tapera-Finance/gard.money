@@ -4,9 +4,6 @@ import {
   gardID,
   gainID,
   gardianID,
-  oracleID,
-  openFeeID,
-  closeFeeID,
   pactGARDID,
   pactAlgoGardPoolAddress,
 } from "./ids";
@@ -18,7 +15,6 @@ import {
   getAppByID,
   signGroup,
 } from "../wallets/wallets";
-import { getCurrentUnix } from "../prices/prices";
 import { VERSION } from "../globals";
 
 const axios = require("axios");
@@ -30,8 +26,8 @@ const axios = require("axios");
  * - live display exchange rate [ √ ]
  *
  * - code out and verify function to swap:
- *  - algoToGard [ 1 / 2 ]
- *  - gardToAlgo [ 0 / 2 ]
+ *  - algoToGard [ 2 / 3 ] - correct values present, 3rd step is send to blockchain
+ *  - gardToAlgo [ 2 / 3 ] - same as above
  * - connect to component [ √ ]
  *  - add helpers to component:
  *    - recalculateRatioAtInterval [ ]
@@ -40,52 +36,28 @@ const axios = require("axios");
  * - smoke test main [ ]
  * - PR open [ ]
  *
+ *
+ *
+ * need swapping doable --> get input value, perform conversion, populate receive input
+ * need wallet info --> get balances, use to limit input
  */
 
 /**
  * Local Helpers
  */
 
-const parseValFromAppState = (appState, idx) =>
-  parseFloat(appState[idx]["value"]["uint"]);
-
-/**
- * Global Helpers
- */
-
-export function showMeTheDeets(txn) {
-  // console.log("this id", this.id);
-  // console.log("this recipient", this.recipient);
-  // console.log("this assets", this.assets);
+function showMeTheDeets(txn) {
   console.log(
     "printing transaction result invoked by swap function --->>>",
     txn,
   );
 }
 
-export function estimateReturn(algo, totalAlgoInPool, totalGardInPool, fee) {
-  let receivedAmount =
-    ((algo * totalGardInPool) / (totalAlgoInPool + algo)) * (1 - fee); // compare this to what actual transaction returns?
-  return receivedAmount;
-}
-
-export async function queryAndConvertTotals() {
-  let result;
-  const algoInPool = await queryObject.getAlgoInPactAlgoGardPool();
-  const gardInPool = await queryObject.getGardInPactAlgoGardPool();
-  // result = algoInPool.amount / gardInPool["asset-holding"].amount;
-  result = {
-    algo: algoInPool.amount,
-    gard: gardInPool["asset-holding"].amount,
-  };
-  return result;
-}
-
 /**
  * Use to get and set exchange rate, estimate slippage and use in component functions to impose accurate transaction limits
  */
 
-export const queryObject = {
+const queryObject = {
   getGardInPactAlgoGardPool: async () => {
     try {
       const response = await axios.get(
@@ -108,8 +80,34 @@ export const queryObject = {
   },
 };
 
+/**
+ * Global Helpers
+ */
+
+// TODO: change to x & y
+
+export function estimateReturn(algo, totalAlgoInPool, totalGardInPool, fee) {
+  let receivedAmount =
+    ((algo * totalGardInPool) / (totalAlgoInPool + algo)) * (1 - fee); // compare this to what actual transaction returns?
+  return receivedAmount;
+}
+
+export async function queryAndConvertTotals() {
+  let result;
+  const algoInPool = await queryObject.getAlgoInPactAlgoGardPool();
+  const gardInPool = await queryObject.getGardInPactAlgoGardPool();
+  result = {
+    algo: algoInPool.amount,
+    gard: gardInPool["asset-holding"].amount,
+  };
+  return result;
+}
+
 /*************
  * Pact Swap Controller
+ *
+ * not convinced this was the necessary approach - leaving for now to cut & paste JSDOC to the latest functions actively used
+ *
  * Instance of SwapController for exchanging assets with Pact
  * @function algoToGard - calculate swap exchange rate from algo to gard
  *    @param {algo} {Float} - representing how many algo to send
@@ -186,37 +184,37 @@ export async function swapAlgoToGard(amount, minimum) {
 
   // let totals = await queryAndConvertTotals();
 
-  const f_a = [0, gardID];
-  // console.log("recipient from transactionFunc being called", recipient);
+  // const f_a = [0, gardID];
+  // // console.log("recipient from transactionFunc being called", recipient);
 
-  /**
-   * create transaction logic:
-   */
+  // /**
+  //  * create transaction logic:
+  //  */
 
-  let txn1 = makePaymentTxnWithSuggestedParams({
-    from: info.address,
-    to: recipient,
-    amount: amount,
-    params: params,
-  });
+  // let txn1 = makePaymentTxnWithSuggestedParams({
+  //   from: info.address,
+  //   to: recipient,
+  //   amount: amount,
+  //   params: params,
+  // });
 
-  let txn2 = makeApplicationNoOpTxn(
-    info.address,
-    params,
-    pactAlgoGardPoolAddress,
-    ["SWAP", minimum],
-    f_a,
-  );
+  // let txn2 = makeApplicationNoOpTxn(
+  //   info.address,
+  //   params,
+  //   pactAlgoGardPoolAddress,
+  //   ["SWAP", minimum],
+  //   f_a,
+  // );
 
   //
-  let txns = [txn1, txn2];
-  let gid = algosdk.assignGroupID(txns);
-  let sn_txns = await signGroup(info, txns);
-  let txnResult = await sendTxn(
-    sn_txns,
-    `swapped ${amount} Algo to Gard successfully!`,
-  );
-  return showMeTheDeets(txnResult);
+  // let txns = [txn1, txn2];
+  // let gid = algosdk.assignGroupID(txns);
+  // let sn_txns = await signGroup(info, txns);
+  // let txnResult = await sendTxn(
+  //   sn_txns,
+  //   `swapped ${amount} Algo to Gard successfully!`,
+  // );
+  // return showMeTheDeets(txnResult);
 }
 
 // removing soon //
