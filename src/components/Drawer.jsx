@@ -139,7 +139,8 @@ export default function Drawer({
                           'Manage CDPs',
                           'New CDP',
                           'Algo Governance',
-                          'Auctions'
+                          'Auctions',
+                          'Swap'
                         ].includes(v.name) &&
                         !walletAddress
                       )

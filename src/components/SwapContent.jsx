@@ -1,100 +1,163 @@
-import React, { useReducer, useState, useContext } from 'react'
-import styled, { css } from 'styled-components'
-import chevron from '../assets/chevron_black.png'
-import swapIcon from '../assets/icons/swapExpanded_icon.png'
-import Modal from './Modal'
-import PrimaryButton from './PrimaryButton'
-import TransactionSummary from './TransactionSummary'
-import { gainID, gardID, gardianID, pactGARDID, pactAlgoGardPoolAddress } from '../transactions/ids'
-import {ThemeContext} from '../contexts/ThemeContext'
-import { swapAlgoToGard, estimateReturn, queryAndConvertTotals } from '../transactions/swap'
-import { useEffect } from 'react'
-
+import React, { useReducer, useState, useContext } from 'react';
+import styled, { css } from 'styled-components';
+import chevron from '../assets/chevron_black.png';
+import swapIcon from '../assets/icons/swapExpanded_icon.png';
+import Modal from './Modal';
+import PrimaryButton from './PrimaryButton';
+import TransactionSummary from './TransactionSummary';
+import LoadingOverlay from './LoadingOverlay';
+import {
+  gainID,
+  gardID,
+  gardianID,
+  pactGARDID,
+  pactAlgoGardPoolAddress,
+} from '../transactions/ids';
+import { ThemeContext } from '../contexts/ThemeContext';
+import {
+  swapAlgoToGard,
+  estimateReturn,
+  queryAndConvertTotals,
+} from '../transactions/swap';
+import { useEffect } from 'react';
+import { setAlert } from '../redux/slices/alertSlice';
+import {
+  getWallet,
+  getWalletInfo,
+  handleTxError,
+  updateWalletInfo,
+} from '../wallets/wallets';
+import { useDispatch } from 'react-redux';
 
 const mAlgosToAlgos = (num) => {
-    return num / 1000000;
-  }
+  return num / 1000000;
+};
 const algosToMAlgos = (num) => {
-    return num * 1000000;
-  }
+  return num * 1000000;
+};
 const mGardToGard = (num) => {
   return num / 1000000;
-}
+};
 const gardToMGard = (num) => {
-  return parseFloat(num * 1000000).toFixed(3)
-}
+  return parseFloat(num * 1000000).toFixed(3);
+};
 
 const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
   return parseFloat(assetX / assetY).toFixed(4);
-}
+};
 
-function calcTransResult(amount, totalX, totalY,transaction) {
+function calcTransResult(amount, totalX, totalY, transaction) {
   if (transaction) {
-    if (transaction.offering.from === "ALGO" && transaction.receiving.to === "GARD") {
+    if (
+      // transaction.offering.from === 'ALGO' &&
+      // transaction.receiving.to === 'GARD'
+      transaction
+    ) {
       if (amount > 0) {
-        let receivedAmount = estimateReturn(parseFloat(amount), totalX, totalY, 0.003);
-        return receivedAmount
+        let receivedAmount = estimateReturn(
+          parseFloat(amount),
+          totalX,
+          totalY,
+          0.003,
+        );
+        return receivedAmount;
       }
     }
     // TODO: else if from === gard && to === algo, estimate return but flip X & Y
   }
 }
 
-
 /**
  * Content for Swap option in drawer
  */
 export default function SwapContent() {
-  const [modalVisible, setModalVisible] = useState(false)
-  const [modalCanAnimate, setModalCanAnimate] = useState(false)
-  const [transaction, setTransaction] = useState([])
-  const {theme} = useContext(ThemeContext);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalCanAnimate, setModalCanAnimate] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [totals, setTotals] = useState(null);
+  const [transaction, setTransaction] = useState([]);
+  const dispatch = useDispatch()
+  const { theme } = useContext(ThemeContext);
 
+  useEffect(async () => {
+    const totals = await queryAndConvertTotals();
+    setTotals(totals);
+    await updateWalletInfo();
+    getWallet();
+    return () => {
+      console.log('pool totals', totals);
+    };
+  }, []);
   return (
-    <div style={{ marginBottom: 50 }}>
-      {titles.map((value, index) => {
-        return (
-          <Section
-            title={value.title}
-            darkToggle={theme === 'dark'}
-            transactionCallback={(transaction) => {
-              setModalCanAnimate(true)
-              setTransaction([
-                {
-                  title: 'You are offering',
-                  value: `${transaction.offering.amount} $${transaction.offering.from}`,
-                },
-                {
-                  title: 'You are receiving',
-                  value: `${transaction.receiving.amount} $${transaction.receiving.to}`,
-                },
-                {
-                  title: 'Fee',
-                  value: '$0.001',
-                },
-              ])
-              setModalVisible(true)
+    <div>
+      {loading ? <LoadingOverlay text={'Swapping assets...'} /> : <></>}
+      <div style={{ marginBottom: 50 }}>
+        {titles.map((value, index) => {
+          return (
+            <Section
+              title={value.title}
+              darkToggle={theme === 'dark'}
+              transactionCallback={(transaction) => {
+                setModalCanAnimate(true);
+                setTransaction([
+                  {
+                    title: 'You are offering',
+                    value: `${transaction.offering.amount} $${transaction.offering.from}`,
+                  },
+                  {
+                    title: 'You are receiving',
+                    value: `${transaction.receiving.amount} $${transaction.receiving.to}`,
+                  },
+                  {
+                    title: 'Fee',
+                    value: '$0.001',
+                  },
+                ]);
+                setModalVisible(true);
+              }}
+            />
+          );
+        })}
+        <Modal
+          title="Are you sure you want to proceed?"
+          subtitle="Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
+          visible={modalVisible}
+          animate={modalCanAnimate}
+          close={() => setModalVisible(false)}
+        >
+          <TransactionSummary
+            specifics={transaction}
+            transactionFunc={async () => {
+              setModalCanAnimate(true);
+              setModalVisible(false);
+              setLoading(true);
+              try {
+                const formattedAmount = parseFloat(transaction[0].value).toFixed(3)
+                // if (balance < transaction.offering.amount) {
+                //   dispatch(setAlert(`Not enough ${transaction.offering.type} in wallet`))
+                // }
+                console.log(transaction)
+                const res = await swapAlgoToGard(
+                  // transaction.offering.amount,
+                  formattedAmount,
+                  totals,
+                  0.001,
+                );
+                if (res && res.alert()) {
+                  dispatch(setAlert(res.text));
+                }
+              } catch (e) {
+                handleTxError(e, 'Error exchanging assets');
+              }
+              setModalCanAnimate(false);
+              setLoading(false);
             }}
+            cancelCallback={() => setModalVisible(false)}
           />
-        )
-      })}
-      <Modal
-        title="Are you sure you want to proceed?"
-        subtitle="Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
-        visible={modalVisible}
-        animate={modalCanAnimate}
-        close={() => setModalVisible(false)}
-      >
-        <TransactionSummary
-          specifics={transaction}
-          transactionFunc={async () => {
-            // TODO: send transaction to blockchain
-          }}
-          cancelCallback={() => setModalVisible(false)}
-        />
-      </Modal>
+        </Modal>
+      </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -103,49 +166,52 @@ export default function SwapContent() {
  * @prop {function} transactionCallback - Callback function for when a transaction is executed
  */
 function Section({ title, transactionCallback }) {
-  const [expanded, setExpanded] = useState(false)
-  const [totals, setTotals] = useState(null)
-  const [algoToGardRatio, setAlgoToGardRatio] = useState(1.1)
-  const [receivedValue, setReceivedValue] = useState(0)
-  const {theme} = useContext(ThemeContext)
+  const [expanded, setExpanded] = useState(false);
+  const [totals, setTotals] = useState(null);
+  const [algoToGardRatio, setAlgoToGardRatio] = useState(1.1);
+  const [receivedValue, setReceivedValue] = useState(0);
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     let res = calcTransResult(transaction);
-    setReceivedValue(res)
-    console.log(transaction)
+    setReceivedValue(res);
+    console.log(transaction);
     return () => {
-      console.log('unmounting')
-    }
-  }, [])
+      console.log('unmounting');
+    };
+  }, []);
 
   useEffect(async () => {
     const resultsOfQuery = await queryAndConvertTotals();
-      setTotals(resultsOfQuery)
-    let ratio = exchangeRatioAssetXtoAssetY(mAlgosToAlgos(resultsOfQuery.algo), mGardToGard(resultsOfQuery.gard));
+    setTotals(resultsOfQuery);
+    let ratio = exchangeRatioAssetXtoAssetY(
+      mAlgosToAlgos(resultsOfQuery.algo),
+      mGardToGard(resultsOfQuery.gard),
+    );
     if (ratio) {
-      setAlgoToGardRatio(ratio)
+      setAlgoToGardRatio(ratio);
     }
     return () => {
       console.log(ratio);
-    }
-  }, [])
+    };
+  }, []);
 
   const [transaction, reduceTransaction] = useReducer(
     (state, action) => {
       switch (action.type) {
         case 'offering-amount':
-          console.log("offering amount state -> ", state);
-          console.log("offering amount action -> ", action);
+          console.log('offering amount state -> ', state);
+          console.log('offering amount action -> ', action);
           return {
             ...state,
             offering: {
               ...state.offering,
               amount: action.value,
             },
-          }
+          };
         case 'offering-from':
-          console.log("offering from state -> ", state)
-          console.log("offering from action -> ", action);
+          console.log('offering from state -> ', state);
+          console.log('offering from action -> ', action);
 
           return {
             ...state,
@@ -153,28 +219,28 @@ function Section({ title, transactionCallback }) {
               ...state.offering,
               from: action.value,
             },
-          }
+          };
         case 'receiving-amount':
-          console.log("receiving amount state -> ", state);
-          console.log("receiving amount action -> ", action);
+          console.log('receiving amount state -> ', state);
+          console.log('receiving amount action -> ', action);
           return {
             ...state,
             receiving: {
               ...state.receiving,
               amount: action.value,
             },
-          }
+          };
         case 'receiving-to':
-          console.log("receiving to state -> ", state);
-          console.log("receiving to action -> ", action);
-          calcTransResult(state)
+          console.log('receiving to state -> ', state);
+          console.log('receiving to action -> ', action);
+          calcTransResult(state);
           return {
             ...state,
             receiving: {
               ...state.receiving,
               to: action.value,
             },
-          }
+          };
       }
     },
     {
@@ -187,16 +253,14 @@ function Section({ title, transactionCallback }) {
         to: 'GARD',
       },
     },
-  )
-
-
+  );
 
   return (
     <div style={{ marginBottom: 10 }}>
       <SectionButton
         darkToggle={theme === 'dark'}
         onClick={() => {
-          setExpanded(!expanded)
+          setExpanded(!expanded);
         }}
       >
         <TitleContainer
@@ -207,19 +271,18 @@ function Section({ title, transactionCallback }) {
           <div style={{ marginRight: 8 }}>
             <Image
               src={chevron}
-              style={expanded ? { transform: 'rotate(90deg)', background: ''} : {}}
+              style={
+                expanded ? { transform: 'rotate(90deg)', background: '' } : {}
+              }
               darkToggle={theme === 'dark'}
             />
           </div>
           <div>
-            <TitleText darkToggle={theme === 'dark'} >{title}</TitleText>
+            <TitleText darkToggle={theme === 'dark'}>{title}</TitleText>
           </div>
         </TitleContainer>
         <RelationsContainer>
-          <div style={{ flex: 1 }}
-          darkToggle={theme === 'dark'}
-          >
-
+          <div style={{ flex: 1 }} darkToggle={theme === 'dark'}>
             <RelationsSpecificsContainer
               style={{
                 display: 'flex',
@@ -238,11 +301,11 @@ function Section({ title, transactionCallback }) {
                 justifyContent: 'center',
               }}
             >
-
               <div>
-
-                <RelationsValue> {algoToGardRatio !== null ? algoToGardRatio : 1.1 }
-                  </RelationsValue>
+                <RelationsValue>
+                  {' '}
+                  {algoToGardRatio !== null ? algoToGardRatio : 1.1}
+                </RelationsValue>
               </div>
             </RelationsSpecificsContainer>
           </div>
@@ -254,7 +317,7 @@ function Section({ title, transactionCallback }) {
                 justifyContent: 'center',
               }}
             > */}
-              {/* <div>
+          {/* <div>
                 <RelationsTitle>Tether/GARD</RelationsTitle>
               </div>
             </RelationsSpecificsContainer>
@@ -332,9 +395,8 @@ function Section({ title, transactionCallback }) {
                       reduceTransaction({
                         type: 'offering-from',
                         value: e.target.value,
-                      })
-                    }
-                    }
+                      });
+                    }}
                     darkToggle={theme === 'dark'}
                   >
                     <option>ALGO</option>
@@ -344,7 +406,11 @@ function Section({ title, transactionCallback }) {
                   </Select>
                 </div>
                 <div>
-                  <InputTitle>Balance: 123.4</InputTitle>
+                  <InputTitle>{
+                  getWallet() == null
+                  ? 'N/A'
+                  : "Balance: " + 123.4}
+                  </InputTitle>
                 </div>
               </div>
               <div style={{ flex: 1 }}>
@@ -355,14 +421,18 @@ function Section({ title, transactionCallback }) {
                   <Input
                     value={transaction.offering.amount}
                     onChange={(e) => {
-                       let result = calcTransResult(e.target.value, totals.algo, totals.gard ,transaction)
-                       setReceivedValue(result)
+                      let result = calcTransResult(
+                        e.target.value,
+                        totals.algo,
+                        totals.gard,
+                        transaction,
+                      );
+                      setReceivedValue(result);
                       reduceTransaction({
                         type: 'offering-amount',
                         value: e.target.value,
-                      })
-                    }
-                    }
+                      });
+                    }}
                     placeholder={'Max 123.4'}
                     darkToggle={theme === 'dark'}
                   />
@@ -418,16 +488,15 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div>
                   <Input
-                    value={transaction.receiving.amount}
+                    value={receivedValue}
                     onChange={(e) => {
                       // TODO: uncomment/refactor to make swap display both ways
-                      // let result = calcTransResult(e.target.value, totals.algo, totals.gard ,transaction)
-                     reduceTransaction({
-                       type: 'receiving-amount',
-                       value: receivedValue,
-                     })
-                    }
-                    }
+                      let result = calcTransResult(e.target.value, totals.algo, totals.gard ,transaction)
+                      reduceTransaction({
+                        type: 'receiving-amount',
+                        value: receivedValue,
+                      });
+                    }}
                     placeholder={receivedValue}
                     darkToggle={theme === 'dark'}
                   />
@@ -443,12 +512,11 @@ function Section({ title, transactionCallback }) {
             />
           </div>
         </ExpandedContainer>
-
       ) : (
         <></>
       )}
     </div>
-  )
+  );
 }
 
 // Styled Components
@@ -458,80 +526,79 @@ const TitleContainer = styled.div`
   flex: 2;
   display: flex;
   flex-direction: row;
-  ${(props) => props.darkToggle &&
-  css `
-    background: #404040;
-  `
-  }
-  ${(props) => props.expanded &&
-  css `
-    background: #fcfcfd;
-  `
-  }
-  ${(props) => props.expanded && props.darkToggle &&
-  css `
-    background: #1c1c1c;
-  `
-  }
-
-`
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #404040;
+    `}
+  ${(props) =>
+    props.expanded &&
+    css`
+      background: #fcfcfd;
+    `}
+  ${(props) =>
+    props.expanded &&
+    props.darkToggle &&
+    css`
+      background: #1c1c1c;
+    `}
+`;
 
 const SectionButton = styled.div`
   height: 96px;
   cursor: pointer;
   display: flex;
   flex-direction: row;
-
-`
+`;
 
 const RelationsContainer = styled.div`
   flex: 3;
   display: flex;
   flex-direction: row;
-`
+`;
 const TitleText = styled.text`
   font-weight: 500;
   font-size: 20px;
-  ${(props) => props.darkToggle ?
-  `
+  ${(props) =>
+    props.darkToggle
+      ? `
     background: #2c2c2c
     color: #f4ebff
-  ` :
-  ``
-  }
-`
+  `
+      : ``}
+`;
 const RelationsSpecificsContainer = styled.div`
   border-bottom: 1px solid #f9f9f9;
   height: 48px;
-`
+`;
 const RelationsTitle = styled.text`
   font-weight: bold;
   font-size: 14px;
-`
+`;
 const RelationsValue = styled.text`
   font-weight: 500;
   font-size: 14px;
-`
+`;
 const ExpandedContainer = styled.div`
   height: 207px;
   background: #f4ebff;
   padding: 0px 3vw;
-  ${(props) => props.darkToggle &&
-  css `
-    background: #404040;
-  `
-  }
-`
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #404040;
+    `}
+`;
 const InputTitle = styled.text`
   font-weight: normal;
   font-size: 14px;
   color: #7a7a7a;
-   ${(props) => props.darkToggle &&
-  css`
-    color:#ffffff;
-    `
-  }
-`
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: #ffffff;
+    `}
+`;
 const Select = styled.select`
   height: 40px;
   background: #ffffff;
@@ -539,13 +606,13 @@ const Select = styled.select`
   border-radius: 4px;
   width: 11.5972222222222vw;
   padding: 0px 0px 0px 12px;
-  ${(props) => props.darkToggle &&
-  css`
-    background:#525252;
-    color:#ffffff;
-    `
-  }
-`
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #525252;
+      color: #ffffff;
+    `}
+`;
 const Input = styled.input`
   height: 40px;
   background: #ffffff;
@@ -553,21 +620,20 @@ const Input = styled.input`
   border-radius: 4px;
   width: 11.5972222222222vw;
   padding: 0px 0px 0px 12px;
-  ${(props) => props.darkToggle &&
-  css`
-    background:#525252;
-  `
-  }
-`
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #525252;
+    `}
+`;
 
 const Image = styled.img`
-  ${(props) => props.darkToggle &&
-  css`
-    filter:invert();
-  `
-  }
-`
-
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      filter: invert();
+    `}
+`;
 
 // Titles of each section
 const titles = [
@@ -580,4 +646,4 @@ const titles = [
   // {
   //   title: 'HumbleSwap',
   // },
-]
+];

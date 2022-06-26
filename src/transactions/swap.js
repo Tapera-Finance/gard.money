@@ -12,6 +12,9 @@ import {
   getParams,
   sendTxn,
   getWallet,
+  getWalletInfo,
+  handleTxError,
+  updateWalletInfo,
   getAppByID,
   signGroup,
 } from "../wallets/wallets";
@@ -91,7 +94,13 @@ export function estimateReturn(algo, totalAlgoInPool, totalGardInPool, fee) {
     ((algo * totalGardInPool) / (totalAlgoInPool + algo)) * (1 - fee); // compare this to what actual transaction returns?
   return receivedAmount;
 }
-
+/**
+ *
+ *
+ * @function queryAndConvertTotals - query blockchain for Pact's asset pool exchange rate given two assets
+ * @returns {Object} algo + gard totals for algo/gard pool
+ *
+ */
 export async function queryAndConvertTotals() {
   let result;
   const algoInPool = await queryObject.getAlgoInPactAlgoGardPool();
@@ -103,119 +112,60 @@ export async function queryAndConvertTotals() {
   return result;
 }
 
-/*************
- * Pact Swap Controller
+/**
  *
- * not convinced this was the necessary approach - leaving for now to cut & paste JSDOC to the latest functions actively used
- *
- * Instance of SwapController for exchanging assets with Pact
- * @function algoToGard - calculate swap exchange rate from algo to gard
- *    @param {algo} {Float} - representing how many algo to send
- *    @param {lockedInRate} {Float} - representing exchange rate from current pool at time of capture
- *    @returns {transactionSummary} - returns details of the exchange to allow for execution
- *
- * @function gardToAlgo - calculate swap exchange rate from gard to algo
- *    @param {gard} {Float} - representing how many gard to send
- *    @param {lockedInRate} {Float} - representing exchange rate from current pool at time of capture
- *    @returns {transactionSummary} - returns details of the exchange to allow for execution
- *
- * @function queryExchangeRate - query blockchain for Pact's asset pool exchange rate given two assets
- *    @param {asset1} {Object} - name and id of asset1
- *    @param {asset2} {Object} name and id of asset2
- *    @returns {rate} ratio of exchange at the time of query
- *
- * @function execute - build and execute blockchain transaction
- *    @param {type} {String} - type of exchange to execute ex. "algoToGard" || "gardToAlgo"
- *    @param {info} {Object} - account holder information with address and wallet details
- *    @returns {transactionResult} - confirmation of exchange from blockchain
- *
- *************/
-
-export function PactController(assetsToOptInto, fee) {
-  this.dexId = "PACT";
-  this.address = pactAlgoGardPoolAddress;
-  this.appId = pactGARDID;
-  this.fee = fee;
-  this.assets = assetsToOptInto;
-  for (var i = 0; i < assetsToOptInto.length; i++) {
-    let asset = assetsToOptInto[i];
-    this[`${asset.name}ID`] = asset.id;
-  }
-  // assetsToOptInto.forEach((asset) => {
-  //   this[`${asset.name}ID`] = asset.id;
-  // });
-}
-
-PactController.prototype.constructor = PactController;
-
-// use pact controller's prototype methods
-// to call function that builds and sends txn based on user input [ input, select ]
-
-PactController.prototype = {
-  algoToGard: (algo, totalAlgo, totalGard) => {
-    console.log("algo to gard!");
-    // call swapAlgoToGard (algo, totalAlgo, totalGard, this.fee)
-  },
-  gardToAlgo: (gard, totalAlgo, totalGard) => {
-    console.log("gard to algo!");
-    // call swapGardToAlgo (gard, totalAlgo, totalGard, this.fee)
-  },
-  algoToUSDC: () => {
-    //
-  },
-  USDCToAlgo: () => {
-    //
-  },
-};
-
-// PACT Exchange rate formulas
-// rcv = a * B / (A + a)
-// rcv_net = rcv * (1 - fee)
-// exchange rate ~= lim a -> 0(rcv/a)
-// exchange rate = limit of a approaching 0 times received value divided by a
-
-// this should allow us to see an estimated result of this transaction on front end
-
-export async function swapAlgoToGard(amount, minimum) {
+ @function swapAlgoToGard - calculate swap exchange rate from algo to gard
+  *    @param {algo} {Float} - representing how many algo to send
+  *    @param {lockedInRate} {Float} - representing exchange rate from current pool at time of capture
+  *    @returns {transactionSummary} - returns details of the exchange to allow for execution
+ */
+export async function swapAlgoToGard(amount, totals, minimum) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(0);
   const info = await infoPromise;
   const params = await paramsPromise;
-
-  // let totals = await queryAndConvertTotals();
-
-  // const f_a = [0, gardID];
+  console.log(amount, "is being sent")
+  console.log(totals, "<- pool totals")
+  console.log(minimum, "minimum")
+  const f_a = [0, gardID];
   // // console.log("recipient from transactionFunc being called", recipient);
 
   // /**
   //  * create transaction logic:
   //  */
 
-  // let txn1 = makePaymentTxnWithSuggestedParams({
-  //   from: info.address,
-  //   to: recipient,
-  //   amount: amount,
-  //   params: params,
-  // });
+  let txn1 = algosdk.makePaymentTxnWithSuggestedParams({
+    from: info.address,
+    to: pactAlgoGardPoolAddress,
+    amount: amount,
+    params: params,
+  });
 
-  // let txn2 = makeApplicationNoOpTxn(
-  //   info.address,
-  //   params,
-  //   pactAlgoGardPoolAddress,
-  //   ["SWAP", minimum],
-  //   f_a,
-  // );
+  let txn2 = algosdk.makeApplicationNoOpTxn(
+    info.address,
+    params,
+    pactAlgoGardPoolAddress,
+    ["SWAP", minimum],
+    f_a,
+  );
 
   //
-  // let txns = [txn1, txn2];
-  // let gid = algosdk.assignGroupID(txns);
-  // let sn_txns = await signGroup(info, txns);
-  // let txnResult = await sendTxn(
-  //   sn_txns,
-  //   `swapped ${amount} Algo to Gard successfully!`,
-  // );
-  // return showMeTheDeets(txnResult);
+  let txns = [txn1, txn2];
+  let gid = algosdk.assignGroupID(txns);
+  let sn_txns = await signGroup(info, txns);
+  let txnResult = await sendTxn(
+    sn_txns,
+    `swapped ${amount} Algo to Gard successfully!`,
+  );
+  return showMeTheDeets(txnResult);
 }
+
+/**
+ * @function swapGardToAlgo - calculate swap exchange rate from gard to algo
+ *    @param {gard} {Float} - representing how many gard to send
+ *    @param {lockedInRate} {Float} - representing exchange rate from current pool at time of capture
+ *    @returns {transactionSummary} - returns details of the exchange to allow for execution
+ */
 
 // removing soon //
 
