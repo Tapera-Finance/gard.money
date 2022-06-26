@@ -49,9 +49,8 @@ const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
 function calcTransResult(amount, totalX, totalY, transaction) {
   if (transaction) {
     if (
-      // transaction.offering.from === 'ALGO' &&
-      // transaction.receiving.to === 'GARD'
-      transaction
+      transaction.offering.from === 'ALGO' &&
+      transaction.receiving.to === 'GARD'
     ) {
       if (amount > 0) {
         let receivedAmount = estimateReturn(
@@ -82,8 +81,6 @@ export default function SwapContent() {
   useEffect(async () => {
     const totals = await queryAndConvertTotals();
     setTotals(totals);
-    await updateWalletInfo();
-    getWallet();
     return () => {
       console.log('pool totals', totals);
     };
@@ -138,7 +135,6 @@ export default function SwapContent() {
                 // }
                 console.log(transaction)
                 const res = await swapAlgoToGard(
-                  // transaction.offering.amount,
                   formattedAmount,
                   totals,
                   0.001,
