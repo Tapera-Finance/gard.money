@@ -16,6 +16,7 @@ import {
 import { useEffect } from 'react';
 import { setAlert } from '../redux/slices/alertSlice';
 import {
+  getGARDInWallet,
   getWallet,
   getWalletInfo,
   handleTxError,
@@ -548,7 +549,7 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div>
                   <InputTitle>
-                  {getWallet() == null ? 'N/A' : 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount)}
+                  {transaction.offering.from == "ALGO" ? 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount): 'Balance: ' + mAlgosToAlgos(getGARDInWallet())}
                   </InputTitle>
                 </div>
               </div>
@@ -646,7 +647,9 @@ function Section({ title, transactionCallback }) {
                   </Select>
                 </div>
                 <div>
-                  <InputTitle>Balance: 123.4</InputTitle>
+                  <InputTitle>
+                  {transaction.receiving.to == "ALGO" ? 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount) : 'Balance: ' + mAlgosToAlgos(getGARDInWallet())}
+                  </InputTitle>
                 </div>
               </div>
               <div style={{ flex: 1 }}>

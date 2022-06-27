@@ -4,6 +4,7 @@ import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import { psToken } from './keys'
 import { updateCDPs } from '../transactions/cdp'
+import { gardID } from '../transactions/ids'
 import { VERSION } from "../globals"
 import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 // Partial fix from https://github.com/randlabs/myalgo-connect/issues/27
@@ -157,6 +158,17 @@ export function getWalletInfo() {
   // TODO: Could add a refresh option
 
   return activeWalletInfo
+}
+
+export function getGARDInWallet() {
+  let asset_array = activeWalletInfo.assets
+  for (var i = 0; i < asset_array.length; i++)
+  {
+    if (asset_array[i]["asset-id"] == gardID) {
+      return asset_array[i]["amount"]
+    }
+  }
+  return 0
 }
 
 export async function connectWallet(type, address) {
