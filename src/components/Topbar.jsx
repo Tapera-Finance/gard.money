@@ -80,16 +80,13 @@ export default function Topbar({ contentName, setMainContent }) {
                     if (!wallet.alert) {
                       dispatch(setWallet({ address: displayWallet() }))
                       const owner_address = getWallet().address
-                      console.log('owneraddr', owner_address)
                       let in_DB = await userInDB(owner_address)
-                      console.log('inDB?:', in_DB)
                       if (!in_DB){
                         let accountCDPs = getCDPs()[owner_address]
                         let addrs = Object.keys(getCDPs()[owner_address])
                         let owned = {}
                         for (var i = 0; i < addrs.length; i++) {
                           if (accountCDPs[addrs[i]].state == 'open'){
-                            //console.log(addrs[i])
                             let cdp_address = cdpGen(owner_address, addrs[i]).address
                             Object.assign(owned, {[cdp_address]: {
                             "lastCommitment": -1,

@@ -38,7 +38,6 @@ export async function addUserToFireStore(user, walletID) {
     try {
       const walletRef = doc(db, "users", walletID);
       const docRef = await setDoc(walletRef, user);
-      console.log('added to firestore')
     } catch (e) {
       console.error("Error adding document: ", e);
     }
