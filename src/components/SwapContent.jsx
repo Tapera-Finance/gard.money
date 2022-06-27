@@ -242,35 +242,33 @@ function toggleSelect(val, other, type1, type2, assets, reducer) {
   }
 }
 
-  // receiving-amount,
-  // 10,
-  // calcTrans(
-      // 10,
-      // [ALGO, GARD]
-      // totalAlgo,
-      // totalGard,
-      // {offering: from: ALGO, receiving: to: GARD}
-      // )
+
 function handleExchange(type, amount, assets, transform, params, transaction, reducer) {  if (type === "offering-amount") { // field 1 handling from field 2 input
-  if (!transaction.offering.amount.length()) {
-    if (transaction.offering.from === assets[0] && transaction.receiving.to === assets[1]) {
+   if (transaction) {
+    if (
+      transaction.offering.from === assets[0] &&
+      transaction.receiving.to === assets[1]
+    ) {
       if (typeof amount === 'number') {
         reducer({
-          type: "receiving-amount",
-          value: transform(amount, params[0], params[1], transaction)
-        })
-        return
-       }
-     }
-    } else if (transaction.offering.from === assets[1] && transaction.receiving.to === assets[0]) {
-        if (typeof amount === 'number') {
-          reducer({
-            type: "receiving-amount",
-            value: transform(amount, params[1], params[0], transaction)
-          })
-          return
-       }
+          type: 'receiving-amount',
+          value: transform(amount, params[0], params[1], transaction),
+        });
+        return;
+      }
+    } else if (
+      transaction.offering.from === assets[1] &&
+      transaction.receiving.to === assets[0]
+    ) {
+      if (typeof amount === 'number') {
+        reducer({
+          type: 'receiving-amount',
+          value: transform(amount, params[1], params[0], transaction),
+        });
+        return;
+      }
     }
+  }
 
   } else if (transaction) {
     if (type === "receiving-amount") { // field 2 handling from field 1 input
@@ -386,6 +384,18 @@ function Section({ title, transactionCallback }) {
               to: action.value,
             },
           };
+        case 'clear':
+          return {
+            ...state,
+            offering: {
+              ...state.offering,
+              amount: ''
+            },
+            receiving: {
+              ...state.receiving,
+              amount: ''
+            }
+          }
         default:
             return {
               ...state,
@@ -538,7 +548,7 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div>
                   <InputTitle>
-                    {getWallet() == null ? 'N/A' : 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount)}
+                  {getWallet() == null ? 'N/A' : 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount)}
                   </InputTitle>
                 </div>
               </div>
@@ -551,32 +561,35 @@ function Section({ title, transactionCallback }) {
                   <Input
                     value={transaction.offering.amount}
                     onChange={(e) => {
-                      if (typeof parseFloat(e.target.value) === 'number') {
-                        handleExchange(
-                       "receiving-amount",
-                        parseFloat(e.target.value),
-                        assetsA2G,
-                        calcTransResult,
-                        [
-                        totals[
-                          targetPool(
-                            transaction.offering.from,
-                            transaction.receiving.to,
-                          )][transaction.offering.from.toLowerCase()],
+                        if (e.target.value !== '' && typeof parseFloat(e.target.value) === 'number') {
+                          handleExchange(
+                         "receiving-amount",
+                          parseFloat(e.target.value),
+                          assetsA2G,
+                          calcTransResult,
+                          [
+                          totals[
+                            targetPool(
+                              transaction.offering.from,
+                              transaction.receiving.to,
+                            )][transaction.offering.from.toLowerCase()],
 
-                        totals[
-                          targetPool(
-                            transaction.offering.from,
-                            transaction.receiving.to,
-                          )][transaction.receiving.to.toLowerCase()],
-                        ],
-                      transaction,
-                        reduceTransaction
-                      )
-                    }
+                          totals[
+                            targetPool(
+                              transaction.offering.from,
+                              transaction.receiving.to,
+                            )][transaction.receiving.to.toLowerCase()],
+                          ],
+                        transaction,
+                          reduceTransaction
+                        )
+                        } else {
+                          reduceTransaction({
+                            type: 'clear',
+                          })
+                        }
                       }
                     }
-                    // placeholder={transaction.offering.amount}
                     darkToggle={theme === 'dark'}
                   />
                 </div>
@@ -645,22 +658,6 @@ function Section({ title, transactionCallback }) {
                   <Input
                     value={transaction.receiving.amount}
                     onChange={(e) => {
-                      if (typeof parseFloat(e.target.value) === 'number') {
-                      if (transaction.offering.amount === '') {
-                          toggleSelect(transaction.receiving.to, transaction.offering.from,
-                            "offering-from",
-                            "receiving-to",
-                          assetsA2G,
-                          reduceTransaction);
-                          reduceTransaction({
-                              type: 'offering-amount',
-                              value: transaction.receiving.amount
-                            });
-                          reduceTransaction({
-                            type: 'receiving-amount',
-                            value: transaction.offering.amount
-                          })
-                      }
                         handleExchange(
                         "offering-amount",
                          parseFloat(e.target.value),
@@ -682,7 +679,7 @@ function Section({ title, transactionCallback }) {
                           reduceTransaction
                         )
                       }
-                    }
+                    // }
                   }
                     // placeholder={
                     //   // `Max: ${maxB}`
