@@ -11,12 +11,12 @@ import { handleTxError, getWallet } from '../wallets/wallets'
 import { cdpGen } from "../transactions/contracts";
 import Table from './Table'
 import { ThemeContext } from '../contexts/ThemeContext'
-import { loadData } from './firebase'
+import { loadFireStoreCDPs } from './firebase'
 
 function getGovernorPage(id) {
   return 'https://governance.algorand.foundation/governance-period-3/governors/' + cdpGen(getWallet().address, id).address
 }
-let commitment = await loadData()
+let commitment = await loadFireStoreCDPs()
 /**
  * Content for Algo Governance option in drawer
  */
@@ -49,7 +49,7 @@ export default function AlgoGovernanceContent() {
   };
 
   useEffect(async () => {
-    commitment = await loadData()
+    commitment = await loadFireStoreCDPs()
   })
   let loadedCDPs = CDPsToList()
   if (loadedCDPs[0].id == 'N/A') {

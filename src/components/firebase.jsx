@@ -6,6 +6,7 @@ import {
   getDocs,
   addDoc,
   setDoc,
+  getDoc,
   updateDoc,
   query,
   where,
@@ -14,6 +15,7 @@ import {
   doc
 } from "firebase/firestore";
 import { cdpGen } from "../transactions/contracts";
+import { getWalletInfo } from "../wallets/wallets";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD4x024OYPM1Zxh2QNklzw3sXfYTV15f30",
@@ -53,34 +55,6 @@ export async function addUserToFireStore(user, walletID) {
     return querySnapshot.docs.length >= 1
   }
   
-  
-
-  function addCDP(owner_address, cdp_address, currentCDPs) {
-    const CDP = 
-    {
-        [cdp_address]: {
-            lastCommitment: -1,
-            commitmentTimestamp: -1,
-            liquidatedTimestamp: [-1],
-        }
-    };
-    // adding new CDP object we just made to current CDPs
-    const CDPs = currentCDPs.concat(CDP);
-
-    const key = `${owner_address}.ownedCDPs`
-    async function addCDPToFireStore() {
-      try {
-        const walletRef = doc(db, "users", owner_address);
-        const docRef = await updateDoc(walletRef, {
-            [key] : CDPs
-        });
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
-    }
-    addCDPToFireStore(CDP);
-}
-
 
 export async function updateCommitmentFirestore(owner_address, account_id, commitment_amt) {
     const cdp_address = cdpGen(owner_address, account_id).address
@@ -90,7 +64,7 @@ export async function updateCommitmentFirestore(owner_address, account_id, commi
         const walletRef = doc(db, "users", owner_address);
         const docRef = await updateDoc(walletRef, {
             [key1]: commitment_amt,
-            [key2]: new Date().toISOString(),
+            [key2]: Date.now(),
         });
     } catch (e) {
         console.error("Error adding document: ", e);
@@ -102,10 +76,20 @@ export async function updateLiquidationFirestore(owner_address, account_id) {
     try {
         const walletRef = doc(db, "users", owner_address);
         const docRef = await updateDoc(walletRef, {
-            [key]: new Date().toISOString(),
+            [key]: Date.now(),
         });
     } catch (e) {
         console.error("Error adding document: ", e);
     }
 }
-//cdpGen(getWallet().address, id).address
+export async function loadFireStoreCDPs() {
+    const owner_address = getWalletInfo().address
+    const docRef = doc(db, "users", owner_address);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+    const data = docSnap.data()
+    return data.ownedCDPs
+    } else {
+    console.log("No such document!");
+    }
+}
