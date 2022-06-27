@@ -129,6 +129,7 @@ export default function SwapContent() {
                   {
                     title: 'You are offering',
                     value: `${transaction.offering.amount}$${transaction.offering.from}`,
+                    token: `${transaction.offering.from}`,
                   },
                   {
                     title: 'You are receiving',
@@ -138,6 +139,7 @@ export default function SwapContent() {
                       totals[target][keys[1].toLowerCase()],
                       transaction,
                     ): transaction.converted.amount} ${'$' + transaction.receiving.to}`,
+                    token: `${transaction.receiving.to}`,
                   },
                   {
                     title: 'Transaction Fee',
@@ -165,20 +167,28 @@ export default function SwapContent() {
                 setModalVisible(false);
                 setLoading(true);
                 try {
-                  const amount = parseFloat(transaction[0].value).toFixed(3);
-                  const formattedAmount = parseFloat(amount).toFixed(3);
-                  // if (balance < transaction.offering.amount) {
-                  //   dispatch(setAlert(`Not enough ${transaction.offering.type} in wallet`))
-                  // }
-
+                  const amount = parseFloat(transaction[0].value);
+                  const formattedAmount = parseInt(1e6*amount);
+                  
                   if (VERSION !== 'MAINNET') {
                     throw new Error('Unable to swap on TESTNET');
                   }
-                  const res = await swapAlgoToGard(
-                    parseInt(1000000 * formattedAmount),
+                  let res;
+                  if (transaction[0].token == "ALGO" && transaction[1].token == "GARD")
+                  {
+                    res = await swapAlgoToGard(
+                    formattedAmount,
                     1,
-                  );
-                  if (res && res.alert) {
+                    );
+                  }
+                  else if (transaction[0].token == "GARD" && transaction[1].token == "ALGO")
+                  {
+                    res = await swapGardToAlgo(
+                      formattedAmount,
+                      1,
+                    )
+                  }
+                  if (res.alert) {
                     dispatch(setAlert(res.text));
                   }
                 } catch (e) {

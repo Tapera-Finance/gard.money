@@ -1,6 +1,5 @@
 import algosdk from "algosdk";
 import {
-  validatorID,
   gardID,
   gainID,
   gardianID,
@@ -11,14 +10,8 @@ import {
   accountInfo,
   getParams,
   sendTxn,
-  getWallet,
-  getWalletInfo,
-  handleTxError,
-  updateWalletInfo,
-  getAppByID,
   signGroup,
 } from "../wallets/wallets";
-import { VERSION } from "../globals";
 
 const axios = require("axios");
 
@@ -42,17 +35,6 @@ const axios = require("axios");
  * need swapping doable --> get input value, perform conversion, populate receive input
  * need wallet info --> get balances, use to limit input
  */
-
-/**
- * Local Helpers
- */
-
-function showMeTheDeets(txn) {
-  console.log(
-    "printing transaction result invoked by swap function --->>>",
-    txn,
-  );
-}
 
 /**
  * Use to get and set exchange rate, estimate slippage and use in component functions to impose accurate transaction limits
@@ -165,7 +147,7 @@ export async function swapAlgoToGard(amount, minimum) {
 
   const response = await sendTxn(stxns, "Successfully swapped " + amount + " tokens.",);
 
-  return showMeTheDeets(response);
+  return response;
 }
 
 /**
@@ -208,5 +190,5 @@ export async function swapAlgoToGard(amount, minimum) {
 
   const response = await sendTxn(stxns, "Successfully swapped " + amount + " tokens.",);
 
-  return showMeTheDeets(response);
+  return response;
 }
