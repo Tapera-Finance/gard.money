@@ -14,6 +14,7 @@ let _validatorID;
 let _treasuryID;
 let _oracleID;
 let _pactGARDID;
+let _checkerID;
 
 // swap recipients
 let _pactAlgoGardPoolAddress =
@@ -34,6 +35,7 @@ if (VERSION == "MAINNET") {
   _treasuryID = 684650318;
   _oracleID = 673925841;
   _pactGARDID = 692053574;
+  _checkerID = 787191335;
 
   // swap AlgoGardPoolAddress
   // _pactAlgoGardPoolAddress =
@@ -56,6 +58,7 @@ if (VERSION == "MAINNET") {
   _treasuryID = 73680850;
   _oracleID = 53083112;
   _pactGARDID = 692053574;
+  _checkerID = 96679309;
 }
 
 // ASAs
@@ -72,6 +75,7 @@ export const validatorID = _validatorID;
 export const treasuryID = _treasuryID;
 export const oracleID = _oracleID;
 export const pactGARDID = _pactGARDID;
+export const checkerID = _checkerID;
 
 // swap AlgoGardPoolAddresss
 export const pactAlgoGardPoolAddress = _pactAlgoGardPoolAddress;
