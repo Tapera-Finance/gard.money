@@ -750,7 +750,6 @@ function Section({ title, transactionCallback }) {
                         reduceTransaction,
                       );
                     }}
-                    darkToggle={theme === 'dark'}
                   />
                 </div>
               </div>
@@ -907,11 +906,28 @@ const Input = styled.input`
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
-    input[type='number'] {
+    margin: 0;
+  }
+   input[type='number'] {
       -moz-appearance: textfield;
     }
-
-  }`
+  &:focus {
+    outline-color: #bc82ff;
+  }
+  &:focus::placeholder {
+    color: transparent;
+  }
+  &:hover {
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+   input[type='number'] {
+      -moz-appearance: textfield;
+    }
+  }
+`
 
 const Image = styled.img`
   background-color: #ffffff;
@@ -936,32 +952,7 @@ const Image = styled.img`
         border: 1px solid #9a71da;
       }
     `}
-  /* ${(props) =>
-    props.variant &&
-    css`
-      background-color: transparent;
-      border: 1px solid #6941c6;
-      &:hover {
-        background-color: #6941c6;
-      }
-    `}
-  ${(props) =>
-    props.variant &&
-    props.darkToggle &&
-    css`
-      background-color: transparent;
-      border: 1px solid #c299eb;
-      &:hover {
-        background-color: #c299eb;
-      }
-    `}
-  ${(props) =>
-    props.disabled &&
-    css`
-      border: 1px solid #999999;
-      background-color: #cccccc;
-      pointer-events: none;
-    `} */
+
 `;
 
 const ImgText = styled.text`
@@ -997,14 +988,12 @@ const Arrow = styled.img`
     `}
 `;
 
-// Titles of each section
-const titles = [
-  {
-    title: 'Pact',
-  },
-];
+const titles = [{
+  title: "Pact"
+}]
 
 /**
+ *
  * /* <div style={{ flex: 1 }}>
             <RelationsSpecificsContainer
               style={{
