@@ -9,6 +9,7 @@ import LoadingOverlay from './LoadingOverlay';
 import { ThemeContext } from '../contexts/ThemeContext';
 import {
   swapAlgoToGard,
+  swapGardToAlgo,
   estimateReturn,
   queryAndConvertTotals,
 } from '../transactions/swap';
@@ -138,8 +139,8 @@ export default function SwapContent() {
                     ): transaction.converted.amount} ${'$' + transaction.receiving.to}`,
                   },
                   {
-                    title: 'Fee',
-                    value: '$0.003',
+                    title: 'Transaction Fee',
+                    value: '0.003 Algos',
                   },
                 ]);
                 setModalVisible(true);
@@ -176,7 +177,7 @@ export default function SwapContent() {
                     parseInt(1000000 * formattedAmount),
                     1,
                   );
-                  if (res && res.alert()) {
+                  if (res && res.alert) {
                     dispatch(setAlert(res.text));
                   }
                 } catch (e) {
