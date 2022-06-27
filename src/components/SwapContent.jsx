@@ -132,7 +132,7 @@ export default function SwapContent() {
                     token: `${transaction.offering.from}`,
                   },
                   {
-                    title: 'You are receiving',
+                    title: 'You are receiving a minimum of ',
                     value:`${totals ? calcTransResult(
                       transaction.offering.amount,
                       totals[target][keys[0].toLowerCase()],
@@ -169,7 +169,7 @@ export default function SwapContent() {
                 try {
                   const amount = parseFloat(transaction[0].value);
                   const formattedAmount = parseInt(1e6*amount);
-                  
+
                   if (VERSION !== 'MAINNET') {
                     throw new Error('Unable to swap on TESTNET');
                   }
@@ -178,14 +178,14 @@ export default function SwapContent() {
                   {
                     res = await swapAlgoToGard(
                     formattedAmount,
-                    1,
+                    parseInt(1e6*parseFloat((transaction[1].value).split()[0])),
                     );
                   }
                   else if (transaction[0].token == "GARD" && transaction[1].token == "ALGO")
                   {
                     res = await swapGardToAlgo(
                       formattedAmount,
-                      1,
+                      parseInt(1e6*parseFloat((transaction[1].value).split()[0])),
                     )
                   }
                   if (res.alert) {
