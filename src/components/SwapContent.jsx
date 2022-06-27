@@ -74,11 +74,13 @@ function calcTransResult(amount, totalX, totalY, transaction) {
   }
 }
 
-const verifyValue = (input) =>
-  !input === null &&
-  typeof parseFloat(input) === 'number' &&
-  parseFloat(input) > 0;
+const toVal = (v) => parseFloat(v);
 
+const verifyValue = (input) => {
+ if ((typeof parseFloat(input) !== 'NaN') && (parseFloat(input) > 0)) {
+    return parseFloat(input)
+  } else return false
+}
 /**
  * Content for Swap option in drawer
  */
@@ -249,23 +251,58 @@ function toggleSelect(val, other, type1, type2, assets, reducer) {
       // totalGard,
       // {offering: from: ALGO, receiving: to: GARD}
       // )
-function handleExchange(type, amount, assets, transform, params, transaction, reducer) {
-  if (type === "offering-amount") {
+function handleExchange(type, amount, assets, transform, params, transaction, reducer) {  if (type === "offering-amount") { // field 1 handling from field 2 input
+  if (!transaction.offering.amount.length()) {
     if (transaction.offering.from === assets[0] && transaction.receiving.to === assets[1]) {
-      reducer({
-        type: "receiving-amount",
-        value: transform(amount, params[0], params[1], transaction)
-      })
-      return
-    }
-  } else if (type === "receiving-amount") {
-      if (transaction.offering.from === assets[1] && transaction.receiving.to === assets[0]) {
+      if (typeof amount === 'number') {
         reducer({
-          type: "offering-amount",
+          type: "receiving-amount",
           value: transform(amount, params[0], params[1], transaction)
         })
         return
-      }
+       }
+     }
+    } else if (transaction.offering.from === assets[1] && transaction.receiving.to === assets[0]) {
+        if (typeof amount === 'number') {
+          reducer({
+            type: "receiving-amount",
+            value: transform(amount, params[1], params[0], transaction)
+          })
+          return
+       }
+    }
+
+  } else if (transaction) {
+    if (type === "receiving-amount") { // field 2 handling from field 1 input
+     if (transaction) {
+       if (transaction.offering.from === assets[1] && transaction.receiving.to === assets[0]) {
+          if (typeof amount === 'number') {
+            reducer({
+              type: "offering-amount",
+              value: amount,
+            })
+            reducer({
+              type: "receiving-amount",
+              value:  transform(amount, params[0], params[1], transaction)
+            })
+            return
+          }
+       } else if (transaction.offering.from === assets[0] && transaction.receiving.to === assets[1]) {
+        if (typeof amount === 'number') {
+
+          reducer({
+            type: "offering-amount",
+            value: parseFloat(amount),
+          })
+          reducer({
+            type: "receiving-amount",
+            value:  transform(amount, params[0], params[1], transaction)
+          })
+          return
+        }
+       }
+       }
+  }
   }
 }
 
@@ -319,10 +356,6 @@ function Section({ title, transactionCallback }) {
               ...state.offering,
               amount: action.value,
             },
-            // converted: {
-            //   ...state.offering,
-            //   amount: action.converted ? action.converted : 0,
-            // },
           };
         case 'offering-from':
           console.log(state, action)
@@ -364,9 +397,6 @@ function Section({ title, transactionCallback }) {
       offering: {
         amount: '',
         from: 'ALGO',
-      },
-      converted: {
-        amount: ''
       },
       receiving: {
         amount: '',
@@ -491,6 +521,14 @@ function Section({ title, transactionCallback }) {
                         "receiving-to",
                         assetsA2G,
                         reduceTransaction);
+                        reduceTransaction({
+                            type: 'offering-amount',
+                            value: transaction.receiving.amount
+                          });
+                        reduceTransaction({
+                          type: 'receiving-amount',
+                          value: transaction.offering.amount
+                        });
                     }}
                     darkToggle={theme === 'dark'}
                   >
@@ -509,33 +547,35 @@ function Section({ title, transactionCallback }) {
                   <InputTitle>Amount</InputTitle>
                 </div>
                 <div>
+                  {/* convert 1st field inputs to field 2 vals*/}
                   <Input
                     value={transaction.offering.amount}
                     onChange={(e) => {
-                     handleExchange(
-                      "receiving-amount",
-                      e.target.value,
-                      calcTransResult,
-                      [
-                      totals[
-                        targetPool(
-                          transaction.offering.from,
-                          transaction.receiving.to,
-                        )][transaction.offering.from.toLowerCase()],
+                      if (typeof parseFloat(e.target.value) === 'number') {
+                        handleExchange(
+                       "receiving-amount",
+                        parseFloat(e.target.value),
+                        assetsA2G,
+                        calcTransResult,
+                        [
+                        totals[
+                          targetPool(
+                            transaction.offering.from,
+                            transaction.receiving.to,
+                          )][transaction.offering.from.toLowerCase()],
 
-                      totals[
-                        targetPool(
-                          transaction.offering.from,
-                          transaction.receiving.to,
-                        )][transaction.receiving.to.toLowerCase()],
-                      ],
-                    transaction,
-                     reduceTransaction
-                    )
-                    // console.log(transaction,);
-
-
-                    }}
+                        totals[
+                          targetPool(
+                            transaction.offering.from,
+                            transaction.receiving.to,
+                          )][transaction.receiving.to.toLowerCase()],
+                        ],
+                      transaction,
+                        reduceTransaction
+                      )
+                    }
+                      }
+                    }
                     // placeholder={transaction.offering.amount}
                     darkToggle={theme === 'dark'}
                   />
@@ -575,6 +615,14 @@ function Section({ title, transactionCallback }) {
                         "offering-from",
                         assetsA2G,
                         reduceTransaction)
+                      reduceTransaction({
+                        type: 'offering-amount',
+                        value: transaction.receiving.amount
+                      });
+                      reduceTransaction({
+                        type: 'receiving-amount',
+                        value: transaction.offering.amount
+                      });
                     }}
                     darkToggle={theme === 'dark'}
                   >
@@ -593,81 +641,53 @@ function Section({ title, transactionCallback }) {
                   <InputTitle>Amount</InputTitle>
                 </div>
                 <div>
+                  {/* convert second field inputs to field 1 vals*/}
                   <Input
                     value={transaction.receiving.amount}
                     onChange={(e) => {
-                      handleExchange(
+                      if (typeof parseFloat(e.target.value) === 'number') {
+                      if (transaction.offering.amount === '') {
+                          toggleSelect(transaction.receiving.to, transaction.offering.from,
+                            "offering-from",
+                            "receiving-to",
+                          assetsA2G,
+                          reduceTransaction);
+                          reduceTransaction({
+                              type: 'offering-amount',
+                              value: transaction.receiving.amount
+                            });
+                          reduceTransaction({
+                            type: 'receiving-amount',
+                            value: transaction.offering.amount
+                          })
+                      }
+                        handleExchange(
                         "offering-amount",
-                        e.target.value,
-                        estimateReturn,
-                        [
-                          totals[
-                            targetPool(
-                              transaction.offering.from,
-                              transaction.receiving.to,
-                            )][transaction.receiving.to.toLowerCase()],
-                          totals[
-                            targetPool(
-                              transaction.offering.from,
-                              transaction.receiving.to,
-                            )][transaction.offering.from.toLowerCase()],
+                         parseFloat(e.target.value),
+                          assetsA2G,
+                          estimateReturn,
+                          [
+                            totals[
+                              targetPool(
+                                transaction.offering.from,
+                                transaction.receiving.to,
+                              )][transaction.receiving.to.toLowerCase()],
+                            totals[
+                              targetPool(
+                                transaction.offering.from,
+                                transaction.receiving.to,
+                              )][transaction.offering.from.toLowerCase()],
+                          ],
                             transaction,
-                        ],
-                        reduceTransaction
+                          reduceTransaction
                         )
-                    //   if (transaction.receiving.to === assetsA2G[0]) {
-                    //     reduceTransaction({
-                    //       type: 'offering-from',
-                    //       value: assetsA2G[1]
-                    //     });
-                    //     reduceTransaction({
-                    //       type: 'offering-amount',
-                    //       value: calcTransResult(
-                    //         e.target.value,
-                    //         totals[
-                    //           targetPool(
-                    //             transaction.offering.from,
-                    //             transaction.receiving.to,
-                    //           )
-                    //         ][transaction.receiving.to.toLowerCase()],
-                    //         totals[
-                    //           targetPool(
-                    //             transaction.offering.from,
-                    //             transaction.receiving.to,
-                    //           )
-                    //         ][transaction.offering.from.toLowerCase()],
-                    //         transaction,
-                    //       )})
-                    //   } else if (transaction.receiving.to === assetsA2G[1]) {
-                    //     reduceTransaction({
-                    //       type: 'offering-from',
-                    //       value: assetsA2G[0]
-                    //     });
-                    //     reduceTransaction({
-                    //       type: 'offering-amount',
-                    //       value: calcTransResult(
-                    //         e.target.value,
-                    //         totals[
-                    //           targetPool(
-                    //             transaction.offering.from,
-                    //             transaction.receiving.to,
-                    //           )
-                    //         ][transaction.offering.from.toLowerCase()],
-                    //         totals[
-                    //           targetPool(
-                    //             transaction.offering.from,
-                    //             transaction.receiving.to,
-                    //           )
-                    //         ][transaction.receiving.to.toLowerCase()],
-                    //         transaction,
-                    //       )
-                    //       })
-                    //     };
-                    }}
-                    placeholder={
-                      // `Max: ${maxB}`
-                      transaction.receiving.amount
+                      }
                     }
+                  }
+                    // placeholder={
+                    //   // `Max: ${maxB}`
+                    //   transaction.receiving.amount
+                    // }
                     darkToggle={theme === 'dark'}
                   />
                 </div>

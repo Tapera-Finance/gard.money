@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled, {css} from 'styled-components'
 import PrimaryButton from './PrimaryButton'
+import { ThemeContext } from '../contexts/ThemeContext'
 
 /**
  * @prop {Specifics[]} specifics - List of concepts and their values to be shown inside the transaction
@@ -14,6 +15,7 @@ export default function TransactionSummary({
   cancelCallback,
   darkToggle,
 }) {
+  const theme = useContext(ThemeContext)
   return (
     <div style={{}}>
       <div style={{ marginLeft: 16, marginBottom: 8 }}>
@@ -53,6 +55,7 @@ export default function TransactionSummary({
         <CancelButton
           style={{ marginLeft: 30 }}
           onClick={() => cancelCallback()}
+          darkToggle={theme === 'dark'}
         >
           <CancelButtonText darkToggle={darkToggle}>Cancel</CancelButtonText>
         </CancelButton>
@@ -78,6 +81,7 @@ const TTitle = styled.text`
       color: white;
   `}
 `
+
 const CancelButton = styled.button`
   border: 0px;
   background: transparent;
@@ -85,6 +89,13 @@ const CancelButton = styled.button`
   align-items: center;
   height: '100%';
   cursor: pointer;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    color: white;
+      background-color: #9a71da;
+      border: 1px solid #9a71da;
+  `}
 `
 const CancelButtonText = styled.text`
   font-weight: 500;

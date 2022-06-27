@@ -32,8 +32,6 @@ const axios = require("axios");
  *  - algoToGard [ 2 / 3 ] - correct values present, 3rd step is send to blockchain
  *  - gardToAlgo [ 2 / 3 ] - same as above
  * - connect to component [ √ ]
- *  - add helpers to component:
- *    - recalculateRatioAtInterval [ ]
  *    - limitUsrMaxInput [ ]
  * - smoke test testnet [ ]
  * - smoke test main [ ]
@@ -89,10 +87,10 @@ const queryObject = {
 
 // TODO: change to x & y
 
-export function estimateReturn(algo, totalAlgoInPool, totalGardInPool, fee) {
+export function estimateReturn(input, totalX, totalY, fee) {
   let receivedAmount =
-    ((algo * totalGardInPool) / (totalAlgoInPool + algo)) * (1 - fee); // compare this to what actual transaction returns?
-  return receivedAmount;
+    ((input * totalY) / (totalX + input)) * (1 - fee); // compare this to what actual transaction returns?
+  return parseFloat(receivedAmount.toFixed(3));
 }
 /**
  *
@@ -103,12 +101,26 @@ export function estimateReturn(algo, totalAlgoInPool, totalGardInPool, fee) {
  */
 export async function queryAndConvertTotals() {
   let result;
-  const algoInPool = await queryObject.getAlgoInPactAlgoGardPool();
-  const gardInPool = await queryObject.getGardInPactAlgoGardPool();
-  result = {
-    algo: algoInPool.amount,
-    gard: gardInPool["asset-holding"].amount,
-  };
+
+    // ALGO/GARD pool
+      const algoInPool = await queryObject.getAlgoInPactAlgoGardPool();
+      const gardInPool = await queryObject.getGardInPactAlgoGardPool();
+      const algoGardPool = {
+        algo: algoInPool.amount,
+        gard: gardInPool["asset-holding"].amount
+      }
+    // as pools are added, add queryObject calls to get those token totals and pass to corresponding result[asset/asset]
+      result = {
+        "ALGO/GARD": {
+          algo: algoGardPool.algo,
+          gard: algoGardPool.gard
+        },
+        "GARD/ALGO" : {
+          algo: algoGardPool.algo,
+          gard: algoGardPool.gard
+        } // same pool as fallback in case targetPool string is reversed
+        // as pools are added, add property to result object that matches the format of string returned from SwapContent's targetPool function, this will be used to dynamically key into each pool total
+      }
   return result;
 }
 
@@ -121,7 +133,7 @@ export async function queryAndConvertTotals() {
  */
 export async function swapAlgoToGard(amount, totals, minimum) {
   const infoPromise = accountInfo();
-  const paramsPromise = getParams(0);
+  const paramsPromise = getParams(1500);
   const info = await infoPromise;
   const params = await paramsPromise;
   console.log(amount, "is being sent")
@@ -132,7 +144,7 @@ export async function swapAlgoToGard(amount, totals, minimum) {
 
   // /**
   //  * create transaction logic:
-  //  */
+
 
   let txn1 = algosdk.makePaymentTxnWithSuggestedParams({
     from: info.address,
@@ -141,18 +153,20 @@ export async function swapAlgoToGard(amount, totals, minimum) {
     params: params,
   });
 
-  let txn2 = algosdk.makeApplicationNoOpTxn(
-    info.address,
-    params,
-    pactAlgoGardPoolAddress,
-    ["SWAP", minimum],
-    f_a,
-  );
+  let txn2 = algosdk.makeApplicationNoOpTxn({
+    from: info.address,
+    to: pactAlgoGardPoolAddress,
+    appArgs: ["SWAP", minimum],
+    foreignAssets: f_a,
+    suggestedParams: params
+  });
 
-  //
+  // //
   let txns = [txn1, txn2];
+  console.log("transactions sent from SwapContent", txns)
   let gid = algosdk.assignGroupID(txns);
   let sn_txns = await signGroup(info, txns);
+  console.log(`groupID: ${gid}, signedTxns: `, sn_txns)
   let txnResult = await sendTxn(
     sn_txns,
     `swapped ${amount} Algo to Gard successfully!`,
