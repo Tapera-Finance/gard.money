@@ -649,7 +649,6 @@ function Section({ title, transactionCallback }) {
                         })
                       }
                     }}
-                    darkToggle={theme === 'dark'}
                   />
                 </div>
               </div>
@@ -723,9 +722,11 @@ function Section({ title, transactionCallback }) {
                   {/* convert second field inputs to field 1 vals*/}
                   <Input
                     type="number"
+                    min={0}
                     value={transaction.receiving.amount}
                     darkToggle={theme === 'dark'}
                     onChange={(e) => {
+                      e.target.value.replace(/\D+/g, '');
                       handleExchange(
                         'offering-amount',
                         parseFloat(e.target.value),
