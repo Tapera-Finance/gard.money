@@ -26,8 +26,6 @@ import { useDispatch } from 'react-redux';
 import { VERSION } from '../globals';
 
 const defaultPool = 'ALGO/GARD';
-const maxA = 100;
-const maxB = 20;
 
 const mAlgosToAlgos = (num) => {
   return num / 1000000;
@@ -37,41 +35,30 @@ const mGardToGard = (num) => {
   return num / 1000000;
 };
 
-
 const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
   return parseFloat(assetX / assetY).toFixed(4);
 };
 
-const targetPool = (assetNameX, assetNameY) => `${assetNameX}/${assetNameY}`
+const targetPool = (assetNameX, assetNameY) => `${assetNameX}/${assetNameY}`;
 
 const getTotals = async () => await queryAndConvertTotals();
 
 function calcTransResult(amount, totalX, totalY, transaction) {
-    if (transaction) {
-      if (
-        transaction.offering.from === 'ALGO' &&
-        transaction.receiving.to === 'GARD'
-      ) {
-        if (amount > 0) {
-          return estimateReturn(
-            parseFloat(amount),
-            totalX,
-            totalY,
-            0.003,
-          );
-        }
-      } else if (
-        transaction.offering.from === 'GARD' &&
-        transaction.receiving.to === 'ALGO'
-      ) {
-        if (amount > 0) {
-          return estimateReturn(
-            parseFloat(amount),
-            totalY,
-            totalX,
-            0.003,
-          );
-        }
+  if (transaction) {
+    if (
+      transaction.offering.from === 'ALGO' &&
+      transaction.receiving.to === 'GARD'
+    ) {
+      if (amount > 0) {
+        return estimateReturn(parseFloat(amount), totalX, totalY, 0.003);
+      }
+    } else if (
+      transaction.offering.from === 'GARD' &&
+      transaction.receiving.to === 'ALGO'
+    ) {
+      if (amount > 0) {
+        return estimateReturn(parseFloat(amount), totalY, totalX, 0.003);
+      }
     }
   }
 }
@@ -79,10 +66,10 @@ function calcTransResult(amount, totalX, totalY, transaction) {
 const toVal = (v) => parseFloat(v);
 
 const verifyValue = (input) => {
- if ((typeof parseFloat(input) !== 'NaN') && (parseFloat(input) > 0)) {
-    return parseFloat(input)
-  } else return false
-}
+  if (typeof parseFloat(input) !== 'NaN' && parseFloat(input) > 0) {
+    return parseFloat(input);
+  } else return false;
+};
 /**
  * Content for Swap option in drawer
  */
@@ -91,11 +78,10 @@ export default function SwapContent() {
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [totals, setTotals] = useState(null);
-  const [target, setTarget] = useState('')
+  const [target, setTarget] = useState('');
   const [transaction, setTransaction] = useState([]);
   const dispatch = useDispatch();
   const { theme } = useContext(ThemeContext);
-
 
   useEffect(async () => {
     const res = await getTotals();
@@ -111,7 +97,7 @@ export default function SwapContent() {
     } else {
       setTarget(defaultPool);
     }
-  },[])
+  }, []);
 
   return (
     <div>
@@ -123,7 +109,7 @@ export default function SwapContent() {
               title={value.title}
               darkToggle={theme === 'dark'}
               transactionCallback={(transaction) => {
-                let keys = target.split("/");
+                let keys = target.split('/');
                 setModalCanAnimate(true);
                 setTransaction([
                   {
@@ -133,12 +119,16 @@ export default function SwapContent() {
                   },
                   {
                     title: 'You are receiving a minimum of ',
-                    value:`${totals ? calcTransResult(
-                      transaction.offering.amount,
-                      totals[target][keys[0].toLowerCase()],
-                      totals[target][keys[1].toLowerCase()],
-                      transaction,
-                    ): transaction.converted.amount} ${'$' + transaction.receiving.to}`,
+                    value: `${
+                      totals
+                        ? calcTransResult(
+                            transaction.offering.amount,
+                            totals[target][keys[0].toLowerCase()],
+                            totals[target][keys[1].toLowerCase()],
+                            transaction,
+                          )
+                        : transaction.converted.amount
+                    } ${'$' + transaction.receiving.to}`,
                     token: `${transaction.receiving.to}`,
                   },
                   {
@@ -168,25 +158,32 @@ export default function SwapContent() {
                 setLoading(true);
                 try {
                   const amount = parseFloat(transaction[0].value);
-                  const formattedAmount = parseInt(1e6*amount);
+                  const formattedAmount = parseInt(1e6 * amount);
 
                   if (VERSION !== 'MAINNET') {
                     throw new Error('Unable to swap on TESTNET');
                   }
                   let res;
-                  if (transaction[0].token == "ALGO" && transaction[1].token == "GARD")
-                  {
+                  if (
+                    transaction[0].token == 'ALGO' &&
+                    transaction[1].token == 'GARD'
+                  ) {
                     res = await swapAlgoToGard(
-                    formattedAmount,
-                    parseInt(1e6*parseFloat((transaction[1].value).split()[0])),
+                      formattedAmount,
+                      parseInt(
+                        1e6 * parseFloat(transaction[1].value.split()[0]),
+                      ),
                     );
-                  }
-                  else if (transaction[0].token == "GARD" && transaction[1].token == "ALGO")
-                  {
+                  } else if (
+                    transaction[0].token == 'GARD' &&
+                    transaction[1].token == 'ALGO'
+                  ) {
                     res = await swapGardToAlgo(
                       formattedAmount,
-                      parseInt(1e6*parseFloat((transaction[1].value).split()[0])),
-                    )
+                      parseInt(
+                        1e6 * parseFloat(transaction[1].value.split()[0]),
+                      ),
+                    );
                   }
                   if (res.alert) {
                     dispatch(setAlert(res.text));
@@ -211,111 +208,123 @@ function toggleSelect(val, other, type1, type2, assets, reducer) {
     reducer({
       type: type1,
       value: assets[0],
-    })
+    });
 
     reducer({
       type: type2,
-      value: assets[1]
-    })
-    return
+      value: assets[1],
+    });
+    return;
   }
   if (val === assets[1] && other === assets[0]) {
-      reducer({
-        type: type1,
-        value: assets[1],
-     })
-      reducer({
-        type: type2,
-        value: assets[0]
-      })
-      return
-    }
+    reducer({
+      type: type1,
+      value: assets[1],
+    });
+    reducer({
+      type: type2,
+      value: assets[0],
+    });
+    return;
+  }
   if (val === assets[0] && other === assets[0]) {
     reducer({
       type: type1,
-      value: assets[0]
-    })
+      value: assets[0],
+    });
     reducer({
       type: type2,
-      value: assets[1]
-    })
-    return
+      value: assets[1],
+    });
+    return;
   }
   if (val === assets[1] && other === assets[1]) {
     reducer({
       type: type1,
-      value: assets[1]
-    })
+      value: assets[1],
+    });
     reducer({
       type: type2,
-      value: assets[0]
-    })
+      value: assets[0],
+    });
   }
 }
 
-
-function handleExchange(type, amount, assets, transform, params, transaction, reducer) {  if (type === "offering-amount") { // field 1 handling from field 2 input
-   if (transaction) {
-    if (
-      transaction.offering.from === assets[0] &&
-      transaction.receiving.to === assets[1]
-    ) {
-      if (typeof amount === 'number') {
-        reducer({
-          type: 'receiving-amount',
-          value: transform(amount, params[0], params[1], transaction),
-        });
-        return;
+function handleExchange(
+  type,
+  amount,
+  assets,
+  transform,
+  params,
+  transaction,
+  reducer,
+) {
+  if (type === 'offering-amount') {
+    // field 1 handling from field 2 input
+    if (transaction) {
+      if (
+        transaction.offering.from === assets[0] &&
+        transaction.receiving.to === assets[1]
+      ) {
+        if (typeof amount === 'number') {
+          reducer({
+            type: 'receiving-amount',
+            value: transform(amount, params[0], params[1], transaction),
+          });
+          return;
+        }
+      } else if (
+        transaction.offering.from === assets[1] &&
+        transaction.receiving.to === assets[0]
+      ) {
+        if (typeof amount === 'number') {
+          reducer({
+            type: 'receiving-amount',
+            value: transform(amount, params[1], params[0], transaction),
+          });
+          return;
+        }
       }
-    } else if (
-      transaction.offering.from === assets[1] &&
-      transaction.receiving.to === assets[0]
-    ) {
-      if (typeof amount === 'number') {
-        reducer({
-          type: 'receiving-amount',
-          value: transform(amount, params[1], params[0], transaction),
-        });
-        return;
+    }
+  } else if (transaction) {
+    if (type === 'receiving-amount') {
+      // field 2 handling from field 1 input
+      if (transaction) {
+        if (
+          transaction.offering.from === assets[1] &&
+          transaction.receiving.to === assets[0]
+        ) {
+          if (typeof amount === 'number') {
+            reducer({
+              type: 'offering-amount',
+              value: amount,
+            });
+            reducer({
+              type: 'receiving-amount',
+              value: transform(amount, params[1], params[0], transaction),
+            });
+            return;
+          }
+        } else if (
+          transaction.offering.from === assets[0] &&
+          transaction.receiving.to === assets[1]
+        ) {
+          if (typeof amount === 'number') {
+            reducer({
+              type: 'offering-amount',
+              value: parseFloat(amount),
+            });
+            reducer({
+              type: 'receiving-amount',
+              value: transform(amount, params[0], params[1], transaction),
+            });
+            return;
+          }
+        }
       }
     }
   }
-
-  } else if (transaction) {
-    if (type === "receiving-amount") { // field 2 handling from field 1 input
-     if (transaction) {
-       if (transaction.offering.from === assets[1] && transaction.receiving.to === assets[0]) {
-          if (typeof amount === 'number') {
-            reducer({
-              type: "offering-amount",
-              value: amount,
-            })
-            reducer({
-              type: "receiving-amount",
-              value:  transform(amount, params[0], params[1], transaction)
-            })
-            return
-          }
-       } else if (transaction.offering.from === assets[0] && transaction.receiving.to === assets[1]) {
-        if (typeof amount === 'number') {
-
-          reducer({
-            type: "offering-amount",
-            value: parseFloat(amount),
-          })
-          reducer({
-            type: "receiving-amount",
-            value:  transform(amount, params[0], params[1], transaction)
-          })
-          return
-        }
-       }
-       }
-  }
-  }
 }
-
-
 
 /**
  * The expandable section in swap content
@@ -325,17 +334,17 @@ function handleExchange(type, amount, assets, transform, params, transaction, re
 function Section({ title, transactionCallback }) {
   const [expanded, setExpanded] = useState(false);
   const [totals, setTotals] = useState(null);
-  const [algoToGardRatio, setAlgoToGardRatio] = useState("Loading...");
+  const [algoToGardRatio, setAlgoToGardRatio] = useState('Loading...');
   const [receivedValue, setReceivedValue] = useState(null);
   const { theme } = useContext(ThemeContext);
-  const assetsA2G = ["ALGO", "GARD"];
+  const assetsA2G = ['ALGO', 'GARD'];
   // get and set all available pool total exchange ratios, only need algoGardRatio at first
   useEffect(async () => {
     const resultsOfQuery = await queryAndConvertTotals();
     setTotals(resultsOfQuery);
     let algoGardRatio = exchangeRatioAssetXtoAssetY(
-      mAlgosToAlgos(resultsOfQuery["ALGO/GARD" || "GARD/ALGO"].algo),
-      mGardToGard(resultsOfQuery["ALGO/GARD"|| "GARD/ALGO"].gard),
+      mAlgosToAlgos(resultsOfQuery['ALGO/GARD' || 'GARD/ALGO'].algo),
+      mGardToGard(resultsOfQuery['ALGO/GARD' || 'GARD/ALGO'].gard),
     );
     if (algoGardRatio) {
       setAlgoToGardRatio(algoGardRatio);
@@ -348,37 +357,37 @@ function Section({ title, transactionCallback }) {
   useEffect(async () => {
     const res = await getTotals();
     if (res) {
-      setTotals(res)
+      setTotals(res);
     }
     return () => {
-      console.log('unmounting getTotals effect', totals)
-    }
-  }, [])
+      console.log('unmounting getTotals effect', totals);
+    };
+  }, []);
 
   const handleSwapButton = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const swappedObj = {
       offering: {
         from: transaction.receiving.to,
-        amount: transaction.receiving.amount
+        amount: transaction.receiving.amount,
       },
       receiving: {
         to: transaction.offering.from,
-        amount: transaction.offering.amount
-      }
-    }
+        amount: transaction.offering.amount,
+      },
+    };
     reduceTransaction({
       type: 'flip',
-      value: swappedObj
-    })
-  }
+      value: swappedObj,
+    });
+  };
 
   const [transaction, reduceTransaction] = useReducer(
     (state, action) => {
       switch (action.type) {
         case 'offering-amount':
-          console.log("state from reducer", state)
-          console.log("action from reducer", action);
+          console.log('state from reducer', state);
+          console.log('action from reducer', action);
           return {
             ...state,
             offering: {
@@ -387,7 +396,7 @@ function Section({ title, transactionCallback }) {
             },
           };
         case 'offering-from':
-          console.log(state, action)
+          console.log(state, action);
           return {
             ...state,
             offering: {
@@ -396,18 +405,18 @@ function Section({ title, transactionCallback }) {
             },
           };
         case 'receiving-amount':
-          console.log("state from reducer", state)
-          console.log("action from reducer", action);
+          console.log('state from reducer', state);
+          console.log('action from reducer', action);
           return {
             ...state,
             receiving: {
               ...state.receiving,
-              amount: action.value
+              amount: action.value,
             },
           };
 
         case 'receiving-to':
-          console.log(state, action)
+          console.log(state, action);
           return {
             ...state,
             receiving: {
@@ -420,23 +429,23 @@ function Section({ title, transactionCallback }) {
             ...state,
             offering: {
               ...state.offering,
-              amount: ''
+              amount: '',
             },
             receiving: {
               ...state.receiving,
-              amount: ''
-            }
-          }
+              amount: '',
+            },
+          };
         case 'flip':
           return {
             ...state,
             ...action.value,
-          }
+          };
         default:
-            return {
-              ...state,
-              defaultPool: defaultPool
-            }
+          return {
+            ...state,
+            defaultPool: defaultPool,
+          };
       }
     },
     {
@@ -454,13 +463,17 @@ function Section({ title, transactionCallback }) {
   useEffect(() => {
     if (transaction) {
       if (totals) {
-        const {offering, converted, receiving } = transaction
+        const { offering, converted, receiving } = transaction;
         let res = calcTransResult(
           offering.amount,
-          totals[targetPool(offering.from, receiving.to)][offering.from.toLowerCase()],
-          totals[targetPool(offering.from, receiving.to)][receiving.to.toLowerCase()],
-          transaction
-          );
+          totals[targetPool(offering.from, receiving.to)][
+            offering.from.toLowerCase()
+          ],
+          totals[targetPool(offering.from, receiving.to)][
+            receiving.to.toLowerCase()
+          ],
+          transaction,
+        );
         setReceivedValue(res);
       }
     }
@@ -518,7 +531,7 @@ function Section({ title, transactionCallback }) {
               <div>
                 <RelationsValue>
                   {' '}
-                  {algoToGardRatio !== null ? algoToGardRatio : "Loading..."}
+                  {algoToGardRatio !== null ? algoToGardRatio : 'Loading...'}
                 </RelationsValue>
               </div>
             </RelationsSpecificsContainer>
@@ -563,18 +576,19 @@ function Section({ title, transactionCallback }) {
                       toggleSelect(
                         e.target.value,
                         transaction.offering.from,
-                        "offering-from",
-                        "receiving-to",
+                        'offering-from',
+                        'receiving-to',
                         assetsA2G,
-                        reduceTransaction);
-                        reduceTransaction({
-                            type: 'offering-amount',
-                            value: transaction.receiving.amount
-                          });
-                        reduceTransaction({
-                          type: 'receiving-amount',
-                          value: transaction.offering.amount
-                        });
+                        reduceTransaction,
+                      );
+                      reduceTransaction({
+                        type: 'offering-amount',
+                        value: transaction.receiving.amount,
+                      });
+                      reduceTransaction({
+                        type: 'receiving-amount',
+                        value: transaction.offering.amount,
+                      });
                     }}
                     darkToggle={theme === 'dark'}
                   >
@@ -584,7 +598,9 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div>
                   <InputTitle>
-                  {transaction.offering.from == "ALGO" ? 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount): 'Balance: ' + mAlgosToAlgos(getGARDInWallet())}
+                    {transaction.offering.from == 'ALGO'
+                      ? 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount)
+                      : 'Balance: ' + mAlgosToAlgos(getGARDInWallet())}
                   </InputTitle>
                 </div>
               </div>
@@ -596,38 +612,42 @@ function Section({ title, transactionCallback }) {
                   {/* convert 1st field inputs to field 2 vals*/}
                   <Input
                     type="number"
-                    pattern="[a-zA-Z0-9_]"
+                    min={0}
                     value={transaction.offering.amount}
                     onChange={(e) => {
-                        if (e.target.value !== '' && typeof parseFloat(e.target.value) === 'number') {
-                          handleExchange(
-                         "receiving-amount",
+                      e.target.value.replace(/\D+/g, '');
+                      if (e.target.value !== '') {
+
+                        handleExchange(
+                          'receiving-amount',
                           parseFloat(e.target.value),
                           assetsA2G,
                           calcTransResult,
                           [
-                          totals[
-                            targetPool(
-                              transaction.offering.from,
-                              transaction.receiving.to,
-                            )][transaction.offering.from.toLowerCase()],
+                            totals[
+                              targetPool(
+                                transaction.offering.from,
+                                transaction.receiving.to,
+                              )
+                            ][transaction.offering.from.toLowerCase()],
 
-                          totals[
-                            targetPool(
-                              transaction.offering.from,
-                              transaction.receiving.to,
-                            )][transaction.receiving.to.toLowerCase()],
+                            totals[
+                              targetPool(
+                                transaction.offering.from,
+                                transaction.receiving.to,
+                              )
+                            ][transaction.receiving.to.toLowerCase()],
                           ],
-                        transaction,
-                          reduceTransaction
-                        )
-                        } else {
-                          reduceTransaction({
-                            type: 'clear',
-                          })
-                        }
+                          transaction,
+                          reduceTransaction,
+                        );
                       }
-                    }
+                       else {
+                        reduceTransaction({
+                          type: 'clear',
+                        })
+                      }
+                    }}
                     darkToggle={theme === 'dark'}
                   />
                 </div>
@@ -641,7 +661,9 @@ function Section({ title, transactionCallback }) {
                 justifyContent: 'center',
               }}
             >
-              <Image onClick={handleSwapButton} src={swapIcon} />
+              <ImgText>
+                <Image onClick={handleSwapButton} src={swapIcon} />
+              </ImgText>
             </div>
             <div
               style={{
@@ -662,17 +684,18 @@ function Section({ title, transactionCallback }) {
                       toggleSelect(
                         e.target.value,
                         transaction.offering.from,
-                        "receiving-to",
-                        "offering-from",
+                        'receiving-to',
+                        'offering-from',
                         assetsA2G,
-                        reduceTransaction)
+                        reduceTransaction,
+                      );
                       reduceTransaction({
                         type: 'offering-amount',
-                        value: transaction.receiving.amount
+                        value: transaction.receiving.amount,
                       });
                       reduceTransaction({
                         type: 'receiving-amount',
-                        value: transaction.offering.amount
+                        value: transaction.offering.amount,
                       });
                     }}
                     darkToggle={theme === 'dark'}
@@ -685,7 +708,9 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div>
                   <InputTitle>
-                  {transaction.receiving.to == "ALGO" ? 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount) : 'Balance: ' + mAlgosToAlgos(getGARDInWallet())}
+                    {transaction.receiving.to == 'ALGO'
+                      ? 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount)
+                      : 'Balance: ' + mAlgosToAlgos(getGARDInWallet())}
                   </InputTitle>
                 </div>
               </div>
@@ -699,28 +724,29 @@ function Section({ title, transactionCallback }) {
                     type="number"
                     value={transaction.receiving.amount}
                     onChange={(e) => {
-                        handleExchange(
-                        "offering-amount",
-                         parseFloat(e.target.value),
-                          assetsA2G,
-                          estimateReturn,
-                          [
-                            totals[
-                              targetPool(
-                                transaction.offering.from,
-                                transaction.receiving.to,
-                              )][transaction.receiving.to.toLowerCase()],
-                            totals[
-                              targetPool(
-                                transaction.offering.from,
-                                transaction.receiving.to,
-                              )][transaction.offering.from.toLowerCase()],
-                          ],
-                            transaction,
-                          reduceTransaction
-                        )
-                      }
-                  }
+                      handleExchange(
+                        'offering-amount',
+                        parseFloat(e.target.value),
+                        assetsA2G,
+                        estimateReturn,
+                        [
+                          totals[
+                            targetPool(
+                              transaction.offering.from,
+                              transaction.receiving.to,
+                            )
+                          ][transaction.receiving.to.toLowerCase()],
+                          totals[
+                            targetPool(
+                              transaction.offering.from,
+                              transaction.receiving.to,
+                            )
+                          ][transaction.offering.from.toLowerCase()],
+                        ],
+                        transaction,
+                        reduceTransaction,
+                      );
+                    }}
                     darkToggle={theme === 'dark'}
                   />
                 </div>
@@ -869,36 +895,93 @@ const Input = styled.input`
   border-radius: 4px;
   width: 11.5972222222222vw;
   padding: 0px 0px 0px 12px;
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
   ${(props) =>
     props.darkToggle &&
     css`
       background: #525252;
     `}
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
 `;
 
 const Image = styled.img`
-  border-radius: 20%;
-  padding: 8px;
- &:hover {
-      transform: scale(1.2);
-      background-color:#292929;
-      border-radius: 20%;
-      padding: 12px;
-      color: white;
-    }
+  background-color: #6941c6;
+  border: 1px solid #ffffff;
+  padding: 8px 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 6px;
+  &:hover {
+    background-color: #381d77;
+  }
   ${(props) =>
     props.darkToggle &&
     css`
-      /* filter: invert(); */
+      border: 1px solid #c299eb;
+      background-color: #c299eb;
+      &:hover {
+        background-color: #9a71da;
+        border: 1px solid #9a71da;
+      }
+    `}
+  ${(props) =>
+    props.variant &&
+    css`
+      background-color: transparent;
+      border: 1px solid #6941c6;
+      &:hover {
+        background-color: #6941c6;
+      }
+    `}
+  ${(props) =>
+    props.variant &&
+    props.darkToggle &&
+    css`
+      background-color: transparent;
+      border: 1px solid #c299eb;
+      &:hover {
+        background-color: #c299eb;
+      }
+    `}
+  ${(props) =>
+    props.disabled &&
+    css`
+      border: 1px solid #999999;
+      background-color: #cccccc;
+      pointer-events: none;
+    `}
+`;
+
+const ImgText = styled.text`
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 16px;
+  ${Image}:hover & {
+    color: #ffffff;
+  }
+  ${(props) =>
+    props.variant &&
+    css`
+      color: #6941c6;
+    `}
+  ${(props) =>
+    props.variant &&
+    props.darkToggle &&
+    css`
+      color: #c299eb;
+    `}
+  ${(props) =>
+    props.disabled &&
+    css`
+      color: #666666;
     `}
 `;
 
@@ -908,7 +991,7 @@ const Arrow = styled.img`
     css`
       filter: invert();
     `}
-`
+`;
 
 // Titles of each section
 const titles = [
@@ -926,7 +1009,7 @@ const titles = [
                 justifyContent: 'center',
               }}
             > */
-          /* <div>
+/* <div>
                 <RelationsTitle>Tether/GARD</RelationsTitle>
               </div>
             </RelationsSpecificsContainer>
@@ -942,7 +1025,7 @@ const titles = [
               </div>
             </RelationsSpecificsContainer>
           </div> */
-          /* <div style={{ flex: 1 }}>
+/* <div style={{ flex: 1 }}>
             <RelationsSpecificsContainer
               style={{
                 display: 'flex',
