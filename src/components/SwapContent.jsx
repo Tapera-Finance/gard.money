@@ -1,7 +1,7 @@
 import React, { useReducer, useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
 import chevron from '../assets/chevron_black.png';
-import swapIcon from '../assets/icons/swapExpanded_icon.png';
+import swapIcon from '../assets/icons/swap_icon_new.png';
 import Modal from './Modal';
 import PrimaryButton from './PrimaryButton';
 import TransactionSummary from './TransactionSummary';
@@ -614,6 +614,7 @@ function Section({ title, transactionCallback }) {
                     type="number"
                     min={0}
                     value={transaction.offering.amount}
+                    darkToggle={theme === 'dark'}
                     onChange={(e) => {
                       e.target.value.replace(/\D+/g, '');
                       if (e.target.value !== '') {
@@ -662,7 +663,7 @@ function Section({ title, transactionCallback }) {
               }}
             >
               <ImgText>
-                <Image onClick={handleSwapButton} src={swapIcon} />
+                <Image onClick={handleSwapButton} src={swapIcon} darkToggle={theme === 'dark'} />
               </ImgText>
             </div>
             <div
@@ -723,6 +724,7 @@ function Section({ title, transactionCallback }) {
                   <Input
                     type="number"
                     value={transaction.receiving.amount}
+                    darkToggle={theme === 'dark'}
                     onChange={(e) => {
                       handleExchange(
                         'offering-amount',
@@ -899,20 +901,20 @@ const Input = styled.input`
     props.darkToggle &&
     css`
       background: #525252;
+      color: white;
     `}
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
-    margin: 0;
-  }
-  input[type='number'] {
-    -moz-appearance: textfield;
-  }
-`;
+    input[type='number'] {
+      -moz-appearance: textfield;
+    }
+
+  }`
 
 const Image = styled.img`
-  background-color: #6941c6;
-  border: 1px solid #ffffff;
+  background-color: #ffffff;
+
   padding: 8px 18px;
   display: flex;
   justify-content: center;
@@ -920,7 +922,8 @@ const Image = styled.img`
   cursor: pointer;
   border-radius: 6px;
   &:hover {
-    background-color: #381d77;
+    background-color: #6941c6;
+    border: 1px solid #ffffff;
   }
   ${(props) =>
     props.darkToggle &&
@@ -932,7 +935,7 @@ const Image = styled.img`
         border: 1px solid #9a71da;
       }
     `}
-  ${(props) =>
+  /* ${(props) =>
     props.variant &&
     css`
       background-color: transparent;
@@ -957,7 +960,7 @@ const Image = styled.img`
       border: 1px solid #999999;
       background-color: #cccccc;
       pointer-events: none;
-    `}
+    `} */
 `;
 
 const ImgText = styled.text`
