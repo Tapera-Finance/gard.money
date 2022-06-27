@@ -174,8 +174,7 @@ export default function SwapContent() {
                   }
                   const res = await swapAlgoToGard(
                     formattedAmount,
-                    totals,
-                    0.001,
+                    1,
                   );
                   if (res && res.alert()) {
                     dispatch(setAlert(res.text));
@@ -314,7 +313,7 @@ function handleExchange(type, amount, assets, transform, params, transaction, re
 function Section({ title, transactionCallback }) {
   const [expanded, setExpanded] = useState(false);
   const [totals, setTotals] = useState(null);
-  const [algoToGardRatio, setAlgoToGardRatio] = useState(1.1);
+  const [algoToGardRatio, setAlgoToGardRatio] = useState("Loading...");
   const [receivedValue, setReceivedValue] = useState(null);
   const { theme } = useContext(ThemeContext);
   const assetsA2G = ["ALGO", "GARD"];
@@ -472,7 +471,7 @@ function Section({ title, transactionCallback }) {
               <div>
                 <RelationsValue>
                   {' '}
-                  {algoToGardRatio !== null ? algoToGardRatio : 1.1}
+                  {algoToGardRatio !== null ? algoToGardRatio : "Loading..."}
                 </RelationsValue>
               </div>
             </RelationsSpecificsContainer>
@@ -538,7 +537,7 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div>
                   <InputTitle>
-                    {getWallet() == null ? 'N/A' : 'Balance: ' + 123.4}
+                    {getWallet() == null ? 'N/A' : 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount)}
                   </InputTitle>
                 </div>
               </div>
