@@ -169,7 +169,7 @@ export default function SwapContent() {
                 try {
                   const amount = parseFloat(transaction[0].value);
                   const formattedAmount = parseInt(1e6*amount);
-                  
+
                   if (VERSION !== 'MAINNET') {
                     throw new Error('Unable to swap on TESTNET');
                   }
@@ -595,6 +595,8 @@ function Section({ title, transactionCallback }) {
                 <div>
                   {/* convert 1st field inputs to field 2 vals*/}
                   <Input
+                    type="number"
+                    pattern="[a-zA-Z0-9_]"
                     value={transaction.offering.amount}
                     onChange={(e) => {
                         if (e.target.value !== '' && typeof parseFloat(e.target.value) === 'number') {
@@ -694,6 +696,7 @@ function Section({ title, transactionCallback }) {
                 <div>
                   {/* convert second field inputs to field 1 vals*/}
                   <Input
+                    type="number"
                     value={transaction.receiving.amount}
                     onChange={(e) => {
                         handleExchange(
@@ -866,6 +869,15 @@ const Input = styled.input`
   border-radius: 4px;
   width: 11.5972222222222vw;
   padding: 0px 0px 0px 12px;
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
   ${(props) =>
     props.darkToggle &&
     css`
@@ -874,10 +886,19 @@ const Input = styled.input`
 `;
 
 const Image = styled.img`
+  border-radius: 20%;
+  padding: 8px;
+ &:hover {
+      transform: scale(1.2);
+      background-color:#292929;
+      border-radius: 20%;
+      padding: 12px;
+      color: white;
+    }
   ${(props) =>
     props.darkToggle &&
     css`
-      filter: invert();
+      /* filter: invert(); */
     `}
 `;
 
