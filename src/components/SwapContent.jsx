@@ -173,7 +173,7 @@ export default function SwapContent() {
                     throw new Error('Unable to swap on TESTNET');
                   }
                   const res = await swapAlgoToGard(
-                    formattedAmount,
+                    parseInt(1000000 * formattedAmount),
                     1,
                   );
                   if (res && res.alert()) {

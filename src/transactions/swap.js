@@ -138,19 +138,20 @@ export async function swapAlgoToGard(amount, minimum) {
   const info = await infoPromise;
   const params = await paramsPromise;
   const f_a = [0, gardID];
+  const enc = new TextEncoder();
 
-  let txn1 = algosdk.makePaymentTxnWithSuggestedParams({
+  let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: pactAlgoGardPoolAddress,
     amount: amount,
-    params: params,
+    suggestedParams: params,
   });
 
   let txn2 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: pactGARDID,
     onComplete: 0,
-    appArgs: ["SWAP", minimum],
+    appArgs: [enc.encode("SWAP"), algosdk.encodeUint64(minimum)],
     foreignAssets: f_a,
     suggestedParams: params,
   });
