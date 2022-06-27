@@ -131,20 +131,13 @@ export async function queryAndConvertTotals() {
   *    @param {lockedInRate} {Float} - representing exchange rate from current pool at time of capture
   *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
-export async function swapAlgoToGard(amount, totals, minimum) {
+export async function swapAlgoToGard(amount, minimum) {
+  
   const infoPromise = accountInfo();
   const paramsPromise = getParams(1500);
   const info = await infoPromise;
   const params = await paramsPromise;
-  console.log(amount, "is being sent")
-  console.log(totals, "<- pool totals")
-  console.log(minimum, "minimum")
   const f_a = [0, gardID];
-  // // console.log("recipient from transactionFunc being called", recipient);
-
-  // /**
-  //  * create transaction logic:
-
 
   let txn1 = algosdk.makePaymentTxnWithSuggestedParams({
     from: info.address,
@@ -153,25 +146,25 @@ export async function swapAlgoToGard(amount, totals, minimum) {
     params: params,
   });
 
-  let txn2 = algosdk.makeApplicationNoOpTxn({
+  let txn2 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
-    to: pactAlgoGardPoolAddress,
+    appIndex: pactGARDID,
+    onComplete: 0,
     appArgs: ["SWAP", minimum],
     foreignAssets: f_a,
-    suggestedParams: params
+    suggestedParams: params,
   });
 
-  // //
   let txns = [txn1, txn2];
-  console.log("transactions sent from SwapContent", txns)
-  let gid = algosdk.assignGroupID(txns);
-  let sn_txns = await signGroup(info, txns);
-  console.log(`groupID: ${gid}, signedTxns: `, sn_txns)
-  let txnResult = await sendTxn(
-    sn_txns,
-    `swapped ${amount} Algo to Gard successfully!`,
-  );
-  return showMeTheDeets(txnResult);
+  algosdk.assignGroupID(txns);
+
+  const signedGroup = await signGroup(info, txns);
+
+  const stxns = [signedGroup[0].blob, signedGroup[1].blob];
+
+  const response = await sendTxn(stxns, "Successfully swapped " + amount + " tokens.",);
+
+  return showMeTheDeets(response);
 }
 
 /**
@@ -180,24 +173,38 @@ export async function swapAlgoToGard(amount, totals, minimum) {
  *    @param {lockedInRate} {Float} - representing exchange rate from current pool at time of capture
  *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
+ export async function swapGardToAlgo(amount, minimum) {
+  
+  const infoPromise = accountInfo();
+  const paramsPromise = getParams(1500);
+  const info = await infoPromise;
+  const params = await paramsPromise;
+  const f_a = [0, gardID];
 
-// removing soon //
+  let txn1 = algosdk.AssetTransferTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: pactAlgoGardPoolAddress,
+    amount: amount,
+    suggestedParams: params,
+    assetIndex: gardID,
+  });
+  let txn2 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: pactGARDID,
+    onComplete: 0,
+    appArgs: ["SWAP", minimum],
+    foreignAssets: f_a,
+    suggestedParams: params,
+  });
 
-// let id = openFeeID;
-// if (close) {
-//   id = closeFeeID;
-// }
-// const app = await getAppByID(id);
-// // const state = app["params"]["global-state"];
-// console.log("app: -> ", app);
-// const gardBalance = getGardBalance(info);
-// console.log(gardBalance);
+  let txns = [txn1, txn2];
+  algosdk.assignGroupID(txns);
 
-// console.log("state: ->", state);
+  const signedGroup = await signGroup(info, txns);
 
-// for (let n = 0; n < state.length; n++) {
-// let stateVal = _parseValFromAppState(state, n);
-// console.log(`state val at index ${n}`, stateVal);
-// }
-// let phrase = "";
-// let f_a = [0, 31566704];
+  const stxns = [signedGroup[0].blob, signedGroup[1].blob];
+
+  const response = await sendTxn(stxns, "Successfully swapped " + amount + " tokens.",);
+
+  return showMeTheDeets(response);
+}
