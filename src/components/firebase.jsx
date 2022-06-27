@@ -10,8 +10,6 @@ import {
   updateDoc,
   query,
   where,
-  deleteDoc,
-  FieldPath,
   doc
 } from "firebase/firestore";
 import { cdpGen } from "../transactions/contracts";
