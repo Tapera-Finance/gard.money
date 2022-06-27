@@ -305,6 +305,8 @@ function handleExchange(type, amount, assets, transform, params, transaction, re
   }
 }
 
+
+
 /**
  * The expandable section in swap content
  * @prop {string} title - Section title to be displayed on top
@@ -342,6 +344,24 @@ function Section({ title, transactionCallback }) {
       console.log('unmounting getTotals effect', totals)
     }
   }, [])
+
+  const handleSwapButton = (e) => {
+    e.preventDefault()
+    const swappedObj = {
+      offering: {
+        from: transaction.receiving.to,
+        amount: transaction.receiving.amount
+      },
+      receiving: {
+        to: transaction.offering.from,
+        amount: transaction.offering.amount
+      }
+    }
+    reduceTransaction({
+      type: 'flip',
+      value: swappedObj
+    })
+  }
 
   const [transaction, reduceTransaction] = useReducer(
     (state, action) => {
@@ -396,6 +416,11 @@ function Section({ title, transactionCallback }) {
               ...state.receiving,
               amount: ''
             }
+          }
+        case 'flip':
+          return {
+            ...state,
+            ...action.value,
           }
         default:
             return {
@@ -604,7 +629,7 @@ function Section({ title, transactionCallback }) {
                 justifyContent: 'center',
               }}
             >
-              <img src={swapIcon} />
+              <Image onClick={handleSwapButton} src={swapIcon} />
             </div>
             <div
               style={{
@@ -682,12 +707,7 @@ function Section({ title, transactionCallback }) {
                           reduceTransaction
                         )
                       }
-                    // }
                   }
-                    // placeholder={
-                    //   // `Max: ${maxB}`
-                    //   transaction.receiving.amount
-                    // }
                     darkToggle={theme === 'dark'}
                   />
                 </div>
