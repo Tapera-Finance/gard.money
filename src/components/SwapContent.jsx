@@ -6,13 +6,6 @@ import Modal from './Modal';
 import PrimaryButton from './PrimaryButton';
 import TransactionSummary from './TransactionSummary';
 import LoadingOverlay from './LoadingOverlay';
-import {
-  gainID,
-  gardID,
-  gardianID,
-  pactGARDID,
-  pactAlgoGardPoolAddress,
-} from '../transactions/ids';
 import { ThemeContext } from '../contexts/ThemeContext';
 import {
   swapAlgoToGard,
@@ -28,43 +21,61 @@ import {
   updateWalletInfo,
 } from '../wallets/wallets';
 import { useDispatch } from 'react-redux';
+import { VERSION } from '../globals';
+
+const defaultPool = 'ALGO/GARD';
 
 const mAlgosToAlgos = (num) => {
   return num / 1000000;
 };
-const algosToMAlgos = (num) => {
-  return num * 1000000;
-};
+
 const mGardToGard = (num) => {
   return num / 1000000;
 };
-const gardToMGard = (num) => {
-  return parseFloat(num * 1000000).toFixed(3);
-};
+
 
 const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
   return parseFloat(assetX / assetY).toFixed(4);
 };
 
+const targetPool = (assetNameX, assetNameY) => `${assetNameX}/${assetNameY}`
+
+const getTotals = async () => await queryAndConvertTotals();
+
 function calcTransResult(amount, totalX, totalY, transaction) {
-  if (transaction) {
-    if (
-      transaction.offering.from === 'ALGO' &&
-      transaction.receiving.to === 'GARD'
-    ) {
-      if (amount > 0) {
-        let receivedAmount = estimateReturn(
-          parseFloat(amount),
-          totalX,
-          totalY,
-          0.003,
-        );
-        return receivedAmount;
-      }
+    if (transaction) {
+      if (
+        transaction.offering.from === 'ALGO' &&
+        transaction.receiving.to === 'GARD'
+      ) {
+        if (amount > 0) {
+          return estimateReturn(
+            parseFloat(amount),
+            totalX,
+            totalY,
+            0.003,
+          );
+        }
+      } else if (
+        transaction.offering.from === 'GARD' &&
+        transaction.receiving.to === 'ALGO'
+      ) {
+        if (amount > 0) {
+          return estimateReturn(
+            parseFloat(amount),
+            totalY,
+            totalX,
+            0.003,
+          );
+        }
     }
-    // TODO: else if from === gard && to === algo, estimate return but flip X & Y
   }
 }
+
+const verifyValue = (input) =>
+  !input === null &&
+  typeof parseFloat(input) === 'number' &&
+  parseFloat(input) > 0;
 
 /**
  * Content for Swap option in drawer
@@ -74,17 +85,28 @@ export default function SwapContent() {
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [totals, setTotals] = useState(null);
+  const [target, setTarget] = useState('')
   const [transaction, setTransaction] = useState([]);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { theme } = useContext(ThemeContext);
 
+
   useEffect(async () => {
-    const totals = await queryAndConvertTotals();
-    setTotals(totals);
+    const res = await getTotals();
+    setTotals(res);
     return () => {
-      console.log('pool totals', totals);
+      console.log('unmounting pool totals', totals);
     };
   }, []);
+
+  useEffect(() => {
+    if (transaction && transaction.offering) {
+      setTarget(targetPool(transaction.offering.from, transaction.offering.to));
+    } else {
+      setTarget(defaultPool);
+    }
+  },[])
+
   return (
     <div>
       {loading ? <LoadingOverlay text={'Swapping assets...'} /> : <></>}
@@ -95,62 +117,75 @@ export default function SwapContent() {
               title={value.title}
               darkToggle={theme === 'dark'}
               transactionCallback={(transaction) => {
+                let keys = target.split("/");
                 setModalCanAnimate(true);
                 setTransaction([
                   {
                     title: 'You are offering',
-                    value: `${transaction.offering.amount} $${transaction.offering.from}`,
+                    value: `${transaction.offering.amount}$${transaction.offering.from}`,
                   },
                   {
                     title: 'You are receiving',
-                    value: `${transaction.receiving.amount} $${transaction.receiving.to}`,
+                    value:`${totals ? calcTransResult(
+                      transaction.offering.amount,
+                      totals[target][keys[0].toLowerCase()],
+                      totals[target][keys[1].toLowerCase()],
+                      transaction,
+                    ): transaction.converted.amount} ${'$' + transaction.receiving.to}`,
                   },
                   {
                     title: 'Fee',
-                    value: '$0.001',
+                    value: '$0.003',
                   },
                 ]);
                 setModalVisible(true);
               }}
-            />
+            ></Section>
           );
         })}
-        <Modal
-          title="Are you sure you want to proceed?"
-          subtitle="Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
-          visible={modalVisible}
-          animate={modalCanAnimate}
-          close={() => setModalVisible(false)}
-        >
-          <TransactionSummary
-            specifics={transaction}
-            transactionFunc={async () => {
-              setModalCanAnimate(true);
-              setModalVisible(false);
-              setLoading(true);
-              try {
-                const formattedAmount = parseFloat(transaction[0].value).toFixed(3)
-                // if (balance < transaction.offering.amount) {
-                //   dispatch(setAlert(`Not enough ${transaction.offering.type} in wallet`))
-                // }
-                console.log(transaction)
-                const res = await swapAlgoToGard(
-                  formattedAmount,
-                  totals,
-                  0.001,
-                );
-                if (res && res.alert()) {
-                  dispatch(setAlert(res.text));
+        <TransactionContainer darkToggle={theme === 'dark'}>
+          <Modal
+            title="Are you sure you want to proceed?"
+            subtitle="Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
+            visible={modalVisible}
+            animate={modalCanAnimate}
+            close={() => setModalVisible(false)}
+            darkToggle={theme === 'dark'}
+          >
+            <TransactionSummary
+              specifics={transaction}
+              transactionFunc={async () => {
+                setModalCanAnimate(true);
+                setModalVisible(false);
+                setLoading(true);
+                try {
+                  const amount = parseFloat(transaction[0].value).toFixed(3);
+                  const formattedAmount = parseFloat(amount).toFixed(3);
+                  // if (balance < transaction.offering.amount) {
+                  //   dispatch(setAlert(`Not enough ${transaction.offering.type} in wallet`))
+                  // }
+
+                  if (VERSION !== 'MAINNET') {
+                    throw new Error('Unable to swap on TESTNET');
+                  }
+                  const res = await swapAlgoToGard(
+                    formattedAmount,
+                    totals,
+                    0.001,
+                  );
+                  if (res && res.alert()) {
+                    dispatch(setAlert(res.text));
+                  }
+                } catch (e) {
+                  handleTxError(e, 'Error exchanging assets');
                 }
-              } catch (e) {
-                handleTxError(e, 'Error exchanging assets');
-              }
-              setModalCanAnimate(false);
-              setLoading(false);
-            }}
-            cancelCallback={() => setModalVisible(false)}
-          />
-        </Modal>
+                setModalCanAnimate(false);
+                setLoading(false);
+              }}
+              cancelCallback={() => setModalVisible(false)}
+            />
+          </Modal>
+        </TransactionContainer>
       </div>
     </div>
   );
@@ -165,50 +200,51 @@ function Section({ title, transactionCallback }) {
   const [expanded, setExpanded] = useState(false);
   const [totals, setTotals] = useState(null);
   const [algoToGardRatio, setAlgoToGardRatio] = useState(1.1);
-  const [receivedValue, setReceivedValue] = useState(0);
+  const [receivedValue, setReceivedValue] = useState(null);
   const { theme } = useContext(ThemeContext);
-
-  useEffect(() => {
-    let res = calcTransResult(transaction);
-    setReceivedValue(res);
-    console.log(transaction);
+  const assetsA2G = ["ALGO", "GARD"];
+  // get and set all available pool total exchange ratios, only need algoGardRatio at first
+  useEffect(async () => {
+    const resultsOfQuery = await queryAndConvertTotals();
+    setTotals(resultsOfQuery);
+    let algoGardRatio = exchangeRatioAssetXtoAssetY(
+      mAlgosToAlgos(resultsOfQuery["ALGO/GARD" || "GARD/ALGO"].algo),
+      mGardToGard(resultsOfQuery["ALGO/GARD"|| "GARD/ALGO"].gard),
+    );
+    if (algoGardRatio) {
+      setAlgoToGardRatio(algoGardRatio);
+    }
     return () => {
-      console.log('unmounting');
+      console.log('unmounting getRatio effect', algoGardRatio);
     };
   }, []);
 
   useEffect(async () => {
-    const resultsOfQuery = await queryAndConvertTotals();
-    setTotals(resultsOfQuery);
-    let ratio = exchangeRatioAssetXtoAssetY(
-      mAlgosToAlgos(resultsOfQuery.algo),
-      mGardToGard(resultsOfQuery.gard),
-    );
-    if (ratio) {
-      setAlgoToGardRatio(ratio);
+    const res = await getTotals();
+    if (res) {
+      setTotals(res)
     }
     return () => {
-      console.log(ratio);
-    };
-  }, []);
+      console.log('unmounting getTotals effect', totals)
+    }
+  }, [])
 
   const [transaction, reduceTransaction] = useReducer(
     (state, action) => {
       switch (action.type) {
         case 'offering-amount':
-          console.log('offering amount state -> ', state);
-          console.log('offering amount action -> ', action);
           return {
             ...state,
             offering: {
               ...state.offering,
               amount: action.value,
             },
+            converted: {
+              ...state.offering,
+              amount: action.converted ? action.converted : 0,
+            },
           };
         case 'offering-from':
-          console.log('offering from state -> ', state);
-          console.log('offering from action -> ', action);
-
           return {
             ...state,
             offering: {
@@ -217,19 +253,22 @@ function Section({ title, transactionCallback }) {
             },
           };
         case 'receiving-amount':
-          console.log('receiving amount state -> ', state);
-          console.log('receiving amount action -> ', action);
           return {
             ...state,
             receiving: {
               ...state.receiving,
-              amount: action.value,
+              amount: receivedValue
+                ? receivedValue
+                : calcTransResult(
+                    state.offering.amount,
+                    totals[targetPool(state.offering.from, state.receiving.to)][state.offering.from.toLowerCase()],
+                    totals[targetPool(state.offering.from, state.receiving.to ? state.receiving.to : "GARD")][state.receiving.to.toLowerCase()],
+                    state,
+                  ),
             },
           };
+
         case 'receiving-to':
-          console.log('receiving to state -> ', state);
-          console.log('receiving to action -> ', action);
-          calcTransResult(state);
           return {
             ...state,
             receiving: {
@@ -237,6 +276,11 @@ function Section({ title, transactionCallback }) {
               to: action.value,
             },
           };
+        default:
+            return {
+              ...state,
+              defaultPool: defaultPool
+            }
       }
     },
     {
@@ -244,12 +288,33 @@ function Section({ title, transactionCallback }) {
         amount: '',
         from: 'ALGO',
       },
+      converted: {
+        amount: ''
+      },
       receiving: {
         amount: '',
         to: 'GARD',
       },
     },
   );
+
+  useEffect(() => {
+    if (transaction) {
+      if (totals) {
+        const {offering, converted, receiving } = transaction
+        let res = calcTransResult(
+          offering.amount,
+          totals[targetPool(offering.from, receiving.to)][offering.from.toLowerCase()],
+          totals[targetPool(offering.from, receiving.to)][receiving.to.toLowerCase()],
+          transaction
+          );
+        setReceivedValue(res);
+      }
+    }
+    return () => {
+      console.log('unmounting get totals effect');
+    };
+  }, []);
 
   return (
     <div style={{ marginBottom: 10 }}>
@@ -305,54 +370,6 @@ function Section({ title, transactionCallback }) {
               </div>
             </RelationsSpecificsContainer>
           </div>
-          {/* <div style={{ flex: 1 }}>
-            <RelationsSpecificsContainer
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            > */}
-          {/* <div>
-                <RelationsTitle>Tether/GARD</RelationsTitle>
-              </div>
-            </RelationsSpecificsContainer>
-            <RelationsSpecificsContainer
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <div>
-                <RelationsValue>1.1</RelationsValue>
-              </div>
-            </RelationsSpecificsContainer>
-          </div> */}
-          {/* <div style={{ flex: 1 }}>
-            <RelationsSpecificsContainer
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <div>
-                <RelationsTitle>USDC/GARD</RelationsTitle>
-              </div>
-            </RelationsSpecificsContainer>
-            <RelationsSpecificsContainer
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <div>
-                <RelationsValue>1.1</RelationsValue>
-              </div>
-            </RelationsSpecificsContainer>
-          </div> */}
         </RelationsContainer>
       </SectionButton>
       {expanded ? (
@@ -386,26 +403,29 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    value={transaction.offering.from}
+                    id="from"
+                    value={
+                      transaction.offering.from
+                    }
                     onChange={(e) => {
                       reduceTransaction({
                         type: 'offering-from',
                         value: e.target.value,
+                      });
+                      reduceTransaction({
+                        type: 'receiving-to',
+                        value: assetsA2G[1],
                       });
                     }}
                     darkToggle={theme === 'dark'}
                   >
                     <option>ALGO</option>
                     <option>GARD</option>
-                    {/* <option>Tether</option>
-                    <option>USDC</option> */}
                   </Select>
                 </div>
                 <div>
-                  <InputTitle>{
-                  getWallet() == null
-                  ? 'N/A'
-                  : "Balance: " + 123.4}
+                  <InputTitle>
+                    {getWallet() == null ? 'N/A' : 'Balance: ' + 123.4}
                   </InputTitle>
                 </div>
               </div>
@@ -417,16 +437,31 @@ function Section({ title, transactionCallback }) {
                   <Input
                     value={transaction.offering.amount}
                     onChange={(e) => {
+                      if (transaction.offering.from === assetsA2G[0]) {
+
+                      }
                       let result = calcTransResult(
                         e.target.value,
-                        totals.algo,
-                        totals.gard,
+                        totals[
+                          targetPool(
+                            transaction.offering.from,
+                            transaction.receiving.to,
+                          )
+                        ][transaction.offering.from.toLowerCase()],
+                        totals[
+                          targetPool(
+                            transaction.offering.from,
+                            transaction.receiving.to,
+                          )
+                        ][transaction.receiving.to.toLowerCase()],
                         transaction,
                       );
                       setReceivedValue(result);
+                      console.log(receivedValue);
                       reduceTransaction({
                         type: 'offering-amount',
                         value: e.target.value,
+                        converted: receivedValue,
                       });
                     }}
                     placeholder={'Max 123.4'}
@@ -459,13 +494,18 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
+                    id="to"
                     value={transaction.receiving.to}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       reduceTransaction({
                         type: 'receiving-to',
                         value: e.target.value,
-                      })
-                    }
+                      });
+                      reduceTransaction({
+                        type: 'offering-from',
+                        value: assetsA2G[0],
+                      });
+                    }}
                     darkToggle={theme === 'dark'}
                   >
                     <option>GARD</option>
@@ -484,14 +524,56 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div>
                   <Input
-                    value={receivedValue}
+                    value={transaction.receiving.amount}
                     onChange={(e) => {
-                      // TODO: uncomment/refactor to make swap display both ways
-                      let result = calcTransResult(e.target.value, totals.algo, totals.gard ,transaction)
-                      reduceTransaction({
-                        type: 'receiving-amount',
-                        value: receivedValue,
-                      });
+                      if (transaction.receiving.to === assetsA2G[1]) {
+                        reduceTransaction({
+                          type: 'offering-from',
+                          value:
+                            // receivedValue && receivedValue > 0
+                            //   ? receivedValue
+                            //   :
+                              calcTransResult(
+                                  e.target.value,
+                                  totals[
+                                    targetPool(
+                                      transaction.offering.from,
+                                      transaction.receiving.to,
+                                    )
+                                  ][transaction.receiving.to.toLowerCase()],
+                                  totals[
+                                    targetPool(
+                                      transaction.offering.from,
+                                      transaction.receiving.to,
+                                    )
+                                  ][transaction.offering.from.toLowerCase()],
+                                  transaction,
+                                ),
+                        });
+                      }
+                      // reduceTransaction({
+                      //   type: 'receiving-amount',
+                      //   value:
+                      //     // receivedValue && receivedValue > 0
+                      //     //   ? receivedValue
+                      //     //   :
+                      //       calcTransResult(
+                      //           e.target.value,
+                      //           totals[
+                      //             targetPool(
+                      //               transaction.offering.from,
+                      //               transaction.receiving.to,
+                      //             )
+                      //           ][transaction.offering.from.toLowerCase()],
+                      //           totals[
+                      //             targetPool(
+                      //               transaction.offering.from,
+                      //               transaction.receiving.to,
+                      //             )
+                      //           ][transaction.receiving.to.toLowerCase()],
+                      //           transaction,
+                      //         ),
+                      // });
                     }}
                     placeholder={receivedValue}
                     darkToggle={theme === 'dark'}
@@ -540,6 +622,15 @@ const TitleContainer = styled.div`
     `}
 `;
 
+const TransactionContainer = styled.div`
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #484848;
+      color: white;
+    `}
+`;
+
 const SectionButton = styled.div`
   height: 96px;
   cursor: pointer;
@@ -551,6 +642,12 @@ const RelationsContainer = styled.div`
   flex: 3;
   display: flex;
   flex-direction: row;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #484848;
+      color: white;
+    `}
 `;
 const TitleText = styled.text`
   font-weight: 500;
@@ -570,6 +667,17 @@ const RelationsSpecificsContainer = styled.div`
 const RelationsTitle = styled.text`
   font-weight: bold;
   font-size: 14px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #484848;
+      color: white;
+      border-radius: 25px;
+      border: 2px solid #c299eb;
+      padding: 20px;
+      width: 200px;
+      height: 150px;
+    `}
 `;
 const RelationsValue = styled.text`
   font-weight: 500;
@@ -636,10 +744,55 @@ const titles = [
   {
     title: 'Pact',
   },
-  // {
-  //   title: 'Tinyman',
-  // },
-  // {
-  //   title: 'HumbleSwap',
-  // },
 ];
+
+/**
+ * /* <div style={{ flex: 1 }}>
+            <RelationsSpecificsContainer
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            > */
+          /* <div>
+                <RelationsTitle>Tether/GARD</RelationsTitle>
+              </div>
+            </RelationsSpecificsContainer>
+            <RelationsSpecificsContainer
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div>
+                <RelationsValue>1.1</RelationsValue>
+              </div>
+            </RelationsSpecificsContainer>
+          </div> */
+          /* <div style={{ flex: 1 }}>
+            <RelationsSpecificsContainer
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div>
+                <RelationsTitle>USDC/GARD</RelationsTitle>
+              </div>
+            </RelationsSpecificsContainer>
+            <RelationsSpecificsContainer
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div>
+                <RelationsValue>1.1</RelationsValue>
+              </div>
+            </RelationsSpecificsContainer>
+          </div>
+ */
