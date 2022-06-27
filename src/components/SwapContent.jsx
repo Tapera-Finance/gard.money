@@ -483,7 +483,7 @@ function Section({ title, transactionCallback }) {
           darkToggle={theme === 'dark'}
         >
           <div style={{ marginRight: 8 }}>
-            <Image
+            <Arrow
               src={chevron}
               style={
                 expanded ? { transform: 'rotate(90deg)', background: '' } : {}
@@ -901,6 +901,14 @@ const Image = styled.img`
       /* filter: invert(); */
     `}
 `;
+
+const Arrow = styled.img`
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      filter: invert();
+    `}
+`
 
 // Titles of each section
 const titles = [
