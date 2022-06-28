@@ -13,6 +13,7 @@ export default function TransactionSummary({
   children,
   cancelCallback,
   darkToggle,
+  commit,
 }) {
   return (
     <div style={{}}>
@@ -42,6 +43,22 @@ export default function TransactionSummary({
             </div>
           )
         })}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: window.innerWidth < 900 ? 'column' : 'row',
+            marginTop: 20,
+            marginBottom: 20,
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <SpecificsTitle>Collateral Balance Commited</SpecificsTitle>
+          </div>
+          <div>
+            <SpecificsValue>{commit === false ? 'No' : 'Yes'}</SpecificsValue>
+          </div>
+        </div>
       </SpecificsContainer>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <PrimaryButton

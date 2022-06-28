@@ -116,6 +116,12 @@ export default function MintContent() {
     setMaxCollateral(((getWalletInfo()['amount'] -  calcDevFees(algosToMAlgos(mGARD || 1)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3))
   }, [])
   
+  const [checked, setChecked] = useState(false);
+
+  const handleCheckboxChange = () => {
+    setChecked(!checked);
+  };
+
   const handleSliderChange1 = (event, newValue) => {
     setCollateral(newValue);
     let max = Math.trunc(100*(algosToMAlgos(price) * algosToMAlgos(newValue) / 1000000) / 1.4  / 1000000)/100
@@ -364,6 +370,25 @@ export default function MintContent() {
                     click “Confirm Transaction” to proceed."
         darkToggle={theme === 'dark'}
       >
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ marginBottom: 4 }}>
+            <InputTitle>Optional: Commit full balance to governance?</InputTitle>
+          </div>
+          <div>
+            <label style={{
+            display: 'flex',
+            alignContent: 'center',
+            }}>
+              <input 
+              type={"checkbox"}
+              checked={checked}
+              onChange={handleCheckboxChange} 
+              />
+                <InputSubtitle> <span style={{ fontWeight: 'bold' }}>{checked === false ? 0 : cAlgos} </span> Algos will be committed</InputSubtitle>
+            </label>
+          </div>
+        </div>
+        
         <TransactionSummary
           specifics={dummyTrans()}
           transactionFunc={async () => {
@@ -386,6 +411,7 @@ export default function MintContent() {
           }}
           cancelCallback={() => setModalVisible(false)}
           darkToggle={theme === 'dark'}
+          commit={checked}
         />
       </Modal>
     </div>
@@ -395,6 +421,15 @@ export default function MintContent() {
 // TODO: parameterize openCDP
 
 // styled components
+const InputTitle = styled.text`
+  font-weight: bold;
+  font-size: 16px;
+`
+const InputSubtitle = styled.text`
+  font-weight: normal;
+  font-size: 12px;
+  margin: 3px 3px 3px 4px
+`
 const InputNameContainer = styled.div`
   height: 132.31px;
   width: ${window.innerWidth < 900 ? '80vw' : '31vw'};
