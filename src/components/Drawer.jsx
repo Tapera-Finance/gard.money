@@ -149,8 +149,9 @@ export default function Drawer({
                             'You cannot enter without first connecting a Wallet',
                           ),
                         )
-                      // else if (['Swap', 'DAO'].includes(v.name))
-                      //   dispatch(setAlert('This page is under construction!'))
+                      else if (['DAO'].includes(v.name)) {
+                         dispatch(setAlert('This page is under construction!'))
+                      }
                       else {
                         if (window.innerWidth < 900) toggleOpenStatus()
                         navigate(v.route)
