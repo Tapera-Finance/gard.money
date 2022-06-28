@@ -58,8 +58,8 @@ const poolShark = {
 
 export function estimateReturn(input, totalX, totalY, fee) {
   let receivedAmount =
-    ((input * totalY) / (totalX + input)) * (1 - fee); // compare this to what actual transaction returns?
-  return parseFloat(receivedAmount.toFixed(3));
+    ((1e6 * input * totalY) / (totalX + (input*1e6))) * (1 - fee); // compare this to what actual transaction returns?
+  return parseInt(receivedAmount);
 }
 /**
  *

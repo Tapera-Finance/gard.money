@@ -30,6 +30,7 @@ import { VERSION } from '../globals';
 
 const defaultPool = 'ALGO/GARD';
 const pools = [defaultPool];
+const slippageTolerance = 0.005
 
 const mAlgosToAlgos = (num) => {
   return num / 1000000;
@@ -67,14 +68,14 @@ function calcTransResult(amount, totalX, totalY, transaction) {
       transaction.receiving.to === 'GARD'
     ) {
       if (amount > 0) {
-        return estimateReturn(parseFloat(amount), totalX, totalY, 0.003);
+        return (estimateReturn(parseFloat(amount), totalX, totalY, 0.003)/1e6).toFixed(6);
       }
     } else if (
       transaction.offering.from === 'GARD' &&
       transaction.receiving.to === 'ALGO'
     ) {
       if (amount > 0) {
-        return estimateReturn(parseFloat(amount), totalY, totalX, 0.003);
+        return (estimateReturn(parseFloat(amount), totalY, totalX, 0.003)/1e6).toFixed(6);
       }
     }
   }
@@ -279,8 +280,8 @@ export default function SwapContent() {
                 setModalCanAnimate(true);
                 setTransaction([
                   {
-                    title: 'You are offering',
-                    value: `${transaction.offering.amount}$${transaction.offering.from}`,
+                    title: 'You are offering ',
+                    value: `${transaction.offering.amount}${' ' + transaction.offering.from}`,
                     token: `${transaction.offering.from}`,
                   },
                   {
@@ -294,7 +295,7 @@ export default function SwapContent() {
                             transaction,
                           )
                         : transaction.converted.amount // not sure if still in use
-                    } ${'$' + transaction.receiving.to}`,
+                    } ${transaction.receiving.to}`,
                     token: `${transaction.receiving.to}`,
                   },
                   {
@@ -337,7 +338,7 @@ export default function SwapContent() {
                     res = await swapAlgoToGard(
                       formattedAmount,
                       parseInt(
-                        1e6 * parseFloat(transaction[1].value.split()[0]),
+                        1e6 * parseFloat(transaction[1].value.split()[0])*(1-slippageTolerance),
                       ),
                     );
                   } else if (
@@ -346,9 +347,9 @@ export default function SwapContent() {
                   ) {
                     res = await swapGardToAlgo(
                       formattedAmount,
-                      parseInt(
-                        1e6 * parseFloat(transaction[1].value.split()[0]),
-                      ),
+                      /*parseInt(
+                        1e6 * parseFloat(transaction[1].value.split()[0])*(1-slippageTolerance),
+                      )*/ 1,
                     );
                   }
                   if (res.alert) {
