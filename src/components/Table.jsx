@@ -74,6 +74,7 @@ export default function Table({
       )}
       <div style={{ marginBottom: 64 }}>
         <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+        <tbody>
           <HeaderRow darkToggle = {theme === 'dark'} style={{ background: headerColor }}>
             {columns
               ? columns.map((value, index) => {
@@ -105,6 +106,7 @@ export default function Table({
               </TableRow>
             )
           })}
+        </tbody>
         </table>
         {data.length > 10 ? (
           <PaginationBar
