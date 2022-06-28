@@ -16,7 +16,6 @@ import { loadFireStoreCDPs } from './firebase'
 function getGovernorPage(id) {
   return 'https://governance.algorand.foundation/governance-period-3/governors/' + cdpGen(getWallet().address, id).address
 }
-let commitment = await loadFireStoreCDPs()
 /**
  * Content for Algo Governance option in drawer
  */
@@ -30,6 +29,8 @@ export default function AlgoGovernanceContent() {
   const [maxBal, setMaxBal] = useState('')
   const dispatch = useDispatch()
   const {theme} = useContext(ThemeContext)
+  const [commitment, setCommitment] = useState(undefined)
+  const [refresh, setRefresh] = useState(0)
 
   const [measure1Vote, setM1Vote] = useState("Granting governor status and twice the voting power to qualified DeFi projects");
   const [measure2Vote, setM2Vote] = useState("Approve the mechanism for community proposals");
@@ -49,8 +50,8 @@ export default function AlgoGovernanceContent() {
   };
 
   useEffect(async () => {
-    commitment = await loadFireStoreCDPs()
-  })
+    setCommitment(await loadFireStoreCDPs())
+  }, [refresh])
   let loadedCDPs = CDPsToList()
   if (loadedCDPs[0].id == 'N/A') {
     loadedCDPs = dummyCdps
@@ -255,6 +256,7 @@ export default function AlgoGovernanceContent() {
                 }
                 setModalCanAnimate(false)
                 setLoading(false)
+                setRefresh(refresh + 1)
               }}/>
               <CancelButton style={{ marginLeft: 30 }}>
                 <CancelButtonText darkToggle = {theme === 'dark'}>Cancel</CancelButtonText>
