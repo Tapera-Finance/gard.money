@@ -56,8 +56,6 @@ const poolShark = {
  * Global Helpers
  */
 
-// TODO: change to x & y
-
 export function estimateReturn(input, totalX, totalY, fee) {
   let receivedAmount =
     ((input * totalY) / (totalX + input)) * (1 - fee); // compare this to what actual transaction returns?
@@ -118,12 +116,14 @@ const setLoadingStage = stage => sessionStorage.setItem("loadingStage", JSON.str
 
 /**
  *
- @function swapAlgoToGard - calculate swap exchange rate from algo to gard
-  *    @param {amount} {Number} - representing how many algo to send
-  *    @param {minimum} {Number} - representing exchange rate from current pool at time of capture
+ @function swapAlgoToGard - create and send transaction to swap ALGO for GARD on Pact DEX
+  *    @param {amount} {Number} - representing how many microalgo to send
+  *    @param {minimum} {Number} - representing minimu microGard to be received for success
   *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
 export async function swapAlgoToGard(amount, minimum) {
+  
+  setLoadingStage("Loading...");
 
   const infoPromise = accountInfo();
   const paramsPromise = getParams(1500);
@@ -131,10 +131,6 @@ export async function swapAlgoToGard(amount, minimum) {
   const params = await paramsPromise;
   const f_a = [0, gardID];
   const enc = new TextEncoder();
-
-  setLoadingStage("Loading...");
-
-  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -155,26 +151,29 @@ export async function swapAlgoToGard(amount, minimum) {
   let txns = [txn1, txn2];
   algosdk.assignGroupID(txns);
 
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+
   const signedGroup = await signGroup(info, txns);
 
-  setLoadingStage("Confirming Transaction...");
-
+  setLoadingStage("Waiting for Confirmation...");
 
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
-  const response = await sendTxn(stxns, "Successfully swapped " + amount + " tokens.",);
+  const response = await sendTxn(stxns, "Successfully swapped " + amount/1e6 + " ALGO.",);
 
   setLoadingStage(null);
   return response;
 }
 
 /**
- * @function swapGardToAlgo - calculate swap exchange rate from gard to algo
- *    @param {gard} {Float} - representing how many gard to send
- *    @param {lockedInRate} {Float} - representing exchange rate from current pool at time of capture
+ * @function swapGardToAlgo - create and send transaction to swap GARD FOR ALGO on Pact DEX
+ *    @param {amount} {number} - representing how many microgard to send
+ *    @param {minimum} {number} - representing minimum acceptable microAlgos for swap to succeed 
  *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
  export async function swapGardToAlgo(amount, minimum) {
+
+  setLoadingStage("Loading...");
 
   const infoPromise = accountInfo();
   const paramsPromise = getParams(1500);
@@ -182,9 +181,6 @@ export async function swapAlgoToGard(amount, minimum) {
   const params = await paramsPromise;
   const f_a = [0, gardID];
   const enc = new TextEncoder();
-
-  setLoadingStage("Loading...");
-  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -205,13 +201,14 @@ export async function swapAlgoToGard(amount, minimum) {
   let txns = [txn1, txn2];
   algosdk.assignGroupID(txns);
 
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
   const signedGroup = await signGroup(info, txns);
 
-  setLoadingStage("Swapping assets...")
+  setLoadingStage("Waiting for Confirmation...")
 
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
-  const response = await sendTxn(stxns, "Successfully swapped " + (amount/1000) + " tokens.",);
+  const response = await sendTxn(stxns, "Successfully swapped " + amount/1e6 + " GARD.",);
 
   setLoadingStage(null)
   return response;
