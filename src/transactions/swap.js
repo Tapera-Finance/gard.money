@@ -211,7 +211,7 @@ export async function swapAlgoToGard(amount, minimum) {
 
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
-  const response = await sendTxn(stxns, "Successfully swapped " + amount + " tokens.",);
+  const response = await sendTxn(stxns, "Successfully swapped " + (amount/1000) + " tokens.",);
 
   setLoadingStage(null)
   return response;

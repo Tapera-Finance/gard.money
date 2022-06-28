@@ -29,6 +29,7 @@ import { VERSION } from '../globals';
  */
 
 const defaultPool = 'ALGO/GARD';
+const pools = [defaultPool];
 
 const mAlgosToAlgos = (num) => {
   return num / 1000000;
@@ -237,7 +238,6 @@ export default function SwapContent() {
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
-  const [balance, setBalance] = useState('...');
   const [totals, setTotals] = useState(null);
   const [target, setTarget] = useState('');
   const [transaction, setTransaction] = useState([]);
@@ -369,23 +369,24 @@ export default function SwapContent() {
   );
 }
 
-
-
 /**
- * The expandable section in swap content
- * @prop {string} title - Section title to be displayed on top
- * @prop {function} transactionCallback - Callback function for when a transaction is executed
+ * @component Section - The expandable section in SwapContent
+ * @prop {String} title - Section title to be displayed on top
+ * @prop {Function} transactionCallback - Callback function for when a transaction is executed
  */
+
 function Section({ title, transactionCallback }) {
   const [expanded, setExpanded] = useState(false);
   const [totals, setTotals] = useState(null);
   const [algoToGardRatio, setAlgoToGardRatio] = useState('Loading...');
   const [loadingText, setLoadingText] = useState(null);
-  const [balance, setBalance] = useState(0);
+  const [balanceX, setBalanceX] = useState('...');
+  const [balanceY, setBalanceY] = useState('...')
   const [receivedValue, setReceivedValue] = useState(null);
   const { theme } = useContext(ThemeContext);
-  const assetsA2G = ['ALGO', 'GARD'];
-  // get and set all available pool total exchange ratios, only need algoGardRatio at first
+  const assetsA2G = ['ALGO', 'GARD']; // 1st asset pairing, store additional pairings here
+
+  // get pool totals and set asset pair ratio
   useEffect(async () => {
     const resultsOfQuery = await queryAndConvertTotals();
     setTotals(resultsOfQuery);
@@ -401,6 +402,7 @@ function Section({ title, transactionCallback }) {
     };
   }, []);
 
+  // get/set totals... this appears redundant
   useEffect(async () => {
     const res = await getTotals();
     if (res) {
@@ -411,6 +413,7 @@ function Section({ title, transactionCallback }) {
     };
   }, []);
 
+  // handler for central swapping mechanism (reverse, reverse!)
   const handleSwapButton = (e) => {
     e.preventDefault();
     const swappedObj = {
@@ -429,12 +432,11 @@ function Section({ title, transactionCallback }) {
     });
   };
 
+  // data object reducer
   const [transaction, reduceTransaction] = useReducer(
     (state, action) => {
       switch (action.type) {
         case 'offering-amount':
-          console.log('state from reducer', state);
-          console.log('action from reducer', action);
           return {
             ...state,
             offering: {
@@ -443,7 +445,6 @@ function Section({ title, transactionCallback }) {
             },
           };
         case 'offering-from':
-          console.log(state, action);
           return {
             ...state,
             offering: {
@@ -452,8 +453,6 @@ function Section({ title, transactionCallback }) {
             },
           };
         case 'receiving-amount':
-          console.log('state from reducer', state);
-          console.log('action from reducer', action);
           return {
             ...state,
             receiving: {
@@ -461,9 +460,7 @@ function Section({ title, transactionCallback }) {
               amount: action.value,
             },
           };
-
         case 'receiving-to':
-          console.log(state, action);
           return {
             ...state,
             receiving: {
@@ -507,10 +504,11 @@ function Section({ title, transactionCallback }) {
     },
   );
 
+  // state update of estimated return
   useEffect(() => {
     if (transaction) {
       if (totals) {
-        const { offering, converted, receiving } = transaction;
+        const { offering, receiving } = transaction;
         let res = calcTransResult(
           offering.amount,
           totals[targetPool(offering.from, receiving.to)][
@@ -528,6 +526,16 @@ function Section({ title, transactionCallback }) {
       console.log('unmounting get totals effect');
     };
   }, []);
+
+// wallet info effect
+  useEffect(() => {
+    let balX = mAlgosToAlgos(getWalletInfo().amount);
+    let balY = mAlgosToAlgos(getGARDInWallet());
+    setBalanceX(balX);
+    setBalanceY(balY);
+
+  }, []);
+
 
   return (
     <div style={{ marginBottom: 10 }}>
@@ -565,7 +573,7 @@ function Section({ title, transactionCallback }) {
               }}
             >
               <div>
-                <RelationsTitle>ALGO/GARD</RelationsTitle>
+                <RelationsTitle>{pools[0]}</RelationsTitle>
               </div>
             </RelationsSpecificsContainer>
             <RelationsSpecificsContainer
@@ -577,7 +585,7 @@ function Section({ title, transactionCallback }) {
             >
               <div>
                 <RelationsValue>
-                  {' '}
+
                   {algoToGardRatio !== null ? algoToGardRatio : 'Loading...'}
                 </RelationsValue>
               </div>
@@ -616,9 +624,7 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    value={
-                      transaction.offering.from //if algo
-                    }
+                    value={transaction.offering.from}
                     onChange={(e) => {
                       toggleSelect(
                         e.target.value,
@@ -645,9 +651,10 @@ function Section({ title, transactionCallback }) {
                 </div>
                 <div>
                   <InputTitle>
-                    {transaction.offering.from == 'ALGO'
-                      ? 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount)
-                      : 'Balance: ' + mAlgosToAlgos(getGARDInWallet())}
+                    {transaction.offering.from === 'ALGO'
+                    ? 'Balance: ' + balanceX
+                    : 'Balance: ' + balanceY
+                    }
                   </InputTitle>
                 </div>
               </div>
@@ -666,7 +673,6 @@ function Section({ title, transactionCallback }) {
                     onChange={(e) => {
                       e.target.value.replace(/\D+/g, '');
                       if (e.target.value !== '') {
-
                         handleExchange(
                           'receiving-amount',
                           parseFloat(e.target.value),
@@ -750,15 +756,14 @@ function Section({ title, transactionCallback }) {
                   >
                     <option>GARD</option>
                     <option>ALGO</option>
-                    {/* <option>Tether</option>
-                    <option>USDC</option> */}
                   </Select>
                 </div>
                 <div>
                   <InputTitle>
                     {transaction.receiving.to == 'ALGO'
-                      ? 'Balance: ' + mAlgosToAlgos(getWalletInfo().amount)
-                      : 'Balance: ' + mAlgosToAlgos(getGARDInWallet())}
+                      ? 'Balance: ' + balanceX
+                      : 'Balance: ' + balanceY
+                      }
                   </InputTitle>
                 </div>
               </div>
@@ -1040,8 +1045,11 @@ const titles = [{
   title: "Pact"
 }]
 
+
+
+
 /**
- *
+ * // for later (shhh)
  * /* <div style={{ flex: 1 }}>
             <RelationsSpecificsContainer
               style={{
