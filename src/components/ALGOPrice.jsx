@@ -11,7 +11,7 @@ export default function ALGOPrice(props) {
                 setPrice(algoprice);
             });
         }, 500);
-        
+
         return () => {
             clearInterval(interval);
         }

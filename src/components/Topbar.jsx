@@ -1,6 +1,7 @@
 import React, { useReducer, useState, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import syncIcon from '../assets/icons/sync_icon.png'
+import syncIconWhite from '../assets/icons/sync_icon_white.png'
 import Modal from './Modal'
 import ALGOPrice from './ALGOPrice'
 import PrimaryButton from './PrimaryButton'
@@ -191,7 +192,7 @@ export default function Topbar({ contentName, setMainContent }) {
             style={{ display: 'flex', justifyContent: 'center' }}
             onClick={() => window.location.reload()}
           >
-            <img src={syncIcon} style={{ height: 24 }} alt="sync" />
+            {theme === 'light' ? <img src={syncIcon} style={{ height: 24 }} alt="sync" />: <img src={syncIconWhite} style={{ height: 24 }} alt="sync-white" />}
           </SimplePressable>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row'}}>

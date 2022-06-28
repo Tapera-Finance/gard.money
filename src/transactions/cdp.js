@@ -7,6 +7,7 @@ import {
   oracleID,
   openFeeID,
   closeFeeID,
+  checkerID,
 } from "./ids";
 import { reserve, treasury, cdpGen } from "./contracts";
 import {
@@ -18,15 +19,12 @@ import {
   signGroup,
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
-import { VERSION } from "../globals";
 import { updateCommitmentFirestore } from "../components/firebase";
+import { VERSION, MINID, MAXID } from "../globals";
 
 var $ = require("jquery");
 
 const enc = new TextEncoder();
-
-const MINID = 7;
-const MAXID = 127;
 const MINRATIO = 140;
 const fundingAmount = 300000;
 let currentBigPrice = 816;
@@ -167,14 +165,13 @@ async function checkChainForCDP(address, id) {
   return false;
 }
 
-// Sets the frequency to double check CDPs
-const mins_to_refresh = 15;
-
 export async function updateCDPs(address) {
   // Checks all CDPs by an address
   const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
   let webcalls = 0;
+  // Sets the frequency to double check CDPs
+  const mins_to_refresh = 15;
   for (const x of Array(MAXID - MINID)
     .fill()
     .map((_, i) => i + MINID)) {
@@ -573,15 +570,23 @@ export async function addCollateral(accountID, newAlgos) {
     amount: microNewAlgos,
     suggestedParams: params,
   });
-
-  let txns = [txn1];
+  let txn2 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: checkerID, // needs to be added
+    onComplete: 0,
+    appArgs: [enc.encode("CDP_Check")],
+    accounts: [cdp.address],
+    foreignApps: [validatorID],
+    suggestedParams: params,
+  });
+  let txns = [txn1, txn2];
   algosdk.assignGroupID(txns);
 
   const signedGroup = await signGroup(info, txns);
 
   setLoadingStage('Confirming Transaction...');
 
-  const stxns = [signedGroup[0].blob];
+  const stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
   const response = await sendTxn(stxns, "Successfully added " + newAlgos + " ALGOs as collateral.",);
   setLoadingStage(null)
