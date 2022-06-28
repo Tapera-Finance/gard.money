@@ -17,8 +17,7 @@ let _pactGARDID;
 let _checkerID;
 
 // swap recipients
-let _pactAlgoGardPoolAddress =
-  "LZ77VFESBLRGIMS5RV2TOQLS7LTVDME2W6GHWMEI2WTMXTAVEHEM4XXYTY";
+let _pactAlgoGardPoolAddress = "LZ77VFESBLRGIMS5RV2TOQLS7LTVDME2W6GHWMEI2WTMXTAVEHEM4XXYTY";
 
 if (VERSION == "MAINNET") {
   // ASAs
@@ -36,17 +35,11 @@ if (VERSION == "MAINNET") {
   _oracleID = 673925841;
   _pactGARDID = 692053574;
   _checkerID = 787191335;
-
-  // swap AlgoGardPoolAddress
-  // _pactAlgoGardPoolAddress =
+  
 } else if (VERSION == "TESTNET1") {
   // ASAs
   _gainID = 73680771;
-  // _gardID = 73680809;
-  _gardID = 684649988;
-
-  // DANGER MOMENT - need to use MAINNET gardID for testing swap pool
-
+  _gardID = 73680809;
   _gardianID = 73680881;
 
   // App ids
@@ -77,5 +70,5 @@ export const oracleID = _oracleID;
 export const pactGARDID = _pactGARDID;
 export const checkerID = _checkerID;
 
-// swap AlgoGardPoolAddresss
+// swap AlgoGardPoolAddress
 export const pactAlgoGardPoolAddress = _pactAlgoGardPoolAddress;
