@@ -17,31 +17,20 @@ const axios = require("axios");
 
 /**
  ********** Swap & Exchange **********
- * Exchange Algos / Gard w/ DEX:
- * todo:
- * - live display exchange rate [ √ ]
- *
- * - code out and verify function to swap:
- *  - algoToGard [ 2 / 3 ] - correct values present, 3rd step is send to blockchain
- *  - gardToAlgo [ 2 / 3 ] - same as above
- * - connect to component [ √ ]
- *    - limitUsrMaxInput [ ]
- * - smoke test testnet [ ]
- * - smoke test main [ ]
- * - PR open [ ]
- *
- *
- *
- * need swapping doable --> get input value, perform conversion, populate receive input
- * need wallet info --> get balances, use to limit input
  */
 
 /**
- * Use to get and set exchange rate, estimate slippage and use in component functions to impose accurate transaction limits
+ * @interface poolShark (not)
+ * @method getGard
+ * @returns {Promise} - fetch GARD in Pact Algo/Gard pool
+ *
+ * @method getAlgo
+ * @returns {Promise} - fetch ALGO in Pact Algo/Gard pool
+ * Queery object used to get and set exchange rate, used to fetch and pass blockchain data to component
  */
 
-const queryObject = {
-  getGardInPactAlgoGardPool: async () => {
+const poolShark = {
+  getGard: async () => {
     try {
       const response = await axios.get(
         `https://node.algoexplorerapi.io/v2/accounts/${pactAlgoGardPoolAddress}/assets/${gardID}`,
@@ -51,7 +40,7 @@ const queryObject = {
       console.log("can't fetch algo/gard pool", e);
     }
   },
-  getAlgoInPactAlgoGardPool: async () => {
+  getAlgo: async () => {
     try {
       const response = await axios.get(
         `https://node.algoexplorerapi.io/v2/accounts/${pactAlgoGardPoolAddress}`,
@@ -77,7 +66,8 @@ export function estimateReturn(input, totalX, totalY, fee) {
 /**
  *
  *
- * @function queryAndConvertTotals - query blockchain for Pact's asset pool exchange rate given two assets
+ * @function queryAndConvertTotals - queer blockchain data
+ * snag Pact's asset pool exchange rate given two assets (ALGO, GARD)
  * @returns {Object} algo + gard totals for algo/gard pool
  *
  */
@@ -85,13 +75,13 @@ export async function queryAndConvertTotals() {
   let result;
 
     // ALGO/GARD pool
-      const algoInPool = await queryObject.getAlgoInPactAlgoGardPool();
-      const gardInPool = await queryObject.getGardInPactAlgoGardPool();
+      const algoInPool = await poolShark.getAlgo();
+      const gardInPool = await poolShark.getGard();
       const algoGardPool = {
         algo: algoInPool.amount,
         gard: gardInPool["asset-holding"].amount
       }
-    // as pools are added, add queryObject calls to get those token totals and pass to corresponding result[asset/asset]
+    // as pools are added, add poolShark calls to get those token totals and pass to corresponding result[asset/asset]
       result = {
         "ALGO/GARD": {
           algo: algoGardPool.algo,
@@ -107,20 +97,44 @@ export async function queryAndConvertTotals() {
 }
 
 /**
+ * Session Helpers
+ */
+//initial store
+ const originalSetItem = sessionStorage.setItem;
+
+ // def storage setItem method
+ sessionStorage.setItem = function (key, value) {
+   var event = new Event("itemInserted");
+
+   event.value = value;
+   event.key = key;
+
+   document.dispatchEvent(event);
+
+   originalSetItem.apply(this, arguments);
+ };
+
+const setLoadingStage = stage => sessionStorage.setItem("loadingStage", JSON.stringify(stage));
+
+/**
  *
  @function swapAlgoToGard - calculate swap exchange rate from algo to gard
-  *    @param {algo} {Float} - representing how many algo to send
-  *    @param {lockedInRate} {Float} - representing exchange rate from current pool at time of capture
+  *    @param {amount} {Number} - representing how many algo to send
+  *    @param {minimum} {Number} - representing exchange rate from current pool at time of capture
   *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
 export async function swapAlgoToGard(amount, minimum) {
-  
+
   const infoPromise = accountInfo();
   const paramsPromise = getParams(1500);
   const info = await infoPromise;
   const params = await paramsPromise;
   const f_a = [0, gardID];
   const enc = new TextEncoder();
+
+  setLoadingStage("Loading...");
+
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -143,10 +157,14 @@ export async function swapAlgoToGard(amount, minimum) {
 
   const signedGroup = await signGroup(info, txns);
 
+  setLoadingStage("Confirming Transaction...");
+
+
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
   const response = await sendTxn(stxns, "Successfully swapped " + amount + " tokens.",);
 
+  setLoadingStage(null);
   return response;
 }
 
@@ -157,13 +175,16 @@ export async function swapAlgoToGard(amount, minimum) {
  *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
  export async function swapGardToAlgo(amount, minimum) {
-  
+
   const infoPromise = accountInfo();
   const paramsPromise = getParams(1500);
   const info = await infoPromise;
   const params = await paramsPromise;
   const f_a = [0, gardID];
   const enc = new TextEncoder();
+
+  setLoadingStage("Loading...");
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -186,9 +207,12 @@ export async function swapAlgoToGard(amount, minimum) {
 
   const signedGroup = await signGroup(info, txns);
 
+  setLoadingStage("Swapping assets...")
+
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
   const response = await sendTxn(stxns, "Successfully swapped " + amount + " tokens.",);
 
+  setLoadingStage(null)
   return response;
 }

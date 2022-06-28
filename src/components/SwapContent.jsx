@@ -17,13 +17,16 @@ import { useEffect } from 'react';
 import { setAlert } from '../redux/slices/alertSlice';
 import {
   getGARDInWallet,
-  getWallet,
   getWalletInfo,
   handleTxError,
-  updateWalletInfo,
 } from '../wallets/wallets';
 import { useDispatch } from 'react-redux';
 import { VERSION } from '../globals';
+
+
+/**
+ * local utils
+ */
 
 const defaultPool = 'ALGO/GARD';
 
@@ -43,6 +46,19 @@ const targetPool = (assetNameX, assetNameY) => `${assetNameX}/${assetNameY}`;
 
 const getTotals = async () => await queryAndConvertTotals();
 
+
+/**
+ * Component Helpers
+ */
+
+/**
+ * @function calcTransResult - calculate estimated result of transaction prior to send
+ * @param {Number || String} amount - input in asset unit
+ * @param {Number} totalX - total asset X in pool
+ * @param {Number} totalY - total asset Y in pool
+ * @param {Object} transaction - data obj acc.
+ * @returns estimated return of swap between x & y
+ */
 function calcTransResult(amount, totalX, totalY, transaction) {
   if (transaction) {
     if (
@@ -63,147 +79,18 @@ function calcTransResult(amount, totalX, totalY, transaction) {
   }
 }
 
-const toVal = (v) => parseFloat(v);
-
-const verifyValue = (input) => {
-  if (typeof parseFloat(input) !== 'NaN' && parseFloat(input) > 0) {
-    return parseFloat(input);
-  } else return false;
-};
 /**
- * Content for Swap option in drawer
+ * @function toggleSelect - swap element selectors based on asset pairing
+ * @param {String} val - representation of val type
+ * @param {String} other - comparison val
+ * @param {String} type1 - offering-from, offering-amount, receiving-to, receiving-amount
+ * @param {String} type2 - offering-from, offering-amount, receiving-to, receiving-amount
+ * @param {String[]} assets - arr asset names
+ * @param {Function} reducer - reduce transaction details
+ * @void
  */
-export default function SwapContent() {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalCanAnimate, setModalCanAnimate] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [totals, setTotals] = useState(null);
-  const [target, setTarget] = useState('');
-  const [transaction, setTransaction] = useState([]);
-  const dispatch = useDispatch();
-  const { theme } = useContext(ThemeContext);
 
-  useEffect(async () => {
-    const res = await getTotals();
-    setTotals(res);
-    return () => {
-      console.log('unmounting pool totals', totals);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (transaction && transaction.offering) {
-      setTarget(targetPool(transaction.offering.from, transaction.offering.to));
-    } else {
-      setTarget(defaultPool);
-    }
-  }, []);
-
-  return (
-    <div>
-      {loading ? <LoadingOverlay text={'Swapping assets...'} /> : <></>}
-      <div style={{ marginBottom: 50 }}>
-        {titles.map((value, index) => {
-          return (
-            <Section
-              title={value.title}
-              darkToggle={theme === 'dark'}
-              transactionCallback={(transaction) => {
-                let keys = target.split('/');
-                setModalCanAnimate(true);
-                setTransaction([
-                  {
-                    title: 'You are offering',
-                    value: `${transaction.offering.amount}$${transaction.offering.from}`,
-                    token: `${transaction.offering.from}`,
-                  },
-                  {
-                    title: 'You are receiving a minimum of ',
-                    value: `${
-                      totals
-                        ? calcTransResult(
-                            transaction.offering.amount,
-                            totals[target][keys[0].toLowerCase()],
-                            totals[target][keys[1].toLowerCase()],
-                            transaction,
-                          )
-                        : transaction.converted.amount
-                    } ${'$' + transaction.receiving.to}`,
-                    token: `${transaction.receiving.to}`,
-                  },
-                  {
-                    title: 'Transaction Fee',
-                    value: '0.003 Algos',
-                  },
-                ]);
-                setModalVisible(true);
-              }}
-            ></Section>
-          );
-        })}
-        <TransactionContainer darkToggle={theme === 'dark'}>
-          <Modal
-            title="Are you sure you want to proceed?"
-            subtitle="Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
-            visible={modalVisible}
-            animate={modalCanAnimate}
-            close={() => setModalVisible(false)}
-            darkToggle={theme === 'dark'}
-          >
-            <TransactionSummary
-              specifics={transaction}
-              transactionFunc={async () => {
-                setModalCanAnimate(true);
-                setModalVisible(false);
-                setLoading(true);
-                try {
-                  const amount = parseFloat(transaction[0].value);
-                  const formattedAmount = parseInt(1e6 * amount);
-
-                  if (VERSION !== 'MAINNET') {
-                    throw new Error('Unable to swap on TESTNET');
-                  }
-                  let res;
-                  if (
-                    transaction[0].token == 'ALGO' &&
-                    transaction[1].token == 'GARD'
-                  ) {
-                    res = await swapAlgoToGard(
-                      formattedAmount,
-                      parseInt(
-                        1e6 * parseFloat(transaction[1].value.split()[0]),
-                      ),
-                    );
-                  } else if (
-                    transaction[0].token == 'GARD' &&
-                    transaction[1].token == 'ALGO'
-                  ) {
-                    res = await swapGardToAlgo(
-                      formattedAmount,
-                      parseInt(
-                        1e6 * parseFloat(transaction[1].value.split()[0]),
-                      ),
-                    );
-                  }
-                  if (res.alert) {
-                    dispatch(setAlert(res.text));
-                  }
-                } catch (e) {
-                  handleTxError(e, 'Error exchanging assets');
-                }
-                setModalCanAnimate(false);
-                setLoading(false);
-              }}
-              cancelCallback={() => setModalVisible(false)}
-            />
-          </Modal>
-        </TransactionContainer>
-      </div>
-    </div>
-  );
-}
-
-function toggleSelect(val, other, type1, type2, assets, reducer) {
+ function toggleSelect(val, other, type1, type2, assets, reducer) {
   if (val === assets[0] && other === assets[1]) {
     reducer({
       type: type1,
@@ -249,6 +136,18 @@ function toggleSelect(val, other, type1, type2, assets, reducer) {
     });
   }
 }
+
+/**
+ * @function handleExchange
+ * @param {String} type - action type
+ * @param {Number} amount - input for action
+ * @param {String[]} assets - arr of asset names
+ * @param {Function} transform - data method (in this case display exc. to user
+ * @param {[]} params
+ * @param {Object} transaction - acc. data obj
+ * @param {Function} reducer - reduce transaction details using action type, value, transform method, params
+ * @void
+ */
 
 function handleExchange(
   type,
@@ -326,6 +225,152 @@ function handleExchange(
   }
 }
 
+
+
+/**
+ * Components
+ * @component SwapContent
+ * Main container for DeX trading interface
+ */
+export default function SwapContent() {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalCanAnimate, setModalCanAnimate] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState(null);
+  const [balance, setBalance] = useState('...');
+  const [totals, setTotals] = useState(null);
+  const [target, setTarget] = useState('');
+  const [transaction, setTransaction] = useState([]);
+  const dispatch = useDispatch();
+  const { theme } = useContext(ThemeContext);
+
+  const sessionStorageSetHandler = (e) => {
+    setLoadingText(JSON.parse(e.value))
+  };
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+
+  useEffect(async () => {
+    const res = await getTotals();
+    setTotals(res);
+    return () => {
+      console.log('unmounting pool totals', totals);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (transaction && transaction.offering) {
+      setTarget(targetPool(transaction.offering.from, transaction.offering.to));
+    } else {
+      setTarget(defaultPool);
+    }
+  }, []);
+
+  return (
+    <div>
+      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+      <div style={{ marginBottom: 50 }}>
+        {titles.map((value, index) => {
+          return (
+            <Section
+              title={value.title}
+              darkToggle={theme === 'dark'}
+              transactionCallback={(transaction) => {
+                let keys = target.split('/');
+                setModalCanAnimate(true);
+                setTransaction([
+                  {
+                    title: 'You are offering',
+                    value: `${transaction.offering.amount}$${transaction.offering.from}`,
+                    token: `${transaction.offering.from}`,
+                  },
+                  {
+                    title: 'You are receiving a minimum of ',
+                    value: `${
+                      totals
+                        ? calcTransResult(
+                            transaction.offering.amount,
+                            totals[target][keys[0].toLowerCase()],
+                            totals[target][keys[1].toLowerCase()],
+                            transaction,
+                          )
+                        : transaction.converted.amount // not sure if still in use
+                    } ${'$' + transaction.receiving.to}`,
+                    token: `${transaction.receiving.to}`,
+                  },
+                  {
+                    title: 'Transaction Fee',
+                    value: '0.003 Algos',
+                  },
+                ]);
+                setModalVisible(true);
+              }}
+            ></Section>
+          );
+        })}
+        <TransactionContainer darkToggle={theme === 'dark'}>
+          <Modal
+            title="Are you sure you want to proceed?"
+            subtitle="Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
+            visible={modalVisible}
+            animate={modalCanAnimate}
+            close={() => setModalVisible(false)}
+            darkToggle={theme === 'dark'}
+          >
+            <TransactionSummary
+              specifics={transaction}
+              transactionFunc={async () => {
+                setModalCanAnimate(true);
+                setModalVisible(false);
+                setLoading(true);
+                try {
+                  const amount = parseFloat(transaction[0].value);
+                  const formattedAmount = parseInt(1e6 * amount);
+
+                  if (VERSION !== 'MAINNET') {
+                    throw new Error('Unable to swap on TESTNET');
+                  }
+                  let res;
+                  if (
+                    transaction[0].token == 'ALGO' &&
+                    transaction[1].token == 'GARD'
+                  ) {
+                    res = await swapAlgoToGard(
+                      formattedAmount,
+                      parseInt(
+                        1e6 * parseFloat(transaction[1].value.split()[0]),
+                      ),
+                    );
+                  } else if (
+                    transaction[0].token == 'GARD' &&
+                    transaction[1].token == 'ALGO'
+                  ) {
+                    res = await swapGardToAlgo(
+                      formattedAmount,
+                      parseInt(
+                        1e6 * parseFloat(transaction[1].value.split()[0]),
+                      ),
+                    );
+                  }
+                  if (res.alert) {
+                    dispatch(setAlert(res.text));
+                  }
+                } catch (e) {
+                  handleTxError(e, 'Error exchanging assets');
+                }
+                setModalCanAnimate(false);
+                setLoading(false);
+              }}
+              cancelCallback={() => setModalVisible(false)}
+            />
+          </Modal>
+        </TransactionContainer>
+      </div>
+    </div>
+  );
+}
+
+
+
 /**
  * The expandable section in swap content
  * @prop {string} title - Section title to be displayed on top
@@ -335,6 +380,8 @@ function Section({ title, transactionCallback }) {
   const [expanded, setExpanded] = useState(false);
   const [totals, setTotals] = useState(null);
   const [algoToGardRatio, setAlgoToGardRatio] = useState('Loading...');
+  const [loadingText, setLoadingText] = useState(null);
+  const [balance, setBalance] = useState(0);
   const [receivedValue, setReceivedValue] = useState(null);
   const { theme } = useContext(ThemeContext);
   const assetsA2G = ['ALGO', 'GARD'];
@@ -612,7 +659,8 @@ function Section({ title, transactionCallback }) {
                   {/* convert 1st field inputs to field 2 vals*/}
                   <Input
                     type="number"
-                    min={0}
+                    min="0"
+                    step="0.00"
                     value={transaction.offering.amount}
                     darkToggle={theme === 'dark'}
                     onChange={(e) => {

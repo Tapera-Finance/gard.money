@@ -237,11 +237,11 @@ export function createOptInTxn(params, info, assetID) {
 }
 var originalSetItem = sessionStorage.setItem;
 
-sessionStorage.setItem = function(key, value) {
-  var event = new Event('itemInserted');
+sessionStorage.setItem = function (key, value) {
+  var event = new Event("itemInserted");
 
-  event.value = value; 
-  event.key = key; 
+  event.value = value;
+  event.key = key;
 
   document.dispatchEvent(event);
 
@@ -249,18 +249,18 @@ sessionStorage.setItem = function(key, value) {
 };
 
 function setLoadingStage(stage) {
-  sessionStorage.setItem('loadingStage', JSON.stringify(stage))
+  sessionStorage.setItem("loadingStage", JSON.stringify(stage));
 }
-
 
 export async function openCDP(openingALGOs, openingGARD) {
   if (openingGARD < 1) {
     return {
       alert: true,
-      text: "Opening GARD needs to be at least 1.\n" +
+      text:
+        "Opening GARD needs to be at least 1.\n" +
         "Your opening GARD is is: " +
-        openingGARD
-    }
+        openingGARD,
+    };
   }
 
   // Setting up promises
@@ -286,12 +286,12 @@ export async function openCDP(openingALGOs, openingGARD) {
   }
 
   // Part 1: Opting in, creating needed info, etc.
-  setLoadingStage('Loading...');
+  setLoadingStage("Loading...");
 
   const info = await infoPromise;
   const devFees = await devFeesPromise;
   const accountIDPromise = findOpenID(info.address);
-  setLoadingStage('Awaiting Signature from Algorand Wallet...');
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   if (
     307000 +
@@ -379,7 +379,7 @@ export async function openCDP(openingALGOs, openingGARD) {
     suggestedParams: params,
   });
   params.fee = 4000;
-  
+
   txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: cdp.address,
@@ -406,25 +406,21 @@ export async function openCDP(openingALGOs, openingGARD) {
   let txns = r1_txns.concat(r2_txns);
   let stxns = await signGroup(info, txns);
 
-  setLoadingStage('Confirming Transaction...');
-
-  console.log(stxns);
-
-  // TODO: Adjust indexing based on including all txns
+  setLoadingStage("Confirming Transaction...");
 
   let r1_stxns = [stxns[0].blob, stxn2.blob];
   // txn3
   let start = 0;
   if (!optedInGard) {
-    r1_stxns.push(stxns[2+start].blob);
+    r1_stxns.push(stxns[2 + start].blob);
     start += 1;
   }
   if (!optedInGain) {
-    r1_stxns.push(stxns[2+start].blob);
+    r1_stxns.push(stxns[2 + start].blob);
     start += 1;
   }
   if (!optedInGardian) {
-    r1_stxns.push(stxns[2+start].blob);
+    r1_stxns.push(stxns[2 + start].blob);
     start += 1;
   }
   if ((await getCurrentUnix()) - start_time > 30) {
@@ -447,8 +443,11 @@ export async function openCDP(openingALGOs, openingGARD) {
   ];
   let response = await sendTxn1Promise;
 
-  response = await sendTxn(stxns2, "Successfully opened a CDP with ID: " + accountID + ".");
-  setLoadingStage(null)
+  response = await sendTxn(
+    stxns2,
+    "Successfully opened a CDP with ID: " + accountID + ".",
+  );
+  setLoadingStage(null);
   updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
@@ -459,7 +458,7 @@ export async function mint(accountID, newGARD) {
   //		Ratio is good
 
   // Core info
-  setLoadingStage('Loading...')
+  setLoadingStage("Loading...");
 
   let info = await accountInfo();
   let cdp = cdpGen(info.address, accountID);
@@ -497,7 +496,7 @@ export async function mint(accountID, newGARD) {
   algosdk.assignGroupID(txns);
   const signedGroupPromise = signGroup(info, txns);
 
-  setLoadingStage('Awaiting Signature from Algorand Wallet...');
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   let lsigCDP = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(5)]);
   let lsigReserve = algosdk.makeLogicSig(reserve.logic, [
@@ -509,12 +508,15 @@ export async function mint(accountID, newGARD) {
   let signedGroup = await signedGroupPromise;
   let stxn2 = signedGroup[1];
 
-  setLoadingStage('Confirming Transaction...');
+  setLoadingStage("Confirming Transaction...");
 
   let stxns = [stxn1.blob, stxn2.blob, stxn3.blob];
 
-  let response = await sendTxn(stxns, "Successfully minted " + newGARD + " GARD.");
-  setLoadingStage(null)
+  let response = await sendTxn(
+    stxns,
+    "Successfully minted " + newGARD + " GARD.",
+  );
+  setLoadingStage(null);
   checkChainForCDP(info.address, accountID);
 
   return response;
@@ -524,26 +526,24 @@ export async function mint(accountID, newGARD) {
 export async function addCollateral(accountID, newAlgos) {
   // TODO: Add catches
   //		Min amount
-  if (accountID == 'N/A') {
-    return{
+  if (accountID == "N/A") {
+    return {
       alert: true,
       text: "You can only add to existing CDPs",
-    }
-  }
-  else if (newAlgos == null) {
-    return{
+    };
+  } else if (newAlgos == null) {
+    return {
       alert: true,
-      text: "Cannot add 'null' ALGOS to a CDP!"
-    }
-  }
-  else if (newAlgos <= 0) {
-    return{
+      text: "Cannot add 'null' ALGOS to a CDP!",
+    };
+  } else if (newAlgos <= 0) {
+    return {
       alert: true,
-      text: "Value needs to be greater than 0!"
-    }
+      text: "Value needs to be greater than 0!",
+    };
   }
 
-  setLoadingStage('Loading...')
+  setLoadingStage("Loading...");
   // Core info
   let info = await accountInfo();
 
@@ -552,15 +552,15 @@ export async function addCollateral(accountID, newAlgos) {
       alert: true,
       text:
         "Depositing this much collateral will put you below your minimum balance.\n" +
-        "Your Maximum deposit is: " + 
+        "Your Maximum deposit is: " +
         (newAlgos + 100000 * (info["assets"].length + 1)) / 1000000 +
         " Algos",
-      };
+    };
   }
   let cdp = cdpGen(info.address, accountID);
   let microNewAlgos = parseInt(newAlgos * 1000000);
 
-  setLoadingStage('Awaiting Signature from Algorand Wallet...');
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   let params = await getParams(1000);
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
@@ -569,26 +569,30 @@ export async function addCollateral(accountID, newAlgos) {
     amount: microNewAlgos,
     suggestedParams: params,
   });
-  let txn2 = algosdk.makeApplicationCallTxnFromObject({
-    from: info.address,
-    appIndex: checkerID, // needs to be added
-    onComplete: 0,
-    appArgs: [enc.encode("CDP_Check")],
-    accounts: [cdp.address],
-    foreignApps: [validatorID],
-    suggestedParams: params,
-  });
-  let txns = [txn1, txn2];
+  // let txn2 = algosdk.makeApplicationCallTxnFromObject({
+  //   from: info.address,
+  //   appIndex: checkerID, // needs to be added
+  //   onComplete: 0,
+  //   appArgs: [enc.encode("CDP_Check")],
+  //   accounts: [cdp.address],
+  //   foreignApps: [validatorID],
+  //   suggestedParams: params,
+  // });
+  // let txns = [txn1, txn2];
+  let txns = [txn1];
   algosdk.assignGroupID(txns);
 
   const signedGroup = await signGroup(info, txns);
 
-  setLoadingStage('Confirming Transaction...');
+  setLoadingStage("Confirming Transaction...");
 
-  const stxns = [signedGroup[0].blob, signedGroup[1].blob];
+  const stxns = [signedGroup[0].blob];
 
-  const response = await sendTxn(stxns, "Successfully added " + newAlgos + " ALGOs as collateral.",);
-  setLoadingStage(null)
+  const response = await sendTxn(
+    stxns,
+    "Successfully added " + newAlgos + " ALGOs as collateral.",
+  );
+  setLoadingStage(null);
 
   checkChainForCDP(info.address, accountID);
 
@@ -600,7 +604,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   // TODO: Actually double check the state before issueing
 
   // Promise setup
-  setLoadingStage('Loading...')
+  setLoadingStage("Loading...");
 
   const accountInfoPromise = accountInfo();
   let paramsPromise = getParams(0);
@@ -620,8 +624,12 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   if (gard_bal == null || gard_bal < microRepayGARD) {
     return {
       alert: true,
-      text: "Insufficient GARD for transaction. Balance: " + (gard_bal / 1000000).toFixed(2).toString() + '\n' +
-        "Required: " + (microRepayGARD / 1000000).toFixed(2).toString()
+      text:
+        "Insufficient GARD for transaction. Balance: " +
+        (gard_bal / 1000000).toFixed(2).toString() +
+        "\n" +
+        "Required: " +
+        (microRepayGARD / 1000000).toFixed(2).toString(),
     };
   }
 
@@ -674,7 +682,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
 
   const signedGroupPromise = signGroup(info, [txn1, txn2, txn3, txn4]);
 
-  setLoadingStage('Awaiting Signature from Algorand Wallet...');
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   const lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(lsigArg)]);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
@@ -684,12 +692,15 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   console.log(signedGroup);
   const stxn2 = signedGroup[1];
 
-  setLoadingStage('Confirming Transaction...');
+  setLoadingStage("Confirming Transaction...");
 
   let stxns = [stxn1.blob, stxn2.blob, stxn3.blob, stxn4.blob];
 
-  let response = await sendTxn(stxns, "Successfully closed your cdp with ID " + accountID + ".",);
-  setLoadingStage(null)
+  let response = await sendTxn(
+    stxns,
+    "Successfully closed your cdp with ID " + accountID + ".",
+  );
+  setLoadingStage(null);
   removeCDP(info.address, accountID);
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
@@ -751,7 +762,7 @@ export function getCDPs() {
 
 export async function commitCDP(account_id, amount) {
   // Setting up promises
-  setLoadingStage('Loading...')
+  setLoadingStage("Loading...");
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
@@ -784,14 +795,14 @@ export async function commitCDP(account_id, amount) {
 
   const signedGroupPromise = signGroup(info, txns);
 
-  setLoadingStage('Awaiting Signature from Algorand Wallet...');
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
   const stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
   const signedGroup = await signedGroupPromise;
   const stxn1 = signedGroup[0];
 
-  setLoadingStage('Committing ALGOs...');
+  setLoadingStage("Committing ALGOs...");
 
   let stxns = [stxn1.blob, stxn2.blob];
   let response = await sendTxn(
@@ -803,15 +814,16 @@ export async function commitCDP(account_id, amount) {
       "https://governance.algorand.foundation/governance-period-3/governors/" +
       cdp.address +
       '">here</a>.\n',
-  true);
-  setLoadingStage(null)
+    true,
+  );
+  setLoadingStage(null);
   updateCommitment(info.address, account_id, parseInt(amount * 1000000));
   return response;
 }
 
 export async function voteCDP(account_id, option1, option2) {
   // Setting up promises
-  setLoadingStage('Loading...')
+  setLoadingStage("Loading...");
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
@@ -843,13 +855,13 @@ export async function voteCDP(account_id, option1, option2) {
 
   const signedGroupPromise = signGroup(info, txns);
 
-  setLoadingStage('Awaiting Signature from Algorand Wallet...');
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
   const stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
   const signedGroup = await signedGroupPromise;
   const stxn1 = signedGroup[0];
-  setLoadingStage('Sending Votes...');
+  setLoadingStage("Sending Votes...");
 
   let stxns = [stxn1.blob, stxn2.blob];
   let response = await sendTxn(
@@ -861,7 +873,7 @@ export async function voteCDP(account_id, option1, option2) {
       " from CDP #" +
       account_id,
   );
-  setLoadingStage(null)
+  setLoadingStage(null);
   return response;
 }
 
@@ -872,7 +884,7 @@ export async function liquidate(
   microPremium,
 ) {
   // Setting up promises
-  setLoadingStage('Loading...');
+  setLoadingStage("Loading...");
 
   const infoPromise = accountInfo();
   const paramsPromise = getParams(0);
@@ -892,7 +904,7 @@ export async function liquidate(
       text:
         "Insufficient GARD for transaction. Balance: " +
         (gard_bal / 1000000).toFixed(2).toString() +
-        '\n' +
+        "\n" +
         "Required: " +
         ((microDebt + to_user + liquid_fee) / 1000000).toFixed(2).toString(),
     };
@@ -939,12 +951,12 @@ export async function liquidate(
   algosdk.assignGroupID(txns);
 
   const signTxnsPromise = signGroup(info, txns);
-  setLoadingStage('Awaiting Signature from Algorand Wallet...');
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
   let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
   const stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
   const user_signed = await signTxnsPromise;
-  setLoadingStage('Liquidating CDP...');
+  setLoadingStage("Liquidating CDP...");
   let stxns = [
     stxn1.blob,
     stxn2.blob,
@@ -954,7 +966,9 @@ export async function liquidate(
   ];
   let response = await sendTxn(
     stxns,
-    "Successfully liquidated CDP #" + account_id + " of " + owner_address, true);
-    setLoadingStage(null)
+    "Successfully liquidated CDP #" + account_id + " of " + owner_address,
+    true,
+  );
+  setLoadingStage(null);
   return response;
 }
