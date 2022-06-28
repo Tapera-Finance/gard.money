@@ -569,24 +569,23 @@ export async function addCollateral(accountID, newAlgos) {
     amount: microNewAlgos,
     suggestedParams: params,
   });
-  // let txn2 = algosdk.makeApplicationCallTxnFromObject({
-  //   from: info.address,
-  //   appIndex: checkerID, // needs to be added
-  //   onComplete: 0,
-  //   appArgs: [enc.encode("CDP_Check")],
-  //   accounts: [cdp.address],
-  //   foreignApps: [validatorID],
-  //   suggestedParams: params,
-  // });
-  // let txns = [txn1, txn2];
-  let txns = [txn1];
+  let txn2 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: checkerID, // needs to be added
+    onComplete: 0,
+    appArgs: [enc.encode("CDP_Check")],
+    accounts: [cdp.address],
+    foreignApps: [validatorID],
+    suggestedParams: params,
+  });
+  let txns = [txn1, txn2];
   algosdk.assignGroupID(txns);
 
   const signedGroup = await signGroup(info, txns);
 
   setLoadingStage("Confirming Transaction...");
 
-  const stxns = [signedGroup[0].blob];
+  const stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
   const response = await sendTxn(
     stxns,
