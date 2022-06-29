@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import { VERSION } from "../globals";
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -14,8 +15,8 @@ import {
 } from "firebase/firestore";
 import { cdpGen } from "../transactions/contracts";
 import { getWalletInfo } from "../wallets/wallets";
-
-const firebaseConfig = {
+var configkey = null;
+const testKey = {
   apiKey: "AIzaSyD4x024OYPM1Zxh2QNklzw3sXfYTV15f30",
   authDomain: "gard-money-testing.firebaseapp.com",
   projectId: "gard-money-testing",
@@ -24,6 +25,22 @@ const firebaseConfig = {
   appId: "1:564363590339:web:8b5e50a902164a03770076",
   measurementId: "G-6SMVCFC990"
 };
+
+if (VERSION === 'MAINNET'){
+  try {
+    const module = await import ("../wallets/keys.js")
+    configkey = module.mainDBkey
+  } catch {
+    configkey = testKey;
+  }
+}
+else {
+  configkey = testKey;
+}
+
+
+
+const firebaseConfig = configkey;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
