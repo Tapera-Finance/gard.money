@@ -16,26 +16,13 @@ import {
 import { cdpGen } from "../transactions/contracts";
 import { getWalletInfo } from "../wallets/wallets";
 var configkey = null;
-const testKey = {
-  apiKey: "AIzaSyD4x024OYPM1Zxh2QNklzw3sXfYTV15f30",
-  authDomain: "gard-money-testing.firebaseapp.com",
-  projectId: "gard-money-testing",
-  storageBucket: "gard-money-testing.appspot.com",
-  messagingSenderId: "564363590339",
-  appId: "1:564363590339:web:8b5e50a902164a03770076",
-  measurementId: "G-6SMVCFC990"
-};
 
-if (VERSION === 'MAINNET'){
-  try {
-    const module = await import ("../wallets/keys.js")
+const module = await import ("../wallets/keys.js")
+if (VERSION === 'MAINNET') {
     configkey = module.mainDBkey
-  } catch {
-    configkey = testKey;
-  }
 }
 else {
-  configkey = testKey;
+  configkey = module.testKey;
 }
 
 

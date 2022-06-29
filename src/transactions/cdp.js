@@ -19,7 +19,7 @@ import {
   signGroup,
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
-import { updateCommitmentFirestore } from "../components/firebase";
+import { updateCommitmentFirestore } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
 
 var $ = require("jquery");

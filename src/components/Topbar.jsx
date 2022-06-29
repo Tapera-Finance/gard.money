@@ -27,7 +27,7 @@ import { setAlert } from '../redux/slices/alertSlice'
 import { setWallet } from '../redux/slices/walletSlice'
 import ThemeToggle from './ThemeToggle'
 import { ThemeContext } from '../contexts/ThemeContext'
-import { userInDB, addUserToFireStore } from '../components/firebase'
+import { userInDB, addUserToFireStore } from '../components/Firebase'
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar

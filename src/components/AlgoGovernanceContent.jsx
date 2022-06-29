@@ -11,7 +11,7 @@ import { handleTxError, getWallet } from '../wallets/wallets'
 import { cdpGen } from "../transactions/contracts";
 import Table from './Table'
 import { ThemeContext } from '../contexts/ThemeContext'
-import { loadFireStoreCDPs } from './firebase'
+import { loadFireStoreCDPs } from './Firebase'
 
 function getGovernorPage(id) {
   return 'https://governance.algorand.foundation/governance-period-3/governors/' + cdpGen(getWallet().address, id).address
