@@ -19,6 +19,7 @@ import {
   signGroup,
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
+import { updateCommitmentFirestore } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
 
 var $ = require("jquery");
@@ -760,12 +761,6 @@ function updateCDP(
   localStorage.setItem("CDPs", JSON.stringify(CDPs));
 }
 
-function updateCommitment(address, id, commitment) {
-  let CDPs = getCDPs();
-  CDPs[address][id]["committed"] = commitment;
-  localStorage.setItem("CDPs", JSON.stringify(CDPs));
-}
-
 function removeCDP(address, id) {
   updateCDP(address, id, 0, 0, "closed");
 }
@@ -840,7 +835,7 @@ export async function commitCDP(account_id, amount) {
       '">here</a>.\n',
   true);
   setLoadingStage(null)
-  updateCommitment(info.address, account_id, parseInt(amount * 1000000));
+  updateCommitmentFirestore(info.address, account_id, parseInt(amount * 1000000));
   return response;
 }
 
