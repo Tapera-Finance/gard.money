@@ -122,6 +122,31 @@ export default function Topbar({ contentName, setMainContent }) {
                     const wallet = await connectWallet(type)
                     if (!wallet.alert) {
                       dispatch(setWallet({ address: displayWallet() }))
+                      const owner_address = getWallet().address
+                      let in_DB = await userInDB(owner_address)
+                      if (!in_DB){
+                        let accountCDPs = getCDPs()[owner_address]
+                        let addrs = Object.keys(getCDPs()[owner_address])
+                        let owned = {}
+                        for (var i = 0; i < addrs.length; i++) {
+                          if (accountCDPs[addrs[i]].state == 'open'){
+                            let cdp_address = cdpGen(owner_address, addrs[i]).address
+                            Object.assign(owned, {[cdp_address]: {
+                            "lastCommitment": -1,
+                            "commitmentTimestamp": -1,
+                            "liquidatedTimestamp": [-1]
+                          }})
+                          }
+                        }
+                        const user = {
+                          "id": owner_address,
+                          "webappActions": [],
+                          "ownedCDPs": owned,
+                          "systemAssetVal": [0, 0],
+                          "systemDebtVal": [0, 0]
+                        }
+                        addUserToFireStore(user, owner_address)
+                      }
                     } else {
                       dispatch(setAlert(wallet.text))
                     }
