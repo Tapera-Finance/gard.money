@@ -1,4 +1,4 @@
-import React, { useReducer, useState, useContext } from 'react'
+import React, { useReducer, useState, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import syncIcon from '../assets/icons/sync_icon.png'
 import syncIconWhite from '../assets/icons/sync_icon_white.png'
@@ -10,7 +10,10 @@ import {
   displayWallet,
   accountInfo,
   disconnectWallet,
+  getWallet
 } from '../wallets/wallets'
+import { updateCDPs, getCDPs } from '../transactions/cdp'
+import { cdpGen } from '../transactions/contracts'
 
 import { connectWallet } from '../wallets/wallets'
 import AlgoSignerLogo from '../wallets/logos/algosigner.svg'
@@ -24,6 +27,7 @@ import { setAlert } from '../redux/slices/alertSlice'
 import { setWallet } from '../redux/slices/walletSlice'
 import ThemeToggle from './ThemeToggle'
 import { ThemeContext } from '../contexts/ThemeContext'
+import { userInDB, addUserToFireStore } from '../components/Firebase'
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -76,6 +80,31 @@ export default function Topbar({ contentName, setMainContent }) {
                     const wallet = await connectWallet(type)
                     if (!wallet.alert) {
                       dispatch(setWallet({ address: displayWallet() }))
+                      const owner_address = getWallet().address
+                      let in_DB = await userInDB(owner_address)
+                      if (!in_DB){
+                        let accountCDPs = getCDPs()[owner_address]
+                        let addrs = Object.keys(getCDPs()[owner_address])
+                        let owned = {}
+                        for (var i = 0; i < addrs.length; i++) {
+                          if (accountCDPs[addrs[i]].state == 'open'){
+                            let cdp_address = cdpGen(owner_address, addrs[i]).address
+                            Object.assign(owned, {[cdp_address]: {
+                            "lastCommitment": -1,
+                            "commitmentTimestamp": -1,
+                            "liquidatedTimestamp": [-1]
+                          }})
+                          }
+                        }
+                        const user = {
+                          "id": owner_address,
+                          "webappActions": [],
+                          "ownedCDPs": owned,
+                          "systemAssetVal": [0, 0],
+                          "systemDebtVal": [0, 0]
+                        }
+                        addUserToFireStore(user, owner_address)
+                    }
                     } else {
                       dispatch(setAlert(wallet.text))
                     }
