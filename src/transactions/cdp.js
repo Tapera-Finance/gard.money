@@ -253,7 +253,7 @@ function setLoadingStage(stage) {
 }
 
 
-export async function openCDP(openingALGOs, openingGARD) {
+export async function openCDP(openingALGOs, openingGARD, commit) {
   if (openingGARD < 1) {
     return {
       alert: true,

@@ -397,7 +397,7 @@ export default function MintContent() {
               setModalVisible(false)
               setLoading(true)
               try {
-                const res = await openCDP(getCollateral(), getMinted())
+                const res = await openCDP(getCollateral(), getMinted(), checked)
                 if (res.alert) {
                   navigate('/manage')
                   dispatch(setAlert(res.text))
