@@ -481,7 +481,7 @@ export async function openCDP(openingALGOs, openingGARD, commit) {
     let stxns3 = [stxns[start+6].blob, stxn6.blob]
     console.log(stxns3, accountID, typeof accountID)
     await sendTxn(stxns3, "dooby dooby doo bah")
-    updateCommitment(info.address, accountID, collateral+300000);
+    updateCommitmentFirestore(info.address, accountID, collateral+300000);
     response.text = response.text + '\nFull Balance committed to Governance Period #4!'
   }
   setLoadingStage(null)
