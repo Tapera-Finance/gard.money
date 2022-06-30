@@ -43,7 +43,7 @@ export default function TransactionSummary({
             </div>
           )
         })}
-        <div
+        {commit !== undefined && commit !== null ? <div
           style={{
             display: 'flex',
             flexDirection: window.innerWidth < 900 ? 'column' : 'row',
@@ -58,7 +58,7 @@ export default function TransactionSummary({
           <div>
             <SpecificsValue>{commit === false ? 'No' : 'Yes'}</SpecificsValue>
           </div>
-        </div>
+        </div> : <div></div>}
       </SpecificsContainer>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <PrimaryButton
