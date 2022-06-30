@@ -19,7 +19,7 @@ import {
   signGroup,
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
-import { updateCommitmentFirestore , addCDPToFireStore, updateDBWebActions } from "../components/Firebase";
+import { updateCommitmentFirestore , addCDPToFireStore, updateDBWebActions, updateLiquidationFirestore } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
 
 var $ = require("jquery");
@@ -474,6 +474,8 @@ export async function openCDP(openingALGOs, openingGARD, commit) {
 
   response = await sendTxn(stxns2, "Successfully opened a CDP with ID: " + accountID + ".");
 
+  addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, devFees)
+
   if (commit) {
     setLoadingStage("Committing to Governance...")
     lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
@@ -486,8 +488,6 @@ export async function openCDP(openingALGOs, openingGARD, commit) {
   }
   setLoadingStage(null)
   updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
-  addCDPToFireStore(accountID)
-  updateDBWebActions(0, accountID, -openingMicroALGOs, microOpeningGard, 0, devFees)
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
 }
@@ -734,6 +734,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   let response = await sendTxn(stxns, "Successfully closed your cdp with ID " + accountID + ".",);
   setLoadingStage(null)
   removeCDP(info.address, accountID);
+  updateLiquidationFirestore(accountID)
   updateDBWebActions(1, accountID, cdpBal - fee, microRepayGARD, 0, fee)
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
@@ -843,7 +844,6 @@ export async function commitCDP(account_id, amount) {
       '">here</a>.\n',
   true);
   setLoadingStage(null)
-  updateDBWebActions(4, account_id, amount, 0, 0, 1000)
   updateCommitmentFirestore(info.address, account_id, parseInt(amount * 1000000));
   return response;
 }
@@ -900,6 +900,7 @@ export async function voteCDP(account_id, option1, option2) {
       " from CDP #" +
       account_id,
   );
+  updateDBWebActions(6, account_id, 0, 0, 0, 1000)
   setLoadingStage(null)
   return response;
 }
