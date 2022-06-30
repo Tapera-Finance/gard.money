@@ -13,7 +13,7 @@ import Table from './Table'
 import { ThemeContext } from '../contexts/ThemeContext'
 
 function getGovernorPage(id) {
-  return 'https://governance.algorand.foundation/governance-period-3/governors/' + cdpGen(getWallet().address, id).address
+  return 'https://governance.algorand.foundation/governance-period-4/governors/' + cdpGen(getWallet().address, id).address
 }
 /**
  * Content for Algo Governance option in drawer
@@ -73,7 +73,6 @@ export default function AlgoGovernanceContent() {
         <PrimaryButton
           text={'Committed'}
           onClick={() => {
-            return
             if (value.id == 'N/A') {
               return
             }
@@ -84,12 +83,11 @@ export default function AlgoGovernanceContent() {
             setMaxBal(value.balance)
           }}
           // variant ={true}
-          disabled = {true}
+          disabled = {false}
         />
         :<PrimaryButton
           text={'Commit'}
           onClick={() => {
-            return
             if (value.id == 'N/A') {
               return
             }
@@ -100,13 +98,14 @@ export default function AlgoGovernanceContent() {
             setMaxBal(value.balance)
           }}
           // variant ={true}
-          disabled = {true}
+          disabled = {false}
         />
       ),
       voted: (
         <PrimaryButton
           text={'Place Vote'}
           onClick={() => {
+            return
             if (value.id == 'N/A') {
               return
             }
@@ -115,6 +114,7 @@ export default function AlgoGovernanceContent() {
             setModalCanAnimate(true)
             setSelectedAccount(value.id)
           }}
+          disabled = {true}
         />
       ),
       info: (

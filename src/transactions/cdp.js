@@ -400,10 +400,34 @@ export async function openCDP(openingALGOs, openingGARD, commit) {
     suggestedParams: params,
     assetIndex: gardID,
   });
+
+  const stringVal = 'af/gov1:j{"com":' + (collateral+300000).toString() + "}";
+
+  const note = enc.encode(stringVal);
+
+  params.fee = 2000;
+  let txn7 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: info.address,
+    amount: parseInt(accountID),
+    suggestedParams: params,
+  });
+  params.fee = 0;
+  let txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: cdp.address,
+    to: "UAME4M7T2NWECVNCUDGQX6LJ7OVDLZP234GFQL3TH6YZUPRV3VF5NGRSRI",
+    amount: 0,
+    note: note,
+    suggestedParams: params,
+  });
   let r2_txns = [txn1, txn2, txn3, txn4];
+  let r3_txns = [txn7, txn8];
+
   algosdk.assignGroupID(r2_txns);
+  algosdk.assignGroupID(r3_txns);
+
   // r2_txns.splice(3, 1)
-  let txns = r1_txns.concat(r2_txns);
+  let txns = r1_txns.concat( commit ? r2_txns.concat(r3_txns) : r2_txns);
   let stxns = await signGroup(info, txns);
 
   setLoadingStage('Confirming Transaction...');
@@ -448,6 +472,17 @@ export async function openCDP(openingALGOs, openingGARD, commit) {
   let response = await sendTxn1Promise;
 
   response = await sendTxn(stxns2, "Successfully opened a CDP with ID: " + accountID + ".");
+
+  if (commit) {
+    setLoadingStage("Committing to Governance...")
+    lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
+    let stxn6 = algosdk.signLogicSigTransactionObject(txn8, lsig)
+    let stxns3 = [stxns[start+6].blob, stxn6.blob]
+    console.log(stxns3, accountID, typeof accountID)
+    await sendTxn(stxns3, "dooby dooby doo bah")
+    updateCommitment(info.address, accountID, collateral+300000);
+    response.text = response.text + '\nFull Balance committed to Governance Period #4!'
+  }
   setLoadingStage(null)
   updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
   return response;
@@ -774,7 +809,7 @@ export async function commitCDP(account_id, amount) {
   params.fee = 0;
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    to: "UD33QBPIM4ZO4B2WK5Y5DYT5J5LYY5FA3IF3G4AVYSCWLCSMS5NYDRW6GE",
+    to: "UAME4M7T2NWECVNCUDGQX6LJ7OVDLZP234GFQL3TH6YZUPRV3VF5NGRSRI",
     amount: 0,
     note: note,
     suggestedParams: params,
@@ -800,7 +835,7 @@ export async function commitCDP(account_id, amount) {
       account_id +
       " to governance! You may verify" +
       ' <a href="' +
-      "https://governance.algorand.foundation/governance-period-3/governors/" +
+      "https://governance.algorand.foundation/governance-period-4/governors/" +
       cdp.address +
       '">here</a>.\n',
   true);
