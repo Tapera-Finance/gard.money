@@ -1,4 +1,4 @@
-import React, { useReducer, useState, useContext } from 'react'
+import React, { useReducer, useState, useContext, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setAlert } from '../redux/slices/alertSlice'
 import styled, {css} from 'styled-components'
@@ -11,6 +11,7 @@ import { handleTxError, getWallet } from '../wallets/wallets'
 import { cdpGen } from "../transactions/contracts";
 import Table from './Table'
 import { ThemeContext } from '../contexts/ThemeContext'
+import { loadFireStoreCDPs } from './Firebase'
 
 function getGovernorPage(id) {
   return 'https://governance.algorand.foundation/governance-period-3/governors/' + cdpGen(getWallet().address, id).address
@@ -28,6 +29,8 @@ export default function AlgoGovernanceContent() {
   const [maxBal, setMaxBal] = useState('')
   const dispatch = useDispatch()
   const {theme} = useContext(ThemeContext)
+  const [commitment, setCommitment] = useState(undefined)
+  const [refresh, setRefresh] = useState(0)
 
   const [measure1Vote, setM1Vote] = useState("Granting governor status and twice the voting power to qualified DeFi projects");
   const [measure2Vote, setM2Vote] = useState("Approve the mechanism for community proposals");
@@ -46,24 +49,21 @@ export default function AlgoGovernanceContent() {
     setM2Vote(event.target.valu);
   };
 
+  useEffect(async () => {
+    setCommitment(await loadFireStoreCDPs())
+  }, [refresh])
   let loadedCDPs = CDPsToList()
   if (loadedCDPs[0].id == 'N/A') {
     loadedCDPs = dummyCdps
   }
+  const owner_address = getWallet().address
   let adjusted = loadedCDPs.map((value) => {
-    if(value.hasOwnProperty('committed')){
-      return {
-        id: value.id,
-        balance: value.collateral == 'N/A' ? 'N/A' : (value.collateral / 1000000),
-        committed: value.committed / 1000000
-      }
-    }
-    else {
+    const cdp_address = cdpGen(owner_address, value.id).address
     return {
       id: value.id,
-      balance: value.collateral == 'N/A' ? 'N/A' : (value.collateral / 1000000), 
+      balance: value.collateral == 'N/A' ? 'N/A' : (value.collateral / 1000000),
+      committed: commitment == undefined || commitment[cdp_address] == undefined ? 'error' : commitment[cdp_address].lastCommitment == -1 ? 0 : commitment[cdp_address].lastCommitment / 1000000
     }
-  }
   })
   let cdps = adjusted.map((value, index) => {
     return {
@@ -256,6 +256,7 @@ export default function AlgoGovernanceContent() {
                 }
                 setModalCanAnimate(false)
                 setLoading(false)
+                setRefresh(refresh + 1)
               }}/>
               <CancelButton style={{ marginLeft: 30 }}>
                 <CancelButtonText darkToggle = {theme === 'dark'}>Cancel</CancelButtonText>
