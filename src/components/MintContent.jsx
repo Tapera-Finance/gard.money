@@ -116,10 +116,10 @@ export default function MintContent() {
     setMaxCollateral(((getWalletInfo()['amount'] -  calcDevFees(algosToMAlgos(mGARD || 1)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3))
   }, [])
   
-  const [checked, setChecked] = useState(false);
+  const [commitChecked, setCommitChecked] = useState(false);
 
   const handleCheckboxChange = () => {
-    setChecked(!checked);
+    setCommitChecked(!commitChecked);
   };
 
   const handleSliderChange1 = (event, newValue) => {
@@ -381,10 +381,10 @@ export default function MintContent() {
             }}>
               <input 
               type={"checkbox"}
-              checked={checked}
+              checked={commitChecked}
               onChange={handleCheckboxChange} 
               />
-                <InputSubtitle> <span style={{ fontWeight: 'bold' }}>{checked === false ? 0 : cAlgos} </span> Algos will be committed</InputSubtitle>
+                <InputSubtitle> <span style={{ fontWeight: 'bold' }}>{commitChecked === false ? 0 : cAlgos} </span> Algos will be committed</InputSubtitle>
             </label>
           </div>
         </div>
@@ -397,7 +397,7 @@ export default function MintContent() {
               setModalVisible(false)
               setLoading(true)
               try {
-                const res = await openCDP(getCollateral(), getMinted(), checked)
+                const res = await openCDP(getCollateral(), getMinted(), commitChecked)
                 if (res.alert) {
                   navigate('/manage')
                   dispatch(setAlert(res.text))
@@ -411,7 +411,7 @@ export default function MintContent() {
           }}
           cancelCallback={() => setModalVisible(false)}
           darkToggle={theme === 'dark'}
-          commit={checked}
+          commit={commitChecked}
         />
       </Modal>
     </div>
