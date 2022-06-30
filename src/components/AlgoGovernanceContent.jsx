@@ -62,14 +62,14 @@ export default function AlgoGovernanceContent() {
     return {
       id: value.id,
       balance: value.collateral == 'N/A' ? 'N/A' : (value.collateral / 1000000),
-      committed: commitment == undefined || commitment[cdp_address] == undefined ? 'error' : commitment[cdp_address].lastCommitment == -1 ? 0 : commitment[cdp_address].lastCommitment / 1000000
+      committed: commitment == undefined || commitment[cdp_address] == undefined ? 'unknown' : commitment[cdp_address].lastCommitment == -1 ? 0 : commitment[cdp_address].lastCommitment / 1000000
     }
   })
   let cdps = adjusted.map((value, index) => {
     return {
       ...value,
       commit: (
-        value.committed != 0 ?
+        value.committed !== 0 && value.committed !== 'unknown' ?
         <PrimaryButton
           text={'Committed'}
           onClick={() => {
