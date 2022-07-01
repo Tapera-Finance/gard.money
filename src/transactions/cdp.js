@@ -629,7 +629,7 @@ export async function addCollateral(accountID, newAlgos) {
   const response = await sendTxn(stxns, "Successfully added " + newAlgos + " ALGOs as collateral.",);
   setLoadingStage(null)
 
-  updateDBWebActions(2, accountID, microNewAlgos, 0, 0, 1000)
+  updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 2000)
   checkChainForCDP(info.address, accountID);
 
   return response;
