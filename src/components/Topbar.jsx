@@ -28,6 +28,7 @@ import { setWallet } from '../redux/slices/walletSlice'
 import ThemeToggle from './ThemeToggle'
 import { ThemeContext } from '../contexts/ThemeContext'
 import { userInDB, addUserToFireStore } from '../components/Firebase'
+import NetToggle from './NetToggle'
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -219,10 +220,16 @@ export default function Topbar({ contentName, setMainContent }) {
           >
             {theme === 'light' ? <img src={syncIcon} style={{ height: 24 }} alt="sync" />: <img src={syncIconWhite} style={{ height: 24 }} alt="sync-white" />}
           </SimplePressable>
+          <div style={{paddingLeft: 20, paddingBottom: 4}}> 
+            <ALGOPrice/>
+          </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row'}}>
-          <div style={{paddingRight: 20}}> 
-            <ALGOPrice/> 
+          <div>
+            <NetToggle/>
+          </div>
+          <div>
+            <ThemeToggle/>
           </div>
           <div>
             <PrimaryButton
@@ -253,7 +260,6 @@ export default function Topbar({ contentName, setMainContent }) {
           ) : (
             <></>
           )}
-          <ThemeToggle />
         </div>
       </TopBar>
       <Modal

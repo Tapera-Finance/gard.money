@@ -20,10 +20,11 @@ import {
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
 import { updateCommitmentFirestore } from "../components/Firebase";
-import { VERSION, MINID, MAXID } from "../globals";
+import { MINID, MAXID } from "../globals";
 
 var $ = require("jquery");
 
+var VERSION = JSON.parse(window.localStorage.getItem('net'))
 const enc = new TextEncoder();
 const MINRATIO = 140;
 const fundingAmount = 300000;

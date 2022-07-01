@@ -1,5 +1,4 @@
 import {useState, useEffect} from "react";
-import { VERSION } from "../globals";
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -17,6 +16,7 @@ import { cdpGen } from "../transactions/contracts";
 import { getWalletInfo } from "../wallets/wallets";
 var configkey = null;
 
+let VERSION = JSON.parse(window.localStorage.getItem('net'))
 const module = await import ("../wallets/keys.js")
 if (VERSION === 'MAINNET') {
     configkey = module.mainDBkey

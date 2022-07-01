@@ -1,5 +1,3 @@
-import { VERSION } from "../globals";
-
 // ASAs
 let _gainID = 73680771;
 let _gardID = 73680809;
@@ -15,6 +13,7 @@ let _treasuryID;
 let _oracleID;
 let _checkerID;
 
+let VERSION = JSON.parse(window.localStorage.getItem('net'))
 if (VERSION == "MAINNET") {
   // ASAs
   _gainID = 684649672;

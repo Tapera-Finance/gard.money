@@ -16,16 +16,6 @@ export const AUCTIONS_CONTENT_NAMES = {
   MARKET_HISTORY: 'Market History',
 }
 
-export const VERSION = "MAINNET";
-// TESTNET1 = initial testnet release
-// TESTNET2 = testnet w/ updated backend code
-// MAINNET = mainnet
 
 export const MINID = 7;
 export const MAXID = 127;
-
-const localStorageVersion = localStorage.getItem('version')
-if (localStorageVersion != VERSION) {
-	localStorage.clear()
-}
-localStorage.setItem('version', VERSION)
