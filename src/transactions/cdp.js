@@ -900,7 +900,7 @@ export async function voteCDP(account_id, option1, option2) {
       " from CDP #" +
       account_id,
   );
-  updateDBWebActions(6, account_id, 0, 0, 0, 1000)
+  updateDBWebActions(6, account_id, 0, 0, 0, 2000)
   setLoadingStage(null)
   return response;
 }
