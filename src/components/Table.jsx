@@ -101,7 +101,14 @@ export default function Table({
                 }}
               >
                 {keys.map((keyVal, keyIndex) => {
-                  return <Cell key={keyIndex}>{value[keyVal]}</Cell>
+                  return typeof value[keyVal] === 'object'
+                  ?
+                   <Cell
+                     className={value[keyVal].className} key={keyIndex}>
+                      {value[keyVal].value}
+                   </Cell>
+                  : <Cell key={keyIndex}>
+                    {value[keyVal]}</Cell>
                 })}
               </TableRow>
             )
@@ -241,13 +248,27 @@ const HeaderElement = styled.th`
 const TableRow = styled.tr`
   height: 60px;
 `
-const Cell = styled.td`
+export const Cell = styled.td`
   font-weight: 500;
   font-size: 14px;
   height: 44px;
   padding-left: 16px;
   text-align: left;
+  ${(props) => props.className && props.className === 'negative' ?
+  css`
+    {
+      color: red
+    }
+  ` : props.className && props.className === 'positive' ?
+  css`
+    {
+      color: green;
+    }
+  ` :
+  null
+}
 `
+
 const PaginationBar = styled.div`
   background: #fcfcfd;
   height: 60px;
