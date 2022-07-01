@@ -31,7 +31,7 @@ else {
 const firebaseConfig = configkey;
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 // get the firestore database instance
 const db = getFirestore(app);
@@ -46,7 +46,7 @@ export async function addUserToFireStore(user, walletID) {
       console.error("Error adding document: ", e);
     }
   }
-  
+
 export async function userInDB(walletID) {
     // get users collection
     const usersRef = collection(db, "users");
@@ -57,7 +57,7 @@ export async function userInDB(walletID) {
     // returns true if there is a document that matches the walletId and false if there isn't (there should be one matched user)
     return querySnapshot.docs.length >= 1
   }
-  
+
 
 export async function updateCommitmentFirestore(owner_address, account_id, commitment_amt) {
     const cdp_address = cdpGen(owner_address, account_id).address
@@ -68,7 +68,7 @@ export async function updateCommitmentFirestore(owner_address, account_id, commi
         await updateDoc(walletRef, {
             [key1]: commitment_amt,
             [key2]: Date.now(),
-            webappActions: arrayUnion({actionType: 4, cdpAddress: cdp_address, microAlgos: 0, 
+            webappActions: arrayUnion({actionType: 4, cdpAddress: cdp_address, microAlgos: 0,
             microGARD: 0, microGAIN: 0, swapPair: 0, feesPaid: 1000, timestamp: Date.now()})
         });
     } catch (e) {
@@ -121,7 +121,7 @@ export async function addCDPToFireStore(account_id, microAlgos, microGARD, feesP
   if (docSnap.exists()) {
     const data = docSnap.data()
     CDPs = data.ownedCDPs
-  } 
+  }
   else {
     console.log("No such document!");
   }
@@ -129,7 +129,7 @@ export async function addCDPToFireStore(account_id, microAlgos, microGARD, feesP
     await updateDoc(walletRef, {
       [key1] : -1,
       [key2] : -1,
-      webappActions: arrayUnion({actionType: 0, cdpAddress: cdp_address, microAlgos: microAlgos, 
+      webappActions: arrayUnion({actionType: 0, cdpAddress: cdp_address, microAlgos: microAlgos,
         microGARD: microGARD, microGAIN: 0, swapPair: 0, feesPaid: feesPaid, timestamp: Date.now()})
     });
     console.log('Reopened', cdp_address)
@@ -137,7 +137,7 @@ export async function addCDPToFireStore(account_id, microAlgos, microGARD, feesP
   else{
     await updateDoc(walletRef, {
       [key] : initStats,
-      webappActions: arrayUnion({actionType: 0, cdpAddress: cdp_address, microAlgos: microAlgos, 
+      webappActions: arrayUnion({actionType: 0, cdpAddress: cdp_address, microAlgos: microAlgos,
       microGARD: microGARD, microGAIN: 0, swapPair: 0, feesPaid: feesPaid, timestamp: Date.now()})
     });
     console.log('Added', cdp_address, 'to firestore')
@@ -149,10 +149,10 @@ export async function updateDBWebActions(actionType, account_id, microAlgos, mic
   const cdp_address = cdpGen(owner_address, account_id).address
   const walletRef = doc(db, "users", owner_address);
   await updateDoc(walletRef, {
-    webappActions: arrayUnion({actionType: actionType, cdpAddress: cdp_address, microAlgos: microAlgos, 
+    webappActions: arrayUnion({actionType: actionType, cdpAddress: cdp_address, microAlgos: microAlgos,
       microGARD: microGARD, microGAIN: microGAIN, swapPair: 0, feesPaid: feesPaid, timestamp: Date.now()})
   });
   console.log('webActionsupdated')
 }
-// [{Action type, CDP address (“0” if not applicable), microAlgos in/out, microGARD in/out, 
+// [{Action type, CDP address (“0” if not applicable), microAlgos in/out, microGARD in/out,
 // microGAIN in/out, swapPair (“0” if not applicable”), Fees Paid (in microAlgos), Timestamp}]
