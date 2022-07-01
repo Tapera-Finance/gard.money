@@ -69,7 +69,7 @@ export async function updateCommitmentFirestore(owner_address, account_id, commi
             [key1]: commitment_amt,
             [key2]: Date.now(),
             webappActions: arrayUnion({actionType: 4, cdpAddress: cdp_address, microAlgos: 0, 
-            microGARD: 0, microGAIN: 0, swapPair: 0, feesPaid: 1000, timestamp: Date.now()})
+            microGARD: 0, microGAIN: 0, swapPair: 0, feesPaid: 2000, timestamp: Date.now()})
         });
     } catch (e) {
         console.error("Error adding document: ", e);
