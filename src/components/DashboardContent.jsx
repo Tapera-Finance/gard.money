@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import graph from '../assets/graph.png'
 import Chart from './Chart'
+import Table from './Table'
 import PrimaryButton from './PrimaryButton'
 import {
   getAlgoUsdHistoric,
@@ -11,6 +12,46 @@ import {
 import RadioButtonSet from './RadioButtonSet'
 import moment from 'moment'
 import { useWindowSize } from '../hooks'
+import { app, loadFireStoreCDPs } from './Firebase';
+import {
+  getFirestore,
+  getDoc,
+  doc
+} from "firebase/firestore";
+import { getWalletInfo } from '../wallets/wallets'
+
+// get the firestore database instance
+const db = getFirestore(app);
+
+function mAlgosToAlgos(num) {
+  return num / 1000000
+}
+
+export async function loadDbActionAndMetrics() {
+  const owner_address = getWalletInfo().address
+  const docRef = doc(db, "users", owner_address);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data()
+    console.log(data);
+
+    return {
+      webappActions: data.webappActions,
+      systemAssetVal: data.systemAssetVal,
+      systemDebtVal: data.systemDebtVal
+    }
+  } else {
+    console.log("No webactions, asset values, or debt values")
+  }
+}
+
+const dbData = await loadDbActionAndMetrics();
+const transHistory = dbData.webappActions;
+
+function formatTime(dateInMs) {
+  return new Date(dateInMs).toUTCString();
+}
+
 
 /**
  * Content for dashboard option
@@ -18,6 +59,38 @@ import { useWindowSize } from '../hooks'
 
 export default function DashboardContent() {
   const [selected, setSelected] = useState('System Metrics')
+  const [collapsed, setCollapsed] = useState(false)
+
+  const formattedHistory = transHistory.map((entry, idx) => {
+
+    let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
+    let formattedAlgo = {
+      className: 'negative',
+      value: mAlgosToAlgos(entry.microAlgos).toFixed(2)
+    }
+    let formattedGard = {
+      className: 'positive',
+      value: mAlgosToAlgos(entry.microGARD).toFixed(2)
+    }
+
+    const newEntry = {
+      type: entry.actionType === 0 ? "CDP": "Swap",
+      cdpAddress: collapsed ? formattedAddress : entry.cdpAddress,
+      algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(2) ,
+      gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(2),
+      timestamp: formatTime(entry.timestamp),
+      feesPaid: mAlgosToAlgos(entry.feesPaid)
+    };
+    console.log('new entry', newEntry);
+    return newEntry
+  })
+
+  useEffect(() => {
+   if ( window.visualViewport.width > 768) {
+    setCollapsed(true)
+   }
+  }, [])
+
   return (
     <div>
       <div style={{ display: 'flex', flexDirection: 'row', marginBottom: 40 }}>
@@ -25,6 +98,7 @@ export default function DashboardContent() {
           titles={
             [
               'System Metrics',
+              'My Metrics'
             ] /* add  'My Metrics' to this array when implemented */
           }
           selected={selected}
@@ -42,6 +116,12 @@ export default function DashboardContent() {
             )
         } else return <GraphRow key={`row: ${index}`} items={[value]} />
       })}
+
+      <HistoryTable>
+        <Table title="Transaction history"
+        countSubtitle={`${transHistory.length} Transactions`}
+        data={formattedHistory} />
+      </HistoryTable>
     </div>
   )
 }
@@ -60,6 +140,15 @@ const InactiveRadioText = styled.text`
   color: #98a2b3;
   font-weight: 500;
   font-size: 16px;
+`
+
+const HistoryTable = styled.div`
+  /* td {
+    text-align: center;
+  }
+  th {
+    font-weight: 500;
+  } */
 `
 
 /**
@@ -294,7 +383,30 @@ const Subtitle = styled.text`
   font-weight: normal;
   font-size: 12px;
   color: #475467;
+
+
 `
+
+const dummyCDPs = [
+  {
+    id: 'N/A',
+    liquidationPrice: 0,
+    collateral: 0,
+    debt: 0,
+  },
+  {
+    id: 'N/A',
+    liquidationPrice: 0,
+    collateral: 0,
+    debt: 0,
+  },
+  {
+    id: 'N/A',
+    liquidationPrice: 0,
+    collateral: 0,
+    debt: 0,
+  },
+]
 
 // temporal dummy data for the graphs
 const dummyGraphs = [
