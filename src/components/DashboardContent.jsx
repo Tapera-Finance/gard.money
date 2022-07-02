@@ -52,6 +52,13 @@ function formatTime(dateInMs) {
   return new Date(dateInMs).toUTCString();
 }
 
+function formatDataCell(val) {
+  let computed = mAlgosToAlgos(val).toFixed(2);
+  return {
+    className: computed < 0 ? 'negative' : 'positive',
+    value: computed
+  }
+}
 
 /**
  * Content for dashboard option
@@ -64,14 +71,9 @@ export default function DashboardContent() {
   const formattedHistory = transHistory.map((entry, idx) => {
 
     let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
-    let formattedAlgo = {
-      className: 'negative',
-      value: mAlgosToAlgos(entry.microAlgos).toFixed(2)
-    }
-    let formattedGard = {
-      className: 'positive',
-      value: mAlgosToAlgos(entry.microGARD).toFixed(2)
-    }
+    let formattedAlgo = formatDataCell(entry.microAlgos);
+    let formattedGard = formatDataCell(entry.microGARD);
+
 
     const newEntry = {
       type: entry.actionType === 0 ? "CDP": "Swap",
@@ -86,8 +88,13 @@ export default function DashboardContent() {
   })
 
   useEffect(() => {
-   if ( window.visualViewport.width > 768) {
+   if ( window.visualViewport.width < 768) {
     setCollapsed(true)
+    formattedHistory.forEach((item, idx) => {
+      if (item[idx]["cdpAddress"] && item[idx]["cdpAddress"].length > 12) {
+        let formattedAddress =item[idx]["cdpAddress"].slice(0, 10) + '...' + item[idx]["cdpAddress"].slice(item[idx]["cdpAddress"].length - 3, item[idx]["cdpAddress"].length - 1)
+      }
+    })
    }
   }, [])
 
