@@ -73,6 +73,12 @@ const Button = styled.button`
     background-color: #6941c6;
     pointer-events: none;
   `}
+  ${(props) =>
+    props.walletAddress && props.darkToggle &&
+    css`
+      background-color: #c299eb;
+      border: 1px solid #c299eb;
+  `}
 `
 const ButtonText = styled.text`
   color: #ffffff;

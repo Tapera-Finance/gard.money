@@ -245,7 +245,7 @@ export default function Topbar({ contentName, setMainContent }) {
           <div>
             <ThemeToggle/>
           </div>
-          <div>
+          <div style={{ marginLeft: 2 }}>
             {walletAddress ? (
               <PrimaryButton
                 walletAddress={true}
