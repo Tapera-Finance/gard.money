@@ -401,16 +401,23 @@ function Graph({ title }) {
           name: moment(currTime)
             .subtract(5 * step * (36 - i / step), 'minutes')
             .format('lll'),
-          asset: (
-            JSON.parse(
-              systemAssetValue[8064 - end + i - 1]) / 1000000
-          ).toFixed(2),
+          asset: systemAssetValue[i] ? (systemAssetValue[i]).toFixed(2) : 0,
+          // (JSON.parse(systemAssetValue[systemAssetValue.length - end + i - 1])).toFixed(2)
         })
       }
       setSubtitle(
         `System Asset Value: ` + account_data[account_data.length - 1].asset,
       )
       setData(account_data)
+    }
+    if (title === 'System Debt Value') {
+      //
+    }
+    if (title === 'My Open CDPs') {
+      //
+    }
+    if (title === 'My GARD') {
+
     }
 
   }, [selected, systemAssetValue, systemDebtValue])
