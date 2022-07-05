@@ -453,6 +453,8 @@ function Graph({ title }) {
   )
 }
 
+// 20 - 40 points at a time - display message to user
+
 // styled components
 const Title = styled.text`
   font-weight: bold;
@@ -532,11 +534,11 @@ const myMetricsInit = [
     subtitle: 'Total debts held'
   },
   {
-    title: 'My Open CDPs',
-    subtitle: 'Number Open CDPs: 8 (Last Updated 12:01 pm)'
-  },
-  {
-    title: 'My GARD',
-    subtitle: 'Value of GARD held'
+    title: 'Position Value',
+    subtitle: 'Assets minus debts'
   }
 ]
+
+/**
+ *
+ */
