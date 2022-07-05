@@ -27,6 +27,10 @@ function mAlgosToAlgos(num) {
   return num / 1000000
 }
 
+function mAlgosToAlgosFixed(num) {
+  return mAlgosToAlgos(num).toFixed(2)
+}
+
 export async function loadDbActionAndMetrics() {
   const owner_address = getWalletInfo().address
   const docRef = doc(db, "users", owner_address);
@@ -52,13 +56,23 @@ function formatTime(dateInMs) {
   return new Date(dateInMs).toUTCString();
 }
 
-function formatDataCell(val) {
-  let computed = mAlgosToAlgos(val).toFixed(2);
+/**
+ *
+ * @param {any} val
+ * @param {function} formatter
+ * @param {string[]} classes
+ * @returns
+ */
+function formatDataCell(val, formatter, classes) {
+  let computed = formatter(val);
   return {
-    className: computed < 0 ? 'negative' : 'positive',
+    className: computed < 0 ? classes[0] : classes[1],
     value: computed
   }
 }
+
+
+
 
 /**
  * Content for dashboard option
@@ -71,11 +85,11 @@ export default function DashboardContent() {
   const formattedHistory = transHistory.map((entry, idx) => {
 
     let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
-    let formattedAlgo = formatDataCell(entry.microAlgos);
-    let formattedGard = formatDataCell(entry.microGARD);
+    let formattedAlgo = formatDataCell(entry.microAlgos, mAlgosToAlgosFixed, ['negative', 'positive']);
+    let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, ['negative', 'positive']);
 
 
-    const newEntry = {
+    const newTableEntry = {
       type: entry.actionType === 0 ? "CDP": "Swap",
       cdpAddress: collapsed ? formattedAddress : entry.cdpAddress,
       algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(2) ,
@@ -83,16 +97,17 @@ export default function DashboardContent() {
       timestamp: formatTime(entry.timestamp),
       feesPaid: mAlgosToAlgos(entry.feesPaid)
     };
-    console.log('new entry', newEntry);
-    return newEntry
+    console.log('new table entry', newTableEntry);
+
+    return newTableEntry
   })
 
   useEffect(() => {
-   if ( window.visualViewport.width < 768) {
+   if (window.visualViewport.width < 768) {
     setCollapsed(true)
     formattedHistory.forEach((item, idx) => {
       if (item[idx]["cdpAddress"] && item[idx]["cdpAddress"].length > 12) {
-        let formattedAddress =item[idx]["cdpAddress"].slice(0, 10) + '...' + item[idx]["cdpAddress"].slice(item[idx]["cdpAddress"].length - 3, item[idx]["cdpAddress"].length - 1)
+        item[idx]["cdpAddress"] = item[idx]["cdpAddress"].slice(0, 10) + '...' + item[idx]["cdpAddress"].slice(item[idx]["cdpAddress"].length - 3, item[idx]["cdpAddress"].length - 1)
       }
     })
    }
@@ -112,7 +127,9 @@ export default function DashboardContent() {
           callback={(selected) => setSelected(selected)}
         />
       </div>
-      {dummyGraphs.map((value, index, array) => {
+     { selected === 'System Metrics' ?
+
+      dummyGraphs.map((value, index, array) => {
         if (window.innerWidth > 900) {
           if (index % 2 !== 0)
             return (
@@ -122,7 +139,22 @@ export default function DashboardContent() {
               />
             )
         } else return <GraphRow key={`row: ${index}`} items={[value]} />
-      })}
+      })
+      : selected === 'My Metrics' ?
+
+      myMetricsInit.map((value, index, array) => {
+        if (window.innerWidth > 900) {
+          if (index % 2 !== 0)
+            return (
+              <GraphRow
+                key={`row: ${index}`}
+                items={[array[index - 1], array[index]]}
+              />
+            )
+          } else return <GraphRow key={`row: ${index}`} items={[value]} />
+        })
+        : null
+      }
 
       <HistoryTable>
         <Table title="Transaction history"
@@ -196,13 +228,18 @@ function Graph({ title }) {
   )
   const [chainData, setChainData] = useState('')
   const [currentPrice, setCurrentPrice] = useState('')
+  const [systemAssetValue, setSystemAssetValue] = useState('')
+  const [systemDebtValue, setSystemDebtValue] = useState('')
   const [currTime, setCurrTime] = useState(new Date())
 
   useEffect(async () => {
     const chainDataResponse = await getChainData()
     const currentPriceResponse = await getCurrentAlgoUsd()
+    const myMetricsResponse = await loadDbActionAndMetrics()
     setChainData(chainDataResponse)
     setCurrentPrice(currentPriceResponse)
+    setSystemAssetValue(myMetricsResponse.systemAssetVal)
+    setSystemDebtValue(myMetricsResponse.systemDebtVal)
   }, [])
 
   useEffect(() => {
@@ -349,6 +386,35 @@ function Graph({ title }) {
       }
   }, [selected, chainData, currentPrice])
 
+  useEffect(() => {
+    if (!systemAssetValue || !systemDebtValue) return
+    if (title === 'System Asset Value') {
+      let step = 8
+      let end = 288
+      if (selected !== '24H') {
+         step = selected === '7D' ? 56 : 224
+         end = selected === '7D' ? 2016 : 8064
+      }
+      let account_data = []
+      for (var i = step; i <= end; i += step) {
+        account_data.push({
+          name: moment(currTime)
+            .subtract(5 * step * (36 - i / step), 'minutes')
+            .format('lll'),
+          asset: (
+            JSON.parse(
+              systemAssetValue[8064 - end + i - 1]) / 1000000
+          ).toFixed(2),
+        })
+      }
+      setSubtitle(
+        `System Asset Value: ` + account_data[account_data.length - 1].asset,
+      )
+      setData(account_data)
+    }
+
+  }, [selected, systemAssetValue, systemDebtValue])
+
   return (
     <div>
       <div style={{ marginLeft: 18 }}>
@@ -446,5 +512,24 @@ const dummyGraphs = [
   {
     title: 'Treasury TVL',
     subtitle: 'Current TVL: $799.89 (Last Updated 12:01 pm)',
+  }
+]
+
+const myMetricsInit = [
+  {
+    title: 'System Asset Value',
+    subtitle: "Value of assets held"
+  },
+  {
+    title: 'System Debt Value',
+    subtitle: 'Total debts held'
+  },
+  {
+    title: 'My Open CDPs',
+    subtitle: 'Number Open CDPs: 8 (Last Updated 12:01 pm)'
+  },
+  {
+    title: 'My GARD',
+    subtitle: 'Value of GARD held'
   }
 ]
