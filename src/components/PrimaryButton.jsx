@@ -7,11 +7,11 @@ import { ThemeContext } from '../contexts/ThemeContext'
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled }) {
+export default function PrimaryButton({ text, onClick, variant, disabled, walletAddress }) {
   const {theme} = useContext(ThemeContext)
   
   return (
-    <Button darkToggle={theme === 'dark'} variant={variant} disabled={disabled}  onClick={() => onClick()}>
+    <Button darkToggle={theme === 'dark'} variant={variant} disabled={disabled} walletAddress={walletAddress}  onClick={() => onClick()}>
       <ButtonText darkToggle={theme === 'dark'} variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
@@ -66,6 +66,13 @@ const Button = styled.button`
     background-color: #cccccc;
     pointer-events: none;
     `}
+  ${(props) =>
+    props.walletAddress &&
+    css`
+    border: 1px solid #6941c6;
+    background-color: #6941c6;
+    pointer-events: none;
+  `}
 `
 const ButtonText = styled.text`
   color: #ffffff;

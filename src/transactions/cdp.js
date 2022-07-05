@@ -181,15 +181,14 @@ export async function updateCDPs(address) {
       !accountCDPs.hasOwnProperty(x) ||
       accountCDPs[x]["checked"] + mins_to_refresh * 60 * 1000 < Date.now()
     ) {
-      checkChainForCDP(address, x);
-      webcalls += 1;
+      try {
+        checkChainForCDP(address, x);
+        webcalls += 1;
+      } catch (error) {
+        continue
+      }
     }
-    if (webcalls % 3 == 0) {
-      await new Promise((r) => setTimeout(r, 500));
-    }
-    if (webcalls % 10 == 0) {
-      await new Promise((r) => setTimeout(r, 4000));
-    }
+    await new Promise((r) => setTimeout(r, 100));
   }
 }
 

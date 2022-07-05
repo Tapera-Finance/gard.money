@@ -228,26 +228,8 @@ export default function Topbar({ contentName, setMainContent }) {
           <div>
             <NetToggle/>
           </div>
-          <div>
-            <ThemeToggle/>
-          </div>
-          <div>
-            <PrimaryButton
-              variant={walletAddress}
-              text={walletAddress || 'Connect Wallet'}
-              onClick={() => {
-                if (walletAddress) {
-                  setMainContent(CONTENT_NAMES.WALLET)
-                } else {
-                  reduceModalContent('terms')
-                  setModalCanAnimate(true)
-                  setModalVisible(true)
-                }
-              }}
-            />
-          </div>
           {walletAddress ? (
-            <div style={{ marginLeft: 12 }}>
+            <div style={{ marginLeft: 6 }}>
               <PrimaryButton
                 variant={true}
                 text="Disconnect Wallet"
@@ -260,6 +242,27 @@ export default function Topbar({ contentName, setMainContent }) {
           ) : (
             <></>
           )}
+          <div>
+            <ThemeToggle/>
+          </div>
+          <div>
+            {walletAddress ? (
+              <PrimaryButton
+                walletAddress={true}
+                text={walletAddress}
+              />
+            ) : (
+              <PrimaryButton
+              text={'Connect Wallet'}
+              onClick={() => {
+                reduceModalContent('terms')
+                setModalCanAnimate(true)
+                setModalVisible(true)
+              }}
+            />
+            )}
+          </div>
+          
         </div>
       </TopBar>
       <Modal

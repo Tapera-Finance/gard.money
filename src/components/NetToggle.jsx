@@ -14,7 +14,7 @@ export default function NetToggle() {
         console.log('net',net)
         window.localStorage.removeItem('CDPs')
         setNet(net === 'MAINNET' ? 'TESTNET1': 'MAINNET')
-        navigate('/')
+        navigate('/dashboard')
         window.location.reload(false);
     }
 
