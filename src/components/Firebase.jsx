@@ -75,8 +75,7 @@ export async function updateCommitmentFirestore(owner_address, account_id, commi
         console.error("Error adding document: ", e);
     }
 }
-export async function updateLiquidationFirestore(account_id) {
-    const owner_address = getWalletInfo().address
+export async function updateLiquidationFirestore(owner_address, account_id) {
     const cdp_address = cdpGen(owner_address, account_id).address
     const key1 = `ownedCDPs.${cdp_address}.lastCommitment`
     const key2 = `ownedCDPs.${cdp_address}.commitmentTimestamp`
@@ -132,7 +131,6 @@ export async function addCDPToFireStore(account_id, microAlgos, microGARD, feesP
       webappActions: arrayUnion({actionType: 0, cdpAddress: cdp_address, microAlgos: microAlgos, 
         microGARD: microGARD, microGAIN: 0, swapPair: 0, feesPaid: feesPaid, timestamp: Date.now()})
     });
-    console.log('Reopened', cdp_address)
   }
   else{
     await updateDoc(walletRef, {
@@ -140,7 +138,6 @@ export async function addCDPToFireStore(account_id, microAlgos, microGARD, feesP
       webappActions: arrayUnion({actionType: 0, cdpAddress: cdp_address, microAlgos: microAlgos, 
       microGARD: microGARD, microGAIN: 0, swapPair: 0, feesPaid: feesPaid, timestamp: Date.now()})
     });
-    console.log('Added', cdp_address, 'to firestore')
   }
 }
 
@@ -152,7 +149,6 @@ export async function updateDBWebActions(actionType, account_id, microAlgos, mic
     webappActions: arrayUnion({actionType: actionType, cdpAddress: cdp_address, microAlgos: microAlgos, 
       microGARD: microGARD, microGAIN: microGAIN, swapPair: 0, feesPaid: feesPaid, timestamp: Date.now()})
   });
-  console.log('webActionsupdated')
 }
 // [{Action type, CDP address (“0” if not applicable), microAlgos in/out, microGARD in/out, 
 // microGAIN in/out, swapPair (“0” if not applicable”), Fees Paid (in microAlgos), Timestamp}]
