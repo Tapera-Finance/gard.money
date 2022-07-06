@@ -102,9 +102,9 @@ export default function MintContent() {
   const [loading, setLoading] = useState(false)
   const [loadingText, setLoadingText] = useState(null)
   const [balance, setBalance] = useState('...')
-  const [cAlgos, setCollateral] = useState(0)
+  const [cAlgos, setCollateral] = useState('')
   const [maxCollateral, setMaxCollateral] = useState(0)
-  const [mGARD, setGARD] = useState(0)
+  const [mGARD, setGARD] = useState('')
   const [maxGARD, setMaxGARD] = useState(0)
   const [minted, setMinted] = useState(1)
   const dispatch = useDispatch()
@@ -127,12 +127,17 @@ export default function MintContent() {
     let max = Math.trunc(100*(algosToMAlgos(price) * algosToMAlgos(newValue) / 1000000) / 1.4  / 1000000)/100
     setMaxGARD(max)
     if (mGARD > max) {
-      setGARD(max)
+      setGARD(max < 1 ? 1 : max)
     } 
   };
 
   const handleInputChange1 = (event) => {
     setCollateral(event.target.value === '' ? '' : Number(event.target.value));
+    let max = Math.trunc(100*(algosToMAlgos(price) * algosToMAlgos(Number(event.target.value)) / 1000000) / 1.4  / 1000000)/100
+    setMaxGARD(max)
+    if (mGARD > max) {
+      setGARD(max < 1 ? 1 : max)
+    } 
   };
 
   const handleSliderChange2 = (event, newValue) => {
@@ -150,6 +155,15 @@ export default function MintContent() {
 
   const handleInputChange2 = (event) => {
     setGARD(event.target.value === '' ? '' : Number(event.target.value));
+    let max = ((getWalletInfo()['amount'] - calcDevFees(algosToMAlgos(mGARD)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3)
+    setMaxCollateral(max)
+    if (isNaN(cAlgos)){
+      console.log('heyy')
+      return
+    }
+    if (cAlgos > max) {
+      setCollateral(max)
+    }
   };
   
   var sessionStorageSetHandler = function(e) {
@@ -199,7 +213,7 @@ export default function MintContent() {
                   darkToggle={theme === 'dark'}
                   type='number'
                   min="0.00"
-                  step="0.001"
+                  step="1"
                   id="collateral"
                   placeholder="Algos sent to CDP"
                   value={cAlgos}
@@ -249,7 +263,7 @@ export default function MintContent() {
                   darkToggle={theme === 'dark'}
                   type='number'
                   min="1.00"
-                  step="0.001"
+                  step="1"
                   id="minted"
                   placeholder="Min. 1"
                   value={mGARD}
