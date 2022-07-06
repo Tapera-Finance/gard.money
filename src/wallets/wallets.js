@@ -16,7 +16,7 @@ function sleep(seconds) {
 
 function rerun(e) {
 	if (e.toString().includes('Network request error. Received status 429')) {
-		return true		
+		return true
 	}
 	// TODO: We should eventually add more cases that return true here
 	return false // We can iterate on this as we identify cases where we don't want it to rerun
@@ -73,7 +73,7 @@ export async function updateWalletInfo() {
     	activeWalletInfo['assets'][j]['decimals'] = response['params']['decimals']
     	activeWalletInfo['assets'][j]['name'] = response['params']['name']
       if (info['assets'][j]['asset-id'] == 684649988 && j != 0){
-        idx = j 
+        idx = j
       }
       })
     )}
@@ -159,9 +159,21 @@ export function getWalletInfo() {
   return activeWalletInfo
 }
 
+function isiOS() {
+  return [
+    'iPad Simulator',
+    'iPhone Simulator',
+    'iPod Simulator',
+    'iPad',
+    'iPhone',
+    'iPod'
+  ].includes(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+}
+
 export async function connectWallet(type, address) {
   // XXX: Only MyAlgoConnect should be used for testing other functionality at present
   // XXX: A future improvement would allow users to select a specific wallet based upon some displayed info, rather than limiting them to one
+  let interval;
   switch (type) {
     case 'MyAlgoConnect':
       const settings = {
@@ -205,7 +217,7 @@ export async function connectWallet(type, address) {
       break
     case 'AlgorandWallet':
       // Check if connection is already established
-      
+
       if (connector && connector.connected) {
         connector.killSession();
         console.log('KILLED')
@@ -226,14 +238,18 @@ export async function connectWallet(type, address) {
       });
       let account;
       connector.on("connect", (error, payload) => {
+        if (isiOS() && !account) {
+          interval = setInterval(() => {
+            console.log('Awaiting pera connect completion')
+          }, 3000)
+        }
         if (error) {
           throw error;
         }
-        
         // Get provided accounts
         const { accounts } = payload.params[0];
         account = accounts[0]
-        
+
         d[0].resolve('Done')
       });
       await d[0];
@@ -246,6 +262,9 @@ export async function connectWallet(type, address) {
     default:
       // We should never get here, that's on bad programming
       console.error('Undefined wallet type!')
+  }
+  if (isiOS() && interval && activeWallet.address) {
+    clearInterval(interval)
   }
   console.log(activeWallet)
   localStorage.setItem('wallet', JSON.stringify(activeWallet))
@@ -290,7 +309,7 @@ export async function signGroup(info, txnarray) {
        }
        return res
     case 'AlgorandWallet':
-       
+
        const txnsToSign = txnarray.map(txn => {
          const encodedTxn = Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString("base64");
          if (!sameSender(txn['from'], senderAddressObj)) {
@@ -323,7 +342,7 @@ export async function signGroup(info, txnarray) {
          }
        })
        console.log(groupIDs)
-       
+
        let signedTxns = []
        // Now we sign each group
        for (const id of groupIDs) {
@@ -351,7 +370,7 @@ export async function signGroup(info, txnarray) {
          return element ? { blob: new Uint8Array(Buffer.from(element.blob, "base64")) }: null;
        });
        return parsedResults
-     default:    
+     default:
        throw 'No wallet selected!';
   }
 }
@@ -407,12 +426,12 @@ export async function sendTxn(txn, confirmMessage = null, commitment=false) {
 
 export function handleTxError(e, text) {
 	// Supresses basic universal errors
-	
+
 	// User cancels TX
 	if (e.toString() == 'Error: Operation cancelled') {
 		return
 	}
-	
+
 	alert(text + ': \n' + e)
 }
 

@@ -629,7 +629,7 @@ export async function addCollateral(accountID, newAlgos) {
   const response = await sendTxn(stxns, "Successfully added " + newAlgos + " ALGOs as collateral.",);
   setLoadingStage(null)
 
-  updateDBWebActions(2, accountID, microNewAlgos, 0, 0, 1000)
+  updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 2000)
   checkChainForCDP(info.address, accountID);
 
   return response;
@@ -655,8 +655,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   }
   let info = await accountInfoPromise;
   let cdp = cdpGen(info.address, accountID);
-  const cdpInfoPromise = accountInfo(cdp.address)
-  let cdpInfo = await cdpInfoPromise
+  let cdpInfo = await accountInfo(cdp.address)
   const cdpBal = cdpInfo.amount
   let gard_bal = getGardBalance(info);
 
@@ -734,7 +733,6 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   let response = await sendTxn(stxns, "Successfully closed your cdp with ID " + accountID + ".",);
   setLoadingStage(null)
   removeCDP(info.address, accountID);
-  updateLiquidationFirestore(accountID)
   updateDBWebActions(1, accountID, cdpBal - fee, microRepayGARD, 0, fee)
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
@@ -900,7 +898,7 @@ export async function voteCDP(account_id, option1, option2) {
       " from CDP #" +
       account_id,
   );
-  updateDBWebActions(6, account_id, 0, 0, 0, 1000)
+  updateDBWebActions(6, account_id, 0, 0, 0, 2000)
   setLoadingStage(null)
   return response;
 }
@@ -995,6 +993,7 @@ export async function liquidate(
   let response = await sendTxn(
     stxns,
     "Successfully liquidated CDP #" + account_id + " of " + owner_address, true);
+    updateLiquidationFirestore(owner_address, account_id)
     setLoadingStage(null)
   return response;
 }
