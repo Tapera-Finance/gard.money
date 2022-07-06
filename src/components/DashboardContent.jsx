@@ -57,11 +57,11 @@ function formatTime(dateInMs) {
 }
 
 /**
- *
+ * applies binary styling to numerical cells of transaction history table
  * @param {any} val
  * @param {function} formatter
  * @param {string[]} classes
- * @returns
+ * @returns {object} {...className, ...value}
  */
 function formatDataCell(val, formatter, classes) {
   let computed = formatter(val);
@@ -70,9 +70,6 @@ function formatDataCell(val, formatter, classes) {
     value: computed
   }
 }
-
-
-
 
 /**
  * Content for dashboard option
@@ -120,15 +117,13 @@ export default function DashboardContent() {
           titles={
             [
               'System Metrics',
-              'My Metrics'
             ] /* add  'My Metrics' to this array when implemented */
           }
           selected={selected}
           callback={(selected) => setSelected(selected)}
         />
       </div>
-     { selected === 'System Metrics' ?
-
+     {
       dummyGraphs.map((value, index, array) => {
         if (window.innerWidth > 900) {
           if (index % 2 !== 0)
@@ -140,22 +135,7 @@ export default function DashboardContent() {
             )
         } else return <GraphRow key={`row: ${index}`} items={[value]} />
       })
-      : selected === 'My Metrics' ?
-
-      myMetricsInit.map((value, index, array) => {
-        if (window.innerWidth > 900) {
-          if (index % 2 !== 0)
-            return (
-              <GraphRow
-                key={`row: ${index}`}
-                items={[array[index - 1], array[index]]}
-              />
-            )
-          } else return <GraphRow key={`row: ${index}`} items={[value]} />
-        })
-        : null
       }
-
       <HistoryTable>
         <Table title="Transaction history"
         countSubtitle={`${transHistory.length} Transactions`}
@@ -182,12 +162,6 @@ const InactiveRadioText = styled.text`
 `
 
 const HistoryTable = styled.div`
-  /* td {
-    text-align: center;
-  }
-  th {
-    font-weight: 500;
-  } */
 `
 
 /**
@@ -228,18 +202,13 @@ function Graph({ title }) {
   )
   const [chainData, setChainData] = useState('')
   const [currentPrice, setCurrentPrice] = useState('')
-  const [systemAssetValue, setSystemAssetValue] = useState('')
-  const [systemDebtValue, setSystemDebtValue] = useState('')
   const [currTime, setCurrTime] = useState(new Date())
 
   useEffect(async () => {
     const chainDataResponse = await getChainData()
     const currentPriceResponse = await getCurrentAlgoUsd()
-    const myMetricsResponse = await loadDbActionAndMetrics()
     setChainData(chainDataResponse)
     setCurrentPrice(currentPriceResponse)
-    setSystemAssetValue(myMetricsResponse.systemAssetVal)
-    setSystemDebtValue(myMetricsResponse.systemDebtVal)
   }, [])
 
   useEffect(() => {
@@ -386,34 +355,6 @@ function Graph({ title }) {
       }
   }, [selected, chainData, currentPrice])
 
-  useEffect(() => {
-    if (!systemAssetValue || !systemDebtValue) return
-    if (title === 'System Asset Value') {
-      let step = 8
-      let end = 288
-      if (selected !== '24H') {
-         step = selected === '7D' ? 56 : 224
-         end = selected === '7D' ? 2016 : 8064
-      }
-      let account_data = []
-      for (var i = step; i <= end; i += step) {
-        account_data.push({
-          name: moment(currTime)
-            .subtract(5 * step * (36 - i / step), 'minutes')
-            .format('lll'),
-          asset: (
-            JSON.parse(
-              systemAssetValue[8064 - end + i - 1]) / 1000000
-          ).toFixed(2),
-        })
-      }
-      setSubtitle(
-        `System Asset Value: ` + account_data[account_data.length - 1].asset,
-      )
-      setData(account_data)
-    }
-
-  }, [selected, systemAssetValue, systemDebtValue])
 
   return (
     <div>
@@ -512,24 +453,5 @@ const dummyGraphs = [
   {
     title: 'Treasury TVL',
     subtitle: 'Current TVL: $799.89 (Last Updated 12:01 pm)',
-  }
-]
-
-const myMetricsInit = [
-  {
-    title: 'System Asset Value',
-    subtitle: "Value of assets held"
-  },
-  {
-    title: 'System Debt Value',
-    subtitle: 'Total debts held'
-  },
-  {
-    title: 'My Open CDPs',
-    subtitle: 'Number Open CDPs: 8 (Last Updated 12:01 pm)'
-  },
-  {
-    title: 'My GARD',
-    subtitle: 'Value of GARD held'
   }
 ]
