@@ -56,11 +56,18 @@ const poolShark = {
  * Global Helpers
  */
 
-export function estimateReturn(input, totalX, totalY, fee) {
+// export function estimateReturn(input, totalX, totalY, fee) {
+//   let receivedAmount =
+//     ((1e6 * input * totalY) / (totalX + (input*1e6))) * (1 - fee); // compare this to what actual transaction returns?
+//   return parseInt(receivedAmount);
+// }
+
+export function estimateReturn(input, totalX, totalY) {
   let receivedAmount =
-    ((1e6 * input * totalY) / (totalX + (input*1e6))) * (1 - fee); // compare this to what actual transaction returns?
+   ((1e6* (input * totalY) / Math.floor(((input*1e6) + totalX)) * 9970)) / 10000;
   return parseInt(receivedAmount);
 }
+
 /**
  *
  *
@@ -122,7 +129,7 @@ const setLoadingStage = stage => sessionStorage.setItem("loadingStage", JSON.str
   *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
 export async function swapAlgoToGard(amount, minimum) {
-  
+
   setLoadingStage("Loading...");
 
   const infoPromise = accountInfo();
@@ -168,7 +175,7 @@ export async function swapAlgoToGard(amount, minimum) {
 /**
  * @function swapGardToAlgo - create and send transaction to swap GARD FOR ALGO on Pact DEX
  *    @param {amount} {number} - representing how many microgard to send
- *    @param {minimum} {number} - representing minimum acceptable microAlgos for swap to succeed 
+ *    @param {minimum} {number} - representing minimum acceptable microAlgos for swap to succeed
  *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
  export async function swapGardToAlgo(amount, minimum) {
