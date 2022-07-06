@@ -113,7 +113,7 @@ export default function MintContent() {
     await updateWalletInfo();
     getWallet();
     setBalance((getWalletInfo()['amount'] / 1000000).toFixed(3));
-    setMaxCollateral(((getWalletInfo()['amount'] -  calcDevFees(algosToMAlgos(mGARD || 1)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3))
+    setMaxCollateral(mAlgosToAlgos(getWalletInfo()['amount'] - (calcDevFees(algosToMAlgos(mGARD || 1))) - 307000 - (100000 * getWalletInfo()['assets'].length + 4)).toFixed(3))
   }, [])
   
   const [commitChecked, setCommitChecked] = useState(false);
@@ -142,7 +142,7 @@ export default function MintContent() {
 
   const handleSliderChange2 = (event, newValue) => {
     setGARD(newValue);
-    let max = ((getWalletInfo()['amount'] - calcDevFees(algosToMAlgos(mGARD)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3)
+    let max = mAlgosToAlgos(getWalletInfo()['amount'] - (calcDevFees(algosToMAlgos(mGARD))) - 307000 - (100000 * getWalletInfo()['assets'].length + 4)).toFixed(3)
     setMaxCollateral(max)
     if (isNaN(cAlgos)){
       console.log('heyy')
@@ -155,7 +155,7 @@ export default function MintContent() {
 
   const handleInputChange2 = (event) => {
     setGARD(event.target.value === '' ? '' : Number(event.target.value) < 1 ? 1: Number(event.target.value));
-    let max = ((getWalletInfo()['amount'] - calcDevFees(algosToMAlgos(mGARD)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3)
+    let max = mAlgosToAlgos(getWalletInfo()['amount'] - (calcDevFees(algosToMAlgos(mGARD))) - 307000 - (100000 * getWalletInfo()['assets'].length + 4)).toFixed(3)
     setMaxCollateral(max)
     if (isNaN(cAlgos)){
       console.log('heyy')
