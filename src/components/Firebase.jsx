@@ -58,7 +58,6 @@ export async function userInDB(walletID) {
     return querySnapshot.docs.length >= 1
   }
 
-
 export async function updateCommitmentFirestore(owner_address, account_id, commitment_amt) {
     const cdp_address = cdpGen(owner_address, account_id).address
     const key1 = `ownedCDPs.${cdp_address}.lastCommitment`

@@ -401,27 +401,6 @@ const Subtitle = styled.text`
 
 `
 
-const dummyCDPs = [
-  {
-    id: 'N/A',
-    liquidationPrice: 0,
-    collateral: 0,
-    debt: 0,
-  },
-  {
-    id: 'N/A',
-    liquidationPrice: 0,
-    collateral: 0,
-    debt: 0,
-  },
-  {
-    id: 'N/A',
-    liquidationPrice: 0,
-    collateral: 0,
-    debt: 0,
-  },
-]
-
 // temporal dummy data for the graphs
 const dummyGraphs = [
   /* Hidden until data is finished
