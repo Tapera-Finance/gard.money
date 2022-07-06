@@ -223,6 +223,7 @@ function GraphRow({ items }) {
 function Graph({ title }) {
   const [data, setData] = useState([])
   const [selected, setSelected] = useState('24H')
+  const [myMetricsToggle, setMyMetricsToggle] = useState(false)
   const [subtitle, setSubtitle] = useState(
     'Current Price: $799.89 (Last Updated 12:01 pm)',
   )
@@ -230,6 +231,8 @@ function Graph({ title }) {
   const [currentPrice, setCurrentPrice] = useState('')
   const [systemAssetValue, setSystemAssetValue] = useState('')
   const [systemDebtValue, setSystemDebtValue] = useState('')
+  const [showSeven, setShowSeven] = useState(true)
+  const [showThirty, setShowThirty] = useState(true)
   const [currTime, setCurrTime] = useState(new Date())
 
   useEffect(async () => {
@@ -389,13 +392,33 @@ function Graph({ title }) {
   useEffect(() => {
     if (!systemAssetValue || !systemDebtValue) return
     if (title === 'System Asset Value') {
+      setMyMetricsToggle(true)
       let step = 8
-      let end = 288
+      let end = systemAssetValue.length;
+      if (!end > 288) {
+        setShowSeven(false)
+      }
+      if (end < 2016) {
+        setShowThirty(false)
+      }
       if (selected !== '24H') {
-         step = selected === '7D' ? 56 : 224
-         end = selected === '7D' ? 2016 : 8064
+        if (selected === '7D') {
+          end = end < 2016 ? end : 2016
+          step = 56
+        }
+        if (selected === '30D') {
+          end = end < 8064 ? end : 8064
+          step = 224
+        }
       }
       let account_data = []
+      console.log(`{
+        step: ${step},
+        end: ${end},
+        dataset: ${systemAssetValue},
+        showSeven: ${showSeven},
+        showThirty: ${showThirty}
+      }`);
       for (var i = step; i <= end; i += step) {
         account_data.push({
           name: moment(currTime)
@@ -443,14 +466,36 @@ function Graph({ title }) {
         />
       </div>
       <div style={{ marginLeft: 18 }}>
-        <RadioButtonSet
-          titles={['24H', '7D', '30D']}
-          selected={selected}
-          callback={(selected) => setSelected(selected)}
-        />
+        {myMetricsToggle ? (
+          showSeven && showThirty ? (
+            <RadioButtonSet
+              titles={["24H", "7D", "30D"]}
+              selected={selected}
+              callback={(selected) => setSelected(selected)}
+            />
+          ) : showSeven && !showThirty ? (
+            <RadioButtonSet
+              titles={["24H", "7D"]}
+              selected={selected}
+              callback={(selected) => setSelected(selected)}
+            />
+          ) : (
+            <RadioButtonSet
+              titles={["24H"]}
+              selected={selected}
+              callback={(selected) => setSelected(selected)}
+            />
+          )
+        ) : (
+          <RadioButtonSet
+            titles={["24H", "7D", "30D"]}
+            selected={selected}
+            callback={(selected) => setSelected(selected)}
+          />
+        )}
       </div>
     </div>
-  )
+  );
 }
 
 // 20 - 40 points at a time - display message to user
