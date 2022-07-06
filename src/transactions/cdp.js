@@ -402,7 +402,7 @@ export async function openCDP(openingALGOs, openingGARD, commit) {
     assetIndex: gardID,
   });
 
-  const stringVal = 'af/gov1:j{"com":' + (collateral+300000).toString() + "}";
+  const stringVal = commit ? `af/gov1:j{"com":${(collateral+300000)},"bnf":"${info.address}"}`: 'af/gov1:j{"com":' + (collateral+300000).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -792,12 +792,12 @@ export async function commitCDP(account_id, amount) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
+  const info = await infoPromise;
+
   const stringVal =
-    'af/gov1:j{"com":' + parseInt(amount * 1000000).toString() + "}";
+  `af/gov1:j{"com":${parseInt(amount * 1000000)},"bnf":"${info.address}"}`;
 
   const note = enc.encode(stringVal);
-
-  const info = await infoPromise;
 
   let cdp = cdpGen(info.address, account_id);
 
