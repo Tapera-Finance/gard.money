@@ -19,8 +19,8 @@ import {
   signGroup,
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
-import { updateCommitmentFirestore } from "../components/Firebase";
-import { MINID, MAXID } from "../globals";
+import { updateCommitmentFirestore , addCDPToFireStore, updateDBWebActions, updateLiquidationFirestore } from "../components/Firebase";
+import { VERSION, MINID, MAXID } from "../globals";
 
 var $ = require("jquery");
 
@@ -474,6 +474,8 @@ export async function openCDP(openingALGOs, openingGARD, commit) {
 
   response = await sendTxn(stxns2, "Successfully opened a CDP with ID: " + accountID + ".");
 
+  addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, devFees)
+
   if (commit) {
     setLoadingStage("Committing to Governance...")
     lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
@@ -551,6 +553,7 @@ export async function mint(accountID, newGARD) {
 
   let response = await sendTxn(stxns, "Successfully minted " + newGARD + " GARD.");
   setLoadingStage(null)
+  updateDBWebActions(3, accountID, 0, microNewGARD, 0, devFees)
   checkChainForCDP(info.address, accountID);
 
   return response;
@@ -626,6 +629,7 @@ export async function addCollateral(accountID, newAlgos) {
   const response = await sendTxn(stxns, "Successfully added " + newAlgos + " ALGOs as collateral.",);
   setLoadingStage(null)
 
+  updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 2000)
   checkChainForCDP(info.address, accountID);
 
   return response;
@@ -651,6 +655,8 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   }
   let info = await accountInfoPromise;
   let cdp = cdpGen(info.address, accountID);
+  let cdpInfo = await accountInfo(cdp.address)
+  const cdpBal = cdpInfo.amount
   let gard_bal = getGardBalance(info);
 
   if (gard_bal == null || gard_bal < microRepayGARD) {
@@ -727,6 +733,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   let response = await sendTxn(stxns, "Successfully closed your cdp with ID " + accountID + ".",);
   setLoadingStage(null)
   removeCDP(info.address, accountID);
+  updateDBWebActions(1, accountID, cdpBal - fee, microRepayGARD, 0, fee)
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
 }
@@ -891,6 +898,7 @@ export async function voteCDP(account_id, option1, option2) {
       " from CDP #" +
       account_id,
   );
+  updateDBWebActions(6, account_id, 0, 0, 0, 2000)
   setLoadingStage(null)
   return response;
 }
@@ -985,6 +993,7 @@ export async function liquidate(
   let response = await sendTxn(
     stxns,
     "Successfully liquidated CDP #" + account_id + " of " + owner_address, true);
+    updateLiquidationFirestore(owner_address, account_id)
     setLoadingStage(null)
   return response;
 }

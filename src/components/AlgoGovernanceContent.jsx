@@ -142,7 +142,7 @@ export default function AlgoGovernanceContent() {
             <div>
               <text>Place your vote below for </text>
               <Link darkToggle = {theme === 'dark'} href="https://governance.algorand.foundation/governance-period-3/period-3-voting-session-1">
-                Governance Period #3 Voting Session #1
+                Governance Period #4 Voting Session #1
               </Link>
               <text>.</text>
             </div>
@@ -150,7 +150,7 @@ export default function AlgoGovernanceContent() {
             <div>
               <text>
                 Enter the number of Algo tokens you would like commit for 
-                governance period #3 from 
+                governance period #4 from 
               </text>
               <BoldText>{` CDP #${selectedAccount}.`}</BoldText>
             </div>
