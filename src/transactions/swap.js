@@ -62,7 +62,7 @@ const poolShark = {
 //   return parseInt(receivedAmount);
 // }
 
-export function estimateReturn(input, totalX, totalY, fee) {
+export function estimateReturn(input, totalX, totalY) {
   let receivedAmount =
    ((1e6* (input * totalY) / Math.floor(((input*1e6) + totalX)) * 9900)) / 10000;
   return parseInt(receivedAmount);

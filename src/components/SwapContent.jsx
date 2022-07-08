@@ -68,14 +68,14 @@ function calcTransResult(amount, totalX, totalY, transaction) {
       transaction.receiving.to === 'GARD'
     ) {
       if (amount > 0) {
-        return (estimateReturn(parseFloat(amount), totalX, totalY, 0.01)/1e6).toFixed(6);
+        return (estimateReturn(parseFloat(amount), totalX, totalY)/1e6).toFixed(6);
       }
     } else if (
       transaction.offering.from === 'GARD' &&
       transaction.receiving.to === 'ALGO'
     ) {
       if (amount > 0) {
-        return (estimateReturn(parseFloat(amount), totalY, totalX, 0.01)/1e6).toFixed(6);
+        return (estimateReturn(parseFloat(amount), totalY, totalX)/1e6).toFixed(6);
       }
     }
   }
@@ -347,9 +347,9 @@ export default function SwapContent() {
                   ) {
                     res = await swapGardToAlgo(
                       formattedAmount,
-                      /*parseInt(
+                      parseInt(
                         1e6 * parseFloat(transaction[1].value.split()[0])*(1-slippageTolerance),
-                      )*/ 1,
+                      ),
                     );
                   }
                   if (res.alert) {
