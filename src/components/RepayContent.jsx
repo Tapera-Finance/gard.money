@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState, useContext } from 'react'
-import styled, {css} from 'styled-components'
+import styled, {css, withTheme} from 'styled-components'
 import { formatToDollars, formatTo } from '../utils'
 import Modal from './Modal'
 import PrimaryButton from './PrimaryButton'
@@ -273,7 +273,7 @@ export default function RepayContent() {
       <div
         style={{
           maxWidth: window.innerWidth - 0.14 * window.innerWidth,
-          overflow: 'scroll',
+          overflow: 'auto',
         }}
       >
         <Table

@@ -254,7 +254,7 @@ function setLoadingStage(stage) {
 }
 
 
-export async function openCDP(openingALGOs, openingGARD, commit) {
+export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   if (openingGARD < 1) {
     return {
       alert: true,
@@ -402,7 +402,7 @@ export async function openCDP(openingALGOs, openingGARD, commit) {
     assetIndex: gardID,
   });
 
-  const stringVal = 'af/gov1:j{"com":' + (collateral+300000).toString() + "}";
+  const stringVal = toWallet ? `af/gov1:j{"com":${(collateral+300000)},"bnf":"${info.address}"}`: 'af/gov1:j{"com":' + (collateral+300000).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -786,18 +786,18 @@ export function getCDPs() {
   return {};
 }
 
-export async function commitCDP(account_id, amount) {
+export async function commitCDP(account_id, amount, toWallet) {
   // Setting up promises
   setLoadingStage('Loading...')
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
+  const info = await infoPromise;
+
   const stringVal =
-    'af/gov1:j{"com":' + parseInt(amount * 1000000).toString() + "}";
+  toWallet ? `af/gov1:j{"com":${parseInt(amount * 1000000)},"bnf":"${info.address}"}`: 'af/gov1:j{"com":' + parseInt(amount * 1000000).toString() + "}";
 
   const note = enc.encode(stringVal);
-
-  const info = await infoPromise;
 
   let cdp = cdpGen(info.address, account_id);
 
