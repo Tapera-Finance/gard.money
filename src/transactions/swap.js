@@ -56,12 +56,6 @@ const poolShark = {
  * Global Helpers
  */
 
-// export function estimateReturn(input, totalX, totalY, fee) {
-//   let receivedAmount =
-//     ((1e6 * input * totalY) / (totalX + (input*1e6))) * (1 - fee); // compare this to what actual transaction returns?
-//   return parseInt(receivedAmount);
-// }
-
 export function estimateReturn(input, totalX, totalY) {
   let receivedAmount =
    ((1e6* (input * totalY) / Math.floor(((input*1e6) + totalX)) * 9900)) / 10000;

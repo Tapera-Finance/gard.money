@@ -804,6 +804,7 @@ function Section({ title, transactionCallback }) {
                         reduceTransaction,
                       );
                     }}
+                    disabled={true}
                   />
                 </div>
               </div>
