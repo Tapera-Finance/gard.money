@@ -274,6 +274,7 @@ export default function SwapContent() {
           return (
             <Section
               title={value.title}
+              key={index}
               darkToggle={theme === 'dark'}
               transactionCallback={(transaction) => {
                 let keys = target.split('/');
@@ -288,12 +289,12 @@ export default function SwapContent() {
                     title: 'You are receiving a minimum of ',
                     value: `${
                       totals
-                        ? calcTransResult(
+                        ? (calcTransResult(
                             transaction.offering.amount,
                             totals[target][keys[0].toLowerCase()],
                             totals[target][keys[1].toLowerCase()],
                             transaction,
-                          )
+                          ) * (1e6*(1-slippageTolerance))/1e6).toFixed(6)
                         : transaction.converted.amount // not sure if still in use
                     } ${transaction.receiving.to}`,
                     token: `${transaction.receiving.to}`,
@@ -318,6 +319,7 @@ export default function SwapContent() {
             darkToggle={theme === 'dark'}
           >
             <TransactionSummary
+              darkToggle={theme === 'dark'}
               specifics={transaction}
               transactionFunc={async () => {
                 setModalCanAnimate(true);
