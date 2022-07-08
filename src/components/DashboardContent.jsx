@@ -3,17 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import graph from '../assets/graph.png'
 import Chart from './Chart'
-import Table from './Table'
+import TransactionHistory from './TransactionHistory'
 import PrimaryButton from './PrimaryButton'
 import {
-  getAlgoUsdHistoric,
   getCurrentAlgoUsd,
   getChainData,
 } from '../prices/prices'
 import RadioButtonSet from './RadioButtonSet'
 import moment from 'moment'
-import { useWindowSize } from '../hooks'
-import { app, loadFireStoreCDPs } from './Firebase';
+import { app } from './Firebase';
 import {
   getFirestore,
   getDoc,
@@ -145,7 +143,7 @@ export default function DashboardContent() {
       {
       transHistory.length && formattedHistory
       ?  <HistoryTable>
-          <Table title="Transaction history"
+          <TransactionHistory title="Transaction history"
           countSubtitle={`${transHistory.length} Transactions`}
           data={formattedHistory}/>
         </HistoryTable>

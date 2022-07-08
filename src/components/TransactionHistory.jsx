@@ -1,0 +1,277 @@
+import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import styled, { css } from "styled-components";
+import { camelToWords } from "../utils";
+import PrimaryButton from "./PrimaryButton";
+import chevron from '../assets/icons/tablePag_icon.png'
+import { ThemeContext } from "../contexts/ThemeContext";
+
+/**
+ * This is a custom implementation of Table for the Dashboard to show
+ * @prop {object[]} data - data to fill the table
+ * @prop {string} title - title for the table
+ * @prop {string} countSubtible - text to be displayed in the count subtitle. If ommited the title prop is used
+ * @param {{data: object[], title: string, countSubtitle: string}} props
+ */
+
+export default function TransactionHistory({
+  data,
+  title,
+  countSubtitle
+}) {
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [shownRows, setShownRows] = useState(data.slice(0, 10));
+  const [currentPageStart, setCurrentPageStart] = useState(1);
+  const keys = data.length ? Object.keys(data[0]) : ["No data to display"];
+
+  const { theme } = useContext(ThemeContext);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setShownRows(data.slice(0, rowsPerPage));
+    setCurrentPageStart(1);
+  }, [rowsPerPage]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setShownRows(
+      data.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
+    );
+  }, [currentPageStart]);
+
+  useEffect(() => {
+    setRowsPerPage(10);
+    setShownRows(data.slice(0, 10));
+    setCurrentPageStart(1);
+  }, [data]);
+
+  return (
+    <div>
+      {title ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignContent: "center",
+            paddingLeft: 24,
+            marginBottom: 19,
+          }}
+        >
+          <div style={{ marginRight: 8 }}>
+            <Title>{title}</Title>
+          </div>
+          <CountContainer darkToggle={theme === "dark"}>
+            <CountText darkToggle={theme === "dark"}>
+              {countSubtitle || `${data.length} ${title}`}
+            </CountText>
+          </CountContainer>
+        </div>
+      ) : (
+        <></>
+      )}
+      <div style={{ marginBottom: 64 }}>
+        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+          <tbody>
+            <HeaderRow
+              darkToggle={theme === "dark"}
+
+            >
+            </HeaderRow>
+            {shownRows.map((value, index) => {
+              return (
+                <TableRow
+                  key={index}
+                  style={{
+                    borderBottom: "solid",
+                    borderBottomWidth: 1,
+                    borderColor: "#F9F9F9",
+                  }}
+                >
+                  {keys.map((keyVal, keyIndex) => {
+                    return typeof value[keyVal] === "object" ? (
+                      <Cell className={value[keyVal].className} key={keyIndex}>
+                        {value[keyVal].value}
+                      </Cell>
+                    ) : (
+                      <Cell key={keyIndex}>{value[keyVal]}</Cell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+          </tbody>
+        </table>
+        {data.length > 10 ? (
+          <PaginationBar
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              paddingLeft: 16,
+              paddingRight: 16,
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              <div style={{ marginRight: 8 }}>
+                <PaginationText>Rows per Page:</PaginationText>
+              </div>
+              <div>
+                <PaginationSelect
+                  value={rowsPerPage}
+                  onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
+                >
+                  <option>10</option>
+                  <option>25</option>
+                  <option>50</option>
+                </PaginationSelect>
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <div style={{ marginRight: 40 }}>
+                <PaginationText>{`${currentPageStart}-${
+                  currentPageStart + rowsPerPage - 1 > data.length
+                    ? data.length
+                    : currentPageStart + rowsPerPage - 1
+                } of ${data.length} items`}</PaginationText>
+              </div>
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                <PaginationButton
+                  style={{
+                    marginRight: 20,
+                    cursor: currentPageStart - rowsPerPage < 1 ? "" : "pointer",
+                  }}
+                  onClick={() => {
+                    if (currentPageStart - rowsPerPage < 1) return;
+                    setCurrentPageStart(currentPageStart - rowsPerPage);
+                  }}
+                >
+                  <img
+                    src={chevron}
+                    style={{ height: 24, transform: "rotate(180deg)" }}
+                  />
+                </PaginationButton>
+                <PaginationButton
+                  style={{
+                    cursor:
+                      currentPageStart + rowsPerPage > data.length
+                        ? ""
+                        : "pointer",
+                  }}
+                  onClick={() => {
+                    if (currentPageStart + rowsPerPage > data.length) return;
+                    setCurrentPageStart(currentPageStart + rowsPerPage);
+                  }}
+                >
+                  <img src={chevron} style={{ height: 24 }} />
+                </PaginationButton>
+              </div>
+            </div>
+          </PaginationBar>
+        ) : (
+          <></>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// styled components
+const Title = styled.text`
+  font-weight: 500;
+  font-size: 18px;
+`
+
+const CountContainer = styled.div`
+  background: #f9f5ff;
+  border-radius: 16px;
+  padding: 2px 8px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #404040;
+  `}
+`
+
+const CountText = styled.text`
+  font-weight: 500;
+  font-size: 12px;
+  color: #6941c6;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: white;
+  `}
+`
+
+const HeaderRow = styled.tr`
+  background: #f9fafb;
+  height: 44px;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      background: #404040;
+  `}
+`
+const HeaderElement = styled.th`
+  font-weight: 500;
+  font-size: 14px;
+  color: #667085;
+  height: 44px;
+  padding-left: 16px;
+  text-align: left;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: white;
+  `}
+`
+const TableRow = styled.tr`
+  height: 60px;
+`
+export const Cell = styled.td`
+  font-weight: 500;
+  font-size: 14px;
+  height: 44px;
+  padding-left: 16px;
+  text-align: left;
+  ${(props) => props.className && props.className === 'negative' ?
+  css`
+    {
+      color: red
+    }
+  ` : props.className && props.className === 'positive' ?
+  css`
+    {
+      color: green;
+    }
+  ` :
+  null
+}
+`
+
+const PaginationBar = styled.div`
+  background: #fcfcfd;
+  height: 60px;
+`
+const PaginationText = styled.text`
+  font-weight: normal;
+  font-size: 12px;
+  color: #464646;
+`
+const PaginationSelect = styled.select`
+  font-size: 12px;
+  line-height: 16px;
+  color: #464646;
+  border: 0px;
+`
+const PaginationButton = styled.button`
+  background: transparent;
+  border: 0px;
+  cursor: normal;
+`
