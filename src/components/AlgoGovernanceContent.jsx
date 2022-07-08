@@ -258,7 +258,7 @@ export default function AlgoGovernanceContent() {
                   checked={toWallet}
                   onChange={handleCheckboxChange1} 
                   />
-                    <InputSubtitle>Governance rewards will be sent to your <span style={{ fontWeight: 'bold' }}>{toWallet ? 'ALGO Wallet' : 'CDP Wallet'}</span></InputSubtitle>
+                    <InputSubtitle>Governance rewards will be sent to your <span style={{ fontWeight: 'bold' }}>{toWallet ? 'ALGO Wallet' : 'CDP'}</span></InputSubtitle>
                 </label>
               </div>
             </div>
