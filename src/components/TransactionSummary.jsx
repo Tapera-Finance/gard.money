@@ -126,6 +126,8 @@ const CancelButtonText = styled.text`
 const SpecificsTitle = styled.text`
   font-weight: normal;
   font-size: 16px;
+  display:inline-block;
+  width: 150px;
 `
 const SpecificsValue = styled.text`
   font-weight: bold;
