@@ -83,7 +83,7 @@ export default function AlgoGovernanceContent() {
             setMaxBal(value.balance)
           }}
           // variant ={true}
-          disabled = {false}
+          disabled = {true}
         />
         :<PrimaryButton
           text={'Commit'}
