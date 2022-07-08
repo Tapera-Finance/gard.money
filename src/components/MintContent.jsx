@@ -102,9 +102,9 @@ export default function MintContent() {
   const [loading, setLoading] = useState(false)
   const [loadingText, setLoadingText] = useState(null)
   const [balance, setBalance] = useState('...')
-  const [cAlgos, setCollateral] = useState(0)
+  const [cAlgos, setCollateral] = useState('')
   const [maxCollateral, setMaxCollateral] = useState(0)
-  const [mGARD, setGARD] = useState(0)
+  const [mGARD, setGARD] = useState('')
   const [maxGARD, setMaxGARD] = useState(0)
   const [minted, setMinted] = useState(1)
   const dispatch = useDispatch()
@@ -113,25 +113,41 @@ export default function MintContent() {
     await updateWalletInfo();
     getWallet();
     setBalance((getWalletInfo()['amount'] / 1000000).toFixed(3));
-    setMaxCollateral(((getWalletInfo()['amount'] -  calcDevFees(algosToMAlgos(mGARD || 1)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3))
+    setMaxCollateral(mAlgosToAlgos(getWalletInfo()['amount'] - (calcDevFees(algosToMAlgos(mGARD || 1))) - 307000 - (100000 * (getWalletInfo()['assets'].length + 4))).toFixed(3))
   }, [])
   
+  const [commitChecked, setCommitChecked] = useState(false);
+  const [toWallet, setToWallet] = useState(false)
+
+  const handleCheckboxChange = () => {
+    setCommitChecked(!commitChecked);
+  };
+
+  const handleCheckboxChange1 = () => {
+    setToWallet(!toWallet);
+  };
+
   const handleSliderChange1 = (event, newValue) => {
     setCollateral(newValue);
     let max = Math.trunc(100*(algosToMAlgos(price) * algosToMAlgos(newValue) / 1000000) / 1.4  / 1000000)/100
     setMaxGARD(max)
     if (mGARD > max) {
-      setGARD(max)
+      setGARD(max < 1 ? 1 : max)
     } 
   };
 
   const handleInputChange1 = (event) => {
     setCollateral(event.target.value === '' ? '' : Number(event.target.value));
+    let max = Math.trunc(100*(algosToMAlgos(price) * algosToMAlgos(Number(event.target.value)) / 1000000) / 1.4  / 1000000)/100
+    setMaxGARD(max)
+    if (mGARD > max) {
+      setGARD(max < 1 ? 1 : max)
+    } 
   };
 
   const handleSliderChange2 = (event, newValue) => {
     setGARD(newValue);
-    let max = ((getWalletInfo()['amount'] - calcDevFees(algosToMAlgos(mGARD)) - 307000 - 100000 * (getWalletInfo()["assets"].length + 4)) /1000000).toFixed(3)
+    let max = mAlgosToAlgos(getWalletInfo()['amount'] - (calcDevFees(algosToMAlgos(mGARD))) - 307000 - (100000 * (getWalletInfo()['assets'].length + 4))).toFixed(3)
     setMaxCollateral(max)
     if (isNaN(cAlgos)){
       console.log('heyy')
@@ -143,7 +159,16 @@ export default function MintContent() {
   };
 
   const handleInputChange2 = (event) => {
-    setGARD(event.target.value === '' ? '' : Number(event.target.value));
+    setGARD(event.target.value === '' ? '' : Number(event.target.value) < 1 ? 1: Number(event.target.value));
+    let max = mAlgosToAlgos(getWalletInfo()['amount'] - (calcDevFees(algosToMAlgos(mGARD))) - 307000 - (100000 * (getWalletInfo()['assets'].length + 4))).toFixed(3)
+    setMaxCollateral(max)
+    if (isNaN(cAlgos)){
+      console.log('heyy')
+      return
+    }
+    if (cAlgos > max) {
+      setCollateral(max)
+    }
   };
   
   var sessionStorageSetHandler = function(e) {
@@ -193,7 +218,7 @@ export default function MintContent() {
                   darkToggle={theme === 'dark'}
                   type='number'
                   min="0.00"
-                  step="0.001"
+                  step="1"
                   id="collateral"
                   placeholder="Algos sent to CDP"
                   value={cAlgos}
@@ -243,7 +268,7 @@ export default function MintContent() {
                   darkToggle={theme === 'dark'}
                   type='number'
                   min="1.00"
-                  step="0.001"
+                  step="1"
                   id="minted"
                   placeholder="Min. 1"
                   value={mGARD}
@@ -363,7 +388,48 @@ export default function MintContent() {
         subtitle="Review the details of this transaction to the right and
                     click “Confirm Transaction” to proceed."
         darkToggle={theme === 'dark'}
+        mint = {true}
       >
+        <div style={{ marginBottom: 6 }}>
+          <div style={{ marginBottom: 4 }}>
+            <InputTitle>Optional: Commit CDP balance to governance?</InputTitle>
+          </div>
+          <div>
+            <label style={{
+            display: 'flex',
+            alignContent: 'center',
+            }}>
+              <input 
+              type={"checkbox"}
+              checked={commitChecked}
+              onChange={handleCheckboxChange} 
+              />
+                <InputSubtitle> <span style={{ fontWeight: 'bold' }}>{commitChecked === false ? 0 : cAlgos} </span> Algos will be committed</InputSubtitle>
+            </label>
+          </div>
+        </div>
+        {commitChecked ?
+        <div style={{ marginBottom: 6 }}>
+          <div style={{ marginBottom: 4 }}>
+            <InputTitle>Send governance rewards directly to your ALGO wallet?</InputTitle>
+          </div>
+          <div>
+            <label style={{
+            display: 'flex',
+            alignContent: 'center',
+            }}>
+              <input 
+              type={"checkbox"}
+              checked={toWallet}
+              onChange={handleCheckboxChange1} 
+              />
+                <InputSubtitle>Governance rewards will be sent to your <span style={{ fontWeight: 'bold' }}>{toWallet ? 'ALGO Wallet' : 'CDP'}</span></InputSubtitle>
+            </label>
+          </div>
+        </div>
+        :
+        <></>}
+        
         <TransactionSummary
           specifics={dummyTrans()}
           transactionFunc={async () => {
@@ -372,7 +438,7 @@ export default function MintContent() {
               setModalVisible(false)
               setLoading(true)
               try {
-                const res = await openCDP(getCollateral(), getMinted())
+                const res = await openCDP(getCollateral(), getMinted(), commitChecked, toWallet)
                 if (res.alert) {
                   navigate('/manage')
                   dispatch(setAlert(res.text))
@@ -386,6 +452,7 @@ export default function MintContent() {
           }}
           cancelCallback={() => setModalVisible(false)}
           darkToggle={theme === 'dark'}
+          commit={commitChecked}
         />
       </Modal>
     </div>
@@ -395,6 +462,15 @@ export default function MintContent() {
 // TODO: parameterize openCDP
 
 // styled components
+const InputTitle = styled.text`
+  font-weight: bold;
+  font-size: 16px;
+`
+const InputSubtitle = styled.text`
+  font-weight: normal;
+  font-size: 12px;
+  margin: 3px 3px 3px 4px
+`
 const InputNameContainer = styled.div`
   height: 132.31px;
   width: ${window.innerWidth < 900 ? '80vw' : '31vw'};
