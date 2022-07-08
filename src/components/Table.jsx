@@ -27,7 +27,7 @@ export default function Table({
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [shownRows, setShownRows] = useState(data.slice(0, 10))
   const [currentPageStart, setCurrentPageStart] = useState(1)
-  const keys = data.length ? Object.keys(data[0]) : ["No data to display"]
+  const keys = Object.keys(data[0])
 
   const {theme} = useContext(ThemeContext)
 
@@ -101,14 +101,7 @@ export default function Table({
                 }}
               >
                 {keys.map((keyVal, keyIndex) => {
-                  return typeof value[keyVal] === 'object'
-                  ?
-                   <Cell
-                     className={value[keyVal].className} key={keyIndex}>
-                      {value[keyVal].value}
-                   </Cell>
-                  : <Cell key={keyIndex}>
-                    {value[keyVal]}</Cell>
+                  return <Cell key={keyIndex}>{value[keyVal]}</Cell>
                 })}
               </TableRow>
             )
@@ -248,27 +241,13 @@ const HeaderElement = styled.th`
 const TableRow = styled.tr`
   height: 60px;
 `
-export const Cell = styled.td`
+const Cell = styled.td`
   font-weight: 500;
   font-size: 14px;
   height: 44px;
   padding-left: 16px;
   text-align: left;
-  ${(props) => props.className && props.className === 'negative' ?
-  css`
-    {
-      color: red
-    }
-  ` : props.className && props.className === 'positive' ?
-  css`
-    {
-      color: green;
-    }
-  ` :
-  null
-}
 `
-
 const PaginationBar = styled.div`
   background: #fcfcfd;
   height: 60px;
