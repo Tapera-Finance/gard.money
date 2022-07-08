@@ -20,7 +20,7 @@ import {
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
 import { updateCommitmentFirestore , addCDPToFireStore, updateDBWebActions, updateLiquidationFirestore } from "../components/Firebase";
-import { VERSION, MINID, MAXID } from "../globals";
+import { MINID, MAXID } from "../globals";
 
 var $ = require("jquery");
 
