@@ -17,7 +17,7 @@ let _pactGARDID;
 let _checkerID;
 
 // swap recipients
-let _pactAlgoGardPoolAddress = "LZ77VFESBLRGIMS5RV2TOQLS7LTVDME2W6GHWMEI2WTMXTAVEHEM4XXYTY";
+let _pactAlgoGardPoolAddress = "F4HXMBXLFLT7IQAKXUVTVEU4HIW5WGULA5RFYN6QE5AALUB54JQCAY2NBI";
 
 if (VERSION == "MAINNET") {
   // ASAs
@@ -33,9 +33,9 @@ if (VERSION == "MAINNET") {
   _validatorID = 684650147;
   _treasuryID = 684650318;
   _oracleID = 673925841;
-  _pactGARDID = 692053574;
+  _pactGARDID = 801613881;
   _checkerID = 787191335;
-  
+
 } else if (VERSION == "TESTNET1") {
   // ASAs
   _gainID = 73680771;
@@ -50,7 +50,7 @@ if (VERSION == "MAINNET") {
   _validatorID = 73680824;
   _treasuryID = 73680850;
   _oracleID = 53083112;
-  _pactGARDID = 692053574;
+  _pactGARDID = 801613881;
   _checkerID = 96679309;
 }
 
