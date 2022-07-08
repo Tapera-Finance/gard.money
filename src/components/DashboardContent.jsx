@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import graph from '../assets/graph.png'
 import Chart from './Chart'
@@ -34,19 +35,23 @@ function mAlgosToAlgosFixed(num) {
 export async function loadDbActionAndMetrics() {
   const owner_address = getWalletInfo().address
   const docRef = doc(db, "users", owner_address);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    const data = docSnap.data()
-    console.log(data);
-
-    return {
-      webappActions: data.webappActions,
-      systemAssetVal: data.systemAssetVal,
-      systemDebtVal: data.systemDebtVal
+  try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data()
+      console.log(data);
+      return {
+        webappActions: data.webappActions,
+        systemAssetVal: data.systemAssetVal,
+        systemDebtVal: data.systemDebtVal
+      }
+    } else {
+      console.log("No webactions, asset values, or debt values")
     }
-  } else {
-    console.log("No webactions, asset values, or debt values")
+  } catch (e) {
+    throw new Error(e)
   }
+
 }
 
 const dbData = await loadDbActionAndMetrics();
@@ -78,6 +83,7 @@ function formatDataCell(val, formatter, classes) {
 export default function DashboardContent() {
   const [selected, setSelected] = useState('System Metrics')
   const [collapsed, setCollapsed] = useState(false)
+  const navigate = useNavigate()
 
   const formattedHistory = transHistory.map((entry, idx) => {
 
@@ -136,11 +142,21 @@ export default function DashboardContent() {
         } else return <GraphRow key={`row: ${index}`} items={[value]} />
       })
       }
-      <HistoryTable>
-        <Table title="Transaction history"
-        countSubtitle={`${transHistory.length} Transactions`}
-        data={formattedHistory} />
-      </HistoryTable>
+      {
+      transHistory.length && formattedHistory
+      ?  <HistoryTable>
+          <Table title="Transaction history"
+          countSubtitle={`${transHistory.length} Transactions`}
+          data={formattedHistory}/>
+        </HistoryTable>
+      :
+      <div style={{ display: 'flex', flexDirection: 'row', marginBottom: 40 }} >
+        <div style={{ margin: 20 }} >
+        <Title>No transaction history</Title>
+        </div>
+        <PrimaryButton text="Mint New CDP" onClick={() => navigate('/new-cdp')}/>
+      </div>
+      }
     </div>
   )
 }
@@ -400,6 +416,7 @@ const Subtitle = styled.text`
 
 
 `
+
 
 // temporal dummy data for the graphs
 const dummyGraphs = [
