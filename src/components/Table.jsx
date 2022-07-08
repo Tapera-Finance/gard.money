@@ -27,7 +27,7 @@ export default function Table({
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [shownRows, setShownRows] = useState(data.slice(0, 10))
   const [currentPageStart, setCurrentPageStart] = useState(1)
-  const keys = Object.keys(data[0])
+  const keys = data.length ? Object.keys(data[0]) : ["No data to display"]
 
   const {theme} = useContext(ThemeContext)
 
