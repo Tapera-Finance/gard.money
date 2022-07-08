@@ -184,7 +184,7 @@ export default function WalletContent() {
       <div
         style={{
           maxWidth: window.innerWidth - 0.14 * window.innerWidth,
-          overflow: 'scroll',
+          overflow: 'auto',
         }}
       >
         <Table data={assets} title="Assets" />
