@@ -2,86 +2,186 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { camelToWords } from "../utils";
+import { getWalletInfo } from '../wallets/wallets'
 import PrimaryButton from "./PrimaryButton";
 import chevron from '../assets/icons/tablePag_icon.png'
 import { ThemeContext } from "../contexts/ThemeContext";
+import { getCDPs } from "../transactions/cdp";
+import { app } from './Firebase';
+import {
+  getFirestore,
+  getDoc,
+  doc
+} from "firebase/firestore";
+
+// get the firestore database instance
+const db = getFirestore(app);
+
+function mAlgosToAlgos(num) {
+  return num / 1000000
+}
+
+function mAlgosToAlgosFixed(num) {
+  return mAlgosToAlgos(num).toFixed(2)
+}
+
+export async function loadDbActionAndMetrics() {
+  const owner_address = getWalletInfo().address
+  const docRef = doc(db, "users", owner_address);
+  try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data()
+      return {
+        webappActions: data.webappActions,
+        systemAssetVal: data.systemAssetVal,
+        systemDebtVal: data.systemDebtVal
+      }
+    } else {
+      console.log("No webactions, asset values, or debt values")
+    }
+  } catch (e) {
+    throw new Error(e)
+  }
+
+}
+
+const dbData = await loadDbActionAndMetrics();
+const transHistory = dbData.webappActions;
+
+function formatTime(dateInMs) {
+  return new Date(dateInMs).toLocaleDateString()
+
+}
 
 /**
- * This is a custom implementation of Table for the Dashboard to show
- * @prop {object[]} data - data to fill the table
- * @prop {string} title - title for the table
- * @prop {string} countSubtible - text to be displayed in the count subtitle. If ommited the title prop is used
- * @param {{data: object[], title: string, countSubtitle: string}} props
+ * applies binary styling to numerical cells of transaction history table
+ * @param {any} val
+ * @param {function} formatter
+ * @param {string[]} classes
+ * @returns {object} {...className, ...value}
+ */
+ function formatDataCell(val, formatter, classes) {
+  let computed = formatter(val);
+  return {
+    className: computed < 0 ? classes[0] : classes[1],
+    value: computed
+  }
+}
+
+function getCDPids() {
+  let ids = [];
+  const CDPs = getCDPs()
+  if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
+    const accountCDPs = CDPs[getWalletInfo().address]
+    for (const cdpID of Object.entries(accountCDPs)) {
+      ids.push({id: cdpID})
+    }
+  }
+  return ids
+}
+const cdpIds = getCDPids()
+
+const formattedHistory = transHistory.map((entry, idx) => {
+  // commenting this out -> should be available for the sake of a link to the CDP on algoExplorer
+  // let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
+  let formattedAlgo = formatDataCell(entry.microAlgos, mAlgosToAlgosFixed, ['negative', 'positive']);
+  let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, ['negative', 'positive']);
+
+
+  const newTableEntry = {
+    type: entry.actionType === 0 ? "CDP": "Swap",
+    // cdpAddress: collapsed ? formattedAddress : entry.cdpAddress,
+    id: cdpIds[idx].id,
+    algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(2) ,
+    gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(2),
+    date: formatTime(entry.timestamp),
+    feesPaid: mAlgosToAlgos(entry.feesPaid)
+  };
+  return newTableEntry
+})
+
+/**
+ * Reworked implementation of Table.jsx for the Dashboard to show txn history
+ * @prop {string} headerColor - background color for the header row. If ommited default is used
+ * @prop {string} tableColor - background color for the rows in the table. If ommited default is used
  */
 
 export default function TransactionHistory({
-  data,
-  title,
-  countSubtitle
+  headerColor,
+  tableColor,
 }) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [shownRows, setShownRows] = useState(data.slice(0, 10));
+  const [shownRows, setShownRows] = useState(transHistory.slice(0, 10));
   const [currentPageStart, setCurrentPageStart] = useState(1);
-  const keys = data.length ? Object.keys(data[0]) : ["No data to display"];
-
   const { theme } = useContext(ThemeContext);
+  const keys = formattedHistory.length ? Object.keys(formattedHistory[0]) : ["No transaction history to display"];
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setShownRows(data.slice(0, rowsPerPage));
+    setShownRows(formattedHistory.slice(0, rowsPerPage));
     setCurrentPageStart(1);
   }, [rowsPerPage]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setShownRows(
-      data.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
+      formattedHistory.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
     );
   }, [currentPageStart]);
 
   useEffect(() => {
     setRowsPerPage(10);
-    setShownRows(data.slice(0, 10));
+    setShownRows(formattedHistory.slice(0, 10));
     setCurrentPageStart(1);
-  }, [data]);
+  }, [formattedHistory]);
 
   return (
     <div>
-      {title ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignContent: "center",
-            paddingLeft: 24,
-            marginBottom: 19,
-          }}
-        >
-          <div style={{ marginRight: 8 }}>
-            <Title>{title}</Title>
-          </div>
-          <CountContainer darkToggle={theme === "dark"}>
-            <CountText darkToggle={theme === "dark"}>
-              {countSubtitle || `${data.length} ${title}`}
-            </CountText>
-          </CountContainer>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignContent: "center",
+          paddingLeft: 24,
+          marginBottom: 19,
+        }}
+      >
+        <div style={{ marginRight: 8 }}>
+          <Title>Transaction History</Title>
         </div>
-      ) : (
-        <></>
-      )}
+        <CountContainer darkToggle={theme === "dark"}>
+          <CountText darkToggle={theme === "dark"}>
+            {formattedHistory.length !== 0
+              ? formattedHistory.length > 1
+                ? `${formattedHistory.length} Transactions`
+                : `${formattedHistory.length} Transaction`
+              : `No Transactions recorded`}
+          </CountText>
+        </CountContainer>
+      </div>
       <div style={{ marginBottom: 64 }}>
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <tbody>
             <HeaderRow
               darkToggle={theme === "dark"}
-
+              style={{ background: headerColor }}
             >
+              {keys.map((value, index) => {
+                    if (value === "button") return;
+                    return (
+                      <HeaderElement darkToggle={theme === "dark"} key={index}>
+                        {camelToWords(value)}
+                      </HeaderElement>
+                    );
+                  })}
             </HeaderRow>
             {shownRows.map((value, index) => {
               return (
                 <TableRow
                   key={index}
                   style={{
+                    color: tableColor,
                     borderBottom: "solid",
                     borderBottomWidth: 1,
                     borderColor: "#F9F9F9",
@@ -101,7 +201,7 @@ export default function TransactionHistory({
             })}
           </tbody>
         </table>
-        {data.length > 10 ? (
+        {formattedHistory.length > 10 ? (
           <PaginationBar
             style={{
               display: "flex",
@@ -135,10 +235,10 @@ export default function TransactionHistory({
             <div style={{ display: "flex", flexDirection: "row" }}>
               <div style={{ marginRight: 40 }}>
                 <PaginationText>{`${currentPageStart}-${
-                  currentPageStart + rowsPerPage - 1 > data.length
-                    ? data.length
+                  currentPageStart + rowsPerPage - 1 > formattedHistory.length
+                    ? formattedHistory.length
                     : currentPageStart + rowsPerPage - 1
-                } of ${data.length} items`}</PaginationText>
+                } of ${formattedHistory.length} items`}</PaginationText>
               </div>
               <div style={{ display: "flex", flexDirection: "row" }}>
                 <PaginationButton
@@ -159,12 +259,16 @@ export default function TransactionHistory({
                 <PaginationButton
                   style={{
                     cursor:
-                      currentPageStart + rowsPerPage > data.length
+                      currentPageStart + rowsPerPage > formattedHistory.length
                         ? ""
                         : "pointer",
                   }}
                   onClick={() => {
-                    if (currentPageStart + rowsPerPage > data.length) return;
+                    if (
+                      currentPageStart + rowsPerPage >
+                      formattedHistory.length
+                    )
+                      return;
                     setCurrentPageStart(currentPageStart + rowsPerPage);
                   }}
                 >

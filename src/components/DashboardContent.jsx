@@ -11,68 +11,11 @@ import {
 } from '../prices/prices'
 import RadioButtonSet from './RadioButtonSet'
 import moment from 'moment'
-import { app } from './Firebase';
-import {
-  getFirestore,
-  getDoc,
-  doc
-} from "firebase/firestore";
-import { getWalletInfo } from '../wallets/wallets'
+import { loadDbActionAndMetrics } from './TransactionHistory'
 
-// get the firestore database instance
-const db = getFirestore(app);
-
-function mAlgosToAlgos(num) {
-  return num / 1000000
-}
-
-function mAlgosToAlgosFixed(num) {
-  return mAlgosToAlgos(num).toFixed(2)
-}
-
-export async function loadDbActionAndMetrics() {
-  const owner_address = getWalletInfo().address
-  const docRef = doc(db, "users", owner_address);
-  try {
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const data = docSnap.data()
-      console.log(data);
-      return {
-        webappActions: data.webappActions,
-        systemAssetVal: data.systemAssetVal,
-        systemDebtVal: data.systemDebtVal
-      }
-    } else {
-      console.log("No webactions, asset values, or debt values")
-    }
-  } catch (e) {
-    throw new Error(e)
-  }
-
-}
-
+// get webactions and metrics data
 const dbData = await loadDbActionAndMetrics();
 const transHistory = dbData.webappActions;
-
-function formatTime(dateInMs) {
-  return new Date(dateInMs).toUTCString();
-}
-
-/**
- * applies binary styling to numerical cells of transaction history table
- * @param {any} val
- * @param {function} formatter
- * @param {string[]} classes
- * @returns {object} {...className, ...value}
- */
-function formatDataCell(val, formatter, classes) {
-  let computed = formatter(val);
-  return {
-    className: computed < 0 ? classes[0] : classes[1],
-    value: computed
-  }
-}
 
 /**
  * Content for dashboard option
@@ -80,39 +23,7 @@ function formatDataCell(val, formatter, classes) {
 
 export default function DashboardContent() {
   const [selected, setSelected] = useState('System Metrics')
-  const [collapsed, setCollapsed] = useState(false)
   const navigate = useNavigate()
-
-  const formattedHistory = transHistory.map((entry, idx) => {
-
-    let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
-    let formattedAlgo = formatDataCell(entry.microAlgos, mAlgosToAlgosFixed, ['negative', 'positive']);
-    let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, ['negative', 'positive']);
-
-
-    const newTableEntry = {
-      type: entry.actionType === 0 ? "CDP": "Swap",
-      cdpAddress: collapsed ? formattedAddress : entry.cdpAddress,
-      algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(2) ,
-      gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(2),
-      timestamp: formatTime(entry.timestamp),
-      feesPaid: mAlgosToAlgos(entry.feesPaid)
-    };
-    console.log('new table entry', newTableEntry);
-
-    return newTableEntry
-  })
-
-  useEffect(() => {
-   if (window.visualViewport.width < 768) {
-    setCollapsed(true)
-    formattedHistory.forEach((item, idx) => {
-      if (item[idx]["cdpAddress"] && item[idx]["cdpAddress"].length > 12) {
-        item[idx]["cdpAddress"] = item[idx]["cdpAddress"].slice(0, 10) + '...' + item[idx]["cdpAddress"].slice(item[idx]["cdpAddress"].length - 3, item[idx]["cdpAddress"].length - 1)
-      }
-    })
-   }
-  }, [])
 
   return (
     <div>
@@ -141,11 +52,9 @@ export default function DashboardContent() {
       })
       }
       {
-      transHistory.length && formattedHistory
+      transHistory.length
       ?  <HistoryTable>
-          <TransactionHistory title="Transaction history"
-          countSubtitle={`${transHistory.length} Transactions`}
-          data={formattedHistory}/>
+          <TransactionHistory />
         </HistoryTable>
       :
       <div style={{ display: 'flex', flexDirection: 'row', marginBottom: 40 }} >
