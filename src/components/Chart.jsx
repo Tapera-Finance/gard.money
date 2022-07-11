@@ -1,4 +1,5 @@
-import React, { useReducer, useState } from 'react'
+import React, { useReducer, useState, useContext } from 'react'
+import { ThemeContext } from '../contexts/ThemeContext'
 import {
   AreaChart,
   Line,
@@ -11,6 +12,7 @@ import {
 } from 'recharts'
 
 export default function Chart({ size, data }) {
+  const { net} = useContext(ThemeContext)
   const dummyData = [
     { name: 'Jan', price: 400 },
     { name: 'Mar', price: 500 },
@@ -71,14 +73,14 @@ export default function Chart({ size, data }) {
       >
         <defs>
           <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+            <stop offset="5%" stopColor={net === 'TESTNET1' ? '#fff6a2': "#8884d8"} stopOpacity={0.8} />
+            <stop offset="95%" stopColor={net === 'TESTNET1' ? '#fff6a2': "#8884d8"} stopOpacity={0} />
           </linearGradient>
         </defs>
         <Area
           type="monotone"
           dataKey={getDataKey()}
-          stroke="#8884d8"
+          stroke={net === 'TESTNET1' ? '#fff6a2': "#8884d8"}
           fillOpacity={1}
           fill="url(#colorPrice)"
         />

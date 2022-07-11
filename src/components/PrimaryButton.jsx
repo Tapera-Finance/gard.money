@@ -8,11 +8,11 @@ import { ThemeContext } from '../contexts/ThemeContext'
  * @param {{text: string, onClick: function}} props
  */
 export default function PrimaryButton({ text, onClick, variant, disabled, walletAddress }) {
-  const {theme} = useContext(ThemeContext)
+  const {theme, net} = useContext(ThemeContext)
   
   return (
-    <Button darkToggle={theme === 'dark'} variant={variant} disabled={disabled} walletAddress={walletAddress}  onClick={() => onClick()}>
-      <ButtonText darkToggle={theme === 'dark'} variant={variant} disabled={disabled}>
+    <Button darkToggle={theme === 'dark'} net ={net} variant={variant} disabled={disabled} walletAddress={walletAddress}  onClick={() => onClick()}>
+      <ButtonText darkToggle={theme === 'dark'} net ={net} variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
     </Button>
@@ -21,7 +21,7 @@ export default function PrimaryButton({ text, onClick, variant, disabled, wallet
 
 const Button = styled.button`
   background-color: #6941c6;
-  border: 1px solid #ffffff;
+  border: 1px solid #6941c6;
   padding: 8px 18px;
   display: flex;
   justify-content: center;
@@ -79,6 +79,15 @@ const Button = styled.button`
       background-color: #c299eb;
       border: 1px solid #c299eb;
   `}
+  ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+      background-color: #FFEE55;
+      border: 1px solid #FFEE55;
+      &:hover {
+        background-color: #FFEE00;
+      }
+  `}
 `
 const ButtonText = styled.text`
   color: #ffffff;
@@ -102,4 +111,9 @@ const ButtonText = styled.text`
     css`
       color: #666666;
     `}
+  ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+      color: black;
+  `}
 `

@@ -101,7 +101,7 @@ export default function AuctionsContent() {
   const [transDebt, setTransDebt] = useState([])
   const [canAnimate, setCanAnimate] = useState(false)
   const dispatch = useDispatch()
-  const {theme} = useContext(ThemeContext)
+  const {theme, net} = useContext(ThemeContext)
 
   useEffect(async () => {
     curr_price = await getCurrentAlgoUsd();
@@ -152,7 +152,7 @@ export default function AuctionsContent() {
       marketDiscount: value.marketDiscount + '%',
       action: value.purchased ? (
         <div style={{ paddingLeft: 18 }}>
-          <ButtonAlternateText>{'Purchased'}</ButtonAlternateText>
+          <ButtonAlternateText net={net}>{'Purchased'}</ButtonAlternateText>
         </div>
       ) : (
         <PrimaryButton
@@ -215,8 +215,8 @@ export default function AuctionsContent() {
                   : 'Auction Marketplace Transaction History'}
               </Title>
             </div>
-            <CountContainer darkToggle={ theme === 'dark'}>
-              <CountText darkToggle={ theme === 'dark'}>
+            <CountContainer darkToggle={ theme === 'dark'} net={net}>
+              <CountText darkToggle={ theme === 'dark'} net={net}>
                 {selected === OPTIONS.LIVE_AUCTIONS
                   ? `${open_defaulted == dummyLiveAuctions ? 0 : open_defaulted.length} ${'Live Auctions'}`
                   : selected === OPTIONS.BIDS
@@ -373,6 +373,11 @@ const CountContainer = styled.div`
   border-radius: 16px;
   padding: 2px 8px;
   ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+      background: #fffcdd;
+  `}
+  ${(props) =>
     props.darkToggle &&
     css`
       background: #404040;
@@ -383,6 +388,11 @@ const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: #6941c6;
+  ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+      color: #e6d64c;
+  `}
   ${(props) =>
     props.darkToggle &&
     css`
@@ -409,6 +419,11 @@ const ButtonAlternateText = styled.text`
   font-weight: 500;
   font-size: 14px;
   color: #7f56d9;
+  ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+      color: #e6d64c;
+  `}
 `
 const InputTitle = styled.text`
   font-weight: bold;

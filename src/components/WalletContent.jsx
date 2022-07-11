@@ -49,7 +49,7 @@ export default function WalletContent() {
   const [rewards, setRewards] = useState('...');
   const [pendingRewards, setPendingRewards] = useState('...');
 
-  const {theme} = useContext(ThemeContext)
+  const {theme, net} = useContext(ThemeContext)
 
   useEffect(async () => {
     await updateWalletInfo();
@@ -94,7 +94,7 @@ export default function WalletContent() {
   if (!walletAddress) return <div></div>
   return (
     <div>
-      <AccountContainer darkToggle = {theme === 'dark'}>
+      <AccountContainer darkToggle = {theme === 'dark'} net={net}>
         <div
           style={{
             display: 'flex',
@@ -198,6 +198,11 @@ const AccountContainer = styled.div`
   background: #f4ebff;
   padding: 5vw 4vw;
   margin-bottom: 56px;
+  ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+    background: #fff9c0;
+  `}
   ${(props) =>
     props.darkToggle &&
     css`

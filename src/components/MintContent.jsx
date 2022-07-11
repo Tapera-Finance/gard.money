@@ -62,7 +62,7 @@ function getCollateral() {
 export default function MintContent() {
   const [modalVisible, setModalVisible] = useState(false)
   const [canAnimate, setCanAnimate] = useState(false)
-  const {theme} = useContext(ThemeContext)
+  const {theme, net} = useContext(ThemeContext)
   const navigate = useNavigate()
 
   const [fields, reduceFields] = useReducer(
@@ -182,7 +182,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === 'dark'}>
+          <InputNameContainer darkToggle={theme === 'dark'} net={net}>
             <InputNameText>Current Balance (Algos)</InputNameText>
           </InputNameContainer>
           <InputContainer darkToggle={theme === 'dark'}>
@@ -200,7 +200,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === 'dark'}>
+          <InputNameContainer darkToggle={theme === 'dark'} net={net}>
             <InputNameText>Collateral (Algos)</InputNameText>
           </InputNameContainer>
           <div>
@@ -232,7 +232,7 @@ export default function MintContent() {
               <Grid item xs={10}>
                 <Slider
                   value={cAlgos}
-                  color="secondary"
+                  color={net === 'TESTNET1' ? "primary" : 'secondary'}
                   onChange={handleSliderChange1}
                   aria-labelledby="input-slider"
                   max={typeof maxCollateral === 'string' || maxCollateral instanceof String ? parseFloat(maxCollateral) : maxCollateral}
@@ -250,7 +250,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === 'dark'}>
+          <InputNameContainer darkToggle={theme === 'dark'} net={net}>
             <InputNameText>Minted GARD</InputNameText>
           </InputNameContainer>
           <div>
@@ -282,7 +282,7 @@ export default function MintContent() {
               <Grid item xs={10}>
                 <Slider
                   value={mGARD}
-                  color="secondary"
+                  color={net === 'TESTNET1' ? "primary" : 'secondary'}
                   onChange={handleSliderChange2}
                   aria-labelledby="input-slider"
                   min={1}
@@ -301,7 +301,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === 'dark'}>
+          <InputNameContainer darkToggle={theme === 'dark'} net={net}>
             <InputNameText>Collateralization Ratio</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -319,7 +319,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === 'dark'}>
+          <InputNameContainer darkToggle={theme === 'dark'} net={net}>
             <InputNameText>Liquidation Price (in ALGO/USD)</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -336,7 +336,7 @@ export default function MintContent() {
             flexDirection: window.innerWidth < 900 ? 'column' : 'row',
           }}
         >
-          <InputNameContainer darkToggle={theme === 'dark'}>
+          <InputNameContainer darkToggle={theme === 'dark'} net={net}>
             <InputNameText>Protocol Fees</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -452,6 +452,11 @@ const InputNameContainer = styled.div`
   display: flex;
   align-items: center;
   margin-right: 2.5px;
+  ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+    background: #fff9c0;
+  `}
   ${(props) =>
     props.darkToggle &&
     css`
