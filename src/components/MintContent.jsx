@@ -117,9 +117,14 @@ export default function MintContent() {
   }, [])
   
   const [commitChecked, setCommitChecked] = useState(false);
+  const [toWallet, setToWallet] = useState(false)
 
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
+  };
+
+  const handleCheckboxChange1 = () => {
+    setToWallet(!toWallet);
   };
 
   const handleSliderChange1 = (event, newValue) => {
@@ -383,10 +388,11 @@ export default function MintContent() {
         subtitle="Review the details of this transaction to the right and
                     click “Confirm Transaction” to proceed."
         darkToggle={theme === 'dark'}
+        mint = {true}
       >
-        <div style={{ marginBottom: 12 }}>
+        <div style={{ marginBottom: 6 }}>
           <div style={{ marginBottom: 4 }}>
-            <InputTitle>Optional: Commit full balance to governance?</InputTitle>
+            <InputTitle>Optional: Commit CDP balance to governance?</InputTitle>
           </div>
           <div>
             <label style={{
@@ -402,6 +408,27 @@ export default function MintContent() {
             </label>
           </div>
         </div>
+        {commitChecked ?
+        <div style={{ marginBottom: 6 }}>
+          <div style={{ marginBottom: 4 }}>
+            <InputTitle>Send governance rewards directly to your ALGO wallet?</InputTitle>
+          </div>
+          <div>
+            <label style={{
+            display: 'flex',
+            alignContent: 'center',
+            }}>
+              <input 
+              type={"checkbox"}
+              checked={toWallet}
+              onChange={handleCheckboxChange1} 
+              />
+                <InputSubtitle>Governance rewards will be sent to your <span style={{ fontWeight: 'bold' }}>{toWallet ? 'ALGO Wallet' : 'CDP'}</span></InputSubtitle>
+            </label>
+          </div>
+        </div>
+        :
+        <></>}
         
         <TransactionSummary
           specifics={dummyTrans()}
@@ -411,7 +438,7 @@ export default function MintContent() {
               setModalVisible(false)
               setLoading(true)
               try {
-                const res = await openCDP(getCollateral(), getMinted(), commitChecked)
+                const res = await openCDP(getCollateral(), getMinted(), commitChecked, toWallet)
                 if (res.alert) {
                   navigate('/manage')
                   dispatch(setAlert(res.text))

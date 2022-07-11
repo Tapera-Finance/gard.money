@@ -31,9 +31,14 @@ export default function AlgoGovernanceContent() {
   const {theme} = useContext(ThemeContext)
   const [commitment, setCommitment] = useState(undefined)
   const [refresh, setRefresh] = useState(0)
+  const [toWallet, setToWallet] = useState(false)
 
   const [measure1Vote, setM1Vote] = useState("Granting governor status and twice the voting power to qualified DeFi projects");
   const [measure2Vote, setM2Vote] = useState("Approve the mechanism for community proposals");
+
+  const handleCheckboxChange1 = () => {
+    setToWallet(!toWallet);
+  };
 
   var sessionStorageSetHandler = function(e) {
     setLoadingText(JSON.parse(e.value))
@@ -62,7 +67,8 @@ export default function AlgoGovernanceContent() {
     return {
       id: value.id,
       balance: value.collateral == 'N/A' ? 'N/A' : (value.collateral / 1000000),
-      committed: commitment == undefined || commitment[cdp_address] == undefined ? 'unknown' : commitment[cdp_address].lastCommitment == -1 ? 0 : commitment[cdp_address].lastCommitment / 1000000
+      committed: commitment == undefined || commitment[cdp_address] == undefined ? 'unknown' : commitment[cdp_address].lastCommitment == -1 ? 0 : commitment[cdp_address].lastCommitment / 1000000,
+      collateral: value.collateral / 1000000
     }
   })
   let cdps = adjusted.map((value, index) => {
@@ -83,7 +89,7 @@ export default function AlgoGovernanceContent() {
             setMaxBal(value.balance)
           }}
           // variant ={true}
-          disabled = {false}
+          disabled = {value.committed === value.collateral}
         />
         :<PrimaryButton
           text={'Commit'}
@@ -237,8 +243,24 @@ export default function AlgoGovernanceContent() {
                 <InputTitle>Number of Algos to Commit</InputTitle>
                 <InputMandatory darkToggle = {theme === 'dark'}>*</InputMandatory>
               </div>
-              <div>
+              <div style={{ marginBottom: 16 }}>
                 <InputSubtitle>{`${maxBal} Algos from CDP #${selectedAccount} will be committed`}</InputSubtitle>
+              </div>
+              <div style={{ marginBottom: 8 }}>
+                <InputTitle>Optional: Send governance rewards directly to your ALGO wallet?</InputTitle>
+              </div>
+              <div>
+                <label style={{
+                display: 'flex',
+                alignContent: 'center',
+                }}>
+                  <input 
+                  type={"checkbox"}
+                  checked={toWallet}
+                  onChange={handleCheckboxChange1} 
+                  />
+                    <InputSubtitle>Governance rewards will be sent to your <span style={{ fontWeight: 'bold' }}>{toWallet ? 'ALGO Wallet' : 'CDP'}</span></InputSubtitle>
+                </label>
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -247,7 +269,7 @@ export default function AlgoGovernanceContent() {
                 setModalVisible(false)
                 setLoading(true)
                 try {
-                  const res = await commitCDP(selectedAccount, maxBal)
+                  const res = await commitCDP(selectedAccount, maxBal, toWallet)
                   if (res.alert) {
                     dispatch(setAlert(res.text))
                   }

@@ -190,7 +190,7 @@ export default function AuctionsContent() {
       <div
         style={{
           maxWidth: window.innerWidth - 0.14 * window.innerWidth,
-          overflow: 'scroll',
+          overflow: 'auto',
           display: 'flex',
           flexDirection: 'column',
         }}

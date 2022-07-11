@@ -11,9 +11,14 @@ let _managerID;
 let _validatorID;
 let _treasuryID;
 let _oracleID;
+let _pactGARDID;
 let _checkerID;
 
 let VERSION = JSON.parse(window.localStorage.getItem('net'))
+
+// swap recipients
+let _pactAlgoGardPoolAddress = "F4HXMBXLFLT7IQAKXUVTVEU4HIW5WGULA5RFYN6QE5AALUB54JQCAY2NBI";
+
 if (VERSION == "MAINNET") {
   // ASAs
   _gainID = 684649672;
@@ -28,7 +33,9 @@ if (VERSION == "MAINNET") {
   _validatorID = 684650147;
   _treasuryID = 684650318;
   _oracleID = 673925841;
+  _pactGARDID = 801613881;
   _checkerID = 787191335;
+
 } else if (VERSION == "TESTNET1") {
   // ASAs
   _gainID = 73680771;
@@ -43,6 +50,7 @@ if (VERSION == "MAINNET") {
   _validatorID = 73680824;
   _treasuryID = 73680850;
   _oracleID = 53083112;
+  _pactGARDID = 801613881;
   _checkerID = 96679309;
 }
 
@@ -59,4 +67,8 @@ export const managerID = _managerID;
 export const validatorID = _validatorID;
 export const treasuryID = _treasuryID;
 export const oracleID = _oracleID;
+export const pactGARDID = _pactGARDID;
 export const checkerID = _checkerID;
+
+// swap AlgoGardPoolAddress
+export const pactAlgoGardPoolAddress = _pactAlgoGardPoolAddress;
