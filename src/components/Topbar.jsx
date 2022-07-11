@@ -28,7 +28,7 @@ import { setWallet } from '../redux/slices/walletSlice'
 import ThemeToggle from './ThemeToggle'
 import { ThemeContext } from '../contexts/ThemeContext'
 import { userInDB, addUserToFireStore } from '../components/Firebase'
-import NetToggle from './NetToggle'
+import { useNavigate } from 'react-router-dom'
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -36,7 +36,7 @@ import NetToggle from './NetToggle'
  */
 
 export default function Topbar({ contentName, setMainContent }) {
-  const {theme} = useContext(ThemeContext)
+  const {theme, net} = useContext(ThemeContext)
   const TopbarStyle = {
     light: {
       height: 96,
@@ -46,6 +46,9 @@ export default function Topbar({ contentName, setMainContent }) {
       height: 96,
       backgroundColor: '#333333',
       color: 'white',
+    },
+    netLight: {
+      background: '#fffcdd',
     },
     common: {
       transition: 'all 1s ease',
@@ -60,7 +63,9 @@ export default function Topbar({ contentName, setMainContent }) {
   const themeStyle = {
     ...TopbarStyle.common,
     ...(theme === 'light' ? TopbarStyle.light : TopbarStyle.dark),
+    ... (net === 'TESTNET1' & theme === 'light' ? TopbarStyle.netLight : theme === 'light' ? TopbarStyle.light : TopbarStyle.dark),
   }
+  const navigate = useNavigate()
   const [modalVisible, setModalVisible] = useState(false)
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -225,8 +230,25 @@ export default function Topbar({ contentName, setMainContent }) {
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row'}}>
-          <div>
-            <NetToggle/>
+          <div style={{ marginLeft: 2 }}>
+            {walletAddress ? (
+              <PrimaryButton
+                variant={true}
+                text={walletAddress}
+                onClick = {() => {
+                  navigate('/wallet')
+                }}
+              />
+            ) : (
+              <PrimaryButton
+              text={'Connect Wallet'}
+              onClick={() => {
+                reduceModalContent('terms')
+                setModalCanAnimate(true)
+                setModalVisible(true)
+              }}
+            />
+            )}
           </div>
           {walletAddress ? (
             <div style={{ marginLeft: 6 }}>
@@ -245,24 +267,6 @@ export default function Topbar({ contentName, setMainContent }) {
           <div>
             <ThemeToggle/>
           </div>
-          <div style={{ marginLeft: 2 }}>
-            {walletAddress ? (
-              <PrimaryButton
-                walletAddress={true}
-                text={walletAddress}
-              />
-            ) : (
-              <PrimaryButton
-              text={'Connect Wallet'}
-              onClick={() => {
-                reduceModalContent('terms')
-                setModalCanAnimate(true)
-                setModalVisible(true)
-              }}
-            />
-            )}
-          </div>
-          
         </div>
       </TopBar>
       <Modal
