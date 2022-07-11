@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import graph from '../assets/graph.png'
 import Chart from './Chart'
@@ -12,10 +11,11 @@ import {
 import RadioButtonSet from './RadioButtonSet'
 import moment from 'moment'
 import { loadDbActionAndMetrics } from './TransactionHistory'
+import { getWalletInfo } from '../wallets/wallets'
 
 // get webactions and metrics data
-const dbData = await loadDbActionAndMetrics();
-const transHistory = dbData.webappActions;
+const dbData = typeof getWalletInfo() !== 'undefined' ? await loadDbActionAndMetrics() : null;
+const transHistory = dbData ? dbData.webappActions : [];
 
 /**
  * Content for dashboard option
@@ -23,7 +23,6 @@ const transHistory = dbData.webappActions;
 
 export default function DashboardContent() {
   const [selected, setSelected] = useState('System Metrics')
-  const navigate = useNavigate()
 
   return (
     <div>
@@ -61,7 +60,10 @@ export default function DashboardContent() {
         <div style={{ margin: 20 }} >
         <Title>No transaction history</Title>
         </div>
-        <PrimaryButton text="Mint New CDP" onClick={() => navigate('/new-cdp')}/>
+        {/*
+          <PrimaryButton text="Mint New CDP" onClick={() => navigate('/new-cdp')}/>
+          replace above snipped with walletConnect cta
+          */}
       </div>
       }
     </div>

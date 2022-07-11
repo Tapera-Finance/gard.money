@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { camelToWords } from "../utils";
 import { getWalletInfo } from '../wallets/wallets'
+import { CDPsToList } from "./RepayContent";
 import PrimaryButton from "./PrimaryButton";
 import chevron from '../assets/icons/tablePag_icon.png'
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -46,8 +46,9 @@ export async function loadDbActionAndMetrics() {
 
 }
 
-const dbData = await loadDbActionAndMetrics();
-const transHistory = dbData.webappActions;
+// only call db if wallet present
+const dbData = typeof getWalletInfo() !== 'undefined' ? await loadDbActionAndMetrics() : null;
+const transHistory = dbData ? dbData.webappActions : [];
 
 function formatTime(dateInMs) {
   return new Date(dateInMs).toLocaleDateString()
@@ -69,18 +70,7 @@ function formatTime(dateInMs) {
   }
 }
 
-function getCDPids() {
-  let ids = [];
-  const CDPs = getCDPs()
-  if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
-    const accountCDPs = CDPs[getWalletInfo().address]
-    for (const cdpID of Object.entries(accountCDPs)) {
-      ids.push({id: cdpID})
-    }
-  }
-  return ids
-}
-const cdpIds = getCDPids()
+const cdpIds = CDPsToList()
 
 const formattedHistory = transHistory.map((entry, idx) => {
   // commenting this out -> should be available for the sake of a link to the CDP on algoExplorer
@@ -88,11 +78,9 @@ const formattedHistory = transHistory.map((entry, idx) => {
   let formattedAlgo = formatDataCell(entry.microAlgos, mAlgosToAlgosFixed, ['negative', 'positive']);
   let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, ['negative', 'positive']);
 
-
   const newTableEntry = {
     type: entry.actionType === 0 ? "CDP": "Swap",
-    // cdpAddress: collapsed ? formattedAddress : entry.cdpAddress,
-    id: cdpIds[idx].id,
+    id: entry.actionType === 0 ? cdpIds[idx].id : 0,
     algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(2) ,
     gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(2),
     date: formatTime(entry.timestamp),
