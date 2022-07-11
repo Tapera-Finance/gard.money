@@ -25,6 +25,7 @@ import { useDispatch } from 'react-redux'
 import { setAlert } from '../redux/slices/alertSlice'
 import { useSelector } from 'react-redux'
 import { ThemeContext } from '../contexts/ThemeContext'
+import NetToggle from './NetToggle'
 
 /**
  * Used as our main navigation
@@ -47,7 +48,7 @@ export default function Drawer({
   const walletAddress = useSelector((state) => state.wallet.address)
   
 
-  const {theme} = useContext(ThemeContext)
+  const {theme, net} = useContext(ThemeContext)
   const DrawerStyle = {
     light: {
       background: 'linear-gradient(45deg, #42307d 0%, #7f56d9 100%)',
@@ -58,10 +59,14 @@ export default function Drawer({
     common: {
       transition: 'all 1s ease',
     },
+    netLight: {
+      background: '#e6d64c',
+    },
   }
   const themeStyle = {
     ...DrawerStyle.common,
     ...(theme === 'light' ? DrawerStyle.light : DrawerStyle.dark),
+    ... (net === 'TESTNET1' & theme === 'light' ? DrawerStyle.netLight : theme === 'light' ? DrawerStyle.light : DrawerStyle.dark),
   }
   return (
     <div>
@@ -275,6 +280,9 @@ export default function Drawer({
               style={{ transform: 'rotate(90deg)' }}
             />
           </HideNavButton>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <NetToggle/>
         </div>
       </DrawerDiv>
     </div>
