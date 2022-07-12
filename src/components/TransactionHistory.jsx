@@ -53,7 +53,7 @@ const formattedHistory = transHistory.map((entry, idx) => {
 
   const newTableEntry = {
     type: entry.actionType === 0 ? "CDP": "Swap",
-    id: entry.actionType === 0 ? cdpIds[idx].id : 0,
+    // id: entry.actionType === 0 ? cdpIds[idx].id : 0,
     algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(2) ,
     gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(2),
     date: formatTime(entry.timestamp),
