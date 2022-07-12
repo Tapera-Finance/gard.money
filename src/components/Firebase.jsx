@@ -151,3 +151,24 @@ export async function updateDBWebActions(actionType, account_id, microAlgos, mic
 }
 // [{Action type, CDP address (“0” if not applicable), microAlgos in/out, microGARD in/out,
 // microGAIN in/out, swapPair (“0” if not applicable”), Fees Paid (in microAlgos), Timestamp}]
+
+export async function loadDbActionAndMetrics() {
+  const owner_address = getWalletInfo().address
+  const docRef = doc(db, "users", owner_address);
+  try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data()
+      return {
+        webappActions: data.webappActions,
+        systemAssetVal: data.systemAssetVal,
+        systemDebtVal: data.systemDebtVal
+      }
+    } else {
+      console.log("No webactions, asset values, or debt values")
+    }
+  } catch (e) {
+    throw new Error(e)
+  }
+
+}
