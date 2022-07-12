@@ -2,15 +2,20 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import graph from '../assets/graph.png'
 import Chart from './Chart'
+import TransactionHistory from './TransactionHistory'
 import PrimaryButton from './PrimaryButton'
 import {
-  getAlgoUsdHistoric,
   getCurrentAlgoUsd,
   getChainData,
 } from '../prices/prices'
 import RadioButtonSet from './RadioButtonSet'
 import moment from 'moment'
-import { useWindowSize } from '../hooks'
+import { loadDbActionAndMetrics } from './TransactionHistory'
+import { getWalletInfo } from '../wallets/wallets'
+
+// get webactions and metrics data
+const dbData = typeof getWalletInfo() !== 'undefined' ? await loadDbActionAndMetrics() : null;
+const transHistory = dbData ? dbData.webappActions : [];
 
 /**
  * Content for dashboard option
@@ -18,6 +23,7 @@ import { useWindowSize } from '../hooks'
 
 export default function DashboardContent() {
   const [selected, setSelected] = useState('System Metrics')
+
   return (
     <div>
       <div style={{ display: 'flex', flexDirection: 'row', marginBottom: 40 }}>
@@ -31,7 +37,8 @@ export default function DashboardContent() {
           callback={(selected) => setSelected(selected)}
         />
       </div>
-      {dummyGraphs.map((value, index, array) => {
+     {
+      dummyGraphs.map((value, index, array) => {
         if (window.innerWidth > 900) {
           if (index % 2 !== 0)
             return (
@@ -41,7 +48,24 @@ export default function DashboardContent() {
               />
             )
         } else return <GraphRow key={`row: ${index}`} items={[value]} />
-      })}
+      })
+      }
+      {
+      transHistory.length
+      ?  <HistoryTable>
+          <TransactionHistory />
+        </HistoryTable>
+      :
+      <div style={{ display: 'flex', flexDirection: 'row', marginBottom: 40 }} >
+        <div style={{ margin: 20 }} >
+        <Title>No transaction history</Title>
+        </div>
+        {/*
+          <PrimaryButton text="Mint New CDP" onClick={() => navigate('/new-cdp')}/>
+          replace above snipped with walletConnect cta
+          */}
+      </div>
+      }
     </div>
   )
 }
@@ -60,6 +84,9 @@ const InactiveRadioText = styled.text`
   color: #98a2b3;
   font-weight: 500;
   font-size: 16px;
+`
+
+const HistoryTable = styled.div`
 `
 
 /**
@@ -253,6 +280,7 @@ function Graph({ title }) {
       }
   }, [selected, chainData, currentPrice])
 
+
   return (
     <div>
       <div style={{ marginLeft: 18 }}>
@@ -294,7 +322,10 @@ const Subtitle = styled.text`
   font-weight: normal;
   font-size: 12px;
   color: #475467;
+
+
 `
+
 
 // temporal dummy data for the graphs
 const dummyGraphs = [
