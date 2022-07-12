@@ -6,16 +6,8 @@ import { CDPsToList } from "./RepayContent";
 import PrimaryButton from "./PrimaryButton";
 import chevron from '../assets/icons/tablePag_icon.png'
 import { ThemeContext } from "../contexts/ThemeContext";
-import { getCDPs } from "../transactions/cdp";
-import { app } from './Firebase';
-import {
-  getFirestore,
-  getDoc,
-  doc
-} from "firebase/firestore";
+import { loadDbActionAndMetrics } from './Firebase';
 
-// get the firestore database instance
-const db = getFirestore(app);
 
 function mAlgosToAlgos(num) {
   return num / 1000000
@@ -25,26 +17,7 @@ function mAlgosToAlgosFixed(num) {
   return mAlgosToAlgos(num).toFixed(2)
 }
 
-export async function loadDbActionAndMetrics() {
-  const owner_address = getWalletInfo().address
-  const docRef = doc(db, "users", owner_address);
-  try {
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const data = docSnap.data()
-      return {
-        webappActions: data.webappActions,
-        systemAssetVal: data.systemAssetVal,
-        systemDebtVal: data.systemDebtVal
-      }
-    } else {
-      console.log("No webactions, asset values, or debt values")
-    }
-  } catch (e) {
-    throw new Error(e)
-  }
 
-}
 
 // only call db if wallet present
 const dbData = typeof getWalletInfo() !== 'undefined' ? await loadDbActionAndMetrics() : null;

@@ -10,7 +10,7 @@ import {
 } from '../prices/prices'
 import RadioButtonSet from './RadioButtonSet'
 import moment from 'moment'
-import { loadDbActionAndMetrics } from './TransactionHistory'
+import { loadDbActionAndMetrics } from './Firebase'
 import { getWalletInfo } from '../wallets/wallets'
 
 // get webactions and metrics data
