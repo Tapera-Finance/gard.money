@@ -67,13 +67,10 @@ export default function AlgoGovernanceContent() {
     return {
       id: value.id,
       balance: value.collateral == 'N/A' ? 'N/A' : (value.collateral / 1000000),
-      committed: commitment == undefined || commitment[cdp_address] == undefined ? 'unknown' : commitment[cdp_address].lastCommitment == -1 ? 0 : commitment[cdp_address].lastCommitment / 1000000,
-      collateral: value.collateral / 1000000
+      committed: commitment == undefined || commitment[cdp_address] == undefined ? 'unknown' : commitment[cdp_address].lastCommitment == -1 ? 0 : commitment[cdp_address].lastCommitment / 1000000
     }
   })
   let cdps = adjusted.map((value, index) => {
-    const grey = value.committed === value.collateral
-    delete value["committed"]
     return {
       ...value,
       commit: (
@@ -91,7 +88,7 @@ export default function AlgoGovernanceContent() {
             setMaxBal(value.balance)
           }}
           // variant ={true}
-          disabled = {grey}
+          disabled = {value.balance === value.committed}
         />
         :<PrimaryButton
           text={'Commit'}
