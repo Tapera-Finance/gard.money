@@ -43,6 +43,31 @@ function formatTime(dateInMs) {
   }
 }
 
+function actionToLabel(type_enum) {
+  switch (type_enum) {
+    case 0:
+      return "NEW CDP" 
+    case 1:
+      return "CLOSE CDP"
+    case 2:
+      return "ADD COLLATERAL"
+    case 3:
+      return "MINT GARD"
+    case 4:
+      return "COMMITMENT"
+    case 5:
+      return "DEBT REPAY"
+    case 6:
+      return "VOTE"
+    case 7:
+      return "AUCTION BID"
+    case 8:
+      return "SWAP"
+    default:
+      return "CDP"
+  }
+}
+
 const cdpIds = CDPsToList()
 
 const formattedHistory = transHistory.map((entry, idx) => {
@@ -52,7 +77,7 @@ const formattedHistory = transHistory.map((entry, idx) => {
   let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, ['negative', 'positive']);
 
   const newTableEntry = {
-    type: entry.actionType === 0 ? "CDP": "Swap",
+    type: actionToLabel(entry.actionType),
     // id: entry.actionType === 0 ? cdpIds[idx].id : 0,
     algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(2) ,
     gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(2),
