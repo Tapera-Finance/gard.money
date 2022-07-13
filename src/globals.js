@@ -17,7 +17,6 @@ export const AUCTIONS_CONTENT_NAMES = {
 }
 
 export const commitmentPeriodEnd = 1657814399000
-export const votingPeriod = false
 
 export const VERSION = "MAINNET";
 // TESTNET1 = initial testnet release
