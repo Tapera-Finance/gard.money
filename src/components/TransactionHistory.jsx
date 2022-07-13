@@ -38,7 +38,7 @@ function formatTime(dateInMs) {
  function formatDataCell(val, formatter, classes) {
   let computed = formatter(val);
   return {
-    className: computed < 0 ? classes[0] : classes[1],
+    className: computed == 0 ? '' : computed < 0 ? classes[0] : classes[1],
     value: computed
   }
 }
@@ -46,7 +46,7 @@ function formatTime(dateInMs) {
 function actionToLabel(type_enum) {
   switch (type_enum) {
     case 0:
-      return "NEW CDP" 
+      return "NEW CDP"
     case 1:
       return "CLOSE CDP"
     case 2:
@@ -84,7 +84,7 @@ const dummy = transHistory.map((entry, idx) => {
     algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(3) ,
     gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(3),
     date: formatTime(entry.timestamp),
-    feesPaid: mAlgosToAlgos(entry.feesPaid).toFixed(3)
+    feesPaid: formatDataCell(-entry.feesPaid, mAlgosToAlgosFixed, ['negative', 'positive'])
   };
   formattedHistory[hist_length - idx] = newTableEntry
   return
