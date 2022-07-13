@@ -70,7 +70,9 @@ function actionToLabel(type_enum) {
 
 const cdpIds = CDPsToList()
 
-const formattedHistory = transHistory.map((entry, idx) => {
+const hist_length = transHistory.length - 1
+let formattedHistory = new Array(hist_length + 1)
+const dummy = transHistory.map((entry, idx) => {
   // commenting this out -> should be available for the sake of a link to the CDP on algoExplorer
   // let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
   let formattedAlgo = formatDataCell(entry.microAlgos, mAlgosToAlgosFixed, ['negative', 'positive']);
@@ -84,7 +86,8 @@ const formattedHistory = transHistory.map((entry, idx) => {
     date: formatTime(entry.timestamp),
     feesPaid: mAlgosToAlgos(entry.feesPaid)
   };
-  return newTableEntry
+  formattedHistory[hist_length - idx] = newTableEntry
+  return
 })
 
 /**
