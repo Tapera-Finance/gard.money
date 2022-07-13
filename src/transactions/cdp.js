@@ -738,7 +738,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   );
   setLoadingStage(null);
   removeCDP(info.address, accountID);
-  updateDBWebActions(1, accountID, cdpBal - fee, microRepayGARD, 0, fee)
+  updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, fee)
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
 }
