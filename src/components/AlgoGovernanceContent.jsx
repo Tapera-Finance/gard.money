@@ -72,6 +72,8 @@ export default function AlgoGovernanceContent() {
     }
   })
   let cdps = adjusted.map((value, index) => {
+    const grey = value.committed === value.collateral
+    delete value["committed"]
     return {
       ...value,
       commit: (
@@ -89,7 +91,7 @@ export default function AlgoGovernanceContent() {
             setMaxBal(value.balance)
           }}
           // variant ={true}
-          disabled = {value.committed === value.collateral}
+          disabled = {grey}
         />
         :<PrimaryButton
           text={'Commit'}
