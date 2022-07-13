@@ -44,9 +44,9 @@ export default function AlgoGovernanceContent() {
   var sessionStorageSetHandler = function(e) {
     setLoadingText(JSON.parse(e.value))
   };
-  
+
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
-  
+
   const handleChangeMeasure1 = (event) => {
     setM1Vote(event.target.value);
   };
@@ -68,8 +68,7 @@ export default function AlgoGovernanceContent() {
     return {
       id: value.id,
       balance: value.collateral == 'N/A' ? 'N/A' : (value.collateral / 1000000),
-      committed: commitment == undefined || commitment[cdp_address] == undefined ? 'unknown' : commitment[cdp_address].lastCommitment == -1 ? 0 : commitment[cdp_address].lastCommitment / 1000000,
-      collateral: value.collateral / 1000000
+      committed: commitment == undefined || commitment[cdp_address] == undefined ? 'unknown' : commitment[cdp_address].lastCommitment == -1 ? 0 : commitment[cdp_address].lastCommitment / 1000000
     }
   })
   let cdps = adjusted.map((value, index) => {
@@ -90,7 +89,8 @@ export default function AlgoGovernanceContent() {
             setMaxBal(value.balance)
           }}
           // variant ={true}
-          disabled = {value.committed === value.collateral || !(Date.now() < commitmentPeriodEnd)}
+          disabled = {value.balance === value.committed || !(Date.now() < commitmentPeriodEnd)}
+
         />
         :<PrimaryButton
           text={'Commit'}
@@ -112,7 +112,6 @@ export default function AlgoGovernanceContent() {
         <PrimaryButton
           text={'Place Vote'}
           onClick={() => {
-            return
             if (value.id == 'N/A') {
               return
             }
@@ -156,8 +155,8 @@ export default function AlgoGovernanceContent() {
           ) : (
             <div>
               <text>
-                Enter the number of Algo tokens you would like commit for 
-                governance period #4 from 
+                Enter the number of Algo tokens you would like commit for
+                governance period #4 from
               </text>
               <BoldText>{` CDP #${selectedAccount}.`}</BoldText>
             </div>
@@ -197,7 +196,7 @@ export default function AlgoGovernanceContent() {
                 <div style={{ marginBottom: 8 }}>
                   <h3>
                     <Link darkToggle = {theme === 'dark'} href="https://algorand.foundation/algorand-governance-period3-voting-measure-2-xgov" subtitle = {true}>
-                    Measure #2: 
+                    Measure #2:
                     </Link> XGovs: Proposing & Upvoting Measures
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
@@ -222,7 +221,7 @@ export default function AlgoGovernanceContent() {
                 setModalVisible(false)
                 setLoading(true)
                 try {
-                  const res = await voteCDP(selectedAccount, measure1Vote == "Granting governor status and twice the voting power to qualified DeFi projects" ? "a" : "b", measure2Vote == "Approve the mechanism for community proposals" ? "a" : "b") 
+                  const res = await voteCDP(selectedAccount, measure1Vote == "Granting governor status and twice the voting power to qualified DeFi projects" ? "a" : "b", measure2Vote == "Approve the mechanism for community proposals" ? "a" : "b")
                   if (res.alert) {
                     dispatch(setAlert(res.text));
                   }
