@@ -14,7 +14,7 @@ function mAlgosToAlgos(num) {
 }
 
 function mAlgosToAlgosFixed(num) {
-  return mAlgosToAlgos(num).toFixed(2)
+  return mAlgosToAlgos(num).toFixed(3)
 }
 
 
@@ -24,7 +24,7 @@ const dbData = typeof getWalletInfo() !== 'undefined' ? await loadDbActionAndMet
 const transHistory = dbData ? dbData.webappActions : [];
 
 function formatTime(dateInMs) {
-  return new Date(dateInMs).toLocaleDateString()
+  return new Date(dateInMs).toLocaleString()
 
 }
 
@@ -79,12 +79,12 @@ const dummy = transHistory.map((entry, idx) => {
   let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, ['negative', 'positive']);
 
   const newTableEntry = {
-    type: actionToLabel(entry.actionType),
+    description: actionToLabel(entry.actionType),
     // id: entry.actionType === 0 ? cdpIds[idx].id : 0,
-    algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(2) ,
-    gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(2),
+    algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(3) ,
+    gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(3),
     date: formatTime(entry.timestamp),
-    feesPaid: mAlgosToAlgos(entry.feesPaid)
+    feesPaid: mAlgosToAlgos(entry.feesPaid).toFixed(3)
   };
   formattedHistory[hist_length - idx] = newTableEntry
   return
