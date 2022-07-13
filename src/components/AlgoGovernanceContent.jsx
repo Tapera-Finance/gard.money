@@ -12,7 +12,7 @@ import { cdpGen } from "../transactions/contracts";
 import Table from './Table'
 import { ThemeContext } from '../contexts/ThemeContext'
 import { loadFireStoreCDPs } from './Firebase'
-import { commitmentPeriod } from '../globals'
+import { commitmentPeriodEnd } from '../globals'
 
 function getGovernorPage(id) {
   return 'https://governance.algorand.foundation/governance-period-4/governors/' + cdpGen(getWallet().address, id).address
@@ -90,7 +90,7 @@ export default function AlgoGovernanceContent() {
             setMaxBal(value.balance)
           }}
           // variant ={true}
-          disabled = {value.committed === value.collateral || !commitmentPeriod}
+          disabled = {value.committed === value.collateral || !(Date.now() < commitmentPeriodEnd)}
         />
         :<PrimaryButton
           text={'Commit'}
@@ -105,7 +105,7 @@ export default function AlgoGovernanceContent() {
             setMaxBal(value.balance)
           }}
           // variant ={true}
-          disabled = {!commitmentPeriod}
+          disabled = {!(Date.now() < commitmentPeriodEnd)}
         />
       ),
       voted: (

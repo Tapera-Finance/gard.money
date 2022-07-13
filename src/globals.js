@@ -16,7 +16,7 @@ export const AUCTIONS_CONTENT_NAMES = {
   MARKET_HISTORY: 'Market History',
 }
 
-export const commitmentPeriod = Date.now() < 1657814399000
+export const commitmentPeriodEnd = 1657814399000
 export const votingPeriod = false
 
 export const VERSION = "MAINNET";
