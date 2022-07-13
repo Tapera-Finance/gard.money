@@ -14,7 +14,7 @@ function mAlgosToAlgos(num) {
 }
 
 function mAlgosToAlgosFixed(num) {
-  return mAlgosToAlgos(num).toFixed(2)
+  return mAlgosToAlgos(num).toFixed(3)
 }
 
 
@@ -24,7 +24,7 @@ const dbData = typeof getWalletInfo() !== 'undefined' ? await loadDbActionAndMet
 const transHistory = dbData ? dbData.webappActions : [];
 
 function formatTime(dateInMs) {
-  return new Date(dateInMs).toLocaleDateString()
+  return new Date(dateInMs).toLocaleString()
 
 }
 
@@ -43,23 +43,51 @@ function formatTime(dateInMs) {
   }
 }
 
+function actionToLabel(type_enum) {
+  switch (type_enum) {
+    case 0:
+      return "NEW CDP" 
+    case 1:
+      return "CLOSE CDP"
+    case 2:
+      return "ADD COLLATERAL"
+    case 3:
+      return "MINT GARD"
+    case 4:
+      return "COMMITMENT"
+    case 5:
+      return "DEBT REPAY"
+    case 6:
+      return "VOTE"
+    case 7:
+      return "AUCTION BID"
+    case 8:
+      return "SWAP"
+    default:
+      return "CDP"
+  }
+}
+
 const cdpIds = CDPsToList()
 
-const formattedHistory = transHistory.map((entry, idx) => {
+const hist_length = transHistory.length - 1
+let formattedHistory = new Array(hist_length + 1)
+const dummy = transHistory.map((entry, idx) => {
   // commenting this out -> should be available for the sake of a link to the CDP on algoExplorer
   // let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
   let formattedAlgo = formatDataCell(entry.microAlgos, mAlgosToAlgosFixed, ['negative', 'positive']);
   let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, ['negative', 'positive']);
 
   const newTableEntry = {
-    type: entry.actionType === 0 ? "CDP": "Swap",
-    id: entry.actionType === 0 ? cdpIds[idx].id : 0,
-    algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(2) ,
-    gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(2),
+    description: actionToLabel(entry.actionType),
+    // id: entry.actionType === 0 ? cdpIds[idx].id : 0,
+    algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(3) ,
+    gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(3),
     date: formatTime(entry.timestamp),
-    feesPaid: mAlgosToAlgos(entry.feesPaid)
+    feesPaid: mAlgosToAlgos(entry.feesPaid).toFixed(3)
   };
-  return newTableEntry
+  formattedHistory[hist_length - idx] = newTableEntry
+  return
 })
 
 /**
