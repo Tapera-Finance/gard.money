@@ -176,9 +176,6 @@ export default function MintContent() {
     setLoadingText(JSON.parse(e.value))
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
-  console.log('commit', commitmentPeriodEnd)
-  console.log('date', Date.now())
-  console.log(Date.now() < commitmentPeriodEnd)
   return (
     <div>
       {loading ? <LoadingOverlay text={loadingText} /> : <></>}
