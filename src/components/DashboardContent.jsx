@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
+import React, { useContext, useEffect, useState } from 'react'
+import styled, {css} from 'styled-components'
 import graph from '../assets/graph.png'
 import Chart from './Chart'
 import TransactionHistory from './TransactionHistory'
@@ -12,6 +12,7 @@ import RadioButtonSet from './RadioButtonSet'
 import moment from 'moment'
 import { loadDbActionAndMetrics } from './Firebase'
 import { getWalletInfo } from '../wallets/wallets'
+import { ThemeContext } from '../contexts/ThemeContext'
 
 // get webactions and metrics data
 const dbData = typeof getWalletInfo() !== 'undefined' ? await loadDbActionAndMetrics() : null;
@@ -128,6 +129,7 @@ function Graph({ title }) {
   const [chainData, setChainData] = useState('')
   const [currentPrice, setCurrentPrice] = useState('')
   const [currTime, setCurrTime] = useState(new Date())
+  const {theme} = useContext(ThemeContext)
 
   useEffect(async () => {
     const chainDataResponse = await getChainData()
@@ -288,10 +290,10 @@ function Graph({ title }) {
           <Title>{title}</Title>
         </div>
         <div style={{ marginBottom: 23 }}>
-          <Subtitle>{subtitle}</Subtitle>
+          <Subtitle darkToggle={theme === 'dark'} >{subtitle}</Subtitle>
         </div>
       </div>
-      <div>
+      <div style={{color: 'black'}}>
         <Chart
           size={
             window.innerWidth < 900
@@ -322,6 +324,11 @@ const Subtitle = styled.text`
   font-weight: normal;
   font-size: 12px;
   color: #475467;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+    color: #8884d8;
+  `}
 
 
 `
