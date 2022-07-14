@@ -20,6 +20,7 @@ export default function Modal({
   children,
   animate,
   darkToggle,
+  mint,
 }) {
   return (
     <div>
@@ -29,6 +30,7 @@ export default function Modal({
           visible={visible}
           darkToggle={darkToggle}
           onClick={(e) => e.stopPropagation()}
+          mint={mint}
         >
           <div
             style={{
@@ -46,7 +48,7 @@ export default function Modal({
             style={{
               display: 'flex',
               flexDirection: window.innerWidth < 900 ? 'column' : 'row',
-              marginTop: window.innerWidth < 900 ? 10 : 104,
+              marginTop: window.innerWidth < 900 ? 10 : mint ? 25 : 104,
               alignItems: 'center',
               justifyContent: 'center',
             }}
@@ -121,7 +123,7 @@ const MainContent = styled.div`
   height: ${window.innerWidth < 900 ? '450px' : '605px'};
   width: ${`${window.innerWidth < 900 ? '90vw' : '835px'}`};
   position: absolute;
-  overflow: scroll;
+  overflow: auto;
   ${(props) =>
     props.animate &&
     css`

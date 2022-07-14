@@ -8,7 +8,7 @@ import mintIcon from '../assets/icons/mint_icon.png'
 import repayIcon from '../assets/icons/repay_icon.png'
 import swapIcon from '../assets/icons/swap_icon.png'
 import walletIcon from '../assets/icons/wallet_icon.png'
-import logo from '../assets/gard_logo.png'
+import logo from '../assets/new_gard_logo.png'
 import chevronDown from '../assets/chevron_down.png'
 import chevronUp from '../assets/chevron_up.png'
 import hamburguerIcon from '../assets/icons/hamburger_icon.png'
@@ -45,7 +45,7 @@ export default function Drawer({
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const walletAddress = useSelector((state) => state.wallet.address)
-  
+
 
   const {theme} = useContext(ThemeContext)
   const DrawerStyle = {
@@ -139,7 +139,8 @@ export default function Drawer({
                           'Manage CDPs',
                           'New CDP',
                           'Algo Governance',
-                          'Auctions'
+                          'Auctions',
+                          'Swap'
                         ].includes(v.name) &&
                         !walletAddress
                       )
@@ -148,8 +149,9 @@ export default function Drawer({
                             'You cannot enter without first connecting a Wallet',
                           ),
                         )
-                      else if (['Swap', 'DAO'].includes(v.name))
-                        dispatch(setAlert('This page is under construction!'))
+                      else if (['DAO'].includes(v.name)) {
+                         dispatch(setAlert('This page is under construction!'))
+                      }
                       else {
                         if (window.innerWidth < 900) toggleOpenStatus()
                         navigate(v.route)
@@ -283,7 +285,7 @@ export default function Drawer({
 // animation for closing and opening drawer
 const closeDrawerAnimation = keyframes`
   0% {left: 0vw;}
-  100% {left: ${`${window.innerWidth < 900 ? -101 : -20}vw`}} 
+  100% {left: ${`${window.innerWidth < 900 ? -101 : -20}vw`}}
 `
 
 const DrawerDiv = styled.div`

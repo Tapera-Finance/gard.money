@@ -16,6 +16,8 @@ export const AUCTIONS_CONTENT_NAMES = {
   MARKET_HISTORY: 'Market History',
 }
 
+export const commitmentPeriodEnd = 1657814399000
+
 export const VERSION = "MAINNET";
 // TESTNET1 = initial testnet release
 // TESTNET2 = testnet w/ updated backend code
