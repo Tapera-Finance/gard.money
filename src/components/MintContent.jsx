@@ -15,6 +15,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Slider from '@mui/material/Slider';
 import { ThemeContext } from '../contexts/ThemeContext'
+import { commitmentPeriodEnd } from '../globals'
 
 
 function displayRatio() {
@@ -175,7 +176,6 @@ export default function MintContent() {
     setLoadingText(JSON.parse(e.value))
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
-  
   return (
     <div>
       {loading ? <LoadingOverlay text={loadingText} /> : <></>}
@@ -388,8 +388,9 @@ export default function MintContent() {
         subtitle="Review the details of this transaction to the right and
                     click “Confirm Transaction” to proceed."
         darkToggle={theme === 'dark'}
-        mint = {true}
+        mint = {Date.now() < commitmentPeriodEnd}
       >
+        {Date.now() < commitmentPeriodEnd ?
         <div style={{ marginBottom: 6 }}>
           <div style={{ marginBottom: 4 }}>
             <InputTitle>Optional: Commit CDP balance to governance?</InputTitle>
@@ -408,6 +409,7 @@ export default function MintContent() {
             </label>
           </div>
         </div>
+        : <></>}
         {commitChecked ?
         <div style={{ marginBottom: 6 }}>
           <div style={{ marginBottom: 4 }}>

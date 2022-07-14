@@ -12,6 +12,9 @@ import {
   sendTxn,
   signGroup,
 } from "../wallets/wallets";
+import {
+  verifyOptIn
+} from "./cdp"
 
 const axios = require("axios");
 
@@ -132,6 +135,7 @@ export async function swapAlgoToGard(amount, minimum) {
   const params = await paramsPromise;
   const f_a = [0, gardID];
   const enc = new TextEncoder();
+  const opted = verifyOptIn(info, gardID);
 
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -148,8 +152,14 @@ export async function swapAlgoToGard(amount, minimum) {
     foreignAssets: f_a,
     suggestedParams: params,
   });
-
-  let txns = [txn1, txn2];
+  let optTxn = opted ? [] : algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: info.address,
+    amount: 0,
+    suggestedParams: params,
+    assetIndex: gardID,
+  });
+  let txns = optTxn.concat([txn1, txn2]);
   algosdk.assignGroupID(txns);
 
   setLoadingStage("Awaiting Signature from Algorand Wallet...");

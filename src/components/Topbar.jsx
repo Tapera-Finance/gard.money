@@ -29,6 +29,8 @@ import ThemeToggle from './ThemeToggle'
 import { ThemeContext } from '../contexts/ThemeContext'
 import { userInDB, addUserToFireStore } from '../components/Firebase'
 import { useNavigate } from 'react-router-dom'
+import { style } from '@mui/system'
+
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -393,7 +395,7 @@ const CancelButtonText = styled.text`
 function TermsOfService({ closeModal, accept }) {
   return (
     <div>
-      <TermsContainer style={{ marginBottom: 20 }}>
+      <TermsContainer style={{ marginBottom: `${window.innerWidth < 769 ? '50px' : '20px'}` }}>
         <TermsText>
           The terms of service are located at: <a href='https://www.algogard.com/app-terms-of-use.html' target="_blank" rel="noopener noreferrer">https://www.algogard.com/app-terms-of-use.html</a>
           <br />
@@ -423,9 +425,10 @@ function TermsOfService({ closeModal, accept }) {
 }
 
 const TermsContainer = styled.div`
-  height: 300px;
+  height: ${window.innerWidth < 769 ? '100%' : '300px'};
   overflow-y: scroll;
 `
 const TermsText = styled.text`
   text-overflow: clip;
+  height: 100%;
 `

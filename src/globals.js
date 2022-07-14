@@ -17,5 +17,8 @@ export const AUCTIONS_CONTENT_NAMES = {
 }
 
 
+export const commitmentPeriodEnd = 1657814399000
+
+
 export const MINID = 7;
 export const MAXID = 127;
