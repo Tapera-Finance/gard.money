@@ -21,7 +21,7 @@ import {
   handleTxError,
 } from '../wallets/wallets';
 import { useDispatch } from 'react-redux';
-import { VERSION } from '../globals';
+var VERSION = JSON.parse(window.localStorage.getItem('net'))
 
 
 /**
