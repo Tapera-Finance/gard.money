@@ -174,7 +174,7 @@ export async function swapAlgoToGard(amount, minimum) {
   const response = await sendTxn(stxns, "Successfully swapped " + amount/1e6 + " ALGO.",);
 
   setLoadingStage(null);
-  updateDBWebActions(8, 0, -amount, minimum, 0, 3000)
+  updateDBWebActions(8, null, -amount, minimum, 0, 3000)
   return response;
 }
 
@@ -224,6 +224,6 @@ export async function swapAlgoToGard(amount, minimum) {
   const response = await sendTxn(stxns, "Successfully swapped " + amount/1e6 + " GARD.",);
 
   setLoadingStage(null)
-  updateDBWebActions(8, 0, minimum, -amount, 0, 3000)
+  updateDBWebActions(8, null, minimum, -amount, 0, 3000)
   return response;
 }
