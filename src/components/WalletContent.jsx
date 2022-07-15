@@ -7,6 +7,8 @@ import copyIcon from '../assets/icons/copy_icon.png'
 import copyIconDark from '../assets/icons/copy_icon_dark.png'
 import copyIconSmall from '../assets/icons/copy_icon_small.png'
 import copyIconSmallDark from '../assets/icons/copy_icon_small_dark.png'
+import linkIcon from '../assets/icons/link_icon.png'
+import linkIconWhite from '../assets/icons/link_icon_white.png'
 import { getWallet, getWalletInfo, updateWalletInfo } from '../wallets/wallets'
 import Table from './Table'
 import { ThemeContext } from '../contexts/ThemeContext'
@@ -48,7 +50,6 @@ export default function WalletContent() {
   const [balance, setBalance] = useState('...');
   const [rewards, setRewards] = useState('...');
   const [pendingRewards, setPendingRewards] = useState('...');
-
   const {theme} = useContext(ThemeContext)
 
   useEffect(async () => {
@@ -61,6 +62,7 @@ export default function WalletContent() {
   useEffect(() => {
     if (!walletAddress) navigate('/')
   }, [walletAddress])
+  const algoLink = `https://algoexplorer.io/address/${getWallet().address}`
   let assets = dummyAssets.map((value, index) => {
     return {
       ...value,
@@ -173,12 +175,16 @@ export default function WalletContent() {
             <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
               <AccountInfoTitle>Status</AccountInfoTitle>
             </div>
-            <div>
+            <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
               <AccountInfoData>
                 {getWallet() == null ? 'N/A' : getWalletInfo()['status']}
               </AccountInfoData>
             </div>
           </div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'row', marginTop: 20 }}>
+          {theme === 'light' ? <img src={linkIcon} alt="link-icon" />: <img src={linkIconWhite} alt="link-icon-white" /> }
+          <Link href={algoLink} target="_blank" style={{paddingLeft: 5}} darkToggle = {theme === 'dark'}> View Account on Algo Explorer </Link>
         </div>
       </AccountContainer>
       <div
@@ -232,6 +238,16 @@ const AccountInfoTitle = styled.text`
 const AccountInfoData = styled.text`
   font-weight: normal;
   font-size: 20px;
+`
+const Link = styled.a`
+  text-decoration: none;
+  font-weight: 500;
+  color: black;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: #99b2ff;
+  `}
 `
 
 // dummy data for the assets table
