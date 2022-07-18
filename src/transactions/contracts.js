@@ -1,6 +1,6 @@
 
 import algosdk from "algosdk";
-import { VERSION } from "../globals"
+let VERSION = JSON.parse(window.localStorage.getItem('net'))
 
 // Versioning
 let reserveAddress;

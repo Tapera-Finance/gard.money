@@ -6,7 +6,7 @@ import toggleLight from '../assets/icons/toggleLight.png'
 
 
 export default function ThemeToggle() {
-    const {theme, setTheme} = useContext(ThemeContext)
+    const {theme, setTheme, net} = useContext(ThemeContext)
     const {lightColor, setLightColor} = useState('trasparent')
     const {darkColor, setDarkColor} = useState('trasparent')
 
@@ -16,8 +16,8 @@ export default function ThemeToggle() {
 
     return <button className='toggle' style={{paddingBottom: 5, border:0, background: 'none', width: '45px'}}>
             {theme === 'light'?
-            <Img src={toggleDark} alt="toggle dark" onClick={handleThemeToggle} darkToggle={theme === 'dark'}/>
-            :<Img src={toggleLight} alt="toggle light" onClick={handleThemeToggle} darkToggle={theme === 'dark'}/>
+            <Img src={toggleDark} alt="toggle dark" onClick={handleThemeToggle} darkToggle={theme === 'dark'} net={net}/>
+            :<Img src={toggleLight} alt="toggle light" onClick={handleThemeToggle} darkToggle={theme === 'dark'} net={net}/>
             }
         </button>
 }
@@ -33,10 +33,23 @@ const Img = styled.img`
         background-color: #6941c6;
     }
     ${(props) =>
+        props.net === 'TESTNET1' &&
+        css`
+        border: 1px solid #ffee55;
+        &:hover {
+            background-color: #ffee55;
+    `}
+    ${(props) =>
         props.darkToggle &&
         css`
         border: 1px solid #c299eb;
         &:hover {
             background-color: #c299eb;
+    `}
+    ${(props) =>
+        props.darkToggle && props.net === 'TESTNET1' &&
+        css`
+        &:hover {
+            background-color: #ffee55;
     `}
 `

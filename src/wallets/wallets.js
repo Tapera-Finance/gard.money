@@ -4,8 +4,9 @@ import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import { psToken } from './keys'
 import { updateCDPs } from '../transactions/cdp'
+
 import { gardID } from '../transactions/ids'
-import { VERSION } from "../globals"
+
 import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 // Partial fix from https://github.com/randlabs/myalgo-connect/issues/27
 import buffer from 'buffer'
@@ -23,6 +24,7 @@ function rerun(e) {
 	return false // We can iterate on this as we identify cases where we don't want it to rerun
 }
 
+let VERSION = JSON.parse(window.localStorage.getItem('net'))
 // DEBUG SWITCH
 const debug = true
 let _testnet = true

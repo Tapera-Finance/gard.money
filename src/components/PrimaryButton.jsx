@@ -7,12 +7,12 @@ import { ThemeContext } from '../contexts/ThemeContext'
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled }) {
-  const {theme} = useContext(ThemeContext)
+export default function PrimaryButton({ text, onClick, variant, disabled, walletAddress }) {
+  const {theme, net} = useContext(ThemeContext)
   
   return (
-    <Button darkToggle={theme === 'dark'} variant={variant} disabled={disabled}  onClick={() => onClick()}>
-      <ButtonText darkToggle={theme === 'dark'} variant={variant} disabled={disabled}>
+    <Button darkToggle={theme === 'dark'} net ={net} variant={variant} disabled={disabled} walletAddress={walletAddress}  onClick={() => onClick()}>
+      <ButtonText darkToggle={theme === 'dark'} net ={net} variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
     </Button>
@@ -21,7 +21,7 @@ export default function PrimaryButton({ text, onClick, variant, disabled }) {
 
 const Button = styled.button`
   background-color: #6941c6;
-  border: 1px solid #ffffff;
+  border: 1px solid #6941c6;
   padding: 8px 18px;
   display: flex;
   justify-content: center;
@@ -66,6 +66,28 @@ const Button = styled.button`
     background-color: #cccccc;
     pointer-events: none;
     `}
+  ${(props) =>
+    props.walletAddress &&
+    css`
+    border: 1px solid #6941c6;
+    background-color: #6941c6;
+    pointer-events: none;
+  `}
+  ${(props) =>
+    props.walletAddress && props.darkToggle &&
+    css`
+      background-color: #c299eb;
+      border: 1px solid #c299eb;
+  `}
+  ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+      background-color: #FFEE55;
+      border: 1px solid #FFEE55;
+      &:hover {
+        background-color: #FFEE00;
+      }
+  `}
 `
 const ButtonText = styled.text`
   color: #ffffff;
@@ -89,4 +111,9 @@ const ButtonText = styled.text`
     css`
       color: #666666;
     `}
+  ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+      color: black;
+  `}
 `

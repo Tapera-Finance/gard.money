@@ -29,7 +29,7 @@ export default function Table({
   const [currentPageStart, setCurrentPageStart] = useState(1)
   const keys = Object.keys(data[0])
 
-  const {theme} = useContext(ThemeContext)
+  const {theme, net} = useContext(ThemeContext)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -65,8 +65,8 @@ export default function Table({
           <div style={{ marginRight: 8 }}>
             <Title>{title}</Title>
           </div>
-          <CountContainer darkToggle={theme === 'dark'}>
-            <CountText darkToggle={theme === 'dark'}>{countSubtitle || `${data.length} ${title}`}</CountText>
+          <CountContainer darkToggle={theme === 'dark'} net={net}>
+            <CountText darkToggle={theme === 'dark'} net={net}>{countSubtitle || `${data.length} ${title}`}</CountText>
           </CountContainer>
         </div>
       ) : (
@@ -199,6 +199,11 @@ const CountContainer = styled.div`
   border-radius: 16px;
   padding: 2px 8px;
   ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+      background: #fffcdd;
+  `}
+  ${(props) =>
     props.darkToggle &&
     css`
       background: #404040;
@@ -209,6 +214,11 @@ const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: #6941c6;
+  ${(props) =>
+    props.net === 'TESTNET1' &&
+    css`
+      color: #e6d64c;
+  `}
   ${(props) =>
     props.darkToggle &&
     css`

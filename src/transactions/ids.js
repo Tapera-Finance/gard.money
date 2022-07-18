@@ -1,5 +1,3 @@
-import { VERSION } from "../globals";
-
 // ASAs
 let _gainID = 73680771;
 let _gardID = 73680809;
@@ -15,6 +13,8 @@ let _treasuryID;
 let _oracleID;
 let _pactGARDID;
 let _checkerID;
+
+let VERSION = JSON.parse(window.localStorage.getItem('net'))
 
 // swap recipients
 let _pactAlgoGardPoolAddress = "F4HXMBXLFLT7IQAKXUVTVEU4HIW5WGULA5RFYN6QE5AALUB54JQCAY2NBI";
