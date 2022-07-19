@@ -37,11 +37,15 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+<<<<<<< HEAD
     "resolve": "npx npm-force-resolutions",
     "lint": "eslint . --ext .js,.jsx --fix",
     "precommit": "pretty-quick --staged",
     "postcommit": "git update-index -g",
     "pretty": "prettier --write \"./**/*.{js,jsx,json}\""
+=======
+    "resolve": "npx npm-force-resolutions"
+>>>>>>> 6b884f2 (resolve 6 other high vulnerabilities- nth-check)
   },
   "eslintConfig": {
     "extends": [
@@ -62,6 +66,7 @@
     ]
   },
   "devDependencies": {
+<<<<<<< HEAD
     "@babel/eslint-parser": "7.18.9",
     "@babel/preset-react": "7.18.6",
     "eslint": "8.20.0",
@@ -70,6 +75,9 @@
     "husky": "8.0.1",
     "prettier": "2.5.1",
     "pretty-quick": "3.1.3"
+=======
+    "prettier": "2.5.1"
+>>>>>>> 6b884f2 (resolve 6 other high vulnerabilities- nth-check)
   },
   "resolutions": {
     "nth-check": "2.1.1"
