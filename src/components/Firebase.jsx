@@ -1,4 +1,3 @@
-import {useState, useEffect} from "react";
 import { VERSION } from "../globals";
 import { initializeApp } from "firebase/app";
 import {
@@ -12,7 +11,7 @@ import {
   query,
   where,
   doc,
-  arrayUnion,
+  arrayUnion
 } from "firebase/firestore";
 import { cdpGen } from "../transactions/contracts";
 import { getWalletInfo } from "../wallets/wallets";
@@ -171,5 +170,11 @@ export async function loadDbActionAndMetrics() {
   } catch (e) {
     throw new Error(e)
   }
+}
 
+export function queryUser() {
+  const owner_address = getWalletInfo().address;
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where('id', "==", owner_address));
+  return q
 }
