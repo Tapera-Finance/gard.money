@@ -5,6 +5,7 @@ build
 /node_modules
 package.json
 package-lock.json
+reportWebVitals.js
 
 # testing
 /coverage
