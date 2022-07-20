@@ -3,10 +3,10 @@ import styled, { css } from "styled-components";
 import { camelToWords } from "../utils";
 import { getWalletInfo } from '../wallets/wallets'
 import { CDPsToList } from "./RepayContent";
-import PrimaryButton from "./PrimaryButton";
 import chevron from '../assets/icons/tablePag_icon.png'
 import { ThemeContext } from "../contexts/ThemeContext";
-import { loadDbActionAndMetrics } from './Firebase';
+import { loadDbActionAndMetrics, queryUser } from './Firebase';
+import { onSnapshot } from "firebase/firestore";
 
 
 function mAlgosToAlgos(num) {
@@ -16,8 +16,6 @@ function mAlgosToAlgos(num) {
 function mAlgosToAlgosFixed(num) {
   return mAlgosToAlgos(num).toFixed(3)
 }
-
-
 
 // only call db if wallet present
 const dbData = typeof getWalletInfo() !== 'undefined' ? await loadDbActionAndMetrics() : null;
@@ -70,26 +68,29 @@ function actionToLabel(type_enum) {
 
 const cdpIds = CDPsToList()
 
-const hist_length = transHistory.length - 1
-let formattedHistory = new Array(hist_length + 1)
-const dummy = transHistory.map((entry, idx) => {
-  // commenting this out -> should be available for the sake of a link to the CDP on algoExplorer
-  // let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
-  let formattedAlgo = formatDataCell(entry.microAlgos, mAlgosToAlgosFixed, ['negative', 'positive']);
-  let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, ['negative', 'positive']);
+function formatHistory(documents) {
+  const hist_length = documents.length - 1
+  let formattedHistory = new Array(hist_length + 1)
+  const dummy = documents.map((entry, idx) => {
+    // commenting this out -> should be available for the sake of a link to the CDP on algoExplorer
+    // let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
+    let formattedAlgo = formatDataCell(entry.microAlgos, mAlgosToAlgosFixed, ['negative', 'positive']);
+    let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, ['negative', 'positive']);
 
-  const newTableEntry = {
-    description: actionToLabel(entry.actionType),
-    // id: entry.actionType === 0 ? cdpIds[idx].id : 0,
-    algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(3) ,
-    gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(3),
-    date: formatTime(entry.timestamp),
-    feesPaid: formatDataCell(-entry.feesPaid, mAlgosToAlgosFixed, ['negative', 'positive'])
-  };
-  formattedHistory[hist_length - idx] = newTableEntry
-  return
-})
-
+    const newTableEntry = {
+      description: actionToLabel(entry.actionType),
+      // id: entry.actionType === 0 ? cdpIds[idx].id : 0,
+      algos: formattedAlgo ? formattedAlgo : mAlgosToAlgos(entry.microAlgos).toFixed(3) ,
+      gard: formattedGard ? formattedGard : mAlgosToAlgos(entry.microGARD).toFixed(3),
+      date: formatTime(entry.timestamp),
+      feesPaid: formatDataCell(-entry.feesPaid, mAlgosToAlgosFixed, ['negative', 'positive'])
+    };
+    formattedHistory[hist_length - idx] = newTableEntry
+    return
+  })
+  return formattedHistory
+}
+const formattedHistory = formatHistory(transHistory)
 /**
  * Reworked implementation of Table.jsx for the Dashboard to show txn history
  * @prop {string} headerColor - background color for the header row. If ommited default is used
@@ -101,29 +102,44 @@ export default function TransactionHistory({
   tableColor,
 }) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [shownRows, setShownRows] = useState(transHistory.slice(0, 10));
   const [currentPageStart, setCurrentPageStart] = useState(1);
+  const [documents, setDocuments] = useState(formattedHistory)
+  const [shownRows, setShownRows] = useState(documents.slice(0, 10));
   const { theme } = useContext(ThemeContext);
   const keys = formattedHistory.length ? Object.keys(formattedHistory[0]) : ["No transaction history to display"];
 
   useEffect(() => {
+    const q = queryUser();
+    const unsub = onSnapshot(q, (docSnap) => {
+      let docs = [];
+      docSnap.forEach(doc => {
+        docs.push([...doc.data().webappActions])
+      })
+      let formatted = formatHistory(docs[0])
+      setDocuments(formatted)
+    })
+    return () => {
+      unsub()
+    }
+  }, [documents]);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
-    setShownRows(formattedHistory.slice(0, rowsPerPage));
+    setShownRows(documents.slice(0, rowsPerPage));
     setCurrentPageStart(1);
   }, [rowsPerPage]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setShownRows(
-      formattedHistory.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
+      documents.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
     );
   }, [currentPageStart]);
 
   useEffect(() => {
-    setRowsPerPage(10);
-    setShownRows(formattedHistory.slice(0, 10));
-    setCurrentPageStart(1);
-  }, [formattedHistory]);
+    setRowsPerPage(rowsPerPage);
+    setShownRows(documents.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1));
+  }, [documents]);
 
   return (
     <div>
@@ -141,10 +157,10 @@ export default function TransactionHistory({
         </div>
         <CountContainer darkToggle={theme === "dark"}>
           <CountText darkToggle={theme === "dark"}>
-            {formattedHistory.length !== 0
-              ? formattedHistory.length > 1
-                ? `${formattedHistory.length} Transactions`
-                : `${formattedHistory.length} Transaction`
+            {documents.length !== 0
+              ? documents.length > 1
+                ? `${documents.length} Transactions`
+                : `${documents.length} Transaction`
               : `No Transactions recorded`}
           </CountText>
         </CountContainer>
@@ -190,7 +206,7 @@ export default function TransactionHistory({
             })}
           </tbody>
         </table>
-        {formattedHistory.length > 10 ? (
+        {documents.length > 10 ? (
           <PaginationBar
             style={{
               display: "flex",
@@ -200,6 +216,7 @@ export default function TransactionHistory({
               paddingRight: 16,
               justifyContent: "space-between",
             }}
+            darkToggle={theme === "dark"}
           >
             <div
               style={{
@@ -208,7 +225,7 @@ export default function TransactionHistory({
               }}
             >
               <div style={{ marginRight: 8 }}>
-                <PaginationText>Rows per Page:</PaginationText>
+                <PaginationText darkToggle={theme === "dark"}>Rows per Page:</PaginationText>
               </div>
               <div>
                 <PaginationSelect
@@ -223,11 +240,11 @@ export default function TransactionHistory({
             </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
               <div style={{ marginRight: 40 }}>
-                <PaginationText>{`${currentPageStart}-${
-                  currentPageStart + rowsPerPage - 1 > formattedHistory.length
-                    ? formattedHistory.length
+                <PaginationText darkToggle={theme === "dark"} >{`${currentPageStart}-${
+                  currentPageStart + rowsPerPage - 1 > documents.length
+                    ? documents.length
                     : currentPageStart + rowsPerPage - 1
-                } of ${formattedHistory.length} items`}</PaginationText>
+                } of ${documents.length} items`}</PaginationText>
               </div>
               <div style={{ display: "flex", flexDirection: "row" }}>
                 <PaginationButton
@@ -239,6 +256,7 @@ export default function TransactionHistory({
                     if (currentPageStart - rowsPerPage < 1) return;
                     setCurrentPageStart(currentPageStart - rowsPerPage);
                   }}
+                  darkToggle={theme === "dark"}
                 >
                   <img
                     src={chevron}
@@ -248,14 +266,14 @@ export default function TransactionHistory({
                 <PaginationButton
                   style={{
                     cursor:
-                      currentPageStart + rowsPerPage > formattedHistory.length
+                      currentPageStart + rowsPerPage > documents.length
                         ? ""
                         : "pointer",
                   }}
                   onClick={() => {
                     if (
                       currentPageStart + rowsPerPage >
-                      formattedHistory.length
+                      documents.length
                     )
                       return;
                     setCurrentPageStart(currentPageStart + rowsPerPage);
@@ -351,11 +369,21 @@ export const Cell = styled.td`
 const PaginationBar = styled.div`
   background: #fcfcfd;
   height: 60px;
+  ${(props) => props.darkToggle &&
+    css`
+      background:#404040;
+  `
+  }
 `
 const PaginationText = styled.text`
   font-weight: normal;
   font-size: 12px;
   color: #464646;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      color: white;
+  `}
 `
 const PaginationSelect = styled.select`
   font-size: 12px;
@@ -367,4 +395,9 @@ const PaginationButton = styled.button`
   background: transparent;
   border: 0px;
   cursor: normal;
+  ${(props) =>
+    props.darkToggle &&
+    css`
+      filter: invert();
+  `}
 `
