@@ -140,13 +140,14 @@ export async function addCDPToFireStore(account_id, microAlgos, microGARD, feesP
   }
 }
 
-export async function updateDBWebActions(actionType, account_id, microAlgos, microGARD, microGAIN, feesPaid){
+export async function updateDBWebActions(actionType, account_id, microAlgos, microGARD, microGAIN, swapPair, feesPaid){
   const owner_address = getWalletInfo().address
-  const cdp_address = cdpGen(owner_address, account_id).address
+  var cdp_address = null
+  account_id === null ? cdp_address = 0 : cdp_address = cdpGen(owner_address, account_id).address
   const walletRef = doc(db, "users", owner_address);
   await updateDoc(walletRef, {
     webappActions: arrayUnion({actionType: actionType, cdpAddress: cdp_address, microAlgos: microAlgos,
-      microGARD: microGARD, microGAIN: microGAIN, swapPair: 0, feesPaid: feesPaid, timestamp: Date.now()})
+      microGARD: microGARD, microGAIN: microGAIN, swapPair: swapPair, feesPaid: feesPaid, timestamp: Date.now()})
   });
 }
 // [{Action type, CDP address (“0” if not applicable), microAlgos in/out, microGARD in/out,
