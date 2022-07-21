@@ -1,29 +1,29 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import PrimaryButton from './PrimaryButton'
+import React, { useState } from "react";
+import styled from "styled-components";
+import PrimaryButton from "./PrimaryButton";
 
 export default function RadioButtonSet({ titles, selected, callback }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'row' }}>
+    <div style={{ display: "flex", flexDirection: "row" }}>
       {titles.map((value, index) => {
         return (
           <div key={index}>
             {value === selected ? (
-              <PrimaryButton text={value}/>
+              <PrimaryButton text={value} />
             ) : (
               <InactiveRadio
                 onClick={() => {
-                  callback(value)
+                  callback(value);
                 }}
               >
                 <InactiveRadioText>{value}</InactiveRadioText>
               </InactiveRadio>
             )}
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
 
 const InactiveRadio = styled.button`
@@ -35,10 +35,10 @@ const InactiveRadio = styled.button`
   cursor: pointer;
   border: 1px solid transparent;
   border-radius: 6px;
-`
+`;
 
 const InactiveRadioText = styled.text`
   color: #98a2b3;
   font-weight: 500;
   font-size: 16px;
-`
+`;

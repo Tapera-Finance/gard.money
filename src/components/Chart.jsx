@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react'
+import React, { useReducer, useState } from "react";
 import {
   AreaChart,
   Line,
@@ -8,58 +8,54 @@ import {
   Tooltip,
   Area,
   LinearGradient,
-} from 'recharts'
+} from "recharts";
 
 export default function Chart({ size, data }) {
   const dummyData = [
-    { name: 'Jan', price: 400 },
-    { name: 'Mar', price: 500 },
-    { name: 'May', price: 300 },
-    { name: 'Jul', price: 700 },
-    { name: 'Sep', price: 550 },
-    { name: 'Nov', price: 800 },
-  ]
+    { name: "Jan", price: 400 },
+    { name: "Mar", price: 500 },
+    { name: "May", price: 300 },
+    { name: "Jul", price: 700 },
+    { name: "Sep", price: 550 },
+    { name: "Nov", price: 800 },
+  ];
 
   function getDataKey() {
     for (var key in data[0]) {
       if (data[0].hasOwnProperty(key) && key != "name") {
-          return key
+        return key;
       }
     }
-    return "price"
+    return "price";
   }
 
-  function getBounds(smallVal=false){
-    let key = getDataKey()
-    if (data[0] === undefined)
-    {
-      return [0, 1]
+  function getBounds(smallVal = false) {
+    let key = getDataKey();
+    if (data[0] === undefined) {
+      return [0, 1];
     }
-    let min = 1e50
-    let max = -1
-    if (smallVal){
+    let min = 1e50;
+    let max = -1;
+    if (smallVal) {
       for (var i = 0; i < data.length; i++) {
-        let elem = data[i][key]
+        let elem = data[i][key];
         if (elem > max) {
-          max = elem
+          max = elem;
+        } else if (elem < min) {
+          min = elem;
         }
-        else if (elem < min){
-          min = elem
+      }
+    } else {
+      for (var i = 0; i < data.length; i++) {
+        let elem = parseInt(data[i][key]);
+        if (elem > max) {
+          max = elem;
+        } else if (elem < min) {
+          min = elem;
         }
       }
     }
-    else{
-      for (var i = 0; i < data.length; i++) {
-        let elem = parseInt(data[i][key])
-        if (elem > max) {
-          max = elem
-        }
-        else if (elem < min){
-          min = elem
-        }
-      }
-  }
-    return [Math.max(min - parseInt(0.1*(max-min)), 0), max]
+    return [Math.max(min - parseInt(0.1 * (max - min)), 0), max];
   }
 
   return (
@@ -93,12 +89,12 @@ export default function Chart({ size, data }) {
           tick={{ fontSize: 10 }}
         />
         <YAxis
-          domain={getBounds(getDataKey() === 'price')}
-          scale={'linear'}
+          domain={getBounds(getDataKey() === "price")}
+          scale={"linear"}
           tick={{ fontSize: 10 }}
         />
         <Tooltip />
       </AreaChart>
     </div>
-  )
+  );
 }
