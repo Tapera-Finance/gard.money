@@ -18,12 +18,13 @@ function getAssets() {
   var assets = [];
   let x = getWalletInfo()["assets"];
   for (var i = 0, len = x.length; i < len; i++) {
-    if ([684649988, 684649672, 692432647].includes(x[i]['asset-id'])){
-    assets.push({
-      id: x[i]['asset-id'],
-      name: x[i]['name'],
-      amount: (x[i]['amount'] / 10 ** x[i]['decimals']).toFixed(3),
-    })}
+    if ([684649988, 684649672, 692432647].includes(x[i]["asset-id"])) {
+      assets.push({
+        id: x[i]["asset-id"],
+        name: x[i]["name"],
+        amount: (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3),
+      });
+    }
   }
   if (assets.length == 0) {
     assets = [
@@ -65,8 +66,8 @@ export default function WalletContent() {
     return {
       ...value,
       amount: `${value.amount}`,
-    }
-  })
+    };
+  });
 
   if (!walletAddress) return <div></div>;
   return (
