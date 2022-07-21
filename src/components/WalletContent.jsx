@@ -23,8 +23,6 @@ function getAssets() {
         id: x[i]["asset-id"],
         name: x[i]["name"],
         amount: (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3),
-        creator: x[i]["creator"],
-        frozen: x[i]["frozen"],
       });
     }
   }
@@ -34,8 +32,6 @@ function getAssets() {
         id: "N/A",
         name: "N/A",
         amount: 0,
-        creator: "N/A",
-        frozen: false,
       },
     ];
   }
@@ -70,37 +66,6 @@ export default function WalletContent() {
     return {
       ...value,
       amount: `${value.amount}`,
-      frozen: value.frozen ? "Yes" : "No",
-      id: (
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ marginRight: 16 }}>
-            <text>{value.id}</text>
-          </div>
-          <CopyButton onClick={() => navigator.clipboard.writeText(value.id)}>
-            {theme === "light" ? (
-              <img src={copyIconSmall} />
-            ) : (
-              <img src={copyIconSmallDark} />
-            )}
-          </CopyButton>
-        </div>
-      ),
-      creator: (
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ marginRight: 16 }}>
-            <text>{value.creator}</text>
-          </div>
-          <CopyButton
-            onClick={() => navigator.clipboard.writeText(value.creator)}
-          >
-            {theme === "light" ? (
-              <img src={copyIconSmall} />
-            ) : (
-              <img src={copyIconSmallDark} />
-            )}
-          </CopyButton>
-        </div>
-      ),
     };
   });
 
@@ -280,8 +245,6 @@ var dummyAssets =
           id: "N/A",
           name: "N/A",
           amount: 0,
-          creator: "N/A",
-          frozen: false,
         },
       ]
     : getAssets();
