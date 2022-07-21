@@ -18,15 +18,12 @@ function getAssets() {
   var assets = [];
   let x = getWalletInfo()["assets"];
   for (var i = 0, len = x.length; i < len; i++) {
-    if ([684649988, 684649672, 692432647].includes(x[i]["asset-id"])) {
-      assets.push({
-        id: x[i]["asset-id"],
-        name: x[i]["name"],
-        amount: (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3),
-        creator: x[i]["creator"],
-        frozen: x[i]["frozen"],
-      });
-    }
+    if ([684649988, 684649672, 692432647].includes(x[i]['asset-id'])){
+    assets.push({
+      id: x[i]['asset-id'],
+      name: x[i]['name'],
+      amount: (x[i]['amount'] / 10 ** x[i]['decimals']).toFixed(3),
+    })}
   }
   if (assets.length == 0) {
     assets = [
@@ -34,8 +31,6 @@ function getAssets() {
         id: "N/A",
         name: "N/A",
         amount: 0,
-        creator: "N/A",
-        frozen: false,
       },
     ];
   }
@@ -70,39 +65,8 @@ export default function WalletContent() {
     return {
       ...value,
       amount: `${value.amount}`,
-      frozen: value.frozen ? "Yes" : "No",
-      id: (
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ marginRight: 16 }}>
-            <text>{value.id}</text>
-          </div>
-          <CopyButton onClick={() => navigator.clipboard.writeText(value.id)}>
-            {theme === "light" ? (
-              <img src={copyIconSmall} />
-            ) : (
-              <img src={copyIconSmallDark} />
-            )}
-          </CopyButton>
-        </div>
-      ),
-      creator: (
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ marginRight: 16 }}>
-            <text>{value.creator}</text>
-          </div>
-          <CopyButton
-            onClick={() => navigator.clipboard.writeText(value.creator)}
-          >
-            {theme === "light" ? (
-              <img src={copyIconSmall} />
-            ) : (
-              <img src={copyIconSmallDark} />
-            )}
-          </CopyButton>
-        </div>
-      ),
-    };
-  });
+    }
+  })
 
   if (!walletAddress) return <div></div>;
   return (
@@ -280,8 +244,6 @@ var dummyAssets =
           id: "N/A",
           name: "N/A",
           amount: 0,
-          creator: "N/A",
-          frozen: false,
         },
       ]
     : getAssets();
