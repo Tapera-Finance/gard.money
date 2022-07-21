@@ -155,7 +155,7 @@ export default function WalletContent() {
               <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
                 <AccountInfoTitle>Balance</AccountInfoTitle>
               </div>
-              <div style={{ marginBottom: window.innerWidth < 900 ? 10 : 0 }}>
+              <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
                 <AccountInfoData>
                   {getWallet() == null
                     ? 'N/A'
