@@ -31,3 +31,7 @@ if (localStorageVersion != VERSION) {
   localStorage.clear();
 }
 localStorage.setItem("version", VERSION);
+
+
+// develop swap in parallel to live app, use flag to change which component connects to router
+export const APPVERSION = "V2";
