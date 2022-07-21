@@ -36,6 +36,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+<<<<<<< HEAD
     "eject": "react-scripts eject",
 <<<<<<< HEAD
     "resolve": "npx npm-force-resolutions",
@@ -46,6 +47,9 @@
 =======
     "resolve": "npx npm-force-resolutions"
 >>>>>>> 6b884f2 (resolve 6 other high vulnerabilities- nth-check)
+=======
+    "eject": "react-scripts eject"
+>>>>>>> 18992f7 (fix 6 high vulnerabilites)
   },
   "eslintConfig": {
     "extends": [
@@ -67,6 +71,7 @@
   },
   "devDependencies": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@babel/eslint-parser": "7.18.9",
     "@babel/preset-react": "7.18.6",
     "eslint": "8.20.0",
@@ -78,9 +83,15 @@
 =======
     "prettier": "2.5.1"
 >>>>>>> 6b884f2 (resolve 6 other high vulnerabilities- nth-check)
+=======
+    "prettier": "2.5.1",
+    "react-scripts": "^5.0.1",
+    "@svgr/webpack": "^6.2.1",
+    "nth-check": "^2.1.1"
+>>>>>>> 18992f7 (fix 6 high vulnerabilites)
   },
-  "resolutions": {
-    "nth-check": "2.1.1",
-    "terser": "5.14.2"
+  "overrides": {
+    "@svgr/webpack": "$@svgr/webpack",
+    "nth-check": "$nth-check"
   }
 }
