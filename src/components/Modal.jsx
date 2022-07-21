@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import styled, { css, keyframes } from 'styled-components'
-import closeIcon from '../assets/icons/close_icon.png'
-import { useWindowSize } from '../hooks'
+import React, { useEffect, useState } from "react";
+import styled, { css, keyframes } from "styled-components";
+import closeIcon from "../assets/icons/close_icon.png";
+import { useWindowSize } from "../hooks";
 
 /**
  * @prop {boolean} visible - This indicates whether the modal should be shown or not
@@ -34,8 +34,8 @@ export default function Modal({
         >
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
+              display: "flex",
+              justifyContent: "flex-end",
               marginTop: 21,
               marginRight: 24,
             }}
@@ -46,11 +46,11 @@ export default function Modal({
           </div>
           <div
             style={{
-              display: 'flex',
-              flexDirection: window.innerWidth < 900 ? 'column' : 'row',
+              display: "flex",
+              flexDirection: window.innerWidth < 900 ? "column" : "row",
               marginTop: window.innerWidth < 900 ? 10 : mint ? 25 : 104,
-              alignItems: 'center',
-              justifyContent: 'center',
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <div style={{ width: 252.55, marginRight: 62.5 }}>
@@ -63,7 +63,7 @@ export default function Modal({
             </div>
             <div
               style={
-                window.innerWidth < 900 ? { width: '85vw' } : { width: 359.9 }
+                window.innerWidth < 900 ? { width: "85vw" } : { width: 359.9 }
               }
             >
               {children}
@@ -72,21 +72,21 @@ export default function Modal({
         </MainContent>
       </Backdrop>
     </div>
-  )
+  );
 }
 // animation for closing and opening modal
 const closeModalAnimation = keyframes`
   0% {bottom: -200vh;}
   1% {bottom: -200vh;}
-  99% {bottom: ${window.innerWidth < 900 ? ' 20vh' : '5vh'};}
-  100% {bottom: ${window.innerWidth < 900 ? ' 20vh' : '5vh'};}
-`
+  99% {bottom: ${window.innerWidth < 900 ? " 20vh" : "5vh"};}
+  100% {bottom: ${window.innerWidth < 900 ? " 20vh" : "5vh"};}
+`;
 const hideBackdropAnimation = keyframes`
   0% { z-index: -10;background: #b0b0b000;}
   1% { z-index: 20;background: #b0b0b000;}
   99% {background: #b0b0b080;z-index: 20;}
   100% {background: #b0b0b080;z-index: 20;}
-`
+`;
 
 // styled components
 const Subtitle = styled.text`
@@ -98,41 +98,41 @@ const Subtitle = styled.text`
     props.darkToggle &&
     css`
       color: white;
-  `}
-`
+    `}
+`;
 const CloseButton = styled.button`
   border: 0px;
   background: transparent;
   cursor: pointer;
-`
+`;
 const Title = styled.text`
   font-weight: bold;
-  font-size: ${window.innerWidth < 900 ? '24px' : '48px'};
-  line-height: ${window.innerWidth < 900 ? '20px' : '60px'};
+  font-size: ${window.innerWidth < 900 ? "24px" : "48px"};
+  line-height: ${window.innerWidth < 900 ? "20px" : "60px"};
   letter-spacing: -0.02em;
   color: #464646;
   ${(props) =>
     props.darkToggle &&
     css`
       color: white;
-  `}
-`
+    `}
+`;
 const MainContent = styled.div`
   background: #ffffff;
   color: black;
-  height: ${window.innerWidth < 900 ? '450px' : '605px'};
-  width: ${`${window.innerWidth < 900 ? '90vw' : '835px'}`};
+  height: ${window.innerWidth < 900 ? "450px" : "605px"};
+  width: ${`${window.innerWidth < 900 ? "90vw" : "835px"}`};
   position: absolute;
   overflow: auto;
   ${(props) =>
     props.animate &&
     css`
-      animation-name: ${props.animate ? closeModalAnimation : ''};
+      animation-name: ${props.animate ? closeModalAnimation : ""};
       animation-duration: 1s;
       animation-iteration-count: 1;
       animation-fill-mode: forwards;
-      animation-direction: ${!props.visible ? 'reverse' : 'normal'};
-  `}
+      animation-direction: ${!props.visible ? "reverse" : "normal"};
+    `}
   ${(props) =>
     props.darkToggle &&
     css`
@@ -142,11 +142,11 @@ const MainContent = styled.div`
   ${(props) => css`
     bottom: ${props.visible
       ? window.innerWidth < 900
-        ? '20vh'
-        : '5vh'
-      : '-200vh'};
+        ? "20vh"
+        : "5vh"
+      : "-200vh"};
   `}
-`
+`;
 const Backdrop = styled.div`
   position: fixed;
   height: 100vh;
@@ -159,14 +159,14 @@ const Backdrop = styled.div`
   ${(props) =>
     props.animate &&
     css`
-      animation-direction: ${!props.visible ? 'reverse' : 'normal'};
-      animation-name: ${props.animate ? hideBackdropAnimation : ''};
+      animation-direction: ${!props.visible ? "reverse" : "normal"};
+      animation-name: ${props.animate ? hideBackdropAnimation : ""};
       animation-duration: 1s;
       animation-iteration-count: 1;
       animation-fill-mode: forwards;
     `}
   ${(props) => css`
-    background: ${props.visible ? '#b0b0b080' : '#b0b0b000'};
+    background: ${props.visible ? "#b0b0b080" : "#b0b0b000"};
     z-index: ${props.visible ? 20 : -10};
   `}
-`
+`;
