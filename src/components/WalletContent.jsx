@@ -75,10 +75,10 @@ export default function WalletContent() {
       <AccountContainer darkToggle={theme === "dark"}>
         <div
           style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: window.innerWidth < 900 ? 'column' : 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             marginBottom: 10,
           }}
         >
@@ -111,67 +111,94 @@ export default function WalletContent() {
         </div>
         <div
           style={{
-            display: "flex",
-            flexDirection: window.innerWidth < 900 ? "column" : "row",
-            justifyContent: "space-between",
+            display: 'flex',
+            flexDirection: window.innerWidth < 900 ? 'column' : 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <div>
-            <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
-              <AccountInfoTitle>Balance</AccountInfoTitle>
-            </div>
-            <div style={{ marginBottom: window.innerWidth < 900 ? 10 : 0 }}>
-              <AccountInfoData>
-                {getWallet() == null ? "N/A" : `${balance} Algos`}
-              </AccountInfoData>
-            </div>
-          </div>
-          <div>
-            <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
-              <AccountInfoTitle>Rewards</AccountInfoTitle>
-            </div>
-            <div style={{ marginBottom: window.innerWidth < 900 ? 10 : 0 }}>
-              <AccountInfoData>
-                {getWallet() == null ? "N/A" : `${rewards} Algos`}
-              </AccountInfoData>
-            </div>
-          </div>
-          <div>
-            <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
-              <AccountInfoTitle>Pending Rewards</AccountInfoTitle>
-            </div>
-            <div style={{ marginBottom: window.innerWidth < 900 ? 10 : 0 }}>
-              <AccountInfoData>
-                {getWallet() == null ? "N/A" : `${pendingRewards} Algos`}
-              </AccountInfoData>
-            </div>
-          </div>
-          <div>
-            <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
-              <AccountInfoTitle>Status</AccountInfoTitle>
-            </div>
-            <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
-              <AccountInfoData>
-                {getWallet() == null ? "N/A" : getWalletInfo()["status"]}
-              </AccountInfoData>
-            </div>
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "row", marginTop: 20 }}>
-          {theme === "light" ? (
-            <img src={linkIcon} alt="link-icon" />
-          ) : (
-            <img src={linkIconWhite} alt="link-icon-white" />
-          )}
-          <Link
-            href={algoLink}
-            target="_blank"
-            style={{ paddingLeft: 5 }}
-            darkToggle={theme === "dark"}
+          {window.innerWidth < 900 ?
+            <LinkButton
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: 15,
+                  }}
+                  onClick={() => {
+                    window.open(algoLink)
+                  }}
+                >
+                  <div style={{ paddingRight: 15 }}>
+                    <LinkButtonText darkToggle={theme === 'dark'}>View Account on Algo Explorer</LinkButtonText>
+                  </div>
+                  <div>
+                    {theme === 'light' ? <img src={linkIcon} alt="link-icon" />: <img src={linkIconWhite} alt="link-icon-white" /> }
+                  </div>
+                </LinkButton>
+              : <></>}
+          <div
+          style={{
+            display: 'flex',
+            flexDirection: window.innerWidth < 900 ? 'column' : 'row',
+            justifyContent: 'space-between',
+            width: '60%',
+          }}
           >
-            {" "}
-            View Account on Algo Explorer{" "}
-          </Link>
+            <div
+            style={{
+              display: 'flex',
+              flexDirection: window.innerWidth < 900 ? 'row' : 'column',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}>
+              <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
+                <AccountInfoTitle>Balance</AccountInfoTitle>
+              </div>
+              <div style={{ marginBottom: window.innerWidth < 900 ? 10 : 0 }}>
+                <AccountInfoData>
+                  {getWallet() == null
+                    ? 'N/A'
+                    : `${balance} Algos`}
+                </AccountInfoData>
+              </div>
+            </div>
+            <div
+            style={{
+              display: 'flex',
+              flexDirection: window.innerWidth < 900 ? 'row' : 'column',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}>
+              <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
+                <AccountInfoTitle>Status</AccountInfoTitle>
+              </div>
+              <div style={{ marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
+                <AccountInfoData>
+                  {getWallet() == null ? 'N/A' : getWalletInfo()['status']}
+                </AccountInfoData>
+              </div>
+            </div>
+          </div>
+          {window.innerWidth >= 900 ?
+          <LinkButton
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+                onClick={() => {
+                  window.open(algoLink)
+                }}
+              >
+                <div style={{ paddingRight: 15 }}>
+                  <LinkButtonText darkToggle={theme === 'dark'}>View Account on Algo Explorer</LinkButtonText>
+                </div>
+                <div>
+                  {theme === 'light' ? <img src={linkIcon} alt="link-icon" />: <img src={linkIconWhite} alt="link-icon-white" /> }
+                </div>
+              </LinkButton>
+              : <></>}
         </div>
       </AccountContainer>
       <div
@@ -225,17 +252,26 @@ const AccountInfoTitle = styled.text`
 const AccountInfoData = styled.text`
   font-weight: normal;
   font-size: 20px;
-`;
-const Link = styled.a`
-  text-decoration: none;
+`
+const LinkButton = styled.button`
+  height: 20px;
+  border-width: 0;
+  background-color: transparent;
+  cursor: pointer;
+`
+
+const LinkButtonText = styled.text`
+  font-size: 16px;
   font-weight: 500;
-  color: black;
   ${(props) =>
     props.darkToggle &&
     css`
       color: #99b2ff;
-    `}
-`;
+  `}
+  ${LinkButton}:hover & {
+    text-decoration: none;
+  }
+`
 
 // dummy data for the assets table
 var dummyAssets =
