@@ -6,7 +6,7 @@
     "es2021": true
   },
   "rules": {
-    "semi": ["error", "always"],
+    "semi": ["warn", "always"],
     "quotes": ["warn", "double"],
     "no-unused-vars": "off",
     "no-prototype-builtins": "off",
