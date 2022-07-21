@@ -5,6 +5,7 @@ import swapIcon from "../../assets/icons/swap_icon_new.png";
 import Modal from "../Modal";
 import PrimaryButton from "../PrimaryButton";
 import TransactionSummary from "../TransactionSummary";
+import PageToggle from "./PageToggle";
 import LoadingOverlay from "../LoadingOverlay";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import {
@@ -21,8 +22,8 @@ import {
   getTotals,
   calcTransResult,
   toggleSelect,
-  handleExchange
-} from "./swapHelpers"
+  handleExchange,
+} from "./swapHelpers";
 import { useEffect } from "react";
 import { setAlert } from "../../redux/slices/alertSlice";
 import {
@@ -82,6 +83,7 @@ export default function SwapContainer() {
   return (
     <div>
       {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+      <PageToggle></PageToggle>
       <div style={{ marginBottom: 50 }}>
         {titles.map((value, index) => {
           return (

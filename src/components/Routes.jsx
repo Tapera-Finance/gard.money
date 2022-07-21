@@ -26,7 +26,14 @@ export default function AppRoutes() {
         <Route path="/new-cdp" element={Main(MintContent, "New CDP")} />
         <Route path="/manage" element={Main(RepayContent, "Manage CDPs")} />
         <Route path="/auctions" element={Main(AuctionsContent, "Auctions")} />
-        <Route path="/swap" element={APPVERSION && APPVERSION === "V2" ? Main(SwapContainer, "Swap") : Main(SwapContent, "Swap")} />
+        <Route
+          path="/swap"
+          element={
+            APPVERSION && APPVERSION === "V2"
+              ? Main(SwapContainer, "Swap")
+              : Main(SwapContent, "Swap")
+          }
+        />
         <Route path="/dao" element={Main(DaoContent, "DAO")} />
         <Route
           path="/algo-governance"

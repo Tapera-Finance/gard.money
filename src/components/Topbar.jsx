@@ -44,7 +44,7 @@ export default function Topbar({ contentName, setMainContent }) {
     },
     dark: {
       height: 96,
-      backgroundColor: "#333333",
+      backgroundColor: "#172756",
       color: "white",
     },
     common: {

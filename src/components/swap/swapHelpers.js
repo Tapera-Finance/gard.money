@@ -1,4 +1,4 @@
-import { estimateReturn } from "../../transactions/swap";
+import { estimateReturn, queryAndConvertTotals } from "../../transactions/swap";
 
 export const mAlgosToAlgos = (num) => {
   return num / 1000000;
@@ -12,10 +12,10 @@ export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
   return parseFloat(assetX / assetY).toFixed(4);
 };
 
-export const targetPool = (assetNameX, assetNameY) => `${assetNameX}/${assetNameY}`;
+export const targetPool = (assetNameX, assetNameY) =>
+  `${assetNameX}/${assetNameY}`;
 
 export const getTotals = async () => await queryAndConvertTotals();
-
 
 /**
  * Component Helpers

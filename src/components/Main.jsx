@@ -68,7 +68,7 @@ export default function Main(WrappedComponent, title) {
   const body = document.querySelector("body");
   body.style.transition = "all 1s ease";
   theme === "dark"
-    ? (body.style.backgroundColor = "#121212")
+    ? (body.style.backgroundColor = "#172756")
     : (body.style.backgroundColor = "#ffffff");
 
   const MainStyle = {
@@ -76,7 +76,7 @@ export default function Main(WrappedComponent, title) {
       backgroundColor: "#ffffff",
     },
     dark: {
-      backgroundColor: "#121212",
+      backgroundColor: "#172756",
       color: "white",
     },
     common: {
@@ -116,8 +116,9 @@ export default function Main(WrappedComponent, title) {
             setCanAnimate(false);
             setModalCanAnimate(false);
           }}
+          style={{ background: "#172756" }}
         />
-        <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+        <div style={{ display: "flex", flexDirection: "row", width: "100%", }}>
           <div
             style={{
               paddingLeft: "6.9444444444444vw",
