@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import styled, {css} from 'styled-components'
 import linkIcon from '../assets/icons/link_icon.png'
 import linkIconWhite from '../assets/icons/link_icon_white.png'
@@ -6,6 +6,7 @@ import pinnedIcon from '../assets/icons/pinned_icon.png'
 import arrowIcon from '../assets/icons/arrow_icon.png'
 import arrowIconWhite from '../assets/icons/arrow_icon_white.png'
 import { ThemeContext } from '../contexts/ThemeContext'
+import { useState } from 'react'
 
 const axios = require('axios')
 
@@ -41,11 +42,64 @@ async function getArticleMetadata() {
   }
   return null
 }
+
+const articles = await loadArticles();
+
 /**
  * Content found on home
  */
 export default function HomeContent() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [newsItems, setNewsItems] = useState([articles[0], articles[1], articles[2], articles[3], articles[4]])
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(1)
+  const limit = 5
   const {theme} = useContext(ThemeContext)
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  function handleScroll(e) {
+    window.onscroll = function (e) {
+      if (
+        window.innerHeight + document.documentElement.scrollTop ===
+        document.documentElement.offsetHeight
+      ) {
+        setPage(page + 1);
+      }
+      console.log("Fetch more")
+      setIsLoading(true)
+    }
+  }
+
+  useEffect(() => {
+    if (!isLoading) return
+    loadMoreItems();
+  }, [isLoading])
+
+  function loadMoreItems() {
+    setCount(count => count += 1)
+    let news = formatNews(limit, count, articles)
+    setNewsItems(news)
+    setIsLoading(false)
+  }
+
+
+function formatNews(limit, idx, articles) {
+    let newsContainer = newsItems
+    let end = limit + idx
+    for (var start = idx; start <= end; start++) {
+     if (!((start + limit) >= articles.length)) {
+        newsContainer.push(articles[start + limit])
+      }
+      return newsContainer
+    }
+  }
+
   return (
     <div style={{}}>
       <div style={{ paddingBottom: 40 }}>
@@ -55,7 +109,7 @@ export default function HomeContent() {
         <div style={{ paddingBottom: 29 }}>
           <Subtitle>
             Welcome to the GARD protocol Web App! This is the MainNet application. Transactions made through this app are final and cannot
-            be undone. 
+            be undone.
           </Subtitle>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -105,8 +159,8 @@ export default function HomeContent() {
         <div style={{ paddingBottom: 26 }}>
           <Title>Recent News</Title>
         </div>
-        <div>
-          {news.map((v, i) => {
+        <div  >
+          {newsItems.length > 0 && newsItems.map((v, i) => {
             return (
               <div key={i} style={{ marginBottom: 24 }}>
                 {v.pinned ? (
@@ -172,6 +226,7 @@ export default function HomeContent() {
               </div>
             )
           })}
+          {isLoading && 'Loading...'}
         </div>
       </div>
     </div>
@@ -244,6 +299,3 @@ const LinkButtonTextBold = styled.text`
   `}
 `
 
-// dummy data for news headlines
-
-const news = await loadArticles()
