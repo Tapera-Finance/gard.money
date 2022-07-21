@@ -254,7 +254,6 @@ export default function Topbar({ contentName, setMainContent }) {
           ) : (
             <></>
           )}
-          <ThemeToggle />
         </div>
       </TopBar>
       <Modal
