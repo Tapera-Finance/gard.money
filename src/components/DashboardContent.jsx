@@ -159,7 +159,7 @@ function Graph({ title }) {
         });
       }
       setSubtitle(
-        `Current TVL: $` + historical_data[historical_data.length - 1].tvl,
+        "Current TVL: $" + historical_data[historical_data.length - 1].tvl,
       );
       setData(historical_data);
     } else if (title === "Circulating GARD") {
@@ -181,7 +181,7 @@ function Graph({ title }) {
         });
       }
       setSubtitle(
-        `Current GARD in Circulation: ` +
+        "Current GARD in Circulation: " +
           historical_data[historical_data.length - 1].circulating,
       );
       setData(historical_data);
@@ -206,7 +206,7 @@ function Graph({ title }) {
         });
       }
       setSubtitle(
-        `Current GAIN Price: $` +
+        "Current GAIN Price: $" +
           historical_data[historical_data.length - 1].price,
       );
       setData(historical_data);
@@ -227,7 +227,7 @@ function Graph({ title }) {
         });
       }
       setSubtitle(
-        `Current Open CDPs: ` +
+        "Current Open CDPs: " +
           historical_data[historical_data.length - 1].open,
       );
       setData(historical_data);
@@ -274,7 +274,7 @@ function Graph({ title }) {
         });
       }
       setSubtitle(
-        `CDP Algos: ` + historical_data[historical_data.length - 1].locked,
+        "CDP Algos: " + historical_data[historical_data.length - 1].locked,
       );
       setData(historical_data);
     }

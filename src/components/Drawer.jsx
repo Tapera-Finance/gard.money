@@ -295,7 +295,7 @@ const DrawerDiv = styled.div`
   width: ${`${window.innerWidth < 900 ? 101 : 20}vw`};
   z-index: 15;
   left: ${`${window.innerWidth < 900 ? -101 : 0}vw`};
-  position: ${`${window.innerWidth < 900 ? `absolute` : `fixed`}`};
+  position: ${`${window.innerWidth < 900 ? "absolute" : "fixed"}`};
   overflow-y: auto;
   ${(props) =>
     props.animate &&

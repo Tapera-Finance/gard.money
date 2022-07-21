@@ -197,7 +197,7 @@ export async function connectWallet(type, address) {
   // XXX: A future improvement would allow users to select a specific wallet based upon some displayed info, rather than limiting them to one
   let interval;
   switch (type) {
-    case "MyAlgoConnect":
+    case "MyAlgoConnect": {
       const settings = {
         shouldSelectOneAccount: true,
         openManager: false,
@@ -211,7 +211,8 @@ export async function connectWallet(type, address) {
         // This would involve good UX informing the user that connection failed (and why)
       }
       break;
-    case "AlgoSigner":
+    }
+    case "AlgoSigner": {
       if (typeof AlgoSigner !== "undefined") {
         try {
           let instance = await AlgoSigner.connect();
@@ -237,7 +238,8 @@ export async function connectWallet(type, address) {
         // XXX: Improve UX
       }
       break;
-    case "AlgorandWallet":
+    }
+    case "AlgorandWallet": {
       // Check if connection is already established
 
       if (connector && connector.connected) {
@@ -281,6 +283,7 @@ export async function connectWallet(type, address) {
       activeWallet.address = account;
       activeWallet.type = "AlgorandWallet";
       break;
+    }
     default:
       // We should never get here, that's on bad programming
       console.error("Undefined wallet type!");
@@ -316,7 +319,7 @@ function sameSender(sender1, sender2) {
 export async function signGroup(info, txnarray) {
   const senderAddressObj = algosdk.decodeAddress(info.address);
   switch (activeWallet.type) {
-    case "MyAlgoConnect":
+    case "MyAlgoConnect": {
       const toSign = txnarray.filter((txn) =>
         sameSender(txn["from"], senderAddressObj),
       );
@@ -334,7 +337,8 @@ export async function signGroup(info, txnarray) {
         }
       }
       return res;
-    case "AlgorandWallet":
+    }
+    case "AlgorandWallet": {
       const txnsToSign = txnarray.map((txn) => {
         const encodedTxn = Buffer.from(
           algosdk.encodeUnsignedTransaction(txn),
@@ -362,7 +366,8 @@ export async function signGroup(info, txnarray) {
           : null;
       });
       return decodedResult;
-    case "AlgoSigner":
+    }
+    case "AlgoSigner": {
       // Alogsigner requires all txns in a sign call to be from the same group,
       // 	so we have to split out groups
       console.log(txnarray);
@@ -405,6 +410,7 @@ export async function signGroup(info, txnarray) {
           : null;
       });
       return parsedResults;
+    }
     default:
       throw "No wallet selected!";
   }

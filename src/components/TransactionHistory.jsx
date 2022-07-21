@@ -176,7 +176,7 @@ export default function TransactionHistory({ headerColor, tableColor }) {
               ? documents.length > 1
                 ? `${documents.length} Transactions`
                 : `${documents.length} Transaction`
-              : `No Transactions recorded`}
+              : "No Transactions recorded"}
           </CountText>
         </CountContainer>
       </div>

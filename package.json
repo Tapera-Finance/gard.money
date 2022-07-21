@@ -38,7 +38,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "resolve": "npx npm-force-resolutions",
-    "lint": "eslint . --ext .js,.jsx",
+    "lint": "eslint . --ext .js,.jsx --fix",
     "precommit": "pretty-quick --staged",
     "postcommit": "git update-index -g",
     "pretty": "prettier --write \"./**/*.{js,jsx,json}\""

@@ -896,7 +896,7 @@ const TitleText = styled.text`
     background: #2c2c2c
     color: #f4ebff
   `
-      : ``}
+      : ""}
 `;
 const RelationsSpecificsContainer = styled.div`
   border-bottom: 1px solid #f9f9f9;

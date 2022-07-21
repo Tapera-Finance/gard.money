@@ -23,16 +23,16 @@
   "plugins": ["react", "jsx"],
 
   "parser": "@babel/eslint-parser",
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "jsx": true,
-            "modules": true,
-            "experimentalObjectRestSpread": true
-        },
-        "react": {
-            "version": "detect"
-        }
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true,
+      "experimentalObjectRestSpread": true
+    },
+    "react": {
+      "version": "detect"
     }
+  }
 }

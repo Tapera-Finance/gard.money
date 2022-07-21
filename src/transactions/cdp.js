@@ -409,7 +409,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
 
   const stringVal = toWallet
     ? `af/gov1:j{"com":${collateral + 300000},"bnf":"${info.address}"}`
-    : 'af/gov1:j{"com":' + (collateral + 300000).toString() + "}";
+    : "af/gov1:j{\"com\":" + (collateral + 300000).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -814,7 +814,7 @@ export async function commitCDP(account_id, amount, toWallet) {
 
   const stringVal = toWallet
     ? `af/gov1:j{"com":${parseInt(amount * 1000000)},"bnf":"${info.address}"}`
-    : 'af/gov1:j{"com":' + parseInt(amount * 1000000).toString() + "}";
+    : "af/gov1:j{\"com\":" + parseInt(amount * 1000000).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -855,10 +855,10 @@ export async function commitCDP(account_id, amount, toWallet) {
     "Succesfully committed your algos from cdp " +
       account_id +
       " to governance! You may verify" +
-      ' <a href="' +
+      " <a href=\"" +
       "https://governance.algorand.foundation/governance-period-4/governors/" +
       cdp.address +
-      '">here</a>.\n',
+      "\">here</a>.\n",
     true,
   );
   setLoadingStage(null);
@@ -876,7 +876,7 @@ export async function voteCDP(account_id, option1, option2) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
-  const stringVal = 'af/gov1:j[6,"' + option1 + '","' + option2 + '"]';
+  const stringVal = "af/gov1:j[6,\"" + option1 + "\",\"" + option2 + "\"]";
 
   const note = enc.encode(stringVal);
 
