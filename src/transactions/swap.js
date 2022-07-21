@@ -6,15 +6,8 @@ import {
   pactGARDID,
   pactAlgoGardPoolAddress,
 } from "./ids";
-import {
-  accountInfo,
-  getParams,
-  sendTxn,
-  signGroup,
-} from "../wallets/wallets";
-import {
-  verifyOptIn
-} from "./cdp"
+import { accountInfo, getParams, sendTxn, signGroup } from "../wallets/wallets";
+import { verifyOptIn } from "./cdp";
 import { updateDBWebActions } from "../components/Firebase";
 
 const axios = require("axios");
@@ -62,7 +55,8 @@ const poolShark = {
 
 export function estimateReturn(input, totalX, totalY) {
   let receivedAmount =
-   ((1e6* (input * totalY) / Math.floor(((input*1e6) + totalX)) * 9900)) / 10000;
+    (((1e6 * (input * totalY)) / Math.floor(input * 1e6 + totalX)) * 9900) /
+    10000;
   return parseInt(receivedAmount);
 }
 
@@ -77,25 +71,25 @@ export function estimateReturn(input, totalX, totalY) {
 export async function queryAndConvertTotals() {
   let result;
 
-    // ALGO/GARD pool
-      const algoInPool = await poolShark.getAlgo();
-      const gardInPool = await poolShark.getGard();
-      const algoGardPool = {
-        algo: algoInPool.amount,
-        gard: gardInPool["asset-holding"].amount
-      }
-    // as pools are added, add poolShark calls to get those token totals and pass to corresponding result[asset/asset]
-      result = {
-        "ALGO/GARD": {
-          algo: algoGardPool.algo,
-          gard: algoGardPool.gard
-        },
-        "GARD/ALGO" : {
-          algo: algoGardPool.algo,
-          gard: algoGardPool.gard
-        } // same pool as fallback in case targetPool string is reversed
-        // as pools are added, add property to result object that matches the format of string returned from SwapContent's targetPool function, this will be used to dynamically key into each pool total
-      }
+  // ALGO/GARD pool
+  const algoInPool = await poolShark.getAlgo();
+  const gardInPool = await poolShark.getGard();
+  const algoGardPool = {
+    algo: algoInPool.amount,
+    gard: gardInPool["asset-holding"].amount,
+  };
+  // as pools are added, add poolShark calls to get those token totals and pass to corresponding result[asset/asset]
+  result = {
+    "ALGO/GARD": {
+      algo: algoGardPool.algo,
+      gard: algoGardPool.gard,
+    },
+    "GARD/ALGO": {
+      algo: algoGardPool.algo,
+      gard: algoGardPool.gard,
+    }, // same pool as fallback in case targetPool string is reversed
+    // as pools are added, add property to result object that matches the format of string returned from SwapContent's targetPool function, this will be used to dynamically key into each pool total
+  };
   return result;
 }
 
@@ -103,21 +97,22 @@ export async function queryAndConvertTotals() {
  * Session Helpers
  */
 //initial store
- const originalSetItem = sessionStorage.setItem;
+const originalSetItem = sessionStorage.setItem;
 
- // def storage setItem method
- sessionStorage.setItem = function (key, value) {
-   var event = new Event("itemInserted");
+// def storage setItem method
+sessionStorage.setItem = function (key, value) {
+  var event = new Event("itemInserted");
 
-   event.value = value;
-   event.key = key;
+  event.value = value;
+  event.key = key;
 
-   document.dispatchEvent(event);
+  document.dispatchEvent(event);
 
-   originalSetItem.apply(this, arguments);
- };
+  originalSetItem.apply(this, arguments);
+};
 
-const setLoadingStage = stage => sessionStorage.setItem("loadingStage", JSON.stringify(stage));
+const setLoadingStage = (stage) =>
+  sessionStorage.setItem("loadingStage", JSON.stringify(stage));
 
 /**
  *
@@ -127,7 +122,6 @@ const setLoadingStage = stage => sessionStorage.setItem("loadingStage", JSON.str
   *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
 export async function swapAlgoToGard(amount, minimum) {
-
   setLoadingStage("Loading...");
 
   const infoPromise = accountInfo();
@@ -153,13 +147,15 @@ export async function swapAlgoToGard(amount, minimum) {
     foreignAssets: f_a,
     suggestedParams: params,
   });
-  let optTxn = opted ? [] : algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: info.address,
-    amount: 0,
-    suggestedParams: params,
-    assetIndex: gardID,
-  });
+  let optTxn = opted
+    ? []
+    : algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+        from: info.address,
+        to: info.address,
+        amount: 0,
+        suggestedParams: params,
+        assetIndex: gardID,
+      });
   let txns = optTxn.concat([txn1, txn2]);
   algosdk.assignGroupID(txns);
 
@@ -171,10 +167,13 @@ export async function swapAlgoToGard(amount, minimum) {
 
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
-  const response = await sendTxn(stxns, "Successfully swapped " + amount/1e6 + " ALGO.",);
+  const response = await sendTxn(
+    stxns,
+    "Successfully swapped " + amount / 1e6 + " ALGO.",
+  );
 
   setLoadingStage(null);
-  updateDBWebActions(8, null, -amount, minimum, 0, 1, 3000)
+  updateDBWebActions(8, null, -amount, minimum, 0, 1, 3000);
   return response;
 }
 
@@ -184,8 +183,7 @@ export async function swapAlgoToGard(amount, minimum) {
  *    @param {minimum} {number} - representing minimum acceptable microAlgos for swap to succeed
  *    @returns {transactionSummary} - returns details of the exchange to allow for execution
  */
- export async function swapGardToAlgo(amount, minimum) {
-
+export async function swapGardToAlgo(amount, minimum) {
   setLoadingStage("Loading...");
 
   const infoPromise = accountInfo();
@@ -217,13 +215,16 @@ export async function swapAlgoToGard(amount, minimum) {
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   const signedGroup = await signGroup(info, txns);
 
-  setLoadingStage("Waiting for Confirmation...")
+  setLoadingStage("Waiting for Confirmation...");
 
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
-  const response = await sendTxn(stxns, "Successfully swapped " + amount/1e6 + " GARD.",);
+  const response = await sendTxn(
+    stxns,
+    "Successfully swapped " + amount / 1e6 + " GARD.",
+  );
 
-  setLoadingStage(null)
-  updateDBWebActions(8, null, minimum, -amount, 0, 1, 3000)
+  setLoadingStage(null);
+  updateDBWebActions(8, null, minimum, -amount, 0, 1, 3000);
   return response;
 }

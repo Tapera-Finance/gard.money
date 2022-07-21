@@ -19,7 +19,12 @@ import {
   signGroup,
 } from "../wallets/wallets";
 import { getCurrentUnix } from "../prices/prices";
-import { updateCommitmentFirestore , addCDPToFireStore, updateDBWebActions, updateLiquidationFirestore } from "../components/Firebase";
+import {
+  updateCommitmentFirestore,
+  addCDPToFireStore,
+  updateDBWebActions,
+  updateLiquidationFirestore,
+} from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
 
 var $ = require("jquery");
@@ -253,7 +258,6 @@ function setLoadingStage(stage) {
   sessionStorage.setItem("loadingStage", JSON.stringify(stage));
 }
 
-
 export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   if (openingGARD < 1) {
     return {
@@ -403,7 +407,9 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     assetIndex: gardID,
   });
 
-  const stringVal = toWallet ? `af/gov1:j{"com":${(collateral+300000)},"bnf":"${info.address}"}`: 'af/gov1:j{"com":' + (collateral+300000).toString() + "}";
+  const stringVal = toWallet
+    ? `af/gov1:j{"com":${collateral + 300000},"bnf":"${info.address}"}`
+    : 'af/gov1:j{"com":' + (collateral + 300000).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -429,7 +435,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   algosdk.assignGroupID(r3_txns);
 
   // r2_txns.splice(3, 1)
-  let txns = r1_txns.concat( commit ? r2_txns.concat(r3_txns) : r2_txns);
+  let txns = r1_txns.concat(commit ? r2_txns.concat(r3_txns) : r2_txns);
   let stxns = await signGroup(info, txns);
 
   setLoadingStage("Confirming Transaction...");
@@ -469,21 +475,25 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   ];
   let response = await sendTxn1Promise;
 
-  response = await sendTxn(stxns2, "Successfully opened a CDP with ID: " + accountID + ".");
+  response = await sendTxn(
+    stxns2,
+    "Successfully opened a CDP with ID: " + accountID + ".",
+  );
 
-  addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, devFees)
+  addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, devFees);
 
   if (commit) {
-    setLoadingStage("Committing to Governance...")
+    setLoadingStage("Committing to Governance...");
     lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
-    let stxn6 = algosdk.signLogicSigTransactionObject(txn8, lsig)
-    let stxns3 = [stxns[start+6].blob, stxn6.blob]
-    console.log(stxns3, accountID, typeof accountID)
-    await sendTxn(stxns3, "dooby dooby doo bah")
-    updateCommitmentFirestore(info.address, accountID, collateral+300000);
-    response.text = response.text + '\nFull Balance committed to Governance Period #4!'
+    let stxn6 = algosdk.signLogicSigTransactionObject(txn8, lsig);
+    let stxns3 = [stxns[start + 6].blob, stxn6.blob];
+    console.log(stxns3, accountID, typeof accountID);
+    await sendTxn(stxns3, "dooby dooby doo bah");
+    updateCommitmentFirestore(info.address, accountID, collateral + 300000);
+    response.text =
+      response.text + "\nFull Balance committed to Governance Period #4!";
   }
-  setLoadingStage(null)
+  setLoadingStage(null);
   updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
@@ -548,9 +558,12 @@ export async function mint(accountID, newGARD) {
 
   let stxns = [stxn1.blob, stxn2.blob, stxn3.blob];
 
-  let response = await sendTxn(stxns, "Successfully minted " + newGARD + " GARD.");
-  setLoadingStage(null)
-  updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, devFees)
+  let response = await sendTxn(
+    stxns,
+    "Successfully minted " + newGARD + " GARD.",
+  );
+  setLoadingStage(null);
+  updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, devFees);
   checkChainForCDP(info.address, accountID);
 
   return response;
@@ -627,7 +640,7 @@ export async function addCollateral(accountID, newAlgos) {
   );
   setLoadingStage(null);
 
-  updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000)
+  updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
   checkChainForCDP(info.address, accountID);
 
   return response;
@@ -653,8 +666,8 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   }
   let info = await accountInfoPromise;
   let cdp = cdpGen(info.address, accountID);
-  let cdpInfo = await accountInfo(cdp.address)
-  const cdpBal = cdpInfo.amount
+  let cdpInfo = await accountInfo(cdp.address);
+  const cdpBal = cdpInfo.amount;
   let gard_bal = getGardBalance(info);
 
   if (gard_bal == null || gard_bal < microRepayGARD) {
@@ -738,7 +751,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   );
   setLoadingStage(null);
   removeCDP(info.address, accountID);
-  updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee)
+  updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee);
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
 }
@@ -799,8 +812,9 @@ export async function commitCDP(account_id, amount, toWallet) {
 
   const info = await infoPromise;
 
-  const stringVal =
-  toWallet ? `af/gov1:j{"com":${parseInt(amount * 1000000)},"bnf":"${info.address}"}`: 'af/gov1:j{"com":' + parseInt(amount * 1000000).toString() + "}";
+  const stringVal = toWallet
+    ? `af/gov1:j{"com":${parseInt(amount * 1000000)},"bnf":"${info.address}"}`
+    : 'af/gov1:j{"com":' + parseInt(amount * 1000000).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -847,8 +861,12 @@ export async function commitCDP(account_id, amount, toWallet) {
       '">here</a>.\n',
     true,
   );
-  setLoadingStage(null)
-  updateCommitmentFirestore(info.address, account_id, parseInt(amount * 1000000));
+  setLoadingStage(null);
+  updateCommitmentFirestore(
+    info.address,
+    account_id,
+    parseInt(amount * 1000000),
+  );
   return response;
 }
 
@@ -904,8 +922,8 @@ export async function voteCDP(account_id, option1, option2) {
       " from CDP #" +
       account_id,
   );
-  updateDBWebActions(6, account_id, 0, 0, 0, 0, 2000)
-  setLoadingStage(null)
+  updateDBWebActions(6, account_id, 0, 0, 0, 0, 2000);
+  setLoadingStage(null);
   return response;
 }
 
@@ -998,8 +1016,10 @@ export async function liquidate(
   ];
   let response = await sendTxn(
     stxns,
-    "Successfully liquidated CDP #" + account_id + " of " + owner_address, true);
-    updateLiquidationFirestore(owner_address, account_id)
-    setLoadingStage(null)
+    "Successfully liquidated CDP #" + account_id + " of " + owner_address,
+    true,
+  );
+  updateLiquidationFirestore(owner_address, account_id);
+  setLoadingStage(null);
   return response;
 }

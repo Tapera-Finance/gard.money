@@ -1,7 +1,7 @@
-import React, { useContext } from 'react'
-import styled, {css} from 'styled-components'
-import PrimaryButton from './PrimaryButton'
-import { ThemeContext } from '../contexts/ThemeContext'
+import React, { useContext } from "react";
+import styled, { css } from "styled-components";
+import PrimaryButton from "./PrimaryButton";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 /**
  * @prop {Specifics[]} specifics - List of concepts and their values to be shown inside the transaction
@@ -16,7 +16,7 @@ export default function TransactionSummary({
   darkToggle,
   commit,
 }) {
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
   return (
     <div style={{}}>
       <div style={{ marginLeft: 16, marginBottom: 8 }}>
@@ -29,11 +29,11 @@ export default function TransactionSummary({
             <div
               key={index}
               style={{
-                display: 'flex',
-                flexDirection: window.innerWidth < 900 ? 'column' : 'row',
+                display: "flex",
+                flexDirection: window.innerWidth < 900 ? "column" : "row",
                 marginTop: 20,
                 marginBottom: 20,
-                justifyContent: 'space-between',
+                justifyContent: "space-between",
               }}
             >
               <div>
@@ -43,42 +43,46 @@ export default function TransactionSummary({
                 <SpecificsValue>{value.value}</SpecificsValue>
               </div>
             </div>
-          )
+          );
         })}
-        {commit !== undefined && commit !== null ? <div
-          style={{
-            display: 'flex',
-            flexDirection: window.innerWidth < 900 ? 'column' : 'row',
-            marginTop: 20,
-            marginBottom: 20,
-            justifyContent: 'space-between',
-          }}
-        >
-          <div>
-            <SpecificsTitle>Collateral Balance Commited</SpecificsTitle>
+        {commit !== undefined && commit !== null ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: window.innerWidth < 900 ? "column" : "row",
+              marginTop: 20,
+              marginBottom: 20,
+              justifyContent: "space-between",
+            }}
+          >
+            <div>
+              <SpecificsTitle>Collateral Balance Commited</SpecificsTitle>
+            </div>
+            <div>
+              <SpecificsValue>{commit === false ? "No" : "Yes"}</SpecificsValue>
+            </div>
           </div>
-          <div>
-            <SpecificsValue>{commit === false ? 'No' : 'Yes'}</SpecificsValue>
-          </div>
-        </div> : <div></div>}
+        ) : (
+          <div></div>
+        )}
       </SpecificsContainer>
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
+      <div style={{ display: "flex", flexDirection: "row" }}>
         <PrimaryButton
           text="Confirm Transaction"
           onClick={() => {
-            transactionFunc()
+            transactionFunc();
           }}
         />
         <CancelButton
           style={{ marginLeft: 30 }}
           onClick={() => cancelCallback()}
-          darkToggle={theme === 'dark'}
+          darkToggle={theme === "dark"}
         >
           <CancelButtonText darkToggle={darkToggle}>Cancel</CancelButtonText>
         </CancelButton>
       </div>
     </div>
-  )
+  );
 }
 
 // styled components
@@ -87,7 +91,7 @@ const SpecificsContainer = styled.div`
   border-width: 1px 0px;
   margin-bottom: 32px;
   padding: 0px 0px 0px 0px;
-`
+`;
 const TTitle = styled.text`
   font-weight: normal;
   font-size: 14px;
@@ -96,24 +100,24 @@ const TTitle = styled.text`
     props.darkToggle &&
     css`
       color: white;
-  `}
-`
+    `}
+`;
 
 const CancelButton = styled.button`
   border: 0px;
   background: transparent;
   display: flex;
   align-items: center;
-  height: '100%';
+  height: "100%";
   cursor: pointer;
   ${(props) =>
     props.darkToggle &&
     css`
-    color: white;
+      color: white;
       background-color: #9a71da;
       border: 1px solid #9a71da;
-  `}
-`
+    `}
+`;
 const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
@@ -121,18 +125,18 @@ const CancelButtonText = styled.text`
     props.darkToggle &&
     css`
       color: white;
-  `}
-`
+    `}
+`;
 const SpecificsTitle = styled.text`
   font-weight: normal;
   font-size: 16px;
-  display:inline-block;
+  display: inline-block;
   width: 150px;
-`
+`;
 const SpecificsValue = styled.text`
   font-weight: bold;
   font-size: 16px;
-`
+`;
 
 /**
  * @typedef {object} Specifics

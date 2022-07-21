@@ -17,7 +17,8 @@ let _pactGARDID;
 let _checkerID;
 
 // swap recipients
-let _pactAlgoGardPoolAddress = "F4HXMBXLFLT7IQAKXUVTVEU4HIW5WGULA5RFYN6QE5AALUB54JQCAY2NBI";
+let _pactAlgoGardPoolAddress =
+  "F4HXMBXLFLT7IQAKXUVTVEU4HIW5WGULA5RFYN6QE5AALUB54JQCAY2NBI";
 
 if (VERSION == "MAINNET") {
   // ASAs
@@ -35,7 +36,6 @@ if (VERSION == "MAINNET") {
   _oracleID = 673925841;
   _pactGARDID = 801613881;
   _checkerID = 787191335;
-
 } else if (VERSION == "TESTNET1") {
   // ASAs
   _gainID = 73680771;

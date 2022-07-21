@@ -1,8 +1,8 @@
-import React, { useEffect, useReducer, useState, useContext } from 'react'
-import styled, { keyframes, css } from 'styled-components'
-import closeIcon from '../assets/icons/close_icon.png'
-import PrimaryButton from './PrimaryButton'
-import { ThemeContext } from '../contexts/ThemeContext'
+import React, { useEffect, useReducer, useState, useContext } from "react";
+import styled, { keyframes, css } from "styled-components";
+import closeIcon from "../assets/icons/close_icon.png";
+import PrimaryButton from "./PrimaryButton";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 const Backdrop = styled.div`
   position: fixed;
@@ -11,11 +11,11 @@ const Backdrop = styled.div`
   left: 0;
   top: 0;
   z-index: ${21};
-  background: ${'#b0b0b080'};
+  background: ${"#b0b0b080"};
   display: flex;
   justify-content: center;
   align-items: center;
-`
+`;
 const Container = styled.div`
   background: #ffffff;
   display: flex;
@@ -26,26 +26,26 @@ const Container = styled.div`
   ${(props) =>
     props.darkToggle &&
     css`
-    background: #484848;
-    color: white;
-  `}
-`
+      background: #484848;
+      color: white;
+    `}
+`;
 
 export default function AlertOverlay({ text, requestClose }) {
-  const [content, setContent] = useState(<></>)
-  const {theme} = useContext(ThemeContext)
+  const [content, setContent] = useState(<></>);
+  const { theme } = useContext(ThemeContext);
   useEffect(() => {
-    if (!text) return
-    setContent(textWithLink(text))
-  }, [])
+    if (!text) return;
+    setContent(textWithLink(text));
+  }, []);
   return (
     <div>
       <Backdrop onClick={() => requestClose()}>
-        <Container darkToggle={theme === 'dark'}>
+        <Container darkToggle={theme === "dark"}>
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
+              display: "flex",
+              justifyContent: "flex-end",
             }}
           >
             <CloseButton onClick={() => requestClose()}>
@@ -53,13 +53,13 @@ export default function AlertOverlay({ text, requestClose }) {
             </CloseButton>
           </div>
           <div style={{ margin: 20 }}>{content}</div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <PrimaryButton text={'OK'} onClick={() => requestClose()} />
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <PrimaryButton text={"OK"} onClick={() => requestClose()} />
           </div>
         </Container>
       </Backdrop>
     </div>
-  )
+  );
 }
 
 const closeModalAnimation = keyframes`
@@ -67,42 +67,44 @@ const closeModalAnimation = keyframes`
   1% {bottom: -200vh;}
   99% {bottom: 5vh;}
   100% {bottom: 5vh;}
-`
+`;
 const hideBackdropAnimation = keyframes`
   0% { z-index: -10;background: #b0b0b000;}
   1% { z-index: 20;background: #b0b0b000;}
   99% {background: #b0b0b080;z-index: 20;}
   100% {background: #b0b0b080;z-index: 20;}
-`
+`;
 
 const AlertText = styled.text`
   font-weight: 500;
   font-size: 16px;
-`
+`;
 const CloseButton = styled.button`
   padding: 0px;
   border: 0px;
   background: transparent;
   cursor: pointer;
-`
+`;
 
 function textWithLink(text) {
-  if (!text.includes('</a>')) return <AlertText>{text}</AlertText>
-  const tagOpenStart = text.indexOf('<a')
-  const hrefStart = text.indexOf('href="', tagOpenStart)
-  const hrefEnd = text.indexOf('"', hrefStart + 6)
-  const tagOpenEnd = text.indexOf('>', hrefEnd)
-  const tagClose = text.indexOf('</a>', tagOpenEnd)
+  if (!text.includes("</a>")) return <AlertText>{text}</AlertText>;
+  const tagOpenStart = text.indexOf("<a");
+  const hrefStart = text.indexOf('href="', tagOpenStart);
+  const hrefEnd = text.indexOf('"', hrefStart + 6);
+  const tagOpenEnd = text.indexOf(">", hrefEnd);
+  const tagClose = text.indexOf("</a>", tagOpenEnd);
 
-  const beforeLink = text.substring(0, tagOpenStart)
-  const afterLink = text.substring(tagClose + 4)
-  const linkedText = text.substring(tagOpenEnd + 1, tagClose)
-  const href = text.substring(hrefStart + 6, hrefEnd)
+  const beforeLink = text.substring(0, tagOpenStart);
+  const afterLink = text.substring(tagClose + 4);
+  const linkedText = text.substring(tagOpenEnd + 1, tagClose);
+  const href = text.substring(hrefStart + 6, hrefEnd);
   return (
     <div>
       <AlertText>{beforeLink}</AlertText>
-      <a href={href} target="_blank" rel="noopener noreferrer">{linkedText}</a>
+      <a href={href} target="_blank" rel="noopener noreferrer">
+        {linkedText}
+      </a>
       <AlertText>{afterLink}</AlertText>
     </div>
-  )
+  );
 }
