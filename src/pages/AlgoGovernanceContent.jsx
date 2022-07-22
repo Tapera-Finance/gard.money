@@ -2,16 +2,16 @@ import React, { useReducer, useState, useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import styled, { css } from "styled-components";
-import Modal from "./Modal";
-import PrimaryButton from "./PrimaryButton";
-import LoadingOverlay from "./LoadingOverlay";
+import Modal from "../components/Modal";
+import PrimaryButton from "../components/PrimaryButton";
+import LoadingOverlay from "../components/LoadingOverlay";
 import { CDPsToList } from "./RepayContent";
 import { commitCDP, voteCDP } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
 import { cdpGen } from "../transactions/contracts";
-import Table from "./Table";
+import Table from "../components/Table";
 import { ThemeContext } from "../contexts/ThemeContext";
-import { loadFireStoreCDPs } from "./Firebase";
+import { loadFireStoreCDPs } from "../components/Firebase";
 import { commitmentPeriodEnd } from "../globals";
 
 function getGovernorPage(id) {

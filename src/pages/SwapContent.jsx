@@ -2,10 +2,10 @@ import React, { useReducer, useState, useContext } from "react";
 import styled, { css } from "styled-components";
 import chevron from "../assets/chevron_black.png";
 import swapIcon from "../assets/icons/swap_icon_new.png";
-import Modal from "./Modal";
-import PrimaryButton from "./PrimaryButton";
-import TransactionSummary from "./TransactionSummary";
-import LoadingOverlay from "./LoadingOverlay";
+import Modal from "../components/Modal";
+import PrimaryButton from "../components/PrimaryButton";
+import TransactionSummary from "../components/TransactionSummary";
+import LoadingOverlay from "../components/LoadingOverlay";
 import { ThemeContext } from "../contexts/ThemeContext";
 import {
   swapAlgoToGard,

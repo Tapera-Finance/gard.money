@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import styled, { css } from "styled-components";
 import { camelToWords } from "../utils";
 import { getWalletInfo } from "../wallets/wallets";
-import { CDPsToList } from "./RepayContent";
+import { CDPsToList } from "../pages/RepayContent";
 import chevron from "../assets/icons/tablePag_icon.png";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { loadDbActionAndMetrics, queryUser } from "./Firebase";
@@ -122,7 +122,7 @@ export default function TransactionHistory({ headerColor, tableColor }) {
     : ["No transaction history to display"];
 
   useEffect(() => {
-    if (typeof getWalletInfo() !== 'undefined') {
+    if (typeof getWalletInfo() !== "undefined") {
       const q = queryUser();
       const unsub = onSnapshot(q, (docSnap) => {
         let docs = [];

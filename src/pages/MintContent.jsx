@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useReducer, useContext } from "react";
 import styled, { keyframes, css } from "styled-components";
-import Modal from "./Modal";
-import PrimaryButton from "./PrimaryButton";
-import TransactionSummary from "./TransactionSummary";
-import LoadingOverlay from "./LoadingOverlay";
+import Modal from "../components/Modal";
+import PrimaryButton from "../components/PrimaryButton";
+import TransactionSummary from "../components/TransactionSummary";
+import LoadingOverlay from "../components/LoadingOverlay";
 import {
   getWallet,
   getWalletInfo,
