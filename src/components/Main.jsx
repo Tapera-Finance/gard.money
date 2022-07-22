@@ -187,12 +187,7 @@ const ContactUsText = styled.text`
 const Link = styled.a`
   text-decoration: none;
   font-weight: 500;
-  color: #1849f8;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
-    `}
+  color: #7c52ff;
 `;
 
 /**
