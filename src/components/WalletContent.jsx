@@ -96,7 +96,7 @@ export default function WalletContent() {
   if (!walletAddress) return <div></div>
   return (
     <div>
-      <AccountContainer darkToggle = {theme === 'dark'}>
+      <AccountContainer>
         <div
           style={{
             display: 'flex',
@@ -184,7 +184,7 @@ export default function WalletContent() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', marginTop: 20 }}>
           {theme === 'light' ? <img src={linkIcon} alt="link-icon" />: <img src={linkIconWhite} alt="link-icon-white" /> }
-          <Link href={algoLink} target="_blank" style={{paddingLeft: 5}} darkToggle = {theme === 'dark'}> View Account on Algo Explorer </Link>
+          <Link href={algoLink} target="_blank" style={{paddingLeft: 5}}> View Account on Algo Explorer </Link>
         </div>
       </AccountContainer>
       <div
@@ -201,14 +201,9 @@ export default function WalletContent() {
 
 // syled components for our wallet content
 const AccountContainer = styled.div`
-  background: #f4ebff;
+  background: #0d1227;
   padding: 5vw 4vw;
   margin-bottom: 56px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-    background: #404040;
-    `}
 `
 const AccountTitle = styled.text`
   font-weight: 500;
@@ -242,12 +237,7 @@ const AccountInfoData = styled.text`
 const Link = styled.a`
   text-decoration: none;
   font-weight: 500;
-  color: black;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
-  `}
+  color: #7c52ff;
 `
 
 // dummy data for the assets table

@@ -65,25 +65,7 @@ export default function Main(WrappedComponent, title) {
 
   
   const body = document.querySelector('body')
-  body.style.transition = 'all 1s ease'
-  theme === 'dark' ? body.style.backgroundColor = '#121212' : body.style.backgroundColor = '#ffffff'
-
-  const MainStyle = {
-    light: {
-      backgroundColor: '#ffffff',
-    },
-    dark: {
-      backgroundColor: '#121212',
-      color: 'white',
-    },
-    common: {
-      transition: 'all 1s ease',
-    },
-  }
-  const themeStyle = {
-    ...MainStyle.common,
-    ...(theme === 'light' ? MainStyle.light : MainStyle.dark),
-  }
+  body.style.backgroundColor = '#172756'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -102,7 +84,7 @@ export default function Main(WrappedComponent, title) {
         toggleOpenStatus={() => setIsOpen(!isOpen)}
         allowAnimate={() => setCanAnimate(true)}
       />
-      <MainContentDiv style = {themeStyle} canAnimate={canAnimate} isOpen={isOpen}>
+      <MainContentDiv canAnimate={canAnimate} isOpen={isOpen}>
         <Topbar
           contentName={title}
           setMainContent={(content) => {
@@ -185,6 +167,7 @@ const MainContentDiv = styled.div`
   animation-duration: 0.5s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
+  color: white;
   ${(props) => css`
     animation-direction: ${!props.isOpen ? 'normal' : 'reverse'};
     animation-name: ${props.canAnimate && window.innerWidth > 900

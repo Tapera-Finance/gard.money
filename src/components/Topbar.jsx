@@ -36,31 +36,6 @@ import { style } from '@mui/system'
  */
 
 export default function Topbar({ contentName, setMainContent }) {
-  const {theme} = useContext(ThemeContext)
-  const TopbarStyle = {
-    light: {
-      height: 96,
-      backgroundColor: '#f9fafb',
-    },
-    dark: {
-      height: 96,
-      backgroundColor: '#333333',
-      color: 'white',
-    },
-    common: {
-      transition: 'all 1s ease',
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingLeft: 36,
-      paddingRight: window.innerWidth * 0.077,
-    },
-  }
-  const themeStyle = {
-    ...TopbarStyle.common,
-    ...(theme === 'light' ? TopbarStyle.light : TopbarStyle.dark),
-  }
   const [modalVisible, setModalVisible] = useState(false)
   const [modalCanAnimate, setModalCanAnimate] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -201,7 +176,15 @@ export default function Topbar({ contentName, setMainContent }) {
         <></>
       )}
       <TopBar
-        style={themeStyle}
+        style={{
+          backgroundColor: '#172756',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingLeft: 36,
+          paddingRight: window.innerWidth * 0.077,
+        }}
       >
         <div
           style={{
@@ -218,7 +201,7 @@ export default function Topbar({ contentName, setMainContent }) {
             style={{ display: 'flex', justifyContent: 'center' }}
             onClick={() => window.location.reload()}
           >
-            {theme === 'light' ? <img src={syncIcon} style={{ height: 24 }} alt="sync" />: <img src={syncIconWhite} style={{ height: 24 }} alt="sync-white" />}
+            <img src={syncIconWhite} style={{ height: 24 }} alt="sync-white" />
           </SimplePressable>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row'}}>

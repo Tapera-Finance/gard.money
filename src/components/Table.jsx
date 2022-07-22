@@ -195,35 +195,21 @@ const Title = styled.text`
 `
 
 const CountContainer = styled.div`
-  background: #f9f5ff;
+  background: #ffffff;
   border-radius: 16px;
   padding: 2px 8px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-  `}
 `
 
 const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
-  color: #6941c6;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-  `}
+  color: #999696;
 `
 
 const HeaderRow = styled.tr`
-  background: #f9fafb;
+  background: #0d1227;
+  border-radius: 10px;
   height: 44px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-  `}
 `
 const HeaderElement = styled.th`
   font-weight: 500;
