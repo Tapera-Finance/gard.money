@@ -108,7 +108,6 @@ export default function RepayContent() {
                 setLoading(false);
               }}
               cancelCallback={() => setModalVisible(false)}
-              darkToggle={theme === "dark"}
             />
           ),
         };
@@ -139,7 +138,6 @@ export default function RepayContent() {
                 setLoading(false);
               }}
               cancelCallback={() => setModalVisible(false)}
-              darkToggle={theme === "dark"}
             >
               <WrappedSummary
                 context="add_collateral"
@@ -183,7 +181,6 @@ export default function RepayContent() {
                 setLoading(false);
               }}
               cancelCallback={() => setModalVisible(false)}
-              darkToggle={theme === "dark"}
             >
               <div
                 style={{
@@ -226,7 +223,6 @@ export default function RepayContent() {
           specifics={[]}
           transactionFunc={() => {}}
           cancelCallback={() => setModalVisible(false)}
-          darkToggle={theme === "dark"}
         />
       ),
     },
@@ -307,7 +303,6 @@ export default function RepayContent() {
         animate={modalCanAnimate}
         visible={modalVisible}
         close={() => setModalVisible(false)}
-        darkToggle={theme === "dark"}
       >
         {modalContent.children}
       </Modal>

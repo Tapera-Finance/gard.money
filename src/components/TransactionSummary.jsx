@@ -121,11 +121,7 @@ const CancelButton = styled.button`
 const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
+  color: white;
 `;
 const SpecificsTitle = styled.text`
   font-weight: normal;

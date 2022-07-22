@@ -366,6 +366,7 @@ const CancelButton = styled.button`
 const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
+  color: white;
 `;
 
 function TermsOfService({ closeModal, accept }) {
