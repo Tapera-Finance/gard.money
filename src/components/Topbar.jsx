@@ -25,8 +25,6 @@ import { useAlert } from "../hooks";
 import { useDispatch, useSelector } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { setWallet } from "../redux/slices/walletSlice";
-import ThemeToggle from "./ThemeToggle";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { userInDB, addUserToFireStore } from "../components/Firebase";
 import { style } from "@mui/system";
 /**

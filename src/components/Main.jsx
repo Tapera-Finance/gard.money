@@ -22,7 +22,6 @@ import AlertOverlay from "./AlertOverlay";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { hide } from "../redux/slices/alertSlice";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 async function googleStuff() {
   const script = document.createElement("script");
@@ -134,7 +133,6 @@ export default function Main(WrappedComponent, title) {
         visible={modalVisible}
         animate={modalCanAnimate}
         close={() => setModalVisible(false)}
-        darkToggle={theme === "dark"}
       >
         <div
           style={{
@@ -146,7 +144,6 @@ export default function Main(WrappedComponent, title) {
           <ContactUsText>
             {"Please let us know via email at"}
             <Link
-              darkToggle={theme === "dark"}
               href="mailto:hello@algogard.com"
             >
               {" "}

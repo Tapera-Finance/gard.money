@@ -19,7 +19,6 @@ import { setAlert } from "../redux/slices/alertSlice";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Slider from "@mui/material/Slider";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { commitmentPeriodEnd } from "../globals";
 
 function displayRatio() {

@@ -65,8 +65,8 @@ export default function Table({
           <div style={{ marginRight: 8 }}>
             <Title>{title}</Title>
           </div>
-          <CountContainer darkToggle={theme === "dark"}>
-            <CountText darkToggle={theme === "dark"}>
+          <CountContainer>
+            <CountText>
               {countSubtitle || `${data.length} ${title}`}
             </CountText>
           </CountContainer>
@@ -78,13 +78,12 @@ export default function Table({
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <tbody>
             <HeaderRow
-              darkToggle={theme === "dark"}
               style={{ background: headerColor }}
             >
               {columns
                 ? columns.map((value, index) => {
                     return (
-                      <HeaderElement darkToggle={theme === "dark"} key={index}>
+                      <HeaderElement key={index}>
                         {value}
                       </HeaderElement>
                     );
@@ -92,7 +91,7 @@ export default function Table({
                 : keys.map((value, index) => {
                     if (value === "button") return;
                     return (
-                      <HeaderElement darkToggle={theme === "dark"} key={index}>
+                      <HeaderElement key={index}>
                         {camelToWords(value)}
                       </HeaderElement>
                     );
@@ -223,15 +222,10 @@ const HeaderRow = styled.tr`
 const HeaderElement = styled.th`
   font-weight: 500;
   font-size: 14px;
-  color: #667085;
+  color: white;
   height: 44px;
   padding-left: 16px;
   text-align: left;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
 `;
 const TableRow = styled.tr`
   height: 60px;

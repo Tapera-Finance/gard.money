@@ -11,7 +11,6 @@ import linkIcon from "../assets/icons/link_icon.png";
 import linkIconWhite from "../assets/icons/link_icon_white.png";
 import { getWallet, getWalletInfo, updateWalletInfo } from "../wallets/wallets";
 import Table from "./Table";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { css } from "styled-components";
 
 function getAssets() {
@@ -47,7 +46,6 @@ export default function WalletContent() {
   const [balance, setBalance] = useState("...");
   const [rewards, setRewards] = useState("...");
   const [pendingRewards, setPendingRewards] = useState("...");
-  const { theme } = useContext(ThemeContext);
 
   useEffect(async () => {
     await updateWalletInfo();
@@ -101,11 +99,7 @@ export default function WalletContent() {
             <AccountButton
               onClick={() => navigator.clipboard.writeText(getWallet().address)}
             >
-              {theme === "light" ? (
-                <img src={copyIcon} />
-              ) : (
-                <img src={copyIconDark} />
-              )}
+              <img src={copyIconDark} />
             </AccountButton>
           </div>
         </div>
@@ -130,16 +124,12 @@ export default function WalletContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText darkToggle={theme === "dark"}>
+                <LinkButtonText>
                   View Account on Algo Explorer
                 </LinkButtonText>
               </div>
               <div>
-                {theme === "light" ? (
-                  <img src={linkIcon} alt="link-icon" />
-                ) : (
-                  <img src={linkIconWhite} alt="link-icon-white" />
-                )}
+                <img src={linkIconWhite} alt="link-icon-white" />
               </div>
             </LinkButton>
           ) : (
@@ -200,16 +190,12 @@ export default function WalletContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText darkToggle={theme === "dark"}>
+                <LinkButtonText>
                   View Account on Algo Explorer
                 </LinkButtonText>
               </div>
               <div>
-                {theme === "light" ? (
-                  <img src={linkIcon} alt="link-icon" />
-                ) : (
-                  <img src={linkIconWhite} alt="link-icon-white" />
-                )}
+                <img src={linkIconWhite} alt="link-icon-white" />
               </div>
             </LinkButton>
           ) : (

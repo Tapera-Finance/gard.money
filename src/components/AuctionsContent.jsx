@@ -227,8 +227,8 @@ export default function AuctionsContent() {
                   : "Auction Marketplace Transaction History"}
               </Title>
             </div>
-            <CountContainer darkToggle={theme === "dark"}>
-              <CountText darkToggle={theme === "dark"}>
+            <CountContainer>
+              <CountText>
                 {selected === OPTIONS.LIVE_AUCTIONS
                   ? `${
                       open_defaulted == dummyLiveAuctions
@@ -291,7 +291,6 @@ export default function AuctionsContent() {
             ? "Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
             : "Enter the details for your bid to the right. If the discount trigger you set is reached, the transaction will be executed automatically using the GARD staked. "
         }
-        darkToggle={theme === "dark"}
       >
         {selected === OPTIONS.LIVE_AUCTIONS ? (
           <TransactionSummary

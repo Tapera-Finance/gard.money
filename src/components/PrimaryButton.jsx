@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import styled, { css } from "styled-components";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 /**
  * @prop {string} text - Text to be rendered inside the button

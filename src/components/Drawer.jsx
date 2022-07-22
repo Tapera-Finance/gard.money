@@ -24,7 +24,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { useSelector } from "react-redux";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 /**
  * Used as our main navigation
