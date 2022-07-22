@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import styled, { css } from "styled-components";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 /**
  * @prop {string} text - Text to be rendered inside the button
@@ -8,20 +7,10 @@ import { ThemeContext } from "../contexts/ThemeContext";
  * @param {{text: string, onClick: function}} props
  */
 export default function PrimaryButton({ text, onClick, variant, disabled }) {
-  const { theme } = useContext(ThemeContext);
 
   return (
-    <Button
-      darkToggle={theme === "dark"}
-      variant={variant}
-      disabled={disabled}
-      onClick={() => onClick()}
-    >
-      <ButtonText
-        darkToggle={theme === "dark"}
-        variant={variant}
-        disabled={disabled}
-      >
+    <Button variant={variant} disabled={disabled}  onClick={() => onClick()}>
+      <ButtonText variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
     </Button>
@@ -41,32 +30,12 @@ const Button = styled.button`
     background-color: #381d77;
   }
   ${(props) =>
-    props.darkToggle &&
-    css`
-      border: 1px solid #c299eb;
-      background-color: #c299eb;
-      &:hover {
-        background-color: #9a71da;
-        border: 1px solid #9a71da;
-      }
-    `}
-  ${(props) =>
     props.variant &&
     css`
       background-color: transparent;
       border: 1px solid #6941c6;
       &:hover {
         background-color: #6941c6;
-      }
-    `}
-  ${(props) =>
-    props.variant &&
-    props.darkToggle &&
-    css`
-      background-color: transparent;
-      border: 1px solid #c299eb;
-      &:hover {
-        background-color: #c299eb;
       }
     `}
   ${(props) =>
@@ -88,12 +57,6 @@ const ButtonText = styled.text`
     props.variant &&
     css`
       color: #6941c6;
-    `}
-  ${(props) =>
-    props.variant &&
-    props.darkToggle &&
-    css`
-      color: #c299eb;
     `}
   ${(props) =>
     props.disabled &&

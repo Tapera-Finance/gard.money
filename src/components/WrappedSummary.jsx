@@ -1,8 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import { calcRatio, calcDevFees } from "../transactions/cdp.js";
-import { ThemeContext } from "../contexts/ThemeContext";
-import { useContext } from "react";
 
 function mAlgosToAlgos(num) {
   return num / 1000000;
@@ -87,7 +85,6 @@ export default class WrappedSummary extends React.Component {
 }
 
 export function Child(props) {
-  const { theme } = useContext(ThemeContext);
   switch (props.context) {
     case "add_collateral":
       return (
@@ -114,7 +111,6 @@ export function Child(props) {
               <TransactionInput
                 placeholder="Enter Value Here"
                 id="more_collateral"
-                darkToggle={theme === "dark"}
                 onChange={props.handler}
               />
             </div>
@@ -206,7 +202,6 @@ export function Child(props) {
               <TransactionInput
                 placeholder="Enter Value Here"
                 id="more_gard"
-                darkToggle={theme === "dark"}
                 onChange={props.handler}
               />
             </div>
@@ -304,6 +299,8 @@ const SpecificsTitle = styled.text`
 `;
 
 const TransactionInput = styled.input`
+  background: #0d1227; 
+  color: #ff00ff;
   font-weight: normal;
   font-size: 16px;
   border: 0px;
@@ -314,14 +311,10 @@ const TransactionInput = styled.input`
   &:focus {
     outline-width: 0;
   }
+  ::placeholder {
+    color: #01d1ff;
+  }
   &:focus::placeholder {
     color: transparent;
   }
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      transition: "all 1s ease";
-      background: #484848;
-      color: white;
-    `}
 `;

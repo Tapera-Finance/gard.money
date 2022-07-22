@@ -19,7 +19,6 @@ export default function Modal({
   subtitle,
   children,
   animate,
-  darkToggle,
   mint,
 }) {
   return (
@@ -28,7 +27,6 @@ export default function Modal({
         <MainContent
           animate={animate}
           visible={visible}
-          darkToggle={darkToggle}
           onClick={(e) => e.stopPropagation()}
           mint={mint}
         >
@@ -55,10 +53,10 @@ export default function Modal({
           >
             <div style={{ width: 252.55, marginRight: 62.5 }}>
               <div style={{ marginBottom: 8 }}>
-                <Title darkToggle={darkToggle}>{title}</Title>
+                <Title>{title}</Title>
               </div>
               <div style={{ marginBottom: 8 }}>
-                <Subtitle darkToggle={darkToggle}>{subtitle}</Subtitle>
+                <Subtitle>{subtitle}</Subtitle>
               </div>
             </div>
             <div
@@ -93,12 +91,7 @@ const Subtitle = styled.text`
   font-weight: normal;
   font-size: 14px;
   line-height: 20px;
-  color: #282828;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
+  color: white;
 `;
 const CloseButton = styled.button`
   border: 0px;
@@ -110,20 +103,16 @@ const Title = styled.text`
   font-size: ${window.innerWidth < 900 ? "24px" : "48px"};
   line-height: ${window.innerWidth < 900 ? "20px" : "60px"};
   letter-spacing: -0.02em;
-  color: #464646;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
+  color: white;
 `;
 const MainContent = styled.div`
-  background: #ffffff;
-  color: black;
+  background: #0d1227;
+  color: white;
   height: ${window.innerWidth < 900 ? "450px" : "605px"};
   width: ${`${window.innerWidth < 900 ? "90vw" : "835px"}`};
   position: absolute;
   overflow: auto;
+  border-radius: 25px;
   ${(props) =>
     props.animate &&
     css`
@@ -132,12 +121,6 @@ const MainContent = styled.div`
       animation-iteration-count: 1;
       animation-fill-mode: forwards;
       animation-direction: ${!props.visible ? "reverse" : "normal"};
-    `}
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #484848;
-      color: white;
     `}
   ${(props) => css`
     bottom: ${props.visible
