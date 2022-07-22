@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import styled, { css } from "styled-components";
 import { formatToDollars } from "../utils";
-import Modal from "./Modal";
-import PrimaryButton from "./PrimaryButton";
-import RadioButtonSet from "./RadioButtonSet";
-import Table from "./Table";
-import LoadingOverlay from "./LoadingOverlay";
-import TransactionSummary from "./TransactionSummary";
+import Modal from "../components/Modal";
+import PrimaryButton from "../components/PrimaryButton";
+import RadioButtonSet from "../components/RadioButtonSet";
+import Table from "../components/Table";
+import LoadingOverlay from "../components/LoadingOverlay";
+import TransactionSummary from "../components/TransactionSummary";
 import {
   getChainData,
   getCurrentAlgoUsd,

@@ -1,15 +1,15 @@
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AlgoGovernanceContent from "./AlgoGovernanceContent";
-import AuctionsContent from "./AuctionsContent";
-import DaoContent from "./DaoContent";
-import DashboardContent from "./DashboardContent";
-import HomeContent from "./HomeContent";
+import AlgoGovernanceContent from "../pages/AlgoGovernanceContent";
+import AuctionsContent from "../pages/AuctionsContent";
+import DaoContent from "../pages/DaoContent";
+import DashboardContent from "../pages/DashboardContent";
+import HomeContent from "../pages/HomeContent";
 import Main from "./Main";
-import MintContent from "./MintContent";
-import RepayContent from "./RepayContent";
-import SwapContent from "./SwapContent";
-import WalletContent from "./WalletContent";
+import MintContent from "../pages/MintContent";
+import RepayContent from "../pages/RepayContent";
+import SwapContent from "../pages/SwapContent";
+import WalletContent from "../pages/WalletContent";
 
 export default function AppRoutes() {
   return (
