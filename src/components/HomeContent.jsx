@@ -77,7 +77,7 @@ export default function HomeContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText darkToggle={theme === "dark"}>
+                <LinkButtonText>
                   View Website
                 </LinkButtonText>
               </div>
@@ -103,7 +103,7 @@ export default function HomeContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText darkToggle={theme === "dark"}>
+                <LinkButtonText>
                   Read White Paper
                 </LinkButtonText>
               </div>
@@ -173,7 +173,6 @@ export default function HomeContent() {
                       >
                         <div style={{ paddingRight: 15 }}>
                           <LinkButtonTextBold
-                            darkToggle={theme === "dark"}
                             onClick={() => window.open(v.link)}
                           >
                             Read More
