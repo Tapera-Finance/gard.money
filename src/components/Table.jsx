@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react'
-import styled, { css } from 'styled-components'
-import copyIconSmall from '../assets/icons/copy_icon_small.png'
-import { camelToWords } from '../utils'
-import PrimaryButton from './PrimaryButton'
-import chevron from '../assets/icons/tablePag_icon.png'
-import { ThemeContext } from '../contexts/ThemeContext'
+import React, { useEffect, useState, useContext } from "react";
+import styled, { css } from "styled-components";
+import copyIconSmall from "../assets/icons/copy_icon_small.png";
+import { camelToWords } from "../utils";
+import PrimaryButton from "./PrimaryButton";
+import chevron from "../assets/icons/tablePag_icon.png";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 /**
  * This renders a table with the given data
@@ -24,40 +24,40 @@ export default function Table({
   tableColor,
   columns,
 }) {
-  const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [shownRows, setShownRows] = useState(data.slice(0, 10))
-  const [currentPageStart, setCurrentPageStart] = useState(1)
-  const keys = Object.keys(data[0])
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [shownRows, setShownRows] = useState(data.slice(0, 10));
+  const [currentPageStart, setCurrentPageStart] = useState(1);
+  const keys = Object.keys(data[0]);
 
-  const {theme} = useContext(ThemeContext)
-
-  useEffect(() => {
-    window.scrollTo(0, 0)
-    setShownRows(data.slice(0, rowsPerPage))
-    setCurrentPageStart(1)
-  }, [rowsPerPage])
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
-    window.scrollTo(0, 0)
+    window.scrollTo(0, 0);
+    setShownRows(data.slice(0, rowsPerPage));
+    setCurrentPageStart(1);
+  }, [rowsPerPage]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
     setShownRows(
       data.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
-    )
-  }, [currentPageStart])
+    );
+  }, [currentPageStart]);
 
   useEffect(() => {
-    setRowsPerPage(10)
-    setShownRows(data.slice(0, 10))
-    setCurrentPageStart(1)
-  }, [data])
+    setRowsPerPage(10);
+    setShownRows(data.slice(0, 10));
+    setCurrentPageStart(1);
+  }, [data]);
 
   return (
     <div>
       {title ? (
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignContent: 'center',
+            display: "flex",
+            flexDirection: "row",
+            alignContent: "center",
             paddingLeft: 24,
             marginBottom: 19,
           }}
@@ -65,64 +65,73 @@ export default function Table({
           <div style={{ marginRight: 8 }}>
             <Title>{title}</Title>
           </div>
-          <CountContainer darkToggle={theme === 'dark'}>
-            <CountText darkToggle={theme === 'dark'}>{countSubtitle || `${data.length} ${title}`}</CountText>
+          <CountContainer darkToggle={theme === "dark"}>
+            <CountText darkToggle={theme === "dark"}>
+              {countSubtitle || `${data.length} ${title}`}
+            </CountText>
           </CountContainer>
         </div>
       ) : (
         <></>
       )}
       <div style={{ marginBottom: 64 }}>
-        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-        <tbody>
-          <HeaderRow darkToggle = {theme === 'dark'} style={{ background: headerColor }}>
-            {columns
-              ? columns.map((value, index) => {
-                  return <HeaderElement darkToggle={theme === 'dark'} key={index}>{value}</HeaderElement>
-                })
-              : keys.map((value, index) => {
-                  if (value === 'button') return
-                  return (
-                    <HeaderElement darkToggle={theme === 'dark'} key={index}>
-                      {camelToWords(value)}
-                    </HeaderElement>
-                  )
-                })}
-          </HeaderRow>
-          {shownRows.map((value, index) => {
-            return (
-              <TableRow
-                key={index}
-                style={{
-                  background: tableColor,
-                  borderBottom: 'solid',
-                  borderBottomWidth: 1,
-                  borderColor: '#F9F9F9',
-                }}
-              >
-                {keys.map((keyVal, keyIndex) => {
-                  return <Cell key={keyIndex}>{value[keyVal]}</Cell>
-                })}
-              </TableRow>
-            )
-          })}
-        </tbody>
+        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+          <tbody>
+            <HeaderRow
+              darkToggle={theme === "dark"}
+              style={{ background: headerColor }}
+            >
+              {columns
+                ? columns.map((value, index) => {
+                    return (
+                      <HeaderElement darkToggle={theme === "dark"} key={index}>
+                        {value}
+                      </HeaderElement>
+                    );
+                  })
+                : keys.map((value, index) => {
+                    if (value === "button") return;
+                    return (
+                      <HeaderElement darkToggle={theme === "dark"} key={index}>
+                        {camelToWords(value)}
+                      </HeaderElement>
+                    );
+                  })}
+            </HeaderRow>
+            {shownRows.map((value, index) => {
+              return (
+                <TableRow
+                  key={index}
+                  style={{
+                    background: tableColor,
+                    borderBottom: "solid",
+                    borderBottomWidth: 1,
+                    borderColor: "#F9F9F9",
+                  }}
+                >
+                  {keys.map((keyVal, keyIndex) => {
+                    return <Cell key={keyIndex}>{value[keyVal]}</Cell>;
+                  })}
+                </TableRow>
+              );
+            })}
+          </tbody>
         </table>
         {data.length > 10 ? (
           <PaginationBar
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
               paddingLeft: 16,
               paddingRight: 16,
-              justifyContent: 'space-between',
+              justifyContent: "space-between",
             }}
           >
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'row',
+                display: "flex",
+                flexDirection: "row",
               }}
             >
               <div style={{ marginRight: 8 }}>
@@ -139,7 +148,7 @@ export default function Table({
                 </PaginationSelect>
               </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ display: "flex", flexDirection: "row" }}>
               <div style={{ marginRight: 40 }}>
                 <PaginationText>{`${currentPageStart}-${
                   currentPageStart + rowsPerPage - 1 > data.length
@@ -147,32 +156,32 @@ export default function Table({
                     : currentPageStart + rowsPerPage - 1
                 } of ${data.length} items`}</PaginationText>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ display: "flex", flexDirection: "row" }}>
                 <PaginationButton
                   style={{
                     marginRight: 20,
-                    cursor: currentPageStart - rowsPerPage < 1 ? '' : 'pointer',
+                    cursor: currentPageStart - rowsPerPage < 1 ? "" : "pointer",
                   }}
                   onClick={() => {
-                    if (currentPageStart - rowsPerPage < 1) return
-                    setCurrentPageStart(currentPageStart - rowsPerPage)
+                    if (currentPageStart - rowsPerPage < 1) return;
+                    setCurrentPageStart(currentPageStart - rowsPerPage);
                   }}
                 >
                   <img
                     src={chevron}
-                    style={{ height: 24, transform: 'rotate(180deg)' }}
+                    style={{ height: 24, transform: "rotate(180deg)" }}
                   />
                 </PaginationButton>
                 <PaginationButton
                   style={{
                     cursor:
                       currentPageStart + rowsPerPage > data.length
-                        ? ''
-                        : 'pointer',
+                        ? ""
+                        : "pointer",
                   }}
                   onClick={() => {
-                    if (currentPageStart + rowsPerPage > data.length) return
-                    setCurrentPageStart(currentPageStart + rowsPerPage)
+                    if (currentPageStart + rowsPerPage > data.length) return;
+                    setCurrentPageStart(currentPageStart + rowsPerPage);
                   }}
                 >
                   <img src={chevron} style={{ height: 24 }} />
@@ -185,14 +194,14 @@ export default function Table({
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // styled components
 const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
-`
+`;
 
 const CountContainer = styled.div`
   background: #ffffff;
@@ -222,35 +231,35 @@ const HeaderElement = styled.th`
     props.darkToggle &&
     css`
       color: white;
-  `}
-`
+    `}
+`;
 const TableRow = styled.tr`
   height: 60px;
-`
+`;
 const Cell = styled.td`
   font-weight: 500;
   font-size: 14px;
   height: 44px;
   padding-left: 16px;
   text-align: left;
-`
+`;
 const PaginationBar = styled.div`
   background: #fcfcfd;
   height: 60px;
-`
+`;
 const PaginationText = styled.text`
   font-weight: normal;
   font-size: 12px;
   color: #464646;
-`
+`;
 const PaginationSelect = styled.select`
   font-size: 12px;
   line-height: 16px;
   color: #464646;
   border: 0px;
-`
+`;
 const PaginationButton = styled.button`
   background: transparent;
   border: 0px;
   cursor: normal;
-`
+`;

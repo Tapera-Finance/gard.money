@@ -1,6 +1,6 @@
-import React, {useContext} from 'react'
-import styled, { css } from 'styled-components'
-import { ThemeContext } from '../contexts/ThemeContext'
+import React, { useContext } from "react";
+import styled, { css } from "styled-components";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 /**
  * @prop {string} text - Text to be rendered inside the button
@@ -15,7 +15,7 @@ export default function PrimaryButton({ text, onClick, variant, disabled }) {
         {text}
       </ButtonText>
     </Button>
-  )
+  );
 }
 
 const Button = styled.button`
@@ -38,15 +38,15 @@ const Button = styled.button`
       &:hover {
         background-color: #6941c6;
       }
-  `}
+    `}
   ${(props) =>
     props.disabled &&
     css`
-    border: 1px solid #999999;
-    background-color: #cccccc;
-    pointer-events: none;
+      border: 1px solid #999999;
+      background-color: #cccccc;
+      pointer-events: none;
     `}
-`
+`;
 const ButtonText = styled.text`
   color: #ffffff;
   font-weight: 500;
@@ -64,4 +64,4 @@ const ButtonText = styled.text`
     css`
       color: #666666;
     `}
-`
+`;
