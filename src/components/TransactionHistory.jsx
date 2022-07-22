@@ -315,48 +315,36 @@ const Title = styled.text`
 `;
 
 const CountContainer = styled.div`
-  background: #f9f5ff;
+  background: #ffffff;
   border-radius: 16px;
   padding: 2px 8px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
 `;
 
 const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
-  color: #6941c6;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
+  color: #999696;
 `;
 
 const HeaderRow = styled.tr`
-  background: #f9fafb;
+  background: #0d1227;
   height: 44px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
 `;
 const HeaderElement = styled.th`
   font-weight: 500;
   font-size: 14px;
-  color: #667085;
+  color: white;
   height: 44px;
   padding-left: 16px;
   text-align: left;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
+  :first-child{
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+  :last-child{
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
 `;
 const TableRow = styled.tr`
   height: 60px;

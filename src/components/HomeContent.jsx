@@ -230,11 +230,7 @@ const LinkButton = styled.button`
 const LinkButtonText = styled.text`
   font-weight: normal;
   font-size: 14px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
-    `}
+  color: #7c52ff;
   ${LinkButton}:hover & {
     text-decoration: underline;
   }
@@ -258,11 +254,8 @@ const NewsHeadline = styled.text`
 const LinkButtonTextBold = styled.text`
   font-weight: bold;
   font-size: 14px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
-    `}
+  color: #7c52ff;
+  ;
 `;
 
 // dummy data for news headlines
