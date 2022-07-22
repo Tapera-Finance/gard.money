@@ -4,7 +4,6 @@ import { camelToWords } from "../utils";
 import { getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "./RepayContent";
 import chevron from "../assets/icons/tablePag_icon.png";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { loadDbActionAndMetrics, queryUser } from "./Firebase";
 import { onSnapshot } from "firebase/firestore";
 
@@ -116,7 +115,6 @@ export default function TransactionHistory({ headerColor, tableColor }) {
   const [currentPageStart, setCurrentPageStart] = useState(1);
   const [documents, setDocuments] = useState(formattedHistory);
   const [shownRows, setShownRows] = useState(documents.slice(0, 10));
-  const { theme } = useContext(ThemeContext);
   const keys = formattedHistory.length
     ? Object.keys(formattedHistory[0])
     : ["No transaction history to display"];

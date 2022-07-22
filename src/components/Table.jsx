@@ -4,7 +4,6 @@ import copyIconSmall from "../assets/icons/copy_icon_small.png";
 import { camelToWords } from "../utils";
 import PrimaryButton from "./PrimaryButton";
 import chevron from "../assets/icons/tablePag_icon.png";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 /**
  * This renders a table with the given data
@@ -29,7 +28,6 @@ export default function Table({
   const [currentPageStart, setCurrentPageStart] = useState(1);
   const keys = Object.keys(data[0]);
 
-  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     window.scrollTo(0, 0);

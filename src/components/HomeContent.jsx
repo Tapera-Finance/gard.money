@@ -5,7 +5,6 @@ import linkIconWhite from "../assets/icons/link_icon_white.png";
 import pinnedIcon from "../assets/icons/pinned_icon.png";
 import arrowIcon from "../assets/icons/arrow_icon.png";
 import arrowIconWhite from "../assets/icons/arrow_icon_white.png";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 const axios = require("axios");
 
@@ -49,7 +48,6 @@ async function getArticleMetadata() {
  * Content found on home
  */
 export default function HomeContent() {
-  const { theme } = useContext(ThemeContext);
   return (
     <div style={{}}>
       <div style={{ paddingBottom: 40 }}>
@@ -82,11 +80,7 @@ export default function HomeContent() {
                 </LinkButtonText>
               </div>
               <div>
-                {theme === "light" ? (
-                  <img src={linkIcon} alt="link-icon" />
-                ) : (
-                  <img src={linkIconWhite} alt="link-icon-white" />
-                )}
+                <img src={linkIconWhite} alt="link-icon-white" />
               </div>
             </LinkButton>
           </div>
@@ -108,11 +102,7 @@ export default function HomeContent() {
                 </LinkButtonText>
               </div>
               <div>
-                {theme === "light" ? (
-                  <img src={linkIcon} alt="link-icon" />
-                ) : (
-                  <img src={linkIconWhite} alt="link-icon-white" />
-                )}
+                <img src={linkIconWhite} alt="link-icon-white" />
               </div>
             </LinkButton>
           </div>
@@ -179,11 +169,7 @@ export default function HomeContent() {
                           </LinkButtonTextBold>
                         </div>
                         <div>
-                          {theme === "light" ? (
-                            <img src={arrowIcon} alt="arrow-icon" />
-                          ) : (
-                            <img src={arrowIconWhite} alt="arrow-icon-white" />
-                          )}
+                          <img src={arrowIconWhite} alt="arrow-icon-white" />
                         </div>
                       </LinkButton>
                     </div>

@@ -17,7 +17,6 @@ import { validatorID } from "../transactions/ids";
 import { liquidate } from "../transactions/cdp";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 let chainDataResponse;
 let cdp_data_promise = loadDefaulted();
@@ -109,7 +108,6 @@ export default function AuctionsContent() {
   const [transDebt, setTransDebt] = useState([]);
   const [canAnimate, setCanAnimate] = useState(false);
   const dispatch = useDispatch();
-  const { theme } = useContext(ThemeContext);
 
   useEffect(async () => {
     curr_price = await getCurrentAlgoUsd();

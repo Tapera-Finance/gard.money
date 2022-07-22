@@ -10,7 +10,6 @@ import { commitCDP, voteCDP } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
 import { cdpGen } from "../transactions/contracts";
 import Table from "./Table";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { loadFireStoreCDPs } from "./Firebase";
 import { commitmentPeriodEnd } from "../globals";
 
@@ -32,7 +31,6 @@ export default function AlgoGovernanceContent() {
   const [selectedAccount, setSelectedAccount] = useState("");
   const [maxBal, setMaxBal] = useState("");
   const dispatch = useDispatch();
-  const { theme } = useContext(ThemeContext);
   const [commitment, setCommitment] = useState(undefined);
   const [refresh, setRefresh] = useState(0);
   const [toWallet, setToWallet] = useState(false);
