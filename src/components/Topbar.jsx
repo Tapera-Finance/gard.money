@@ -5,7 +5,7 @@ import syncIconWhite from "../assets/icons/sync_icon_white.png";
 import Modal from "./Modal";
 import ALGOPrice from "./ALGOPrice";
 import PrimaryButton from "./PrimaryButton";
-import arrow from "../assets/arrow.png";
+import arrow from "../assets/whitearrow.png";
 import {
   displayWallet,
   accountInfo,
@@ -341,7 +341,7 @@ const WalletOption = styled.button`
   height: 70px;
   background: transparent;
   cursor: pointer;
-  border: 1px solid #464646;
+  border: 1px solid #e8e8e8;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -352,6 +352,7 @@ const WalletOption = styled.button`
 const WalletOptionText = styled.text`
   font-weight: bold;
   font-size: 20px;
+  color: white;
 `;
 
 // styled components for wallet form
