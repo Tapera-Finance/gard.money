@@ -204,7 +204,7 @@ export default function SwapContainer() {
  */
 
 function Section({ title, transactionCallback }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const [totals, setTotals] = useState(null);
   const [algoToGardRatio, setAlgoToGardRatio] = useState("Loading...");
   const [loadingText, setLoadingText] = useState(null);
@@ -366,15 +366,10 @@ function Section({ title, transactionCallback }) {
   return (
     <div style={{ marginBottom: 10 }}>
       <SectionButton
-        darkToggle={theme === "dark"}
-        onClick={() => {
-          setExpanded(!expanded);
-        }}
       >
         <TitleContainer
           expanded={expanded}
           style={{ paddingTop: 44, paddingLeft: 16 }}
-          darkToggle={theme === "dark"}
         >
           <div style={{ marginRight: 8 }}>
             <Arrow
@@ -382,15 +377,14 @@ function Section({ title, transactionCallback }) {
               style={
                 expanded ? { transform: "rotate(90deg)", background: "" } : {}
               }
-              darkToggle={theme === "dark"}
             />
           </div>
           <div>
-            <TitleText darkToggle={theme === "dark"}>{title}</TitleText>
+            <TitleText>{title}</TitleText>
           </div>
         </TitleContainer>
         <RelationsContainer>
-          <div style={{ flex: 1 }} darkToggle={theme === "dark"}>
+          <div style={{ flex: 1 }}>
             <RelationsSpecificsContainer
               style={{
                 display: "flex",
@@ -424,7 +418,6 @@ function Section({ title, transactionCallback }) {
             display: "flex",
             flexDirection: "column",
           }}
-          darkToggle={theme === "dark"}
         >
           <div
             style={{
@@ -468,7 +461,6 @@ function Section({ title, transactionCallback }) {
                         value: transaction.offering.amount,
                       });
                     }}
-                    darkToggle={theme === "dark"}
                   >
                     <option>ALGO</option>
                     <option>GARD</option>
@@ -493,7 +485,6 @@ function Section({ title, transactionCallback }) {
                     min="0"
                     step="0.00"
                     value={transaction.offering.amount}
-                    darkToggle={theme === "dark"}
                     onChange={(e) => {
                       e.target.value.replace(/\D+/g, "");
                       if (e.target.value !== "") {
@@ -542,7 +533,6 @@ function Section({ title, transactionCallback }) {
                 <Image
                   onClick={handleSwapButton}
                   src={swapIcon}
-                  darkToggle={theme === "dark"}
                 />
               </ImgText>
             </div>
@@ -603,7 +593,6 @@ function Section({ title, transactionCallback }) {
                     type="number"
                     min={0}
                     value={transaction.receiving.amount}
-                    darkToggle={theme === "dark"}
                     onChange={(e) => {
                       e.target.value.replace(/\D+/g, "");
                       handleExchange(
@@ -639,7 +628,6 @@ function Section({ title, transactionCallback }) {
             <PrimaryButton
               text={"Execute Transaction"}
               onClick={() => transactionCallback(transaction)}
-              darkToggle={theme === "dark"}
             />
           </div>
         </ExpandedContainer>
@@ -652,36 +640,15 @@ function Section({ title, transactionCallback }) {
 
 // Styled Components
 const TitleContainer = styled.div`
-  background: #f4ebff;
+  background: #0d1227;
   border-radius: 6px;
   flex: 2;
   display: flex;
   flex-direction: row;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
-  ${(props) =>
-    props.expanded &&
-    css`
-      background: #fcfcfd;
-    `}
-  ${(props) =>
-    props.expanded &&
-    props.darkToggle &&
-    css`
-      background: #1c1c1c;
-    `}
 `;
 
 const TransactionContainer = styled.div`
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #484848;
-      color: white;
-    `}
+
 `;
 
 const SectionButton = styled.div`
@@ -695,26 +662,15 @@ const RelationsContainer = styled.div`
   flex: 3;
   display: flex;
   flex-direction: row;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #484848;
-      color: white;
-    `}
+
 `;
 const TitleText = styled.text`
   font-weight: 500;
   font-size: 20px;
-  ${(props) =>
-    props.darkToggle
-      ? `
-    background: #2c2c2c
-    color: #f4ebff
-  `
-      : ""}
+
 `;
 const RelationsSpecificsContainer = styled.div`
-  border-bottom: 1px solid #f9f9f9;
+  border-bottom: 1px solid #0d1227;
   height: 48px;
 `;
 const RelationsTitle = styled.text`
@@ -738,51 +694,34 @@ const RelationsValue = styled.text`
 `;
 const ExpandedContainer = styled.div`
   height: 207px;
-  background: #f4ebff;
+  background: #0d1227;
   padding: 0px 3vw;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
+
 `;
 const InputTitle = styled.text`
   font-weight: normal;
   font-size: 14px;
-  color: #7a7a7a;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #ffffff;
-    `}
+  color: #ffffff;
 `;
 const Select = styled.select`
   height: 40px;
-  background: #ffffff;
+  background: #0d1227;
+  color: #01d1ff;
   border: 1px solid #dce1e6;
   border-radius: 4px;
   width: 11.5972222222222vw;
   padding: 0px 0px 0px 12px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #525252;
-      color: #ffffff;
-    `}
+
 `;
 const Input = styled.input`
   height: 40px;
-  background: #ffffff;
+  background: #0d1227;
+  color: #e8e8e8;
   border: 1px solid #dce1e6;
   border-radius: 4px;
   width: 11.5972222222222vw;
   padding: 0px 0px 0px 12px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #525252;
-      color: white;
-    `}
+
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;

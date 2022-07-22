@@ -9,7 +9,7 @@ export default function PageToggle({ pages }) {
         justifyContent: "center",
         alignItems: "center",
         height: "20vh",
-        width: "250vh",
+        width: "100vh",
 
       }}
     >
