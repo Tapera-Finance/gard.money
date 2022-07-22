@@ -220,6 +220,7 @@ const AccountContainer = styled.div`
   background: #0d1227;
   padding: 5vw 4vw;
   margin-bottom: 56px;
+  border-radius: 10px;
 `
 const AccountTitle = styled.text`
   font-weight: 500;
