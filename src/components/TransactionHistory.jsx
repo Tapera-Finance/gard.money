@@ -4,7 +4,6 @@ import { camelToWords } from "../utils";
 import { getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "./RepayContent";
 import chevron from "../assets/icons/tablePag_icon.png";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { loadDbActionAndMetrics, queryUser } from "./Firebase";
 import { onSnapshot } from "firebase/firestore";
 
@@ -116,7 +115,6 @@ export default function TransactionHistory({ headerColor, tableColor }) {
   const [currentPageStart, setCurrentPageStart] = useState(1);
   const [documents, setDocuments] = useState(formattedHistory);
   const [shownRows, setShownRows] = useState(documents.slice(0, 10));
-  const { theme } = useContext(ThemeContext);
   const keys = formattedHistory.length
     ? Object.keys(formattedHistory[0])
     : ["No transaction history to display"];
@@ -170,8 +168,8 @@ export default function TransactionHistory({ headerColor, tableColor }) {
         <div style={{ marginRight: 8 }}>
           <Title>Transaction History</Title>
         </div>
-        <CountContainer darkToggle={theme === "dark"}>
-          <CountText darkToggle={theme === "dark"}>
+        <CountContainer>
+          <CountText>
             {documents.length !== 0
               ? documents.length > 1
                 ? `${documents.length} Transactions`
@@ -184,13 +182,12 @@ export default function TransactionHistory({ headerColor, tableColor }) {
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <tbody>
             <HeaderRow
-              darkToggle={theme === "dark"}
               style={{ background: headerColor }}
             >
               {keys.map((value, index) => {
                 if (value === "button") return;
                 return (
-                  <HeaderElement darkToggle={theme === "dark"} key={index}>
+                  <HeaderElement key={index}>
                     {camelToWords(value)}
                   </HeaderElement>
                 );
@@ -231,7 +228,6 @@ export default function TransactionHistory({ headerColor, tableColor }) {
               paddingRight: 16,
               justifyContent: "space-between",
             }}
-            darkToggle={theme === "dark"}
           >
             <div
               style={{
@@ -240,7 +236,7 @@ export default function TransactionHistory({ headerColor, tableColor }) {
               }}
             >
               <div style={{ marginRight: 8 }}>
-                <PaginationText darkToggle={theme === "dark"}>
+                <PaginationText>
                   Rows per Page:
                 </PaginationText>
               </div>
@@ -258,7 +254,6 @@ export default function TransactionHistory({ headerColor, tableColor }) {
             <div style={{ display: "flex", flexDirection: "row" }}>
               <div style={{ marginRight: 40 }}>
                 <PaginationText
-                  darkToggle={theme === "dark"}
                 >{`${currentPageStart}-${
                   currentPageStart + rowsPerPage - 1 > documents.length
                     ? documents.length
@@ -275,7 +270,6 @@ export default function TransactionHistory({ headerColor, tableColor }) {
                     if (currentPageStart - rowsPerPage < 1) return;
                     setCurrentPageStart(currentPageStart - rowsPerPage);
                   }}
-                  darkToggle={theme === "dark"}
                 >
                   <img
                     src={chevron}
@@ -315,48 +309,36 @@ const Title = styled.text`
 `;
 
 const CountContainer = styled.div`
-  background: #f9f5ff;
+  background: #ffffff;
   border-radius: 16px;
   padding: 2px 8px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
 `;
 
 const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
-  color: #6941c6;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
+  color: #999696;
 `;
 
 const HeaderRow = styled.tr`
-  background: #f9fafb;
+  background: #0d1227;
   height: 44px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
 `;
 const HeaderElement = styled.th`
   font-weight: 500;
   font-size: 14px;
-  color: #667085;
+  color: white;
   height: 44px;
   padding-left: 16px;
   text-align: left;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
+  :first-child{
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+  :last-child{
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
 `;
 const TableRow = styled.tr`
   height: 60px;
@@ -384,23 +366,13 @@ export const Cell = styled.td`
 `;
 
 const PaginationBar = styled.div`
-  background: #fcfcfd;
+  background: #0d1227;
   height: 60px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
 `;
 const PaginationText = styled.text`
   font-weight: normal;
   font-size: 12px;
-  color: #464646;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
+  color: white;
 `;
 const PaginationSelect = styled.select`
   font-size: 12px;

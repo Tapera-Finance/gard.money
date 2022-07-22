@@ -5,7 +5,7 @@ import syncIconWhite from "../assets/icons/sync_icon_white.png";
 import Modal from "./Modal";
 import ALGOPrice from "./ALGOPrice";
 import PrimaryButton from "./PrimaryButton";
-import arrow from "../assets/arrow.png";
+import arrow from "../assets/whitearrow.png";
 import {
   displayWallet,
   accountInfo,
@@ -25,8 +25,6 @@ import { useAlert } from "../hooks";
 import { useDispatch, useSelector } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { setWallet } from "../redux/slices/walletSlice";
-import ThemeToggle from "./ThemeToggle";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { userInDB, addUserToFireStore } from "../components/Firebase";
 import { style } from "@mui/system";
 /**
@@ -36,36 +34,11 @@ import { style } from "@mui/system";
  */
 
 export default function Topbar({ contentName, setMainContent }) {
-  const { theme } = useContext(ThemeContext);
-  const TopbarStyle = {
-    light: {
-      height: 96,
-      backgroundColor: "#f9fafb",
-    },
-    dark: {
-      height: 96,
-      backgroundColor: "#172756",
-      color: "white",
-    },
-    common: {
-      transition: "all 1s ease",
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      paddingLeft: 36,
-      paddingRight: window.innerWidth * 0.077,
-    },
-  };
-  const themeStyle = {
-    ...TopbarStyle.common,
-    ...(theme === "light" ? TopbarStyle.light : TopbarStyle.dark),
-  };
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalCanAnimate, setModalCanAnimate] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  const walletAddress = useSelector((state) => state.wallet.address);
+  const [modalVisible, setModalVisible] = useState(false)
+  const [modalCanAnimate, setModalCanAnimate] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch()
+  const walletAddress = useSelector((state) => state.wallet.address)
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
       if (action === "options")
@@ -210,7 +183,17 @@ export default function Topbar({ contentName, setMainContent }) {
       ) : (
         <></>
       )}
-      <TopBar style={themeStyle}>
+      <TopBar
+        style={{
+          backgroundColor: '#172756',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingLeft: 36,
+          paddingRight: window.innerWidth * 0.077,
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -226,15 +209,7 @@ export default function Topbar({ contentName, setMainContent }) {
             style={{ display: "flex", justifyContent: "center" }}
             onClick={() => window.location.reload()}
           >
-            {theme === "light" ? (
-              <img src={syncIcon} style={{ height: 24 }} alt="sync" />
-            ) : (
-              <img
-                src={syncIconWhite}
-                style={{ height: 24 }}
-                alt="sync-white"
-              />
-            )}
+            <img src={syncIconWhite} style={{ height: 24 }} alt="sync-white" />
           </SimplePressable>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
@@ -366,7 +341,7 @@ const WalletOption = styled.button`
   height: 70px;
   background: transparent;
   cursor: pointer;
-  border: 1px solid #464646;
+  border: 1px solid #e8e8e8;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -377,6 +352,7 @@ const WalletOption = styled.button`
 const WalletOptionText = styled.text`
   font-weight: bold;
   font-size: 20px;
+  color: white;
 `;
 
 // styled components for wallet form
@@ -391,6 +367,7 @@ const CancelButton = styled.button`
 const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
+  color: white;
 `;
 
 function TermsOfService({ closeModal, accept }) {
