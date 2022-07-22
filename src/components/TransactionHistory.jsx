@@ -122,18 +122,20 @@ export default function TransactionHistory({ headerColor, tableColor }) {
     : ["No transaction history to display"];
 
   useEffect(() => {
-    const q = queryUser();
-    const unsub = onSnapshot(q, (docSnap) => {
-      let docs = [];
-      docSnap.forEach((doc) => {
-        docs.push([...doc.data().webappActions]);
+    if (typeof getWalletInfo() !== 'undefined') {
+      const q = queryUser();
+      const unsub = onSnapshot(q, (docSnap) => {
+        let docs = [];
+        docSnap.forEach((doc) => {
+          docs.push([...doc.data().webappActions]);
+        });
+        let formatted = formatHistory(docs[0]);
+        setDocuments(formatted);
       });
-      let formatted = formatHistory(docs[0]);
-      setDocuments(formatted);
-    });
-    return () => {
-      unsub();
-    };
+      return () => {
+        unsub();
+      };
+    }
   }, [documents]);
 
   useEffect(() => {
