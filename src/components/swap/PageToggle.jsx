@@ -5,17 +5,9 @@ export default function PageToggle({ selectedTab }) {
 const [swap, setSwap] = useState(true)
 const [pool, setPool] = useState(false)
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "6vh",
-        width: "20vh",
-        background: "#000000",
-        borderRadius: "12px"
-      }}
+    <Bar
     >
+      <Box selected={swap} >
         <Btn
         selected={swap}
         onClick={() => {
@@ -25,7 +17,9 @@ const [pool, setPool] = useState(false)
             setPool(false)
           }
         }} >Swap</Btn>
-        {/* <Btn
+      </Box>
+      {/* <Box selected={pool}>
+        <Btn
         selected={pool}
         onClick={() => {
           selectedTab("pool")
@@ -34,27 +28,51 @@ const [pool, setPool] = useState(false)
             setPool(true)
           }
         }}
-        >Pool</Btn> */}
-    </div>
+        >Pool</Btn>
+      </Box> */}
+    </Bar>
   );
 }
 
-
-const Btn = styled.text`
+const Box = styled.div`
+  display: flex;
   border: 1px transparent;
   height: 30px;
-  width: 60px;
+  width: 65px;
   text-align: center;
-  border-radius: 4px;
+  justify-content: center;
+  align-content: center;
+  border-radius: 3px;
   ${(props) =>
     props.selected &&
     css`
+      border: 1px solid #ffffff;
       background: #172756;
-      text-decoration: underline;
-      text-decoration-style: dotted;
+      &:hover {
+        border: unset;
+      }
     `
   }
   &:hover {
-    border: 1px solid #019fff;
+    border: 1px solid #ffffff;
   }
+
+`
+
+const Btn = styled.text`
+  text-decoration: underline;
+  text-decoration-style: dotted;
+
+`
+const Bar = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  min-width: 74px;
+  max-width: max-content;
+  background: #000000;
+  border-radius: 6px;
+  margin: auto;
+
 `
