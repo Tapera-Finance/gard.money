@@ -19,7 +19,7 @@ import swapIcon from "../../assets/icons/swap_icon_v2.png";
 // need field, button, helpers
 const defaultPool = "ALGO/GARD";
 
-export default function SwapDetails({transactionCallback}) {
+export default function SwapDetails() {
   const [totals, setTotals] = useState(null);
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState(1);
