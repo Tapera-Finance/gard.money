@@ -5,7 +5,6 @@ import linkIconWhite from "../assets/icons/link_icon_white.png";
 import pinnedIcon from "../assets/icons/pinned_icon.png";
 import arrowIcon from "../assets/icons/arrow_icon.png";
 import arrowIconWhite from "../assets/icons/arrow_icon_white.png";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 const axios = require("axios");
 
@@ -49,7 +48,6 @@ async function getArticleMetadata() {
  * Content found on home
  */
 export default function HomeContent() {
-  const { theme } = useContext(ThemeContext);
   return (
     <div style={{}}>
       <div style={{ paddingBottom: 40 }}>
@@ -77,16 +75,12 @@ export default function HomeContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText darkToggle={theme === "dark"}>
+                <LinkButtonText>
                   View Website
                 </LinkButtonText>
               </div>
               <div>
-                {theme === "light" ? (
-                  <img src={linkIcon} alt="link-icon" />
-                ) : (
-                  <img src={linkIconWhite} alt="link-icon-white" />
-                )}
+                <img src={linkIconWhite} alt="link-icon-white" />
               </div>
             </LinkButton>
           </div>
@@ -103,16 +97,12 @@ export default function HomeContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText darkToggle={theme === "dark"}>
+                <LinkButtonText>
                   Read White Paper
                 </LinkButtonText>
               </div>
               <div>
-                {theme === "light" ? (
-                  <img src={linkIcon} alt="link-icon" />
-                ) : (
-                  <img src={linkIconWhite} alt="link-icon-white" />
-                )}
+                <img src={linkIconWhite} alt="link-icon-white" />
               </div>
             </LinkButton>
           </div>
@@ -173,18 +163,13 @@ export default function HomeContent() {
                       >
                         <div style={{ paddingRight: 15 }}>
                           <LinkButtonTextBold
-                            darkToggle={theme === "dark"}
                             onClick={() => window.open(v.link)}
                           >
                             Read More
                           </LinkButtonTextBold>
                         </div>
                         <div>
-                          {theme === "light" ? (
-                            <img src={arrowIcon} alt="arrow-icon" />
-                          ) : (
-                            <img src={arrowIconWhite} alt="arrow-icon-white" />
-                          )}
+                          <img src={arrowIconWhite} alt="arrow-icon-white" />
                         </div>
                       </LinkButton>
                     </div>
@@ -230,11 +215,7 @@ const LinkButton = styled.button`
 const LinkButtonText = styled.text`
   font-weight: normal;
   font-size: 14px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
-    `}
+  color: #7c52ff;
   ${LinkButton}:hover & {
     text-decoration: underline;
   }
@@ -258,11 +239,8 @@ const NewsHeadline = styled.text`
 const LinkButtonTextBold = styled.text`
   font-weight: bold;
   font-size: 14px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
-    `}
+  color: #7c52ff;
+  ;
 `;
 
 // dummy data for news headlines
