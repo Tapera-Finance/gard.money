@@ -33,6 +33,11 @@ import {
 } from "../../wallets/wallets";
 import { useDispatch } from "react-redux";
 import { VERSION } from "../../globals";
+import SwapDetails from "./SwapDetails";
+import Test from "./Test";
+import { Container } from "@mui/system";
+
+
 
 /**
  * local utils
@@ -58,6 +63,7 @@ export default function SwapContainer() {
   const [transaction, setTransaction] = useState([]);
   const dispatch = useDispatch();
   const { theme } = useContext(ThemeContext);
+  let test = true;
 
   const sessionStorageSetHandler = (e) => {
     setLoadingText(JSON.parse(e.value));
@@ -81,6 +87,8 @@ export default function SwapContainer() {
   }, []);
 
   return (
+    <div>{
+    test ? <Test /> :
     <div>
       {loading ? <LoadingOverlay text={loadingText} /> : <></>}
       <PageToggle></PageToggle>
@@ -193,8 +201,9 @@ export default function SwapContainer() {
           </Modal>
         </TransactionContainer>
       </div>
-    </div>
-  );
+      </div>
+}</div>
+            );
 }
 
 /**
@@ -353,7 +362,7 @@ function Section({ title, transactionCallback }) {
     return () => {
       console.log("unmounting get totals effect");
     };
-  }, []);
+  }, [receivedValue]);
 
   // wallet info effect
   useEffect(() => {
