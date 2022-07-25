@@ -14,7 +14,7 @@ import {
     getGARDInWallet,
     getWalletInfo
   } from "../../wallets/wallets";
-import swapIcon from "../../assets/icons/swap_icon_new.png";
+import swapIcon from "../../assets/icons/swap_icon_v2.png";
 
 // need field, button, helpers
 const defaultPool = "ALGO/GARD";
@@ -29,7 +29,6 @@ export default function SwapDetails({transactionCallback}) {
   const [balanceY, setBalanceY] = useState("...");
   const [receivedValue, setReceivedValue] = useState(null);
   const assets = ["ALGO", "GARD"];
-
 
   useEffect(async () => {
     const res = await getTotals();
@@ -51,6 +50,27 @@ export default function SwapDetails({transactionCallback}) {
       console.log("unmounting getRatio effect", algoGardRatio);
     };
   }, [algoToGardRatio]);
+
+  const handleSwapButton = (e) => {
+    e.preventDefault();
+    // setLeft(right)
+    // setRight(left)
+    console.log("flip")
+    const swappedObj = {
+      offering: {
+        from: transaction.receiving.to,
+        amount: transaction.receiving.amount,
+      },
+      receiving: {
+        to: transaction.offering.from,
+        amount: transaction.offering.amount,
+      },
+    };
+    reduceTransaction({
+      type: "flip",
+      value: swappedObj,
+    });
+  };
 
   const [transaction, reduceTransaction] = useReducer(
     (state, action) => {
@@ -123,6 +143,8 @@ export default function SwapDetails({transactionCallback}) {
     },
   );
 
+
+
     // state update of estimated return
     useEffect(() => {
         if (transaction) {
@@ -154,39 +176,19 @@ export default function SwapDetails({transactionCallback}) {
     setBalanceY(balY);
   }, []);
 
-  const handleSwapButton = (e) => {
-    e.preventDefault();
-    setLeft(right)
-    setRight(left)
-    const swappedObj = {
-      offering: {
-        from: transaction.receiving.to,
-        amount: transaction.receiving.amount,
-      },
-      receiving: {
-        to: transaction.offering.from,
-        amount: transaction.offering.amount,
-      },
-    };
-    reduceTransaction({
-      type: "flip",
-      value: swappedObj,
-    });
-  };
-
     return(
         <div><div>
-            Swap
+
             </div>
             <ExchangeBar>
-                <ExchangeField
+                <ExchangeFields
                     type={left}
                     transaction={transaction}
                     assets={assets}
                     transactionCallback={reduceTransaction}
                     balances={[balanceX, balanceY]}
                     totals={totals}
-                ></ExchangeField>
+                ></ExchangeFields>
                 <div
               style={{
                 display: "flex",
@@ -202,14 +204,14 @@ export default function SwapDetails({transactionCallback}) {
                 />
 
             </div>
-                <ExchangeField
+                <ExchangeFields
                     type={right}
                     transaction={transaction}
                     assets={assets}
                     transactionCallback={reduceTransaction}
                     balances={[balanceX, balanceY]}
                     totals={totals}
-                ></ExchangeField>
+                ></ExchangeFields>
             </ExchangeBar>
         </div>
     )
@@ -220,17 +222,27 @@ const ExchangeBar = styled.div`
     flex-direction: row;
     flex: 3;
     justify-content: space-between;
+
 `
+
+const ExchangeFields = styled(ExchangeField)`
+  width: 40%;
+  background: #0d1227;
+`
+
+
 const SwapButton = styled.img`
-    background-color: #019fff;
+    max-width: 75px;
+    max-height: 75px;
+    /* background-color: #019fff;
 
     padding: 8px 18px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; */
     cursor: pointer;
-    border-radius: 30px;
+    /* border-radius: 30px; */
     &:hover {
-        background-color: #7c52ff;
+      transform: rotate(180deg);
     }
 `

@@ -1,13 +1,15 @@
-import { Container } from "@mui/system";
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import {
   calcTransResult,
-  toggleSelect,
   handleExchange,
   targetPool,
 } from "./swapHelpers";
-import { estimateReturn } from "../../transactions/swap";
+import Select from "./Select";
+import { formatToDollars } from "../../utils";
+import chevron from "../../assets/chevron_black.png";
+
+
 
 // entire container for currency select, input field, text for displaying vals
 
@@ -26,36 +28,22 @@ export default function ExchangeField({
   balances,
   totals,
 }) {
+
   return (
     <div>
-      <Container>
+      <div >
         {type === 0 ? (
-          <div>
+          <Container>
             <div style={{ marginBottom: 8 }}>
               <Select
+                options={assets}
+                transaction={transaction}
                 value={transaction.offering.from}
-                onChange={(e) => {
-                  toggleSelect(
-                    e.target.value,
-                    transaction.offering.from,
-                    "offering-from",
-                    "receiving-to",
-                    assets,
-                    transactionCallback,
-                  );
-                  transactionCallback({
-                    type: "offering-amount",
-                    value: transaction.receiving.amount,
-                  });
-                  transactionCallback({
-                    type: "receiving-amount",
-                    value: transaction.offering.amount,
-                  });
-                }}
-              >
-                <option>ALGO</option>
-                <option>GARD</option>
-              </Select>
+                transactionCallback={transactionCallback}
+              />
+              <Arrow
+              src={chevron}
+            />
             </div>
             <InputTitle>
               {transaction.offering.from === "ALGO"
@@ -63,12 +51,15 @@ export default function ExchangeField({
                 : "Balance: " + balances[1]}
             </InputTitle>
             <Input
+              id="left"
               type="number"
               min="0"
               step="0.00"
               value={transaction.offering.amount}
               onChange={(e) => {
-                e.target.value.replace(/\D+/g, "");
+                // e.target.value.replace(/\D+/g, "");
+                console.log(e.target.value);
+                e.preventDefault()
                 if (e.target.value !== "") {
                   handleExchange(
                     "receiving-amount",
@@ -100,34 +91,17 @@ export default function ExchangeField({
                 }
               }}
             />
-          </div>
+          </Container>
         ) : (
-          <div>
+          <Container>
             <div style={{ marginBottom: 8 }}>
-              <Select
+            <Select
                 value={transaction.receiving.to}
-                onChange={(e) => {
-                  toggleSelect(
-                    e.target.value,
-                    transaction.offering.from,
-                    "receiving-to",
-                    "offering-from",
-                    assets,
-                    transactionCallback,
-                  );
-                  transactionCallback({
-                    type: "offering-amount",
-                    value: transaction.receiving.amount,
-                  });
-                  transactionCallback({
-                    type: "receiving-amount",
-                    value: transaction.offering.amount,
-                  });
-                }}
-              >
-                <option>GARD</option>
-                <option>ALGO</option>
-              </Select>
+                options={assets}
+                transaction={transaction}
+                transactionCallback={transactionCallback}
+              />
+
             </div>
 
             <InputTitle>
@@ -136,16 +110,20 @@ export default function ExchangeField({
                 : "Balance: " + balances[1]}
             </InputTitle>
             <Input
+              id="right"
               type="number"
               min={0}
               value={transaction.receiving.amount}
               onChange={(e) => {
-                e.target.value.replace(/\D+/g, "");
+                // e.target.value.replace(/\D+/g, "");
+                if (e.target.value !== "") {
+                e.preventDefault()
+                console.log(e.target.value);
                 handleExchange(
                   "offering-amount",
                   parseFloat(e.target.value),
                   assets,
-                  estimateReturn,
+                  calcTransResult,
                   [
                     totals[
                       targetPool(
@@ -162,24 +140,41 @@ export default function ExchangeField({
                   ],
                   transaction,
                   transactionCallback,
+                  true
                 );
+
+                } else {
+                  transactionCallback({
+                    type: "clear"
+                  })
+                }
               }}
-              disabled={true}
             />
-          </div>
+          </Container>
         )}
-      </Container>
+      </div>
     </div>
   );
 }
 
+const Container = styled.div`
+  background: #0d1227;
+  width: 28vw;
+  height: 16vh;
+  border-radius: 8px;
+  opacity: 65%;
+`
+
 const InputTitle = styled.text`
-  /*  */
-`;
-const Select = styled.select`
   /*  */
 `;
 
 const Input = styled.input`
-  /*  */
+  appearance: none;
+  text-decoration: underline;
 `;
+
+const Arrow = styled.img`
+  filter: invert(38%) sepia(82%) saturate(1518%) hue-rotate(181deg) brightness(104%) contrast(106%);
+  transform: rotate(90deg);
+`
