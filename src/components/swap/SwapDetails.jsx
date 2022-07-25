@@ -21,6 +21,8 @@ const defaultPool = "ALGO/GARD";
 
 export default function SwapDetails({transactionCallback}) {
   const [totals, setTotals] = useState(null);
+  const [left, setLeft] = useState(0);
+  const [right, setRight] = useState(1);
   const [algoToGardRatio, setAlgoToGardRatio] = useState("Loading...");
   const [loadingText, setLoadingText] = useState(null);
   const [balanceX, setBalanceX] = useState("...");
@@ -37,9 +39,10 @@ export default function SwapDetails({transactionCallback}) {
   }, [totals]);
 
   useEffect(async () => {
+    const res = totals === null ? await getTotals() : totals;
     let algoGardRatio = exchangeRatioAssetXtoAssetY(
-      mAlgosToAlgos(totals["ALGO/GARD" || "GARD/ALGO"].algo),
-      mGardToGard(totals["ALGO/GARD" || "GARD/ALGO"].gard),
+      mAlgosToAlgos(res["ALGO/GARD" || "GARD/ALGO"].algo),
+      mGardToGard(res["ALGO/GARD" || "GARD/ALGO"].gard),
     );
     if (algoGardRatio) {
       setAlgoToGardRatio(algoGardRatio);
@@ -153,6 +156,8 @@ export default function SwapDetails({transactionCallback}) {
 
   const handleSwapButton = (e) => {
     e.preventDefault();
+    setLeft(right)
+    setRight(left)
     const swappedObj = {
       offering: {
         from: transaction.receiving.to,
@@ -175,7 +180,7 @@ export default function SwapDetails({transactionCallback}) {
             </div>
             <ExchangeBar>
                 <ExchangeField
-                    type={0}
+                    type={left}
                     transaction={transaction}
                     assets={assets}
                     transactionCallback={reduceTransaction}
@@ -198,7 +203,7 @@ export default function SwapDetails({transactionCallback}) {
 
             </div>
                 <ExchangeField
-                    type={1}
+                    type={right}
                     transaction={transaction}
                     assets={assets}
                     transactionCallback={reduceTransaction}
