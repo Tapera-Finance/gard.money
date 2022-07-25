@@ -17,13 +17,13 @@ const axios = require("axios");
  */
 
 /**
- * @interface poolShark (not)
+ *
  * @method getGard
  * @returns {Promise} - fetch GARD in Pact Algo/Gard pool
  *
  * @method getAlgo
  * @returns {Promise} - fetch ALGO in Pact Algo/Gard pool
- * Queery object used to get and set exchange rate, used to fetch and pass blockchain data to component
+ * Query object used to get and set exchange rate, used to fetch and pass blockchain data to component
  */
 
 const poolShark = {
@@ -63,7 +63,7 @@ export function estimateReturn(input, totalX, totalY) {
 /**
  *
  *
- * @function queryAndConvertTotals - queer blockchain data
+ * @function queryAndConvertTotals - query blockchain data
  * snag Pact's asset pool exchange rate given two assets (ALGO, GARD)
  * @returns {Object} algo + gard totals for algo/gard pool
  *
