@@ -1,10 +1,10 @@
 import React, { useReducer, useState } from "react";
 import styled from "styled-components";
-import Modal from "./Modal";
-import Table from "./Table";
+import Modal from "../components/Modal";
+import Table from "../components/Table";
 import graph from "../assets/graph.png";
-import PrimaryButton from "./PrimaryButton";
-import Chart from "./Chart";
+import PrimaryButton from "../components/PrimaryButton";
+import Chart from "../components/Chart";
 
 /**
  * Content for DAO option in drawer

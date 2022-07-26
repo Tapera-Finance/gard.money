@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer, useState, useContext } from "react";
 import styled, { css, withTheme } from "styled-components";
 import { formatToDollars, formatTo } from "../utils";
-import Modal from "./Modal";
-import PrimaryButton from "./PrimaryButton";
-import Table from "./Table";
-import WrappedSummary from "./WrappedSummary";
-import TransactionSummary from "./TransactionSummary";
-import LoadingOverlay from "./LoadingOverlay";
+import Modal from "../components/Modal";
+import PrimaryButton from "../components/PrimaryButton";
+import Table from "../components/Table";
+import WrappedSummary from "../components/WrappedSummary";
+import TransactionSummary from "../components/TransactionSummary";
+import LoadingOverlay from "../components/LoadingOverlay";
 import {
   mint,
   closeCDP,
