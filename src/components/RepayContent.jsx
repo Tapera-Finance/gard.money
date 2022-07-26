@@ -19,7 +19,6 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentAlgoUsd } from "../prices/prices";
 import { setAlert } from "../redux/slices/alertSlice";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 // TODO: Replace value.liquidationPrice with the proper liquidation price
 /**
@@ -47,7 +46,6 @@ export default function RepayContent() {
   const walletAddress = useSelector((state) => state.wallet.address);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { theme } = useContext(ThemeContext);
 
   useEffect(async () => {
     const updatePromise = updateCDPs(getWallet()["address"]);
@@ -108,7 +106,6 @@ export default function RepayContent() {
                 setLoading(false);
               }}
               cancelCallback={() => setModalVisible(false)}
-              darkToggle={theme === "dark"}
             />
           ),
         };
@@ -139,7 +136,6 @@ export default function RepayContent() {
                 setLoading(false);
               }}
               cancelCallback={() => setModalVisible(false)}
-              darkToggle={theme === "dark"}
             >
               <WrappedSummary
                 context="add_collateral"
@@ -183,7 +179,6 @@ export default function RepayContent() {
                 setLoading(false);
               }}
               cancelCallback={() => setModalVisible(false)}
-              darkToggle={theme === "dark"}
             >
               <div
                 style={{
@@ -226,7 +221,6 @@ export default function RepayContent() {
           specifics={[]}
           transactionFunc={() => {}}
           cancelCallback={() => setModalVisible(false)}
-          darkToggle={theme === "dark"}
         />
       ),
     },
@@ -307,7 +301,6 @@ export default function RepayContent() {
         animate={modalCanAnimate}
         visible={modalVisible}
         close={() => setModalVisible(false)}
-        darkToggle={theme === "dark"}
       >
         {modalContent.children}
       </Modal>

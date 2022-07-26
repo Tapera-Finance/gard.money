@@ -19,7 +19,6 @@ import { setAlert } from "../redux/slices/alertSlice";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Slider from "@mui/material/Slider";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { commitmentPeriodEnd } from "../globals";
 
 function displayRatio() {
@@ -67,7 +66,6 @@ function getCollateral() {
 export default function MintContent() {
   const [modalVisible, setModalVisible] = useState(false);
   const [canAnimate, setCanAnimate] = useState(false);
-  const { theme } = useContext(ThemeContext);
   const navigate = useNavigate();
 
   const [fields, reduceFields] = useReducer(
@@ -226,10 +224,10 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === "dark"}>
+          <InputNameContainer>
             <InputNameText>Current Balance (Algos)</InputNameText>
           </InputNameContainer>
-          <InputContainer darkToggle={theme === "dark"}>
+          <InputContainer>
             <InputNameText>
               {getWallet() == null ? "N/A" : `${balance}`}
             </InputNameText>
@@ -242,41 +240,31 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === "dark"}>
+          <InputNameContainer>
             <InputNameText>Collateral (Algos)</InputNameText>
           </InputNameContainer>
           <div>
-            <Box
-              sx={{
-                width: window.innerWidth < 900 ? "80vw" : "31vw",
-              }}
-            >
-              <Grid
-                container
-                spacing={0}
-                justifyContent="center"
-                alignItems="center"
-                marginLeft={0}
-                borderBottom="1px solid #e9ecfb"
-              >
-                <Grid item xs={12}>
-                  <Input
-                    darkToggle={theme === "dark"}
-                    type="number"
-                    min="0.00"
-                    step="1"
-                    id="collateral"
-                    placeholder="Algos sent to CDP"
-                    value={cAlgos}
-                    size="small"
-                    onKeyPress={(event) => {
-                      if (!/[0-9]/.test(event.key)) {
-                        if (event.key === ".") {
-                          return;
-                        }
-                        event.preventDefault();
+          <Box sx={{
+            width: window.innerWidth < 900 ? '80vw' : '31vw',
+            } }>
+            <Grid container spacing={0} justifyContent="center" alignItems="center" marginLeft={0} borderBottom= '1px solid #e9ecfb' >
+            <Grid item xs={12}>
+                <Input
+                  type='number'
+                  min="0.00"
+                  step="1"
+                  id="collateral"
+                  placeholder="Algos sent to CDP"
+                  value={cAlgos}
+                  size="small"
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      if(event.key === '.'){
+                        return
                       }
-                    }}
+                      event.preventDefault();
+                    }
+                  }}
                     onChange={handleInputChange1}
                   />
                 </Grid>
@@ -306,42 +294,32 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === "dark"}>
+          <InputNameContainer>
             <InputNameText>Minted GARD</InputNameText>
           </InputNameContainer>
           <div>
-            <Box
-              sx={{
-                width: window.innerWidth < 900 ? "80vw" : "31vw",
-              }}
-            >
-              <Grid
-                container
-                spacing={0}
-                justifyContent="center"
-                alignItems="center"
-                marginLeft={0}
-                borderBottom="1px solid #e9ecfb"
-              >
-                <Grid item xs={12}>
-                  <Input
-                    darkToggle={theme === "dark"}
-                    type="number"
-                    min="1.00"
-                    step="1"
-                    id="minted"
-                    placeholder="Min. 1"
-                    value={mGARD}
-                    size="small"
-                    onKeyPress={(event) => {
-                      if (!/[0-9]/.test(event.key)) {
-                        if (event.key === ".") {
-                          return;
-                        }
-                        event.preventDefault();
+          <Box sx={{
+            width: window.innerWidth < 900 ? '80vw' : '31vw',
+            } }>
+            <Grid container spacing={0} justifyContent="center" alignItems="center" marginLeft={0} borderBottom= '1px solid #e9ecfb' >
+            <Grid item xs={12}>
+                <Input
+                  type='number'
+                  min="1.00"
+                  step="1"
+                  id="minted"
+                  placeholder="Min. 1"
+                  value={mGARD}
+                  size="small"
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      if(event.key === '.'){
+                        return
                       }
-                    }}
-                    onChange={handleInputChange2}
+                      event.preventDefault();
+                    }
+                  }}
+                  onChange={handleInputChange2}
                   />
                 </Grid>
                 <Grid item xs={10}>
@@ -366,7 +344,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === "dark"}>
+          <InputNameContainer>
             <InputNameText>Collateralization Ratio</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -384,7 +362,7 @@ export default function MintContent() {
             marginBottom: 4.5,
           }}
         >
-          <InputNameContainer darkToggle={theme === "dark"}>
+          <InputNameContainer>
             <InputNameText>Liquidation Price (in ALGO/USD)</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -401,7 +379,7 @@ export default function MintContent() {
             flexDirection: window.innerWidth < 900 ? "column" : "row",
           }}
         >
-          <InputNameContainer darkToggle={theme === "dark"}>
+          <InputNameContainer>
             <InputNameText>Protocol Fees</InputNameText>
           </InputNameContainer>
           <InputContainer>
@@ -447,8 +425,8 @@ export default function MintContent() {
         title="Are you sure you want to proceed?"
         subtitle="Review the details of this transaction to the right and
                     click “Confirm Transaction” to proceed."
-        darkToggle={theme === "dark"}
-        mint={Date.now() < commitmentPeriodEnd}
+      
+        mint = {Date.now() < commitmentPeriodEnd}
       >
         {Date.now() < commitmentPeriodEnd ? (
           <div style={{ marginBottom: 6 }}>
@@ -540,7 +518,7 @@ export default function MintContent() {
             }
           }}
           cancelCallback={() => setModalVisible(false)}
-          darkToggle={theme === "dark"}
+        
           commit={commitChecked}
         />
       </Modal>
@@ -562,18 +540,14 @@ const InputSubtitle = styled.text`
 `;
 const InputNameContainer = styled.div`
   height: 132.31px;
-  width: ${window.innerWidth < 900 ? "80vw" : "31vw"};
-  background: #e9d7fe;
+  width: ${window.innerWidth < 900 ? '80vw' : '31vw'};
+  background: rgba(13, 18, 39, .75);
   padding-left: 16px;
   display: flex;
   align-items: center;
   margin-right: 2.5px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
-`;
+  border-radius: 10px;
+`
 const InputNameText = styled.text`
   font-weight: 500;
   font-size: 20px;
@@ -593,26 +567,18 @@ const Input = styled.input`
   border: 0px;
   height: 96px;
   text-align: center;
+  background: #172756;
+  color: #ff00ff;
   &:focus {
-    outline-color: #bc82ff;
+    outline-color: white;
+  }
+  ::placeholder {
+    color: #01d1ff;
   }
   &:focus::placeholder {
     color: transparent;
   }
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      transition: "all 1s ease";
-      background: #121212;
-      color: white;
-      &:focus {
-        outline-color: white;
-      }
-      &:focus::placeholder {
-        color: transparent;
-      }
-    `}
-`;
+`
 // Why don't these refresh right away?
 // dummy info for the transaction
 function dummyTrans() {

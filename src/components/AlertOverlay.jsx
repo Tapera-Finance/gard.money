@@ -2,7 +2,6 @@ import React, { useEffect, useReducer, useState, useContext } from "react";
 import styled, { keyframes, css } from "styled-components";
 import closeIcon from "../assets/icons/close_icon.png";
 import PrimaryButton from "./PrimaryButton";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 const Backdrop = styled.div`
   position: fixed;
@@ -17,23 +16,17 @@ const Backdrop = styled.div`
   align-items: center;
 `;
 const Container = styled.div`
-  background: #ffffff;
+  background: rgba(13, 18, 39);
+  color: white;
   display: flex;
   width: 400px;
   flex-direction: column;
   border-radius: 25px;
   padding: 10px 20px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #484848;
-      color: white;
-    `}
 `;
 
 export default function AlertOverlay({ text, requestClose }) {
   const [content, setContent] = useState(<></>);
-  const { theme } = useContext(ThemeContext);
   useEffect(() => {
     if (!text) return;
     setContent(textWithLink(text));
@@ -41,7 +34,7 @@ export default function AlertOverlay({ text, requestClose }) {
   return (
     <div>
       <Backdrop onClick={() => requestClose()}>
-        <Container darkToggle={theme === "dark"}>
+        <Container>
           <div
             style={{
               display: "flex",

@@ -67,14 +67,14 @@ export default function Chart({ size, data }) {
       >
         <defs>
           <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+            <stop offset="5%" stopColor="#01d1ff" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="#01d1ff" stopOpacity={0} />
           </linearGradient>
         </defs>
         <Area
           type="monotone"
           dataKey={getDataKey()}
-          stroke="#8884d8"
+          stroke="#01d1ff"
           fillOpacity={1}
           fill="url(#colorPrice)"
         />
