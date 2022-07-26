@@ -45,7 +45,7 @@ const Backdrop = styled.div`
 `;
 const TextContainer = styled.div`
   height: 100px;
-  background: #0d1227;
+  background: rgba(13, 18, 39);
   display: flex;
   justify-content: center;
   align-items: center;

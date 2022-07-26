@@ -16,7 +16,7 @@ const Backdrop = styled.div`
   align-items: center;
 `;
 const Container = styled.div`
-  background: #0d1227;
+  background: rgba(13, 18, 39);
   color: white;
   display: flex;
   width: 400px;

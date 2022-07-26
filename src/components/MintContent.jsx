@@ -541,7 +541,7 @@ const InputSubtitle = styled.text`
 const InputNameContainer = styled.div`
   height: 132.31px;
   width: ${window.innerWidth < 900 ? '80vw' : '31vw'};
-  background: #0d1227;
+  background: rgba(13, 18, 39, .75);
   padding-left: 16px;
   display: flex;
   align-items: center;

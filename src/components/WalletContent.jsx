@@ -217,7 +217,7 @@ export default function WalletContent() {
 
 // syled components for our wallet content
 const AccountContainer = styled.div`
-  background: #0d1227;
+  background: rgba(13, 18, 39, .75);
   padding: 5vw 4vw;
   margin-bottom: 56px;
   border-radius: 10px;

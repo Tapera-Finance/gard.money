@@ -106,7 +106,7 @@ const Title = styled.text`
   color: white;
 `;
 const MainContent = styled.div`
-  background: #0d1227;
+  background: rgba(13, 18, 39, .75);
   color: white;
   height: ${window.innerWidth < 900 ? "450px" : "605px"};
   width: ${`${window.innerWidth < 900 ? "90vw" : "835px"}`};

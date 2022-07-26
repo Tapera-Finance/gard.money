@@ -429,7 +429,8 @@ const Select = styled.select`
   border: 1px solid #dce1e6;
   padding-left: 12px;
   box-sizing: border-box;
-  background-color: #0d1227;
+  background-color: rgba(13, 18, 39, .75);
+  opacity: 65%;
   color: white;
 `;
 const InputMandatory = styled.text`

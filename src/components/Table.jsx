@@ -213,7 +213,7 @@ const CountText = styled.text`
 `
 
 const HeaderRow = styled.tr`
-  background: #0d1227;
+  background: rgba(13, 18, 39, .75);
   border-radius: 10px;
   height: 44px;
 `

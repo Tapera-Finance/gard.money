@@ -299,7 +299,7 @@ const SpecificsTitle = styled.text`
 `;
 
 const TransactionInput = styled.input`
-  background: #0d1227; 
+  background: rgba(13, 18, 39, .75); 
   color: #ff00ff;
   font-weight: normal;
   font-size: 16px;
