@@ -14,6 +14,7 @@ import { ThemeContext } from "../contexts/ThemeContext";
  * @prop {string} headerColor - background color for the header row. If ommited default is used
  * @prop {string} tableColor - background color for the rows in the table. If ommited default is used
  * @prop {string[]} columns - Array of strings containing each column name
+ * @prop {boolean} noID - boolean to specifiy removal of ID column from table
  * @param {{data: object[], title: string, countSubtitle: string, headerColor: string, columns: string[], tableColor: string}} props
  */
 export default function Table({
@@ -23,6 +24,7 @@ export default function Table({
   headerColor,
   tableColor,
   columns,
+  noID
 }) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [shownRows, setShownRows] = useState(data.slice(0, 10));
@@ -91,6 +93,7 @@ export default function Table({
                   })
                 : keys.map((value, index) => {
                     if (value === "button") return;
+                    if (value === "id" && noID) return;
                     return (
                       <HeaderElement darkToggle={theme === "dark"} key={index}>
                         {camelToWords(value)}
@@ -110,6 +113,7 @@ export default function Table({
                   }}
                 >
                   {keys.map((keyVal, keyIndex) => {
+                    if (keyVal == "id" && noID) return;
                     return <Cell key={keyIndex}>{value[keyVal]}</Cell>;
                   })}
                 </TableRow>

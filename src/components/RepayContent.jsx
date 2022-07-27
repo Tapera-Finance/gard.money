@@ -299,6 +299,7 @@ export default function RepayContent() {
           title="Collateralized Debt Positions (CDPs)"
           countSubtitle={`${cdps.length} CDPs`}
           data={cdps}
+          noID={true}
         />
       </div>
       <Modal
