@@ -6,48 +6,48 @@ import {
   pactGARDID,
   pactAlgoGardPoolAddress,
 } from "./ids";
-import { accountInfo, getParams, sendTxn, signGroup } from "../wallets/wallets";
+import { accountInfo, getParams, sendTxn, signGroup, algodClient } from "../wallets/wallets";
 import { verifyOptIn } from "./cdp";
 import { updateDBWebActions } from "../components/Firebase";
 
-const axios = require("axios");
+
+
+import pactsdk from "@pactfi/pactsdk";
+import { mAlgosToAlgos, mGardToGard } from "../components/swap/swapHelpers";
+
+export const pactClient = new pactsdk.PactClient(algodClient);
+
+// const gard = await pactClient.fetchAsset(pactGARDID);
+// export const AGpool = await pactClient.fetchPoolsByAssets(algo, gard);
+
+// export async function previewPoolSwap(assetDeposited, amount, slippagePct, swapForExact) {
+//     const swap = AGpool.prepareSwap({
+//         assetDeposited: assetDeposited,
+//         amount: amount,
+//         slippagePct: slippagePct,
+//         swapForExact: swapForExact
+//     })
+//     return swap.effect
+// }
+
+export async function getPools() {
+    return await pactClient.listPools()
+}
+
+export const gardpool = await pactClient.fetchPoolById(pactGARDID)
+
+
+export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
+  return parseFloat(assetX / assetY).toFixed(4);
+};
+
+export const algoGardRatio = async () => exchangeRatioAssetXtoAssetY(mAlgosToAlgos(gardpool.calculator.primaryAssetPrice), mGardToGard(gardpool.calculator.secondaryAssetPrice))
 
 /**
  ********** Swap & Exchange **********
  */
 
-/**
- *
- * @method getGard
- * @returns {Promise} - fetch GARD in Pact Algo/Gard pool
- *
- * @method getAlgo
- * @returns {Promise} - fetch ALGO in Pact Algo/Gard pool
- * Query object used to get and set exchange rate, used to fetch and pass blockchain data to component
- */
 
-const poolShark = {
-  getGard: async () => {
-    try {
-      const response = await axios.get(
-        `https://node.algoexplorerapi.io/v2/accounts/${pactAlgoGardPoolAddress}/assets/${gardID}`,
-      );
-      return response.data;
-    } catch (e) {
-      console.log("can't fetch algo/gard pool", e);
-    }
-  },
-  getAlgo: async () => {
-    try {
-      const response = await axios.get(
-        `https://node.algoexplorerapi.io/v2/accounts/${pactAlgoGardPoolAddress}`,
-      );
-      return response.data;
-    } catch (e) {
-      console.log("can't fetch algo/gard Pact LP info");
-    }
-  },
-};
 
 /**
  * Global Helpers
