@@ -155,6 +155,7 @@ export default function AlgoGovernanceContent() {
         title="Algorand CDPs"
         countSubtitle={`${loadedCDPs == dummyCdps ? 0 : adjusted.length} CDPs`}
         data={cdps}
+        noID={true}
       />
       <Modal
         title={modalContent === "vote" ? "Cast Your Vote" : "ALGOs to Commit"}
