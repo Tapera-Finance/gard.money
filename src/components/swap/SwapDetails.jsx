@@ -8,14 +8,16 @@ import {
     exchangeRatioAssetXtoAssetY,
     targetPool,
     getTotals,
-    calcTransResult
+    calcTransResult,
+    processSwap
 } from "./swapHelpers"
 import {
     getGARDInWallet,
     getWalletInfo
   } from "../../wallets/wallets";
 import swapIcon from "../../assets/icons/swap_icon_v2.png";
-
+import { gardpool, algoGardRatio, getPools } from "../../transactions/swap";
+const allpools = await getPools();
 // need field, button, helpers
 const defaultPool = "ALGO/GARD";
 
@@ -27,146 +29,28 @@ export default function SwapDetails() {
   const [loadingText, setLoadingText] = useState(null);
   const [balanceX, setBalanceX] = useState("...");
   const [balanceY, setBalanceY] = useState("...");
+  const [gardPool, setGardPool] = useState(gardpool)
   const [receivedValue, setReceivedValue] = useState(null);
+  const [slippageTolerance, setSlippageTolerance] = useState(0.10);
   const assets = ["ALGO", "GARD"];
 
-  useEffect(async () => {
-    const res = await getTotals();
-    if (res) {
-      setTotals(res);
-    }
-  }, [totals]);
 
   useEffect(async () => {
-    const res = totals === null ? await getTotals() : totals;
-    let algoGardRatio = exchangeRatioAssetXtoAssetY(
-      mAlgosToAlgos(res["ALGO/GARD" || "GARD/ALGO"].algo),
-      mGardToGard(res["ALGO/GARD" || "GARD/ALGO"].gard),
-    );
-    if (algoGardRatio) {
-      setAlgoToGardRatio(algoGardRatio);
+    let ratio = await algoGardRatio();
+    if (algoToGardRatio !== "Loading..." ) {
+      setTimeout(() => {
+        setAlgoToGardRatio(ratio)
+      },180000)
+    } else if (ratio) {
+      setAlgoToGardRatio(ratio)
     }
-    return () => {
-      console.log("unmounting getRatio effect", algoGardRatio);
-    };
   }, [algoToGardRatio]);
 
-  const handleSwapButton = (e) => {
-    e.preventDefault();
-    // setLeft(right)
-    // setRight(left)
-    console.log("flip")
-    const swappedObj = {
-      offering: {
-        from: transaction.receiving.to,
-        amount: transaction.receiving.amount,
-      },
-      receiving: {
-        to: transaction.offering.from,
-        amount: transaction.offering.amount,
-      },
-    };
-    reduceTransaction({
-      type: "flip",
-      value: swappedObj,
-    });
-  };
+  function handleSwap() {
 
-  const [transaction, reduceTransaction] = useReducer(
-    (state, action) => {
-      switch (action.type) {
-        case "offering-amount":
-          return {
-            ...state,
-            offering: {
-              ...state.offering,
-              amount: action.value,
-            },
-          };
-        case "offering-from":
-          return {
-            ...state,
-            offering: {
-              ...state.offering,
-              from: action.value,
-            },
-          };
-        case "receiving-amount":
-          return {
-            ...state,
-            receiving: {
-              ...state.receiving,
-              amount: action.value,
-            },
-          };
-        case "receiving-to":
-          return {
-            ...state,
-            receiving: {
-              ...state.receiving,
-              to: action.value,
-            },
-          };
-        case "clear":
-          return {
-            ...state,
-            offering: {
-              ...state.offering,
-              amount: "",
-            },
-            receiving: {
-              ...state.receiving,
-              amount: "",
-            },
-          };
-        case "flip":
-          return {
-            ...state,
-            ...action.value,
-          };
-        default:
-          return {
-            ...state,
-            defaultPool: defaultPool,
-          };
-      }
-    },
-    {
-      offering: {
-        amount: "",
-        from: "ALGO",
-      },
-      receiving: {
-        amount: "",
-        to: "GARD",
-      },
-    },
-  );
-
-
+  }
 
     // state update of estimated return
-    useEffect(() => {
-        if (transaction) {
-          if (totals) {
-            const { offering, receiving } = transaction;
-            let res = calcTransResult(
-              offering.amount,
-              totals[targetPool(offering.from, receiving.to)][
-                offering.from.toLowerCase()
-              ],
-              totals[targetPool(offering.from, receiving.to)][
-                receiving.to.toLowerCase()
-              ],
-              transaction,
-            );
-            setReceivedValue(res);
-          }
-        }
-        return () => {
-          console.log("unmounting get totals effect");
-        };
-      }, [receivedValue]);
 
         // wallet info effect
   useEffect(() => {
@@ -175,6 +59,17 @@ export default function SwapDetails() {
     setBalanceX(balX);
     setBalanceY(balY);
   }, []);
+
+
+  const testObj = {
+    algoGardRatio: algoToGardRatio,
+    totals: totals,
+    balanceX: balanceX,
+    balanceY: balanceY,
+    assets: assets,
+    allpools: allpools,
+    gardpool: gardpool
+  }
 
     return(
         <div><div>
@@ -213,9 +108,59 @@ export default function SwapDetails() {
                     totals={totals}
                 ></ExchangeFields>
             </ExchangeBar>
+              <DetailsContainer>
+                <SlippageField value={slippageTolerance} ></SlippageField>
+              </DetailsContainer>
+
+            {/* <TestButton onClick={() => {
+              console.log("variables", testObj)
+            }} >Click me!!</TestButton> */}
         </div>
     )
 }
+
+const SlippageField = styled.input`
+  appearance: none;
+  background: #0d1227;
+  width: 20vw;
+  height: 12vh;
+  border-radius: 8px;
+  opacity: 65%;
+  text-decoration: underline;
+`
+
+const DetailsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex: 2;
+  justify-content: space-between;
+  width: 80%;
+  background: #0d1227;
+  opacity: 65%;
+`
+
+const TestButton = styled.button`
+  appearance: none;
+  background: fuchsia;
+  border: linear-gradient(217deg, rgba(255,0,0,.8), rgba(255,0,0,0) 70.71%),
+          linear-gradient(127deg, rgba(0,255,0,.8), rgba(0,255,0,0) 70.71%),
+          linear-gradient(336deg, #392fff, rgba(0,0,255,0) 70.71%);
+  color: #2fe7ff;
+  text-decoration: dashed;
+  animation-duration: 2s;
+  animation-name: bounce;
+
+  @keyframes bounce {
+    from {
+      margin-left: 100%;
+      width: 300%;
+    }
+    to {
+      margin-left: 0%;
+      width: 100%;
+    }
+  }
+`
 
 const ExchangeBar = styled.div`
     display: flex;
@@ -246,3 +191,29 @@ const SwapButton = styled.img`
       transform: rotate(180deg);
     }
 `
+
+/**
+ * use the strengths of Pact SDK to your advantage here - all the processing logic is there. Make components that represent each individual piece of a swap, do not use transaction object as state as it was done before. Write function to capture current state of all individual components to pass to transaction modal when execute transaction is clicked.
+ */
+
+/**
+ * Ask about modal or select
+ *  * token select - button to trigger modal or conditional rendering span?
+
+token for select - not tied to select
+
+ *
+ * for input:
+ * style the div where it lives, and make input have as minimal a styling as possible
+ * input and div share background color
+ * border and container properties live outside input
+ *      span below input that shows dollar amount
+ *      button on details container that shows exchange rate, calculate reverse onclick
+ *
+ *
+ * for exchange fields:
+ * async function call on input, -- regardless -- of which one is called.
+ */
+
+/**
+ */
