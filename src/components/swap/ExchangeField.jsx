@@ -35,15 +35,21 @@ export default function ExchangeField({
         {type === 0 ? (
           <Container>
             <div style={{ marginBottom: 8 }}>
+            <Arrow
+              src={chevron}
+              // onClick={() => {
+              //   let el = document.querySelector(".left")
+              //   el.
+              // }}
+            />
               <Select
+                class="left"
                 options={assets}
                 transaction={transaction}
                 value={transaction.offering.from}
                 transactionCallback={transactionCallback}
               />
-              <Arrow
-              src={chevron}
-            />
+
             </div>
             <InputTitle>
               {transaction.offering.from === "ALGO"
@@ -95,6 +101,9 @@ export default function ExchangeField({
         ) : (
           <Container>
             <div style={{ marginBottom: 8 }}>
+            <Arrow
+              src={chevron}
+            />
             <Select
                 value={transaction.receiving.to}
                 options={assets}

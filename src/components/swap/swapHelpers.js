@@ -29,28 +29,12 @@ export const getTotals = async () => await queryAndConvertTotals();
  * @param {Object} transaction - data obj acc.
  * @returns estimated return of swap between x & y
  */
-export function calcTransResult(amount, totalX, totalY, transaction) {
-  if (transaction) {
-    if (
-      transaction.offering.from === "ALGO" &&
-      transaction.receiving.to === "GARD"
-    ) {
+export function calcTransResult(amount, totalX, totalY, slippageTolerance) {
       if (amount > 0) {
         return (
           estimateReturn(parseFloat(amount), totalX, totalY) / 1e6
         ).toFixed(6);
       }
-    } else if (
-      transaction.offering.from === "GARD" &&
-      transaction.receiving.to === "ALGO"
-    ) {
-      if (amount > 0) {
-        return (
-          estimateReturn(parseFloat(amount), totalY, totalX) / 1e6
-        ).toFixed(6);
-      }
-    }
-  }
 }
 
 /**
@@ -131,7 +115,14 @@ export function handleExchange(
   params,
   transaction,
   reducer,
+  rightSideChanged = false
 ) {
+  if (rightSideChanged) {
+    // reducer({
+    //   type: "flip-input"
+    // })
+    console.log("right side changed")
+  }
   if (type === "offering-amount") {
     // field 1 handling from field 2 input
     if (transaction) {
@@ -197,4 +188,41 @@ export function handleExchange(
       }
     }
   }
+}
+
+/**
+ * use asset pairings to logically determine direction of swap, decoupling it from the front end state
+ *
+ * @param {object} assetA - has type, amount, id
+ * @param {object} assetB
+ */
+
+export async function processSwap(assetA, assetB, params) {
+  /**
+   * assetA.type === ALGO || GARD
+   * assetB.type === ALGO || GARD
+   * if assetA.type === assetB.type => throw error
+   * params should have a swapTo property that is either a or b
+   * from variable that is b === to ? a : a === to ? b : null
+   *
+      params = {
+        swapTo: assetA || assetB
+        from: to === assetA ? assetB : assetA
+        slippageTolerance: number,
+      }
+   *
+    * if A is being swapped to, its from B. if A is not being swapped to,  * B is from A
+
+      pass to calculator with amount to swap, pool total of id of the received assed, pool total of id of the given asset, params.
+      ensures that estimate return always receives arguments the same way independent of frontend state
+
+      also independent of what these assets are
+      */
+
+     const poolId = targetPool(assetA.type, assetB.type)
+     const pools = await queryAndConvertTotals()
+
+     const { swapTo, slippageTolerance } = params
+     const from = swapTo.type === assetA.type ? assetB : assetA
+    //  const receivedValue = calcTransResult(from.amount, pools[swapTo.id], pools[from.id], slippageTolerance )
 }
