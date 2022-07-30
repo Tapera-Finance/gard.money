@@ -2,6 +2,7 @@ import React, { useState, useEffect, useReducer } from "react";
 import styled, { css } from "styled-components";
 import { Container } from "@mui/system";
 import ExchangeField from "./ExchangeField";
+import InputField from "./InputField";
 import {
     mAlgosToAlgos,
     mGardToGard,
@@ -29,6 +30,10 @@ export default function SwapDetails() {
   const [loadingText, setLoadingText] = useState(null);
   const [balanceX, setBalanceX] = useState("...");
   const [balanceY, setBalanceY] = useState("...");
+
+  const [assetAtype, setAssetAtype] = useState(null);
+  const [assetBtype, setAssetBtype] = useState(null);
+
   const [gardPool, setGardPool] = useState(gardpool)
   const [receivedValue, setReceivedValue] = useState(null);
   const [slippageTolerance, setSlippageTolerance] = useState(0.10);
@@ -46,7 +51,26 @@ export default function SwapDetails() {
     }
   }, [algoToGardRatio]);
 
-  function handleSwap() {
+  function handleSwap(e) {
+    console.log(e.target.value)
+  }
+
+  function handleSwapButton() {
+    console.log("flip")
+    console.log("asset type A", assetAtype);
+    console.log("asset type B", assetBtype);
+  }
+
+  function handleSelect(e) {
+    // console.log("selecting", e.target.value);
+    const leftSelect = document.querySelector("#left-select")
+    const rightSelect = document.querySelector("#right-select")
+    setAssetAtype(leftSelect.value);
+    setAssetBtype(rightSelect.value);
+    // console.log("left select element id", leftSelect.id);
+    // console.log("left select element value", leftSelect.value);
+    // console.log("right select element id", rightSelect.id);
+    // console.log("right select element value", rightSelect.value);
 
   }
 
@@ -77,13 +101,17 @@ export default function SwapDetails() {
             </div>
             <ExchangeBar>
                 <ExchangeFields
+                    ids={["left-select", "right-select"]}
                     type={left}
-                    transaction={transaction}
+
                     assets={assets}
-                    transactionCallback={reduceTransaction}
+                    onOptionSelect={handleSelect}
                     balances={[balanceX, balanceY]}
                     totals={totals}
                 ></ExchangeFields>
+                {/* <TestInput
+                  onChange={handleSwap}
+                ></TestInput> */}
                 <div
               style={{
                 display: "flex",
@@ -100,10 +128,10 @@ export default function SwapDetails() {
 
             </div>
                 <ExchangeFields
+                    ids={["left-select", "right-select"]}
                     type={right}
-                    transaction={transaction}
                     assets={assets}
-                    transactionCallback={reduceTransaction}
+                    onOptionSelect={handleSelect}
                     balances={[balanceX, balanceY]}
                     totals={totals}
                 ></ExchangeFields>
@@ -119,12 +147,24 @@ export default function SwapDetails() {
     )
 }
 
-const SlippageField = styled.input`
+const TestInput = styled.input`
   appearance: none;
   background: #0d1227;
-  width: 20vw;
-  height: 12vh;
+  text-decoration: underline;
+  color: #999696;
+  width: 16vw;
+  height: 6vh;
+  border: 1px transparent;
+  opacity: 65%;
+`
+
+const SlippageField = styled(InputField)`
+  appearance: none;
+  background: #0d1227;
+  width: 16vw;
+  height: 6vh;
   border-radius: 8px;
+  border: 1px transparent;
   opacity: 65%;
   text-decoration: underline;
 `

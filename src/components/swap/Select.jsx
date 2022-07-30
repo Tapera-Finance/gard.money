@@ -28,34 +28,16 @@ export function toggleSelect(val, other, type1, type2, assets, reducer) {
 }
 
 export default function Select({
+  id,
   value,
   options,
-  transaction,
-  transactionCallback,
+  callback,
 }) {
   return (
     <Dropdown
-      transaction={transaction}
+      id={id}
       value={value}
-      onChange={(e) => {
-        toggleSelect(
-          e.target.value,
-          value,
-          "offering-from",
-          "receiving-to",
-          options,
-          transactionCallback,
-        );
-
-        transactionCallback({
-          type: "offering-amount",
-          value: transaction.receiving.amount,
-        });
-        transactionCallback({
-          type: "receiving-amount",
-          value: transaction.offering.amount,
-        });
-      }}
+      onChange={callback}
     >
       {options.length > 0 ? (
         options.map((opt, idx) => {
@@ -81,7 +63,9 @@ const Dropdown = styled.select`
   font-size: 140%;
   margin: 0;
   box-sizing: border-box;
-  width: 30%;
-  height: 30%;
+  width: max-content;
+  height: max-content;
   padding: 5px;
+  opacity: 65%;
+  white-space: nowrap;
 `;

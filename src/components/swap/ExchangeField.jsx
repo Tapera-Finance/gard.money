@@ -6,6 +6,7 @@ import {
   targetPool,
 } from "./swapHelpers";
 import Select from "./Select";
+import InputField from "./InputField";
 import { formatToDollars } from "../../utils";
 import chevron from "../../assets/chevron_black.png";
 
@@ -21,10 +22,10 @@ import chevron from "../../assets/chevron_black.png";
  */
 
 export default function ExchangeField({
+  ids,
   type,
-  transaction,
   assets,
-  transactionCallback,
+  onOptionSelect,
   balances,
   totals,
 }) {
@@ -34,128 +35,137 @@ export default function ExchangeField({
       <div >
         {type === 0 ? (
           <Container>
-            <div style={{ marginBottom: 8 }}>
-            <Arrow
+
+            {/* <Arrow
               src={chevron}
               // onClick={() => {
               //   let el = document.querySelector(".left")
               //   el.
               // }}
-            />
+            /> */}
+            <SelectContainer>
+            <Span for={ids[0]}>Select Asset</Span>
               <Select
-                class="left"
+                id={ids[0]}
                 options={assets}
-                transaction={transaction}
-                value={transaction.offering.from}
-                transactionCallback={transactionCallback}
-              />
 
-            </div>
+                // value={transaction.offering.from}
+                callback={onOptionSelect}
+              />
+              </SelectContainer>
+
+
             <InputTitle>
-              {transaction.offering.from === "ALGO"
+              {/* {transaction.offering.from === "ALGO"
                 ? "Balance: " + balances[0]
-                : "Balance: " + balances[1]}
+                : "Balance: " + balances[1]} */}
             </InputTitle>
-            <Input
-              id="left"
+
+            <InputField
+              id="left-input"
               type="number"
               min="0"
               step="0.00"
-              value={transaction.offering.amount}
+              // value={transaction.offering.amount}
               onChange={(e) => {
                 // e.target.value.replace(/\D+/g, "");
                 console.log(e.target.value);
                 e.preventDefault()
                 if (e.target.value !== "") {
-                  handleExchange(
-                    "receiving-amount",
-                    parseFloat(e.target.value),
-                    assets,
-                    calcTransResult,
-                    [
-                      totals[
-                        targetPool(
-                          transaction.offering.from,
-                          transaction.receiving.to,
-                        )
-                      ][transaction.offering.from.toLowerCase()],
+                //   handleExchange(
+                //     "receiving-amount",
+                //     parseFloat(e.target.value),
+                //     assets,
+                //     calcTransResult,
+                //     [
+                //       totals[
+                //         targetPool(
+                //           transaction.offering.from,
+                //           transaction.receiving.to,
+                //         )
+                //       ][transaction.offering.from.toLowerCase()],
 
-                      totals[
-                        targetPool(
-                          transaction.offering.from,
-                          transaction.receiving.to,
-                        )
-                      ][transaction.receiving.to.toLowerCase()],
-                    ],
-                    transaction,
-                    transactionCallback,
-                  );
-                } else {
-                  transactionCallback({
-                    type: "clear",
-                  });
+                //       totals[
+                //         targetPool(
+                //           transaction.offering.from,
+                //           transaction.receiving.to,
+                //         )
+                //       ][transaction.receiving.to.toLowerCase()],
+                //     ],
+                //     transaction,
+                //     transactionCallback,
+                //   );
+                // } else {
+                //   transactionCallback({
+                //     type: "clear",
+                //   });
                 }
-              }}
+              }
+            }
             />
           </Container>
         ) : (
           <Container>
-            <div style={{ marginBottom: 8 }}>
-            <Arrow
-              src={chevron}
-            />
-            <Select
-                value={transaction.receiving.to}
-                options={assets}
-                transaction={transaction}
-                transactionCallback={transactionCallback}
-              />
 
-            </div>
+            {/* <Arrow
+              src={chevron}
+            /> */}
+            <SelectContainer>
+             <Span for={ids[1]}>Select Asset</Span>
+            <Select
+                // value={transaction.receiving.to}
+                id={ids[1]}
+                options={assets}
+                callback={onOptionSelect}
+
+              />
+            </SelectContainer>
+
 
             <InputTitle>
-              {transaction.receiving.to == "ALGO"
+              {/* {transaction.receiving.to == "ALGO"
                 ? "Balance: " + balances[0]
-                : "Balance: " + balances[1]}
+                : "Balance: " + balances[1]} */}
             </InputTitle>
-            <Input
+
+            <InputField
               id="right"
               type="number"
               min={0}
-              value={transaction.receiving.amount}
+              // value={transaction.receiving.amount}
               onChange={(e) => {
                 // e.target.value.replace(/\D+/g, "");
                 if (e.target.value !== "") {
-                e.preventDefault()
-                console.log(e.target.value);
-                handleExchange(
-                  "offering-amount",
-                  parseFloat(e.target.value),
-                  assets,
-                  calcTransResult,
-                  [
-                    totals[
-                      targetPool(
-                        transaction.offering.from,
-                        transaction.receiving.to,
-                      )
-                    ][transaction.receiving.to.toLowerCase()],
-                    totals[
-                      targetPool(
-                        transaction.offering.from,
-                        transaction.receiving.to,
-                      )
-                    ][transaction.offering.from.toLowerCase()],
-                  ],
-                  transaction,
-                  transactionCallback,
-                  true
-                );
+                // e.preventDefault()
+                // console.log(e.target.value);
+                // handleExchange(
+                //   "offering-amount",
+                //   parseFloat(e.target.value),
+                //   assets,
+                //   calcTransResult,
+                //   [
+                //     totals[
+                //       targetPool(
+                //         transaction.offering.from,
+                //         transaction.receiving.to,
+                //       )
+                //     ][transaction.receiving.to.toLowerCase()],
+                //     totals[
+                //       targetPool(
+                //         transaction.offering.from,
+                //         transaction.receiving.to,
+                //       )
+                //     ][transaction.offering.from.toLowerCase()],
+                //   ],
+                //   transaction,
+                //   transactionCallback,
+                //   true
+                // );
 
-                } else {
-                  transactionCallback({
-                    type: "clear"
-                  })
+                // } else {
+                //   transactionCallback({
+                //     type: "clear"
+                //   })
                 }
               }}
             />
@@ -167,9 +177,12 @@ export default function ExchangeField({
 }
 
 const Container = styled.div`
+  display: flex;
   background: #0d1227;
-  width: 28vw;
+  /* width: 28vw;
+  height: 16vh; */
   height: 16vh;
+  width: 28vw;
   border-radius: 8px;
   opacity: 65%;
 `
@@ -178,10 +191,20 @@ const InputTitle = styled.text`
   /*  */
 `;
 
-const Input = styled.input`
-  appearance: none;
-  text-decoration: underline;
-`;
+const SelectContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  align-items: center;
+  width: max-content;
+`
+
+const Span = styled.label`
+  font-size: 8px;
+  color: #999696;
+
+`
+
 
 const Arrow = styled.img`
   filter: invert(38%) sepia(82%) saturate(1518%) hue-rotate(181deg) brightness(104%) contrast(106%);
