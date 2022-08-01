@@ -18,7 +18,6 @@ import {
   getAppByID,
   signGroup,
 } from "../wallets/wallets";
-import { getCurrentUnix } from "../prices/prices";
 import {
   updateCommitmentFirestore,
   addCDPToFireStore,
@@ -372,8 +371,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   }
 
   params = await getParams(0);
-  // This time could be delayed up to 20 seconds
-  let start_time = (await getCurrentUnix()) + 30;
+  let start_time = Math.floor(Datetime.Now() / 1000) + 10;
   txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: validatorID,
