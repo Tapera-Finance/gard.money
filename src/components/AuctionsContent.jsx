@@ -10,7 +10,6 @@ import TransactionSummary from "./TransactionSummary";
 import {
   getChainData,
   getCurrentAlgoUsd,
-  getCurrentUnix,
 } from "../prices/prices";
 import { accountInfo } from "../wallets/wallets";
 import { validatorID } from "../transactions/ids";
@@ -26,7 +25,7 @@ let cdp_data = await cdp_data_promise;
 
 async function loadDefaulted() {
   const chainDataPromise = getChainData();
-  const timePromise = getCurrentUnix();
+  const timePromise = Date.now() / 1000;
   chainDataResponse = await chainDataPromise;
   let curr_time = await timePromise;
   let result = [];
