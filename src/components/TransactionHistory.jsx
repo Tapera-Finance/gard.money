@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import styled, { css } from "styled-components";
 import { camelToWords } from "../utils";
 import { getWalletInfo } from "../wallets/wallets";
-import { CDPsToList } from "./RepayContent";
+import { CDPsToList } from "../pages/RepayContent";
 import chevron from "../assets/icons/tablePag_icon.png";
 import { loadDbActionAndMetrics, queryUser } from "./Firebase";
 import { onSnapshot } from "firebase/firestore";

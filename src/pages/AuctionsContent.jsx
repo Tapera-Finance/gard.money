@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import styled, { css } from "styled-components";
 import { formatToDollars } from "../utils";
-import Modal from "./Modal";
-import PrimaryButton from "./PrimaryButton";
-import RadioButtonSet from "./RadioButtonSet";
-import Table from "./Table";
-import LoadingOverlay from "./LoadingOverlay";
-import TransactionSummary from "./TransactionSummary";
+import Modal from "../components/Modal";
+import PrimaryButton from "../components/PrimaryButton";
+import RadioButtonSet from "../components/RadioButtonSet";
+import Table from "../components/Table";
+import LoadingOverlay from "../components/LoadingOverlay";
+import TransactionSummary from "../components/TransactionSummary";
 import {
   getChainData,
   getCurrentAlgoUsd,
-  getCurrentUnix,
 } from "../prices/prices";
 import { accountInfo } from "../wallets/wallets";
 import { validatorID } from "../transactions/ids";
@@ -25,7 +24,7 @@ let cdp_data = await cdp_data_promise;
 
 async function loadDefaulted() {
   const chainDataPromise = getChainData();
-  const timePromise = getCurrentUnix();
+  const timePromise = Date.now() / 1000;
   chainDataResponse = await chainDataPromise;
   let curr_time = await timePromise;
   let result = [];

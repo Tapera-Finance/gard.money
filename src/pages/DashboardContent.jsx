@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import graph from "../assets/graph.png";
-import Chart from "./Chart";
-import TransactionHistory from "./TransactionHistory";
-import PrimaryButton from "./PrimaryButton";
+import Chart from "../components/Chart";
+import TransactionHistory from "../components/TransactionHistory";
+import PrimaryButton from "../components/PrimaryButton";
 import { getCurrentAlgoUsd, getChainData } from "../prices/prices";
-import RadioButtonSet from "./RadioButtonSet";
+import RadioButtonSet from "../components/RadioButtonSet";
 import moment from "moment";
-import { loadDbActionAndMetrics } from "./Firebase";
+import { loadDbActionAndMetrics } from "../components/Firebase";
 import { getWalletInfo } from "../wallets/wallets";
 
 // get webactions and metrics data
