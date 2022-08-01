@@ -8,7 +8,7 @@ import HomeContent from "../pages/HomeContent";
 import Main from "./Main";
 import MintContent from "../pages/MintContent";
 import RepayContent from "../pages/RepayContent";
-import SwapContent from "../pages/SwapContent";
+import SwapContent from "../pages/oldSwapContent";
 import WalletContent from "../pages/WalletContent";
 
 export default function AppRoutes() {
@@ -24,14 +24,7 @@ export default function AppRoutes() {
         <Route path="/new-cdp" element={Main(MintContent, "New CDP")} />
         <Route path="/manage" element={Main(RepayContent, "Manage CDPs")} />
         <Route path="/auctions" element={Main(AuctionsContent, "Auctions")} />
-        <Route
-          path="/swap"
-          element={
-            APPVERSION && APPVERSION === "V2"
-              ? Main(SwapContainer, "Swap")
-              : Main(SwapContent, "Swap")
-          }
-        />
+        <Route path="/swap" element={Main(SwapContent, "Swap")} />
         <Route path="/dao" element={Main(DaoContent, "DAO")} />
         <Route
           path="/algo-governance"

@@ -1,13 +1,23 @@
 import React, { useState, useEffect, useReducer } from "react";
 import styled, { css } from "styled-components";
-import ExchangeField from "./ExchangeField";
-import InputField from "./InputField";
+import ExchangeField from "../ExchangeField";
+import InputField from "../InputField";
 import { mAlgosToAlgos, processSwap } from "./swapHelpers";
 import { getGARDInWallet, getWalletInfo } from "../../wallets/wallets";
 import swapIcon from "../../assets/icons/swap_icon_v2.png";
 import { gardpool, algoGardRatio, getPools } from "../../transactions/swap";
+import TransactionSummary from "../TransactionSummary";
+import Modal from "../Modal";
 import { gardID } from "../../transactions/ids";
 const allpools = await getPools();
+
+/**
+ * local utils
+ */
+
+const defaultPool = "ALGO/GARD";
+const pools = [defaultPool];
+const slippageTolerance = 0.005;
 
 export default function SwapDetails() {
   const [totals, setTotals] = useState(null);
@@ -301,7 +311,6 @@ const SwapButton = styled.img`
   }
 `;
 
-
 // jsx for the transaction container to open on execute
 
 /**
@@ -369,7 +378,6 @@ const SwapButton = styled.img`
       </div>
       </div>
  */
-
 
 // code from txn callback (passed to section which became this component)
 /**

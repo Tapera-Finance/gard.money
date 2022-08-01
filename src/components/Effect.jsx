@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import ToolTip from "../ToolTip";
-import * as tips from "../../assets/tooltiptext";
+import ToolTip from "./ToolTip";
+import * as tips from "../assets/tooltiptext";
 
 export default function Effect(title, func, hasToolTip) {
   return (

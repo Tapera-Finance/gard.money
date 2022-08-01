@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import Select from "./Select";
 import InputField from "./InputField";
-import { formatToDollars } from "../../utils";
+import { formatToDollars } from "../utils";
 import chevron from "../../assets/chevron_black.png";
 
 // entire container for currency select, input field, text for displaying vals
