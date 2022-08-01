@@ -120,7 +120,7 @@ export default function TransactionHistory({ headerColor, tableColor }) {
     : ["No transaction history to display"];
 
   useEffect(() => {
-    if (typeof getWalletInfo() !== 'undefined') {
+    if (typeof getWalletInfo() !== "undefined") {
       const q = queryUser();
       const unsub = onSnapshot(q, (docSnap) => {
         let docs = [];

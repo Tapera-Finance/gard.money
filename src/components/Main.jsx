@@ -62,8 +62,8 @@ export default function Main(WrappedComponent, title) {
   const dispatch = useDispatch();
   const alertData = useSelector((state) => state.alert);
 
-  const body = document.querySelector('body')
-  body.style.backgroundColor = '#172756'
+  const body = document.querySelector("body");
+  body.style.backgroundColor = "#172756";
 
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
