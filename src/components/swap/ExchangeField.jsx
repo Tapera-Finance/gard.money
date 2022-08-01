@@ -26,6 +26,7 @@ export default function ExchangeField({
   type,
   assets,
   onOptionSelect,
+  onInputChange,
   balances,
   totals,
 }) {
@@ -62,16 +63,18 @@ export default function ExchangeField({
             </InputTitle>
 
             <InputField
-              id="left-input"
+              id={ids[1]}
               type="number"
               min="0"
               step="0.00"
               // value={transaction.offering.amount}
-              onChange={(e) => {
+              onChange={onInputChange}
+
+                // (e) => {
                 // e.target.value.replace(/\D+/g, "");
-                console.log(e.target.value);
-                e.preventDefault()
-                if (e.target.value !== "") {
+                // console.log(e.target.value);
+                // e.preventDefault()
+                // if (e.target.value !== "") {
                 //   handleExchange(
                 //     "receiving-amount",
                 //     parseFloat(e.target.value),
@@ -99,9 +102,9 @@ export default function ExchangeField({
                 //   transactionCallback({
                 //     type: "clear",
                 //   });
-                }
-              }
-            }
+              //   }
+              // }
+
             />
           </Container>
         ) : (
@@ -111,10 +114,10 @@ export default function ExchangeField({
               src={chevron}
             /> */}
             <SelectContainer>
-             <Span for={ids[1]}>Select Asset</Span>
+             <Span for={ids[0]}>Select Asset</Span>
             <Select
                 // value={transaction.receiving.to}
-                id={ids[1]}
+                id={ids[0]}
                 options={assets}
                 callback={onOptionSelect}
 
@@ -129,7 +132,7 @@ export default function ExchangeField({
             </InputTitle>
 
             <InputField
-              id="right"
+              id={ids[1]}
               type="number"
               min={0}
               // value={transaction.receiving.amount}
