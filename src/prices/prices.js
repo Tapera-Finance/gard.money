@@ -39,14 +39,3 @@ export async function getCurrentAlgoUsd() {
     console.log("Cant get current algo/usd", e);
   }
 }
-
-export async function getCurrentUnix() {
-  try {
-    const response = await axios.get(
-      "https://storage.googleapis.com/algo-pricing-data-2022/latest_pricing.json",
-    );
-    return response.data.unix;
-  } catch (e) {
-    console.log("Cant get current UNIX Time", e);
-  }
-}

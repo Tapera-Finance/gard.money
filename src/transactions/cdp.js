@@ -371,7 +371,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   }
 
   params = await getParams(0);
-  let start_time = Math.floor(Datetime.Now() / 1000) + 10;
+  let start_time = Math.floor(Date.now() / 1000) + 10;
   txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: validatorID,
@@ -453,7 +453,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     r1_stxns.push(stxns[2 + start].blob);
     start += 1;
   }
-  if ((await getCurrentUnix()) - start_time > 30) {
+  if (Math.floor(Date.now() / 1000) - start_time > 30) {
     return {
       alert: true,
       text: "Aborted: Transaction review and signing took too long. Please try again.",
