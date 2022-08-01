@@ -475,7 +475,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
 
   response = await sendTxn(
     stxns2,
-    "Successfully opened a CDP with ID: " + accountID + ".",
+    "Successfully opened a new CDP.",
   );
 
   addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, devFees);
@@ -745,7 +745,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
 
   let response = await sendTxn(
     stxns,
-    "Successfully closed your cdp with ID " + accountID + ".",
+    "Successfully closed your cdp.",
   );
   setLoadingStage(null);
   removeCDP(info.address, accountID);
@@ -917,8 +917,7 @@ export async function voteCDP(account_id, option1, option2) {
       option1 +
       " and " +
       option2 +
-      " from CDP #" +
-      account_id,
+      "."
   );
   updateDBWebActions(6, account_id, 0, 0, 0, 0, 2000);
   setLoadingStage(null);
@@ -1014,7 +1013,7 @@ export async function liquidate(
   ];
   let response = await sendTxn(
     stxns,
-    "Successfully liquidated CDP #" + account_id + " of " + owner_address,
+    `Successfully liquidated ${owner_address}'s CDP.`,
     true,
   );
   updateLiquidationFirestore(owner_address, account_id);
