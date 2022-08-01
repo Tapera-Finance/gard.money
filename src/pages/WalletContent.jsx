@@ -10,7 +10,7 @@ import copyIconSmallDark from "../assets/icons/copy_icon_small_dark.png";
 import linkIcon from "../assets/icons/link_icon.png";
 import linkIconWhite from "../assets/icons/link_icon_white.png";
 import { getWallet, getWalletInfo, updateWalletInfo } from "../wallets/wallets";
-import Table from "./Table";
+import Table from "../components/Table";
 import { css } from "styled-components";
 
 function getAssets() {

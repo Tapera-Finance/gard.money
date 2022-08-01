@@ -9,8 +9,8 @@ import { CDPsToList } from "./RepayContent";
 import { commitCDP, voteCDP } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
 import { cdpGen } from "../transactions/contracts";
-import Table from "./Table";
-import { loadFireStoreCDPs } from "./Firebase";
+import Table from "../components/Table";
+import { loadFireStoreCDPs } from "../components/Firebase";
 import { commitmentPeriodEnd } from "../globals";
 
 function getGovernorPage(id) {
