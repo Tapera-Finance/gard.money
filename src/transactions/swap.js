@@ -17,24 +17,25 @@ import { mAlgosToAlgos, mGardToGard } from "../components/swap/swapHelpers";
 
 export const pactClient = new pactsdk.PactClient(algodClient);
 
-// const gard = await pactClient.fetchAsset(pactGARDID);
 // export const AGpool = await pactClient.fetchPoolsByAssets(algo, gard);
 
-// export async function previewPoolSwap(assetDeposited, amount, slippagePct, swapForExact) {
-//     const swap = AGpool.prepareSwap({
-//         assetDeposited: assetDeposited,
-//         amount: amount,
-//         slippagePct: slippagePct,
-//         swapForExact: swapForExact
-//     })
-//     return swap.effect
-// }
+export const gardpool = await pactClient.fetchPoolById(pactGARDID)
+
+export async function previewPoolSwap(pool, assetDeposited, amount, slippagePct, swapForExact) {
+    const swap = pool.prepareSwap({
+        assetDeposited: assetDeposited,
+        amount: amount,
+        slippagePct: slippagePct,
+        swapForExact: swapForExact
+    })
+    return swap.effect
+}
 
 export async function getPools() {
     return await pactClient.listPools()
 }
 
-export const gardpool = await pactClient.fetchPoolById(pactGARDID)
+
 
 
 export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
@@ -58,39 +59,6 @@ export function estimateReturn(input, totalX, totalY) {
     (((1e6 * (input * totalY)) / Math.floor(input * 1e6 + totalX)) * 9900) /
     10000;
   return parseInt(receivedAmount);
-}
-
-/**
- *
- *
- * @function queryAndConvertTotals - query blockchain data
- * snag Pact's asset pool exchange rate given two assets (ALGO, GARD)
- * @returns {Object} algo + gard totals for algo/gard pool
- *
- */
-export async function queryAndConvertTotals() {
-  let result;
-
-  // ALGO/GARD pool
-  const algoInPool = await poolShark.getAlgo();
-  const gardInPool = await poolShark.getGard();
-  const algoGardPool = {
-    algo: algoInPool.amount,
-    gard: gardInPool["asset-holding"].amount,
-  };
-  // as pools are added, add poolShark calls to get those token totals and pass to corresponding result[asset/asset]
-  result = {
-    "ALGO/GARD": {
-      algo: algoGardPool.algo,
-      gard: algoGardPool.gard,
-    },
-    "GARD/ALGO": {
-      algo: algoGardPool.algo,
-      gard: algoGardPool.gard,
-    }, // same pool as fallback in case targetPool string is reversed
-    // as pools are added, add property to result object that matches the format of string returned from SwapContent's targetPool function, this will be used to dynamically key into each pool total
-  };
-  return result;
 }
 
 /**
