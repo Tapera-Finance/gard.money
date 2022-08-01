@@ -1,16 +1,9 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
-import {
-  calcTransResult,
-  handleExchange,
-  targetPool,
-} from "./swapHelpers";
 import Select from "./Select";
 import InputField from "./InputField";
 import { formatToDollars } from "../../utils";
 import chevron from "../../assets/chevron_black.png";
-
-
 
 // entire container for currency select, input field, text for displaying vals
 
@@ -65,46 +58,10 @@ export default function ExchangeField({
             <InputField
               id={ids[1]}
               type="number"
-              min="0"
-              step="0.00"
+              min={0}
+              placeholder="0.00"
               // value={transaction.offering.amount}
               onChange={onInputChange}
-
-                // (e) => {
-                // e.target.value.replace(/\D+/g, "");
-                // console.log(e.target.value);
-                // e.preventDefault()
-                // if (e.target.value !== "") {
-                //   handleExchange(
-                //     "receiving-amount",
-                //     parseFloat(e.target.value),
-                //     assets,
-                //     calcTransResult,
-                //     [
-                //       totals[
-                //         targetPool(
-                //           transaction.offering.from,
-                //           transaction.receiving.to,
-                //         )
-                //       ][transaction.offering.from.toLowerCase()],
-
-                //       totals[
-                //         targetPool(
-                //           transaction.offering.from,
-                //           transaction.receiving.to,
-                //         )
-                //       ][transaction.receiving.to.toLowerCase()],
-                //     ],
-                //     transaction,
-                //     transactionCallback,
-                //   );
-                // } else {
-                //   transactionCallback({
-                //     type: "clear",
-                //   });
-              //   }
-              // }
-
             />
           </Container>
         ) : (
@@ -136,41 +93,6 @@ export default function ExchangeField({
               type="number"
               min={0}
               // value={transaction.receiving.amount}
-              onChange={(e) => {
-                // e.target.value.replace(/\D+/g, "");
-                if (e.target.value !== "") {
-                // e.preventDefault()
-                // console.log(e.target.value);
-                // handleExchange(
-                //   "offering-amount",
-                //   parseFloat(e.target.value),
-                //   assets,
-                //   calcTransResult,
-                //   [
-                //     totals[
-                //       targetPool(
-                //         transaction.offering.from,
-                //         transaction.receiving.to,
-                //       )
-                //     ][transaction.receiving.to.toLowerCase()],
-                //     totals[
-                //       targetPool(
-                //         transaction.offering.from,
-                //         transaction.receiving.to,
-                //       )
-                //     ][transaction.offering.from.toLowerCase()],
-                //   ],
-                //   transaction,
-                //   transactionCallback,
-                //   true
-                // );
-
-                // } else {
-                //   transactionCallback({
-                //     type: "clear"
-                //   })
-                }
-              }}
             />
           </Container>
         )}

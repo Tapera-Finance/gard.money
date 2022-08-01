@@ -3,6 +3,9 @@ import styled, { css } from "styled-components";
 
 export default function InputField({
     id,
+    type,
+    min,
+    step,
     callback
 }) {
     return (
