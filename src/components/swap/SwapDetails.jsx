@@ -9,27 +9,6 @@ import { gardpool, algoGardRatio, getPools } from "../../transactions/swap";
 import { gardID } from "../../transactions/ids";
 const allpools = await getPools();
 
-// need field, button, helpers
-
-/**
-// in Details Container ->
-
-
-// render
-    effects.map((item) => {
-        <Effect title={item.title} func={item.func} hasToolTip={item.hasToolTip} />
-    })
-
-
-
-*/
-
-// decouple amount and name of asset from each other's state, set separately
-// -- the initial react dev took a weird hardcoded oop approach, ie assigning directionality
-//    and type of input to a single object instead of using pure functions to pass each piece
-//    to logic held elsewhere, smh.
-// -- react is meant to be written with a functional approach
-
 export default function SwapDetails() {
   const [totals, setTotals] = useState(null);
   const [left, setLeft] = useState(0);
@@ -322,28 +301,111 @@ const SwapButton = styled.img`
   }
 `;
 
+
+// jsx for the transaction container to open on execute
+
 /**
- * use the strengths of Pact SDK to your advantage here - all the processing logic is there. Make components that represent each individual piece of a swap, do not use transaction object as state as it was done before. Write function to capture current state of all individual components to pass to transaction modal when execute transaction is clicked.
+ * <div style={{ marginBottom: 50 }}>
+        <TransactionContainer>
+          <Modal
+            title="Are you sure you want to proceed?"
+            subtitle="Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
+            visible={modalVisible}
+            animate={modalCanAnimate}
+            close={() => setModalVisible(false)}
+          >
+            <TransactionSummary
+              specifics={transaction}
+              transactionFunc={async () => {
+                setModalCanAnimate(true);
+                setModalVisible(false);
+                setLoading(true);
+                try {
+                  const amount = parseFloat(transaction[0].value);
+                  const formattedAmount = parseInt(1e6 * amount);
+
+                  if (VERSION !== "MAINNET") {
+                    throw new Error("Unable to swap on TESTNET");
+                  }
+                  let res;
+                  if (
+                    transaction[0].token == "ALGO" &&
+                    transaction[1].token == "GARD"
+                  ) {
+                    res = await swapAlgoToGard(
+                      formattedAmount,
+                      parseInt(
+                        1e6 *
+                          parseFloat(transaction[1].value.split()[0]) *
+                          (1 - slippageTolerance),
+                      ),
+                    );
+                  } else if (
+                    transaction[0].token == "GARD" &&
+                    transaction[1].token == "ALGO"
+                  ) {
+                    res = await swapGardToAlgo(
+                      formattedAmount,
+                      parseInt(
+                        1e6 *
+                          parseFloat(transaction[1].value.split()[0]) *
+                          (1 - slippageTolerance),
+                      ),
+                    );
+                  }
+                  if (res.alert) {
+                    dispatch(setAlert(res.text));
+                  }
+                } catch (e) {
+                  handleTxError(e, "Error exchanging assets");
+                }
+                setModalCanAnimate(false);
+                setLoading(false);
+              }}
+              cancelCallback={() => setModalVisible(false)}
+            />
+          </Modal>
+        </TransactionContainer>
+      </div>
+      </div>
  */
 
+
+// code from txn callback (passed to section which became this component)
 /**
- * Ask about modal or select
- *  * token select - button to trigger modal or conditional rendering span?
+ * function tnxCb() {
+  let keys = target.split("/");
+  setModalCanAnimate(true);
+  setTransaction([
+    {
+      title: "You are offering ",
+      value: `${transaction.offering.amount}${" " + transaction.offering.from}`,
+      token: `${transaction.offering.from}`,
+    },
+    {
+      title: "You are receiving a minimum of ",
+      value: `${
+        totals
+          ? (
+              (calcTransResult(
+                transaction.offering.amount,
+                totals[target][keys[0].toLowerCase()],
+                totals[target][keys[1].toLowerCase()],
+                transaction,
+              ) *
+                (1e6 * (1 - slippageTolerance))) /
+              1e6
+            ).toFixed(6)
+          : transaction.converted.amount // not sure if still in use
+      } ${transaction.receiving.to}`,
+      token: `${transaction.receiving.to}`,
+    },
+    {
+      title: "Transaction Fee",
+      value: "0.003 Algos",
+    },
+  ]);
+  setModalVisible(true);
+}
 
-token for select - not tied to select
-
- *
- * for input:
- * style the div where it lives, and make input have as minimal a styling as possible
- * input and div share background color
- * border and container properties live outside input
- *      span below input that shows dollar amount
- *      button on details container that shows exchange rate, calculate reverse onclick
- *
- *
- * for exchange fields:
- * async function call on input, -- regardless -- of which one is called.
- */
-
-/**
  */
