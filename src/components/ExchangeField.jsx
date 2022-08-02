@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import Select from "./Select";
 import InputField from "./InputField";
-import { formatToDollars } from "../utils";
-import chevron from "../../assets/chevron_black.png";
+import Effect from "./Effect";
+
 
 // entire container for currency select, input field, text for displaying vals
 
@@ -18,80 +18,46 @@ export default function ExchangeField({
   ids,
   type,
   assets,
+  effect,
   onOptionSelect,
   onInputChange,
 }) {
-
   return (
     <div>
-      <div >
+      <div>
         {type === 0 ? (
           <Container>
-
-            {/* <Arrow
-              src={chevron}
-              // onClick={() => {
-              //   let el = document.querySelector(".left")
-              //   el.
-              // }}
-            /> */}
             <SelectContainer>
-            <Span for={ids[0]}>Select Asset</Span>
-              <Select
-                id={ids[0]}
-                options={assets}
+              <Span for={ids[0]}>Select Asset</Span>
+              <Select id={ids[0]} options={assets} callback={onOptionSelect} />
+            </SelectContainer>
 
-                // value={transaction.offering.from}
-                callback={onOptionSelect}
-              />
-              </SelectContainer>
+            <InputTitle></InputTitle>
 
-
-            <InputTitle>
-              {/* {transaction.offering.from === "ALGO"
-                ? "Balance: " + balances[0]
-                : "Balance: " + balances[1]} */}
-            </InputTitle>
-
-            <InputField
+            <ExchangeInput
               id={ids[1]}
               type="number"
               min={0}
               placeholder="0.00"
-              // value={transaction.offering.amount}
-              onChange={onInputChange}
+              callback={onInputChange}
             />
+            <Effect title={effect.title} val={effect.val} />
           </Container>
         ) : (
           <Container>
-
-            {/* <Arrow
-              src={chevron}
-            /> */}
             <SelectContainer>
-             <Span for={ids[0]}>Select Asset</Span>
-            <Select
-                // value={transaction.receiving.to}
-                id={ids[0]}
-                options={assets}
-                callback={onOptionSelect}
-
-              />
+              <Span for={ids[0]}>Select Asset</Span>
+              <Select id={ids[0]} options={assets} callback={onOptionSelect} />
             </SelectContainer>
 
-
-            <InputTitle>
-              {/* {transaction.receiving.to == "ALGO"
-                ? "Balance: " + balances[0]
-                : "Balance: " + balances[1]} */}
-            </InputTitle>
-
-            <InputField
+            <ExchangeInput
               id={ids[1]}
               type="number"
               min={0}
-              // value={transaction.receiving.amount}
+              placeholder="0.00"
+              callback={onInputChange}
             />
+            <Effect title={effect.title} val={effect.val} />
           </Container>
         )}
       </div>
@@ -108,10 +74,22 @@ const Container = styled.div`
   width: 28vw;
   border-radius: 8px;
   opacity: 65%;
-`
+`;
 
 const InputTitle = styled.text`
   /*  */
+`;
+
+const ExchangeInput = styled(InputField)`
+  &:active {
+    color: #999696;
+    background: #e8e8e8;
+  }
+  &:focus {
+    color: #999696;
+    background: #e8e8e8;
+    text-decoration: none;
+  }
 `;
 
 const SelectContainer = styled.div`
@@ -120,16 +98,15 @@ const SelectContainer = styled.div`
   /* justify-content: space-between; */
   align-items: center;
   width: max-content;
-`
+`;
 
 const Span = styled.label`
   font-size: 8px;
   color: #999696;
-
-`
-
+`;
 
 const Arrow = styled.img`
-  filter: invert(38%) sepia(82%) saturate(1518%) hue-rotate(181deg) brightness(104%) contrast(106%);
+  filter: invert(38%) sepia(82%) saturate(1518%) hue-rotate(181deg)
+    brightness(104%) contrast(106%);
   transform: rotate(90deg);
-`
+`;
