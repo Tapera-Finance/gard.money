@@ -55,44 +55,45 @@ export default function BorrowContent(){
                 <div>Borrow GARD</div>
             </div>
             <div style={{
-            background: "rgba(13, 18, 39, .75)",
-            paddingTop: 30,
-            paddingBottom: 30,
-            borderRadius: 10
-             }}>
-                <div style={{display: "grid", gridTemplateColumns:"repeat(4, 20%)", rowGap: 30, justifyContent: "center"}}>
-                    <div style={{display: "flex", flexDirection: "column"}}>
-                        <div>Collateral</div>
-                        <div>0.05%</div>
-                    </div>
-                    <div style={{display: "flex", flexDirection: "column"}}>
-                        <div>Recieved DAI</div>
-                        <div>0.00%</div>
-                    </div>
-                    <div style={{display: "flex", flexDirection: "column"}}>
-                        <div>Liquidation Price</div>
-                        <div>0.00%</div>
-                    </div>
-                    <div style={{display: "flex", flexDirection: "column"}}>
-                        <div>Received DAI</div>
-                        <div>0.00%</div>
-                    </div>
-                    <div style={{display: "flex", flexDirection: "column"}}>
-                        <div>ETH exposure</div>
-                        <div>0.05%</div>
-                    </div>
-                    <div style={{display: "flex", flexDirection: "column"}}>
-                        <div>Stability Fee</div>
-                        <div>0.00%</div>
-                    </div>
-                    <div style={{display: "flex", flexDirection: "column"}}>
-                        <div>Liquidation ratio</div>
-                        <div>0.00%</div>
-                    </div>
-                    <div style={{display: "flex", flexDirection: "column"}}>
-                        <div>DAI avaible from ETH</div>
-                        <div>0.00%</div>
-                    </div>
+                display: "grid",
+                gridTemplateColumns:"repeat(4, 20%)", 
+                rowGap: 30, 
+                justifyContent: "center",
+                background: "rgba(13, 18, 39, .75)",
+                paddingTop: 30,
+                paddingBottom: 30,
+                borderRadius: 10}}>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <div>Collateral</div>
+                    <div>0.05%</div>
+                </div>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <div>Recieved DAI</div>
+                    <div>0.00%</div>
+                </div>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <div>Liquidation Price</div>
+                    <div>0.00%</div>
+                </div>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <div>Received DAI</div>
+                    <div>0.00%</div>
+                </div>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <div>ETH exposure</div>
+                    <div>0.05%</div>
+                </div>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <div>Stability Fee</div>
+                    <div>0.00%</div>
+                </div>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <div>Liquidation ratio</div>
+                    <div>0.00%</div>
+                </div>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <div>DAI avaible from ETH</div>
+                    <div>0.00%</div>
                 </div>
             </div>
         </div>
