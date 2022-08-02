@@ -1,5 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
+import Effect from "./Effect";
 
 export default function Details({ className, details }) {
   return (
@@ -12,8 +13,7 @@ export default function Details({ className, details }) {
         details.map((d) => {
             return (
                 <Item>
-                    <Text>{d.title}</Text>
-                    <Text>{d.val}</Text>
+                    <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
                 </Item>
             )
         })
