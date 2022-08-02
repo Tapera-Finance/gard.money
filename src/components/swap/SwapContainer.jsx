@@ -16,7 +16,7 @@ export default function SwapContainer() {
 
   const Tabs = {
     swap: <SwapDetails />,
-    pool: <PoolDetails />,
+    // pool: <PoolDetails />,
   };
 
 

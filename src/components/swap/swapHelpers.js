@@ -10,6 +10,10 @@ export const mAlgosToAlgos = (num) => {
   return num / 1000000;
 };
 
+export const algosTomAlgos = (num) => {
+  return num * 1000000;
+}
+
 export const mGardToGard = (num) => {
   return num / 1000000;
 };

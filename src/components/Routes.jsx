@@ -8,7 +8,7 @@ import HomeContent from "../pages/HomeContent";
 import Main from "./Main";
 import MintContent from "../pages/MintContent";
 import RepayContent from "../pages/RepayContent";
-import SwapContent from "../pages/oldSwapContent";
+import SwapContent from "../pages/SwapContent";
 import WalletContent from "../pages/WalletContent";
 
 export default function AppRoutes() {

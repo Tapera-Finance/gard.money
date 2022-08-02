@@ -2,19 +2,28 @@ import React, { useState, useEffect, useReducer } from "react";
 import styled, { css } from "styled-components";
 import ExchangeField from "../ExchangeField";
 import InputField from "../InputField";
-import { mAlgosToAlgos, processSwap } from "./swapHelpers";
+import { mAlgosToAlgos, algosTomAlgos, processSwap } from "./swapHelpers";
 import { getGARDInWallet, getWalletInfo } from "../../wallets/wallets";
+import { formatToDollars } from "../../utils";
 import swapIcon from "../../assets/icons/swap_icon_v2.png";
 import { gardpool, algoGardRatio, getPools } from "../../transactions/swap";
+import Effect from "../Effect";
 import TransactionSummary from "../TransactionSummary";
 import Modal from "../Modal";
 import { gardID } from "../../transactions/ids";
+import { getPrice } from "../../transactions/cdp";
 const allpools = await getPools();
 
 /**
  * local utils
  */
+async function price() {
+  let price = await getPrice();
+  return price
+}
 
+const algoPrice = await getPrice().then(val => val.toFixed(5))
+const prices = {algo: gardpool.calculator.primaryAssetPrice, gard: gardpool.calculator.secondaryAssetPrice}
 const defaultPool = "ALGO/GARD";
 const pools = [defaultPool];
 const slippageTolerance = 0.005;
@@ -37,6 +46,13 @@ export default function SwapDetails() {
   const [gardPool, setGardPool] = useState(gardpool);
 
   const [swapEffect, setSwapEffect] = useState(null);
+  const [leftSelectVal, setLeftSelectVal] = useState("ALGO");
+  const [rightSelectVal, setRightSelectVal] = useState("GARD");
+  const [leftInputAmt, setLeftInputAmt] = useState(0)
+  const [rightInputAmt, setRightInputAmt] = useState(0);
+
+  const [rightDollars, setRightDollars] = useState(0);
+  const [leftDollars, setLeftDollars] = useState(0);
 
   const [receivedValue, setReceivedValue] = useState(null);
   const [slippageTolerance, setSlippageTolerance] = useState(0.1);
@@ -44,6 +60,31 @@ export default function SwapDetails() {
   const assetIds = [0, gardID];
 
   const [priceImpact, setPriceImpact] = useState(0);
+
+
+  function convertToDollars(amt, idx) {
+    let result = formatToDollars(amt * prices[idx])
+    console.log("result in convert func", result)
+    return result
+  }
+
+  useEffect(() => {
+    let dollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase())
+    setLeftDollars(dollars)
+  }, [leftInputAmt])
+
+  useEffect(() => {
+    let dollars = convertToDollars(rightInputAmt, rightSelectVal.toLowerCase())
+    setRightDollars(dollars)
+  }, [rightInputAmt])
+
+  useEffect(() => {
+
+  }, [leftSelectVal])
+
+  useEffect(() => {
+
+  }, [rightSelectVal])
 
   useEffect(() => {}, [assetAtotal]);
 
@@ -97,55 +138,65 @@ export default function SwapDetails() {
   }, [algoToGardRatio]);
 
   function handleSwap(e) {
-    //
+    const leftSelect = document.querySelector("#left-select");
+    const rightSelect = document.querySelector("#right-select");
+    setAssetAtype(leftSelect.value);
+    setAssetBtype(rightSelect.value);
   }
 
   function handleSwapButton() {
     console.log("flip");
     console.log("asset type A", assetAtype);
     console.log("asset type B", assetBtype);
+    setRight(left);
+    setLeft(right);
   }
 
-  const leftSelect = document.querySelector("#left-select");
-  const rightSelect = document.querySelector("#right-select");
+
 
   function handleSelect(e) {
-    // console.log("selecting", e.target.value);
-    // const leftSelect = document.querySelector("#left-select")
-    // const rightSelect = document.querySelector("#right-select")
-    setAssetAtype(leftSelect.value);
-    setAssetBtype(rightSelect.value);
-    // console.log("left select element id", leftSelect.id);
-    // console.log("left select element value", leftSelect.value);
-    // console.log("right select element id", rightSelect.id);
-    // console.log("right select element value", rightSelect.value);
+    if (e.target.id === "left-select") {
+      setLeftSelectVal(e.target.value)
+    }
+    if (e.target.id === "right-select") {
+      setRightSelectVal(e.target.value)
+    }
   }
 
   async function handleInput(e) {
-    if (leftSelect.value !== rightSelect.value) {
-      // either use pact swap function to set swap effect
-      // or use estimateReturn to set the inputs, pact swap
-      // to set pact swap anyway async -> front end preview uses
-      // local function updated live via interval and query blockchain
-      // or
-      const assetA = {
-        type: assetAtype,
-        amount: assetAtotal,
-        id: assetAtype === assets[0] ? assetIds[0] : assetIds[1],
-      };
-      const assetB = {
-        type: assetBtype,
-        amount: assetBtotal,
-        id: assetBtype === assets[1] ? assetIds[1] : assetIds[0],
-      };
-      const params = {
-        swapTo: rightSelect.value === assets[1] ? assets[1] : assets[0],
-        slippageTolerance: slippageTolerance,
-      };
-      // const effect1 = await previewPoolSwap(leftSelect.value, e.target.)
-      const effect = await processSwap(assetA, assetB, params);
-      setSwapEffect(effect);
+    if (e.target.id === "left-input") {
+      setLeftInputAmt(e.target.value)
     }
+    if (e.target.id === "right-input") {
+      setRightInputAmt(e.target.value)
+    }
+    // let res = convertToDollars(rightInputAmt)
+    // console.log(res);
+    // if (leftSelect.value !== rightSelect.value) {
+    //   // either use pact swap function to set swap effect
+    //   // or use estimateReturn to set the inputs, pact swap
+    //   // to set pact swap anyway async -> front end preview uses
+    //   // local function updated live via interval and query blockchain
+    //   // or
+    //   const assetA = {
+    //     type: assetAtype,
+    //     amount: assetAtotal,
+    //     id: assetAtype === assets[0] ? assetIds[0] : assetIds[1],
+    //   };
+    //   const assetB = {
+    //     type: assetBtype,
+    //     amount: assetBtotal,
+    //     id: assetBtype === assets[1] ? assetIds[1] : assetIds[0],
+    //   };
+    //   const params = {
+    //     swapTo: rightSelect.value === assets[1] ? assets[1] : assets[0],
+    //     slippageTolerance: slippageTolerance,
+    //   };
+    //   // const effect1 = await previewPoolSwap(leftSelect.value, e.target.)
+    //   const effect = await processSwap(assetA, assetB, params);
+    //   setSwapEffect(effect);
+    // }
+
   }
 
   // state update of estimated return
@@ -176,11 +227,14 @@ export default function SwapDetails() {
           ids={["left-select", "left-input"]}
           type={left}
           assets={assets}
+          effect={{title: "$Value: ", val: leftDollars}}
           onOptionSelect={handleSelect}
           onInputChange={handleInput}
           balances={[balanceX, balanceY]}
           totals={totals}
-        ></ExchangeFields>
+        >
+
+        </ExchangeFields>
         {/* <TestInput
                   onChange={handleSwap}
                 ></TestInput> */}
@@ -195,14 +249,16 @@ export default function SwapDetails() {
           <SwapButton onClick={handleSwapButton} src={swapIcon} />
         </div>
         <ExchangeFields
-          ids={["right-select", "right-select"]}
+          ids={["right-select", "right-input"]}
           type={right}
           assets={assets}
+          effect={{title: "$Value: ", val: rightDollars}}
           onOptionSelect={handleSelect}
           onInputChange={handleInput}
           balances={[balanceX, balanceY]}
           totals={totals}
-        ></ExchangeFields>
+        >
+        </ExchangeFields>
       </ExchangeBar>
       <DetailsContainer>
         {effects.length > 0
@@ -223,6 +279,10 @@ export default function SwapDetails() {
     </div>
   );
 }
+
+const InputTitle= styled.text`
+
+`
 
 const TestInput = styled.input`
   appearance: none;
