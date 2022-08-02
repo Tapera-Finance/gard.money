@@ -20,8 +20,6 @@ export default function ExchangeField({
   assets,
   onOptionSelect,
   onInputChange,
-  balances,
-  totals,
 }) {
 
   return (

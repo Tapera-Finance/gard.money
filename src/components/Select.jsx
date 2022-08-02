@@ -1,31 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import styled, { css } from "styled-components";
-
-export function toggleSelect(val, other, type1, type2, assets, reducer) {
-  if (val === assets[0] && other === assets[1]) {
-    reducer({
-      type: type1,
-      value: assets[0],
-    });
-
-    reducer({
-      type: type2,
-      value: assets[1],
-    });
-    return;
-  }
-  if (val === assets[1] && other === assets[0]) {
-    reducer({
-      type: type1,
-      value: assets[1],
-    });
-    reducer({
-      type: type2,
-      value: assets[0],
-    });
-    return;
-  }
-}
 
 export default function Select({
   id,
