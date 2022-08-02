@@ -323,7 +323,7 @@ const CountText = styled.text`
 `;
 
 const HeaderRow = styled.tr`
-  background: #0d1227;
+  background: rgba(13, 18, 39, .75);
   height: 44px;
 `;
 const HeaderElement = styled.th`
@@ -368,7 +368,7 @@ export const Cell = styled.td`
 `;
 
 const PaginationBar = styled.div`
-  background: #0d1227;
+  background: rgba(13, 18, 39, .65);
   height: 60px;
 `;
 const PaginationText = styled.text`

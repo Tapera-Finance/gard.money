@@ -62,8 +62,8 @@ export default function Main(WrappedComponent, title) {
   const dispatch = useDispatch();
   const alertData = useSelector((state) => state.alert);
 
-  const body = document.querySelector('body')
-  body.style.backgroundColor = '#172756'
+  const body = document.querySelector("body");
+  body.style.backgroundColor = "#172756";
 
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
@@ -188,12 +188,7 @@ const ContactUsText = styled.text`
 const Link = styled.a`
   text-decoration: none;
   font-weight: 500;
-  color: #1849f8;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
-    `}
+  color: #7c52ff;
 `;
 
 /**

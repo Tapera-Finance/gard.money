@@ -10,7 +10,7 @@ import copyIconSmallDark from "../assets/icons/copy_icon_small_dark.png";
 import linkIcon from "../assets/icons/link_icon.png";
 import linkIconWhite from "../assets/icons/link_icon_white.png";
 import { getWallet, getWalletInfo, updateWalletInfo } from "../wallets/wallets";
-import Table from "./Table";
+import Table from "../components/Table";
 import { css } from "styled-components";
 
 function getAssets() {
@@ -217,7 +217,7 @@ export default function WalletContent() {
 
 // syled components for our wallet content
 const AccountContainer = styled.div`
-  background: #0d1227;
+  background: rgba(13, 18, 39, .75);
   padding: 5vw 4vw;
   margin-bottom: 56px;
   border-radius: 10px;
