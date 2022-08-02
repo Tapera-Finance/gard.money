@@ -1,13 +1,11 @@
 import React, { useReducer, useState, useContext } from "react";
 import styled, { keyframes, css } from "styled-components";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 export default function LoadingOverlay({ text }) {
-  const { theme } = useContext(ThemeContext);
   return (
     <div>
-      <Backdrop darkToggle={theme === "dark"}>
-        <TextContainer darkToggle={theme === "dark"}>
+      <Backdrop>
+        <TextContainer>
           <div>
             <LoadingText>{text || "Loading..."}</LoadingText>
           </div>
@@ -18,9 +16,9 @@ export default function LoadingOverlay({ text }) {
 }
 
 const TextAnimation = keyframes`
-  0% {color: #ffffff;}
-  50% {color: #6941c6;}
-  100% {color: black;}
+  0% {color: #01d1ff;}
+  50% {color: #7c52ff;}
+  100% {color: #ff00ff;}
 `;
 
 const LoadingText = styled.text`
@@ -47,15 +45,10 @@ const Backdrop = styled.div`
 `;
 const TextContainer = styled.div`
   height: 100px;
-  background: #ffffff;
+  background: rgba(13, 18, 39);
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 25px;
   padding: 0px 40px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #484848;
-    `}
 `;

@@ -11,7 +11,6 @@ import linkIcon from "../assets/icons/link_icon.png";
 import linkIconWhite from "../assets/icons/link_icon_white.png";
 import { getWallet, getWalletInfo, updateWalletInfo } from "../wallets/wallets";
 import Table from "../components/Table";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { css } from "styled-components";
 
 function getAssets() {
@@ -47,7 +46,6 @@ export default function WalletContent() {
   const [balance, setBalance] = useState("...");
   const [rewards, setRewards] = useState("...");
   const [pendingRewards, setPendingRewards] = useState("...");
-  const { theme } = useContext(ThemeContext);
 
   useEffect(async () => {
     await updateWalletInfo();
@@ -72,7 +70,7 @@ export default function WalletContent() {
   if (!walletAddress) return <div></div>;
   return (
     <div>
-      <AccountContainer darkToggle={theme === "dark"}>
+      <AccountContainer>
         <div
           style={{
             display: "flex",
@@ -101,11 +99,7 @@ export default function WalletContent() {
             <AccountButton
               onClick={() => navigator.clipboard.writeText(getWallet().address)}
             >
-              {theme === "light" ? (
-                <img src={copyIcon} />
-              ) : (
-                <img src={copyIconDark} />
-              )}
+              <img src={copyIconDark} />
             </AccountButton>
           </div>
         </div>
@@ -130,16 +124,12 @@ export default function WalletContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText darkToggle={theme === "dark"}>
+                <LinkButtonText>
                   View Account on Algo Explorer
                 </LinkButtonText>
               </div>
               <div>
-                {theme === "light" ? (
-                  <img src={linkIcon} alt="link-icon" />
-                ) : (
-                  <img src={linkIconWhite} alt="link-icon-white" />
-                )}
+                <img src={linkIconWhite} alt="link-icon-white" />
               </div>
             </LinkButton>
           ) : (
@@ -200,16 +190,12 @@ export default function WalletContent() {
               }}
             >
               <div style={{ paddingRight: 15 }}>
-                <LinkButtonText darkToggle={theme === "dark"}>
+                <LinkButtonText>
                   View Account on Algo Explorer
                 </LinkButtonText>
               </div>
               <div>
-                {theme === "light" ? (
-                  <img src={linkIcon} alt="link-icon" />
-                ) : (
-                  <img src={linkIconWhite} alt="link-icon-white" />
-                )}
+                <img src={linkIconWhite} alt="link-icon-white" />
               </div>
             </LinkButton>
           ) : (
@@ -231,15 +217,11 @@ export default function WalletContent() {
 
 // syled components for our wallet content
 const AccountContainer = styled.div`
-  background: #f4ebff;
+  background: rgba(13, 18, 39, .75);
   padding: 5vw 4vw;
   margin-bottom: 56px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
-`;
+  border-radius: 10px;
+`
 const AccountTitle = styled.text`
   font-weight: 500;
   font-size: 30px;
@@ -279,15 +261,8 @@ const LinkButton = styled.button`
 const LinkButtonText = styled.text`
   font-size: 16px;
   font-weight: 500;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
-    `}
-  ${LinkButton}:hover & {
-    text-decoration: none;
-  }
-`;
+  color: #7c52ff;
+`
 
 // dummy data for the assets table
 var dummyAssets =

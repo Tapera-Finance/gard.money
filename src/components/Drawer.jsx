@@ -24,7 +24,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { useSelector } from "react-redux";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 /**
  * Used as our main navigation
@@ -46,22 +45,6 @@ export default function Drawer({
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
 
-  const { theme } = useContext(ThemeContext);
-  const DrawerStyle = {
-    light: {
-      background: "linear-gradient(45deg, #42307d 0%, #7f56d9 100%)",
-    },
-    dark: {
-      background: "#3c3c3c",
-    },
-    common: {
-      transition: "all 1s ease",
-    },
-  };
-  const themeStyle = {
-    ...DrawerStyle.common,
-    ...(theme === "light" ? DrawerStyle.light : DrawerStyle.dark),
-  };
   return (
     <div>
       {!open ? (
@@ -77,7 +60,7 @@ export default function Drawer({
       ) : (
         <></>
       )}
-      <DrawerDiv style={themeStyle} open={open} animate={animate}>
+      <DrawerDiv open={open} animate={animate}>
         <div
           style={{
             display: "flex",
@@ -128,7 +111,7 @@ export default function Drawer({
                       displey: "flex",
                       alignItems: "center",
                       ...(selected === v.name
-                        ? { backgroundColor: "rgba(233, 236, 251, 0.3)" }
+                        ? { backgroundColor: '#172756' }
                         : {}),
                     }}
                     onClick={() => {
@@ -291,6 +274,7 @@ const closeDrawerAnimation = keyframes`
 `;
 
 const DrawerDiv = styled.div`
+  background: linear-gradient(80deg, #172756 0%, #000000 100%);
   height: 101vh;
   width: ${`${window.innerWidth < 900 ? 101 : 20}vw`};
   z-index: 15;
@@ -431,7 +415,7 @@ const NavButton = styled.button`
   cursor: pointer;
   border-radius: 6px;
   &:hover {
-    background-color: rgba(233, 236, 251, 0.3);
+    background-color: #172756;
   }
 `;
 const ButtonText = styled.text`

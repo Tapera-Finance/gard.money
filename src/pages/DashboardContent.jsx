@@ -9,7 +9,6 @@ import RadioButtonSet from "../components/RadioButtonSet";
 import moment from "moment";
 import { loadDbActionAndMetrics } from "../components/Firebase";
 import { getWalletInfo } from "../wallets/wallets";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 // get webactions and metrics data
 const dbData =
@@ -127,7 +126,6 @@ function Graph({ title }) {
   const [chainData, setChainData] = useState("");
   const [currentPrice, setCurrentPrice] = useState("");
   const [currTime, setCurrTime] = useState(new Date());
-  const { theme } = useContext(ThemeContext);
 
   useEffect(async () => {
     const chainDataResponse = await getChainData();
@@ -287,7 +285,7 @@ function Graph({ title }) {
           <Title>{title}</Title>
         </div>
         <div style={{ marginBottom: 23 }}>
-          <Subtitle darkToggle={theme === "dark"}>{subtitle}</Subtitle>
+          <Subtitle>{subtitle}</Subtitle>
         </div>
       </div>
       <div style={{ color: "black" }}>
@@ -320,12 +318,7 @@ const Title = styled.text`
 const Subtitle = styled.text`
   font-weight: normal;
   font-size: 12px;
-  color: #475467;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #8884d8;
-    `}
+  color: #8884d8;
 `;
 
 // temporal dummy data for the graphs

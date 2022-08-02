@@ -16,7 +16,6 @@ import { validatorID } from "../transactions/ids";
 import { liquidate } from "../transactions/cdp";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 let chainDataResponse;
 let cdp_data_promise = loadDefaulted();
@@ -108,7 +107,6 @@ export default function AuctionsContent() {
   const [transDebt, setTransDebt] = useState([]);
   const [canAnimate, setCanAnimate] = useState(false);
   const dispatch = useDispatch();
-  const { theme } = useContext(ThemeContext);
 
   useEffect(async () => {
     curr_price = await getCurrentAlgoUsd();
@@ -226,8 +224,8 @@ export default function AuctionsContent() {
                   : "Auction Marketplace Transaction History"}
               </Title>
             </div>
-            <CountContainer darkToggle={theme === "dark"}>
-              <CountText darkToggle={theme === "dark"}>
+            <CountContainer>
+              <CountText>
                 {selected === OPTIONS.LIVE_AUCTIONS
                   ? `${
                       open_defaulted == dummyLiveAuctions
@@ -290,7 +288,6 @@ export default function AuctionsContent() {
             ? "Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
             : "Enter the details for your bid to the right. If the discount trigger you set is reached, the transaction will be executed automatically using the GARD staked. "
         }
-        darkToggle={theme === "dark"}
       >
         {selected === OPTIONS.LIVE_AUCTIONS ? (
           <TransactionSummary
@@ -388,26 +385,16 @@ const Title = styled.text`
 `;
 
 const CountContainer = styled.div`
-  background: #f9f5ff;
+  background: #ffffff;
   border-radius: 16px;
   padding: 2px 8px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background: #404040;
-    `}
-`;
+`
 
 const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
-  color: #6941c6;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
-`;
+  color: #999696;
+`
 const InactiveRadio = styled.button`
   background-color: transparent;
   padding: 8px 18px;
@@ -459,6 +446,7 @@ const CancelButton = styled.button`
 const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
+  color: white;
 `;
 
 // dummy info for our 3 tables

@@ -22,7 +22,6 @@ import AlertOverlay from "./AlertOverlay";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { hide } from "../redux/slices/alertSlice";
-import { ThemeContext } from "../contexts/ThemeContext";
 
 async function googleStuff() {
   const script = document.createElement("script");
@@ -59,34 +58,12 @@ export default function Main(WrappedComponent, title) {
     // Google Analytics
     googleStuff();
   }, []);
+
   const dispatch = useDispatch();
   const alertData = useSelector((state) => state.alert);
 
-  //Dark theme context
-  const { theme } = useContext(ThemeContext);
-
   const body = document.querySelector("body");
-  body.style.transition = "all 1s ease";
-  theme === "dark"
-    ? (body.style.backgroundColor = "#121212")
-    : (body.style.backgroundColor = "#ffffff");
-
-  const MainStyle = {
-    light: {
-      backgroundColor: "#ffffff",
-    },
-    dark: {
-      backgroundColor: "#121212",
-      color: "white",
-    },
-    common: {
-      transition: "all 1s ease",
-    },
-  };
-  const themeStyle = {
-    ...MainStyle.common,
-    ...(theme === "light" ? MainStyle.light : MainStyle.dark),
-  };
+  body.style.backgroundColor = "#172756";
 
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
@@ -105,11 +82,7 @@ export default function Main(WrappedComponent, title) {
         toggleOpenStatus={() => setIsOpen(!isOpen)}
         allowAnimate={() => setCanAnimate(true)}
       />
-      <MainContentDiv
-        style={themeStyle}
-        canAnimate={canAnimate}
-        isOpen={isOpen}
-      >
+      <MainContentDiv canAnimate={canAnimate} isOpen={isOpen}>
         <Topbar
           contentName={title}
           setMainContent={(content) => {
@@ -160,7 +133,6 @@ export default function Main(WrappedComponent, title) {
         visible={modalVisible}
         animate={modalCanAnimate}
         close={() => setModalVisible(false)}
-        darkToggle={theme === "dark"}
       >
         <div
           style={{
@@ -172,7 +144,6 @@ export default function Main(WrappedComponent, title) {
           <ContactUsText>
             {"Please let us know via email at"}
             <Link
-              darkToggle={theme === "dark"}
               href="mailto:hello@algogard.com"
             >
               {" "}
@@ -198,6 +169,7 @@ const MainContentDiv = styled.div`
   animation-duration: 0.5s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
+  color: white;
   ${(props) => css`
     animation-direction: ${!props.isOpen ? "normal" : "reverse"};
     animation-name: ${props.canAnimate && window.innerWidth > 900
@@ -215,12 +187,7 @@ const ContactUsText = styled.text`
 const Link = styled.a`
   text-decoration: none;
   font-weight: 500;
-  color: #1849f8;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
-    `}
+  color: #7c52ff;
 `;
 
 /**

@@ -10,7 +10,6 @@ import { commitCDP, voteCDP } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
 import { cdpGen } from "../transactions/contracts";
 import Table from "../components/Table";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { loadFireStoreCDPs } from "../components/Firebase";
 import { commitmentPeriodEnd } from "../globals";
 
@@ -32,7 +31,6 @@ export default function AlgoGovernanceContent() {
   const [selectedAccount, setSelectedAccount] = useState("");
   const [maxBal, setMaxBal] = useState("");
   const dispatch = useDispatch();
-  const { theme } = useContext(ThemeContext);
   const [commitment, setCommitment] = useState(undefined);
   const [refresh, setRefresh] = useState(0);
   const [toWallet, setToWallet] = useState(false);
@@ -164,7 +162,6 @@ export default function AlgoGovernanceContent() {
             <div>
               <text>Place your vote below for </text>
               <Link
-                darkToggle={theme === "dark"}
                 href="https://governance.algorand.foundation/governance-period-3/period-3-voting-session-1"
               >
                 Governance Period #4 Voting Session #1
@@ -182,7 +179,6 @@ export default function AlgoGovernanceContent() {
           )
         }
         close={() => setModalVisible(false)}
-        darkToggle={theme === "dark"}
         animate={modalCanAnimate}
         visible={modalVisible}
       >
@@ -193,7 +189,6 @@ export default function AlgoGovernanceContent() {
                 <div style={{ marginBottom: 8 }}>
                   <h3>
                     <Link
-                      darkToggle={theme === "dark"}
                       href="https://algorand.foundation/algorand-governance-period3-voting-measure-1-defi-participation"
                       subtitle={true}
                     >
@@ -202,13 +197,12 @@ export default function AlgoGovernanceContent() {
                     Including DeFi Participants in Governance
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory darkToggle={theme === "dark"}>
+                  <InputMandatory>
                     *
                   </InputMandatory>
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    darkToggle={theme === "dark"}
                     value={measure1Vote}
                     onChange={handleChangeMeasure1}
                   >
@@ -231,7 +225,6 @@ export default function AlgoGovernanceContent() {
                 <div style={{ marginBottom: 8 }}>
                   <h3>
                     <Link
-                      darkToggle={theme === "dark"}
                       href="https://algorand.foundation/algorand-governance-period3-voting-measure-2-xgov"
                       subtitle={true}
                     >
@@ -240,13 +233,12 @@ export default function AlgoGovernanceContent() {
                     XGovs: Proposing & Upvoting Measures
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory darkToggle={theme === "dark"}>
+                  <InputMandatory>
                     *
                   </InputMandatory>
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    darkToggle={theme === "dark"}
                     value={measure2Vote}
                     onChange={handleChangeMeasure2}
                   >
@@ -296,7 +288,7 @@ export default function AlgoGovernanceContent() {
                 }}
               />
               <CancelButton style={{ marginLeft: 30 }}>
-                <CancelButtonText darkToggle={theme === "dark"}>
+                <CancelButtonText>
                   Cancel
                 </CancelButtonText>
               </CancelButton>
@@ -307,7 +299,7 @@ export default function AlgoGovernanceContent() {
             <div style={{ marginBottom: 45, marginTop: 80 }}>
               <div style={{ marginBottom: 8 }}>
                 <InputTitle>Number of Algos to Commit</InputTitle>
-                <InputMandatory darkToggle={theme === "dark"}>*</InputMandatory>
+                <InputMandatory>*</InputMandatory>
               </div>
               <div style={{ marginBottom: 16 }}>
                 <InputSubtitle>{`${maxBal} Algos from CDP #${selectedAccount} will be committed`}</InputSubtitle>
@@ -364,7 +356,7 @@ export default function AlgoGovernanceContent() {
                 }}
               />
               <CancelButton style={{ marginLeft: 30 }}>
-                <CancelButtonText darkToggle={theme === "dark"}>
+                <CancelButtonText>
                   Cancel
                 </CancelButtonText>
               </CancelButton>
@@ -398,16 +390,11 @@ const Link = styled.a`
   text-decoration: none;
   font-weight: 500;
   font-size: 14px;
-  color: #1849f8;
+  color: #7f56d9;
   ${(props) =>
     props.subtitle &&
     css`
       font-size: 17px;
-    `}
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #99b2ff;
     `}
 `;
 const InputTitle = styled.text`
@@ -435,11 +422,7 @@ const CancelButton = styled.button`
 const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: white;
-    `}
+  color: white;
 `;
 const Select = styled.select`
   width: 24.3055555555556vw;
@@ -447,22 +430,14 @@ const Select = styled.select`
   border: 1px solid #dce1e6;
   padding-left: 12px;
   box-sizing: border-box;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      background-color: #484848;
-      color: white;
-    `}
+  background-color: rgba(13, 18, 39, .75);
+  opacity: 65%;
+  color: white;
 `;
 const InputMandatory = styled.text`
   font-weight: bold;
   font-size: 16px;
-  color: #ff0000;
-  ${(props) =>
-    props.darkToggle &&
-    css`
-      color: #ff9999;
-    `}
+  color: #ff9999;
 `;
 
 // Dummy info for cdp rows
