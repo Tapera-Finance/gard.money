@@ -55,11 +55,15 @@ export default function SwapDetails() {
   const [leftDollars, setLeftDollars] = useState(0);
 
   const [receivedValue, setReceivedValue] = useState(null);
-  const [slippageTolerance, setSlippageTolerance] = useState(0.1);
   const assets = ["ALGO", "GARD"];
   const assetIds = [0, gardID];
 
   const [priceImpact, setPriceImpact] = useState(0);
+  const [liquidityFee, setLiquidityFee] = useState(0);
+  const [exchangeRate, setExchangeRate] = useState();
+  const [slippageTolerance, setSlippageTolerance] = useState(0.1);
+  const [feeRate, setFeeRate] = useState(0);
+  const [minimumReceived, setMinimumReceived] = useState(0);
 
 
   function convertToDollars(amt, idx) {
@@ -91,37 +95,32 @@ export default function SwapDetails() {
   const effects = [
     {
       title: "Price Impact",
-      func: priceImpact,
+      val: priceImpact,
       hasToolTip: false,
     },
     {
       title: "Exchange Rate",
-      func: priceImpact,
-      // func: exchangeRate,
+      val: exchangeRate,
       hasToolTip: false,
     },
     {
       title: "Liquidity Fee",
-      func: priceImpact,
-      // func: liquidityFee,
+      val: liquidityFee,
       hasToolTip: true,
     },
     {
       title: "Slippage Tolerance",
-      func: priceImpact,
-      // func: slippageTolerance,
+      val: slippageTolerance,
       hasToolTip: true,
     },
     {
       title: "Fee Rate",
-      func: priceImpact,
-      // func: feeRate,
+      val: feeRate,
       hasToolTip: true,
     },
     {
       title: "Minimum Recieved",
-      func: priceImpact,
-      // func: minimumReceived,
+      val: minimumReceived,
       hasToolTip: false,
     },
   ];
@@ -261,21 +260,21 @@ export default function SwapDetails() {
         </ExchangeFields>
       </ExchangeBar>
       <DetailsContainer>
+        <Details>
         {effects.length > 0
-          ? effects.map((item) => {
-              <Effect
+          ? effects.map((item, idx) => {
+              return(<Effect
                 title={item.title}
-                func={item.func}
+                key={idx}
+                val={item.val}
                 hasToolTip={item.hasToolTip}
-              />;
+              />);
             })
           : null}
-        <SlippageField value={slippageTolerance}></SlippageField>
+          </Details>
+        {/* <SlippageField value={slippageTolerance}></SlippageField> */}
       </DetailsContainer>
 
-      {/* <TestButton onClick={() => {
-              console.log("variables", testObj)
-            }} >Click me!!</TestButton> */}
     </div>
   );
 }
@@ -310,11 +309,27 @@ const DetailsContainer = styled.div`
   display: flex;
   flex-direction: row;
   flex: 2;
-  justify-content: space-between;
+  justify-content: center;
   width: 80%;
+  height: 30vh;
   background: #0d1227;
   opacity: 65%;
+  border-radius: 10px;
+  margin: auto;
+  margin-top: 30px;
 `;
+
+const Details = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 50%);
+  padding-top: 30;
+  padding-bottom: 30;
+  border-radius: 10px;
+  width: 50%;
+  margin: auto;
+  justify-content: space-around;
+  align-items: flex-start;
+`
 
 const TestButton = styled.button`
   appearance: none;
@@ -348,6 +363,7 @@ const ExchangeBar = styled.div`
   flex-direction: row;
   flex: 3;
   justify-content: space-between;
+  margin: auto;
 `;
 
 const ExchangeFields = styled(ExchangeField)`
