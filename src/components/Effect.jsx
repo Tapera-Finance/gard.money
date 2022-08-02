@@ -5,9 +5,14 @@ import styled, {css} from "styled-components";
 
 export default function Effect({title, val,  hasToolTip}) {
  return (
-    <div>
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      flexDirection: "column",
+      alignItems: "center"
+    }} >
       {hasToolTip ? (
-        <ToolTip toolTip={title} toolTipText={tips[title]}></ToolTip>
+        <NewToolTip toolTip={title} toolTipText={tips[title]}></NewToolTip>
       ) : (
         <Text>{title}</Text>
       )}
@@ -17,8 +22,17 @@ export default function Effect({title, val,  hasToolTip}) {
 }
 
 const Text = styled.text`
-
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  margin: auto;
+  color: #ffffff;
 `
 const Result = styled.text`
-
+  color: #999696;
+`
+const NewToolTip = styled(ToolTip)`
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  margin: auto;
+  color: #ffffff;
 `
