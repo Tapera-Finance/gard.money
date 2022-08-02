@@ -24,8 +24,6 @@ export default function Effect({title, val,  hasToolTip}) {
 const Text = styled.text`
   text-decoration: underline;
   text-decoration-style: dotted;
-
-  /* width: max-content; */
   margin: auto;
   color: #ffffff;
 `
