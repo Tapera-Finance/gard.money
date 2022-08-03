@@ -6,16 +6,8 @@ export default function Details({ className, details }) {
   return (
     <Container
       className={className}
-      style={{
-        paddingTop: 30,
-        paddingBottom: 30,
-        borderRadius: 10
-      }}
     >
       <Items
-      style={{
-        rowGap: 30,
-      }}
       >
         {details.length && details.length > 0 ?
         details.map((d) => {
@@ -34,15 +26,15 @@ export default function Details({ className, details }) {
 
 const Container = styled.div`
   background: rgba(13, 18, 39, 0.75);
-  padding-top: 30;
-  padding-bottom: 30;
-  border-radius: 10;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  border-radius: 10px;
 `;
 
 const Items = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 20%);
-    row-gap: 30;
+    row-gap: 30px;
     justify-content: center;
 `
 
