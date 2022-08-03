@@ -20,6 +20,7 @@ import { commitmentPeriodEnd } from "../globals";
 import InputContainer from "../components/InputContainer";
 import RewardNotice from "../components/RewardNotice";
 import Details from "../components/Details";
+import Positions from "../components/Positions";
 
 
 function displayRatio() {
@@ -63,6 +64,17 @@ function getCollateral() {
 }
 
 export default function BorrowContent(){
+    const [balance, setBalance] = useState("...");
+    const [price, setPrice] = useState(0);
+
+
+    useEffect(async () => {
+        setPrice(await getPrice());
+        await updateWalletInfo();
+        getWallet();
+        setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+    }, []);
+
     var details = [
         {
             title: "Collateral",
@@ -112,12 +124,11 @@ export default function BorrowContent(){
         estimatedRewards={"12% - 33% APR Rewards"}
         action={"Borrow ALGO to Claim Rewards"}
         />
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-        }}>
-            <InputContainer/>
-            <Details className={"borrow"} details={details}/>
-        </div>
+        <InputContainer 
+        balance={balance} 
+        price={price}
+        />
+        <Details className={"borrow"} details={details}/>
+        <Positions/>
     </div>
 }
