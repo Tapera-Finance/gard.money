@@ -6,10 +6,10 @@ import styled, { css } from "styled-components";
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled }) {
+export default function PrimaryButton({ text, onClick, variant, disabled, positioned }) {
 
   return (
-    <Button variant={variant} disabled={disabled}  onClick={() => onClick()}>
+    <Button variant={variant} disabled={disabled} positioned={positioned}  onClick={() => onClick()}>
       <ButtonText variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
@@ -18,7 +18,7 @@ export default function PrimaryButton({ text, onClick, variant, disabled }) {
 }
 
 const Button = styled.button`
-  background-color: #6941c6;
+  background-color: transparent;
   border: 1px solid #ffffff;
   padding: 8px 18px;
   display: flex;
@@ -33,16 +33,25 @@ const Button = styled.button`
     props.variant &&
     css`
       background-color: transparent;
-      border: 1px solid #6941c6;
+      border: 1px solid white;
       &:hover {
         background-color: #6941c6;
       }
     `}
   ${(props) =>
+    props.positioned &&
+    css`
+      position: relative;
+      bottom: 20px;
+      margin: auto;
+      background-color: #6941c6;
+      border: none;
+    `}
+  ${(props) =>
     props.disabled &&
     css`
-      border: 1px solid #999999;
-      background-color: #cccccc;
+      border: none;
+      background-color: #999999;
       pointer-events: none;
     `}
 `;
@@ -53,14 +62,4 @@ const ButtonText = styled.text`
   ${Button}:hover & {
     color: #ffffff;
   }
-  ${(props) =>
-    props.variant &&
-    css`
-      color: #6941c6;
-    `}
-  ${(props) =>
-    props.disabled &&
-    css`
-      color: #666666;
-    `}
 `;
