@@ -17,85 +17,107 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
+import InputContainer from "../components/InputContainer";
+import RewardNotice from "../components/RewardNotice";
+import Details from "../components/Details";
+
+
+function displayRatio() {
+  return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
+}
+
+function mAlgosToAlgos(num) {
+  return num / 1000000;
+}
+function algosToMAlgos(num) {
+  return num * 1000000;
+}
+
+function displayFees() {
+  const fees = mAlgosToAlgos(calcDevFees(algosToMAlgos(getMinted())));
+  return fees + " Algos";
+}
+
+function displayLiquidationPrice() {
+  return "$" + ((1.15 * getMinted()) / getCollateral()).toFixed(4);
+}
+
+function getMinted() {
+  if (
+    document.getElementById("minted") == null ||
+    isNaN(parseFloat(document.getElementById("minted").value))
+  ) {
+    return null;
+  }
+  return parseFloat(document.getElementById("minted").value);
+}
+
+function getCollateral() {
+  if (
+    document.getElementById("collateral") == null ||
+    isNaN(parseFloat(document.getElementById("collateral").value))
+  ) {
+    return null;
+  }
+  return parseFloat(document.getElementById("collateral").value);
+}
 
 export default function BorrowContent(){
+    var details = [
+        {
+            title: "Collateral",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Received DAI",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Liquidation Price",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Received DAI",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "ETH exposure",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Stability Fee",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Liquidation ratio",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "DAI avaible from ETH",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+    ]
     return <div>
-        <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            background: "#80deff",
-            borderRadius: 10,
-            color: "#172756",
-            paddingTop: 10,
-            paddingBottom: 10,
-            paddingLeft: 20,
-            paddingRight: 20,
-        }}>
-            <div>
-                <div>Governance Rewards</div>
-                <div>Now - October 22, 2022</div>
-            </div>
-            <div>
-                12% - 33% APR Rewards
-            </div>
-            <div>
-                Borrow ALGO to Claim Rewards
-            </div>
-        </div>
+        <RewardNotice 
+        program={"Governance Rewards"} 
+        timespan={"Now - October 22, 2022"}
+        estimatedRewards={"12% - 33% APR Rewards"}
+        action={"Borrow ALGO to Claim Rewards"}
+        />
         <div style={{
             display: "flex",
             flexDirection: "column",
         }}>
-            <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 50%)",
-            }}>
-                <div>Supply ALGO</div>
-                <div>Borrow GARD</div>
-            </div>
-            <div style={{
-                display: "grid",
-                gridTemplateColumns:"repeat(4, 20%)", 
-                rowGap: 30, 
-                justifyContent: "center",
-                background: "rgba(13, 18, 39, .75)",
-                paddingTop: 30,
-                paddingBottom: 30,
-                borderRadius: 10}}>
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <div>Collateral</div>
-                    <div>0.05%</div>
-                </div>
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <div>Recieved DAI</div>
-                    <div>0.00%</div>
-                </div>
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <div>Liquidation Price</div>
-                    <div>0.00%</div>
-                </div>
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <div>Received DAI</div>
-                    <div>0.00%</div>
-                </div>
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <div>ETH exposure</div>
-                    <div>0.05%</div>
-                </div>
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <div>Stability Fee</div>
-                    <div>0.00%</div>
-                </div>
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <div>Liquidation ratio</div>
-                    <div>0.00%</div>
-                </div>
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <div>DAI avaible from ETH</div>
-                    <div>0.00%</div>
-                </div>
-            </div>
+            <InputContainer/>
+            <Details className={"borrow"} details={details}/>
         </div>
     </div>
 }

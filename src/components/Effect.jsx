@@ -3,16 +3,17 @@ import ToolTip from "./ToolTip";
 import * as tips from "../assets/tooltiptext";
 import styled, {css} from "styled-components";
 
-export default function Effect({title, val,  hasToolTip}) {
+export default function Effect({title, val, hasToolTip}) {
  return (
     <div style={{
       display: "flex",
       justifyContent: "space-between",
       flexDirection: "column",
-      alignItems: "center"
     }} >
       {hasToolTip ? (
-        <NewToolTip toolTip={title} toolTipText={tips[title]}></NewToolTip>
+        <div style={{paddingBottom:8}}>
+          <NewToolTip toolTip={title} toolTipText={tips[title]}></NewToolTip>
+        </div>
       ) : (
         <Text>{title}</Text>
       )}

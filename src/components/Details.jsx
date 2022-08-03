@@ -6,13 +6,21 @@ export default function Details({ className, details }) {
   return (
     <Container
       className={className}
+      style={{
+        paddingTop: 30,
+        paddingBottom: 30,
+        borderRadius: 10
+      }}
     >
       <Items
+      style={{
+        rowGap: 30,
+      }}
       >
         {details.length && details.length > 0 ?
         details.map((d) => {
             return (
-                <Item>
+                <Item key={d.title}>
                     <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
                 </Item>
             )
