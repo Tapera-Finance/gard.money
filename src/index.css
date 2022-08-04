@@ -12,3 +12,14 @@ code {
 a {
   color: #7c52ff;
 }
+
+span.MuiSlider-thumb{
+  background-color: white;
+}
+
+span.MuiSlider-rail {
+  height: 3px;
+}
+span.MuiSlider-track {
+  height: 1px;
+}
