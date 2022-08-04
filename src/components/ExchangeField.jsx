@@ -3,8 +3,7 @@ import styled, { css } from "styled-components";
 import Select from "./Select";
 import InputField from "./InputField";
 import Effect from "./Effect";
-import chevronDown from "../assets/chevron_down.png"
-
+import chevronDown from "../assets/chevron_down.png";
 
 // entire container for currency select, input field, text for displaying vals
 
@@ -19,60 +18,74 @@ export default function ExchangeField({
   ids,
   type,
   assets,
+  selectVal,
+  inputVal,
   effect,
   onOptionSelect,
   onInputChange,
 }) {
   const optionSelectRef = createRef();
-  const optionSelectRef2 = createRef()
+  const optionSelectRef2 = createRef();
   return (
     <div>
       <div>
         {type === 0 ? (
           <div>
-              <Span for={ids[0]}>You Put Up</Span>
-          <Container>
-            <SelectContainer  >
-              <ExchangeSelect id={ids[0]} options={assets} callback={onOptionSelect} ref={optionSelectRef}/>
-              <Arrow src={chevronDown} onClick={() => {
-                optionSelectRef.focus()
-              }} ></Arrow>
-            </SelectContainer>
-
-
-            <InputContainer>
-            <ExchangeInput
-              id={ids[1]}
-              type="number"
-              min={0}
-              placeholder="0.00"
-              callback={onInputChange}
-            />
-            <DollarEffect title={effect.title} val={effect.val} />
-            </InputContainer>
-          </Container>
+            <Span for={ids[0]}>You Put Up</Span>
+            <Container>
+              <SelectContainer>
+                <ExchangeSelect
+                  id={ids[0]}
+                  options={assets}
+                  value={selectVal}
+                  callback={onOptionSelect}
+                />
+                <Arrow
+                  src={chevronDown}
+                  onClick={() => {
+                    optionSelectRef.focus();
+                  }}
+                ></Arrow>
+              </SelectContainer>
+              <InputContainer>
+                <ExchangeInput
+                  id={ids[1]}
+                  placeholder="0.00"
+                  value={inputVal}
+                  callback={onInputChange}
+                />
+                <DollarEffect title="Value: " val={effect} />
+              </InputContainer>
+            </Container>
           </div>
         ) : (
           <div>
-              <Span for={ids[0]}>You'll Receive</Span>
-          <Container>
-            <SelectContainer>
-              <ExchangeSelect id={ids[0]} options={assets} callback={onOptionSelect} ref={optionSelectRef2}/>
-              <Arrow src={chevronDown} onClick={() => {
-                optionSelectRef2.current?.focus()
-              }}  ></Arrow>
-            </SelectContainer>
-            <InputContainer>
-            <ExchangeInput
-              id={ids[1]}
-              type="number"
-              min={0}
-              placeholder="0.00"
-              callback={onInputChange}
-              />
-            <DollarEffect title={effect.title} val={effect.val} />
+            <Span for={ids[0]}>You'll Receive</Span>
+            <Container>
+              <SelectContainer>
+                <ExchangeSelect
+                  id={ids[0]}
+                  options={assets}
+                  value={selectVal}
+                  callback={onOptionSelect}
+                />
+                <Arrow
+                  src={chevronDown}
+                  onClick={() => {
+                    optionSelectRef2.current?.focus();
+                  }}
+                ></Arrow>
+              </SelectContainer>
+              <InputContainer>
+                <ExchangeInput
+                  id={ids[1]}
+                  placeholder="0.00"
+                  value={inputVal}
+                  callback={onInputChange}
+                />
+                <DollarEffect title="Value: " val={effect} />
               </InputContainer>
-          </Container>
+            </Container>
           </div>
         )}
       </div>
@@ -95,18 +108,17 @@ const InputTitle = styled.text`
 
 const DollarEffect = styled(Effect)`
   color: #999696;
-  scale: .8;
+  scale: 0.8;
   display: unset;
   flex-direction: initial;
-
-`
+`;
 
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-`
+`;
 
 const ExchangeInput = styled(InputField)`
   width: 8vw;
@@ -141,12 +153,14 @@ const SelectContainer = styled.div`
     img:only-of-type {
       color: #ffffff;
       transform: unset;
-      filter: sepia(0%) saturate(7430%) hue-rotate(104deg) brightness(118%) contrast(88%);
+      filter: sepia(0%) saturate(7430%) hue-rotate(104deg) brightness(118%)
+        contrast(88%);
     }
     select + img {
       color: #ffffff;
       transform: unset;
-      filter: sepia(0%) saturate(7430%) hue-rotate(104deg) brightness(118%) contrast(88%);
+      filter: sepia(0%) saturate(7430%) hue-rotate(104deg) brightness(118%)
+        contrast(88%);
     }
   }
 `;
@@ -167,7 +181,7 @@ const ExchangeSelect = styled(Select)`
     color: #ffffff;
     /* border: 1px solid #01d1ff; */
   }
-`
+`;
 
 const Span = styled.label`
   font-size: 10px;
@@ -180,7 +194,7 @@ const Span = styled.label`
 const Arrow = styled.img`
   filter: invert(38%) sepia(82%) saturate(1518%) hue-rotate(181deg)
     brightness(104%) contrast(106%);
-    transform: rotate(270deg);
+  transform: rotate(270deg);
 
   &:hover {
     color: #ffffff;

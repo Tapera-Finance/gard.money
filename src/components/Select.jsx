@@ -7,7 +7,6 @@ export default function Select({
   value,
   options,
   callback,
-  ref
 }) {
   return (
     <Dropdown
@@ -15,7 +14,6 @@ export default function Select({
       className={className}
       value={value}
       onChange={callback}
-      ref={ref}
     >
       <option value="" selected disabled hidden>Select</option>
       {options.length > 0 ? (

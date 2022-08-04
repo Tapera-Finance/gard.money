@@ -33,6 +33,8 @@ const slippageTolerance = 0.005;
 
 export default function SwapDetails() {
   const [totals, setTotals] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [waitingText, setWaitingText] = useState("fetching...");
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState(1);
   const [algoToGardRatio, setAlgoToGardRatio] = useState("Loading...");
@@ -69,10 +71,10 @@ export default function SwapDetails() {
   const [feeRate, setFeeRate] = useState(0);
   const [minimumReceived, setMinimumReceived] = useState(0);
 
-  const leftSelectEl = document.querySelector("#left-select")
-  const rightSelectEl = document.querySelector("#right-select")
-  const leftInputField = document.querySelector("#left-input")
-  const rightInputField = document.querySelector("#right-input")
+  const leftSelectEl = document.querySelector("#left-select");
+  const rightSelectEl = document.querySelector("#right-select");
+  const leftInputField = document.querySelector("#left-input");
+  const rightInputField = document.querySelector("#right-input");
 
   const effects = [
     {
@@ -112,30 +114,30 @@ export default function SwapDetails() {
       leftEl: leftSelectEl,
       leftVal: leftSelectVal,
       rightEl: rightSelectEl,
-      rightVal: rightSelectVal
+      rightVal: rightSelectVal,
     },
     inputs: {
       leftField: leftInputField,
       leftVal: leftInputAmt,
       rightField: rightInputField,
-      rightVal: rightInputAmt
+      rightVal: rightInputAmt,
     },
     appState: {
       assetA: {
         type: assetAtype,
         total: assetAtotal,
-        id: assetAid
+        id: assetAid,
       },
       assetB: {
         type: assetBtype,
         total: assetBtotal,
-        id: assetBid
+        id: assetBid,
       },
       swapEffect: swapEffect,
       algoToGardRatio: algoToGardRatio,
-      pool: gardpool
-    }
-  }
+      pool: gardpool,
+    },
+  };
 
   function convertToDollars(amt, idx) {
     let result = formatToDollars(amt * prices[idx]);
@@ -153,7 +155,6 @@ export default function SwapDetails() {
     id: assetBid,
   };
 
-
   function handleSwapButton() {
     console.log("flip");
     console.log("asset type A", assetAtype);
@@ -162,43 +163,69 @@ export default function SwapDetails() {
     setLeft(right);
   }
 
-  function handleSelect(e) {
+  function handleLeftSelect(e) {
     if (e.target.value === "") {
-      return
+      return;
     }
-    if (e.target.id === "left-select") {
-      setLeftSelectVal(e.target.value);
-    }
-    if (e.target.id === "right-select") {
-      setRightSelectVal(e.target.value);
-    }
-
+    setLeftSelectVal(e.target.value);
+    setRightSelectVal(leftSelectVal);
   }
 
-  function handleInput(e) {
-    if (e.target.id === "left-input") {
-      if (e.target.value === 0 || e.target.value === "") {
-        rightInputField.value.replace(/./, "0.00")
-      }
-      setLeftInputAmt(e.target.value);
+  function handleRightSelect(e) {
+    if (e.target.value === "") {
+      return;
     }
-    if (e.target.id === "right-input") {
-      if (e.target.value === 0 || e.target.value === "") {
-        setLeftInputAmt(0)
-      }
-      setRightInputAmt(e.target.value);
+    setRightSelectVal(e.target.value);
+    setLeftSelectVal(rightSelectVal);
+  }
+
+  async function handleLeftInput(e) {
+    if (e.target.value === 0 || e.target.value === "") {
+      setRightInputAmt(0);
     }
-    console.log("variables: ", variableViewer)
+    let newRight = await processSwap(assetA, assetB, {
+      swapTo: rightSelectVal === assetB.type ? assetB : assetA,
+    });
+    setLoading(true);
+    if (newRight.calcResult) {
+      setRightInputAmt(parseFloat(newRight.calcResult));
+      setSwapEffect(newRight.pactResult);
+      setLoading(false);
+    }
+    console.log("variables: ", variableViewer);
+  }
+
+  async function handleRightInput(e) {
+    if (e.target.value === 0 || e.target.value === "") {
+      setLeftInputAmt(0);
+    }
+    let newLeft = await processSwap(assetA, assetB, {
+      swapTo: leftSelectVal === assetA.type ? assetA : assetB,
+    });
+    setLoading(true);
+    if (newLeft.calcResult) {
+      setLeftInputAmt(parseFloat(newLeft.calcResult));
+      setSwapEffect(newLeft.pactResult);
+      setLoading(false);
+    }
+    console.log("variables: ", variableViewer);
   }
 
   useEffect(() => {
-    if (leftSelectEl && leftSelectEl.value === assetAtype) {
-      rightSelectEl.value = assetBtype
+    assetA.amount = assetAtotal;
+  }, [assetAtotal]);
+
+  useEffect(() => {
+    assetB.amount = assetBtotal;
+  }, [assetBtotal]);
+
+  useEffect(() => {
+    if (!loading) {
+      setWaitingText("");
+    } else {
+      setWaitingText("fetching...");
     }
-    if (rightSelectEl && rightSelectEl.value === assetAtype) {
-      leftSelectEl.value = assetBtype
-    }
-  }, [])
+  }, [loading]);
 
   // fetch ratio
   useEffect(async () => {
@@ -212,86 +239,25 @@ export default function SwapDetails() {
     }
   }, [algoToGardRatio]);
 
-  // set amounts when select changes
-  useEffect(() => {
-    if (leftSelectVal === assetAtype) {
-      setAssetAtotal(leftInputAmt);
-    } else {
-      setAssetBtotal(leftSelectVal);
-    }
-  }, [leftSelectVal]);
-
-  useEffect(() => {
-    if (rightSelectVal === assetAtype) {
-      setAssetAtotal(rightInputAmt);
-    } else {
-      setAssetBtotal(rightInputAmt);
-    }
-  }, [rightSelectVal]);
-
   // set asset amounts to be input amounts
 
   useEffect(() => {
     if (leftSelectVal === assetAtype) {
-      setAssetAtotal(leftInputAmt)
-    }
-    if (leftSelectVal === assetBtype) {
-      setAssetBtotal(leftInputAmt)
+      setAssetAtotal(leftInputAmt);
+    } else if (leftSelectVal === assetBtype) {
+      setAssetBtotal(leftInputAmt);
     }
   }, [leftInputAmt]);
 
   useEffect(() => {
     if (rightSelectVal === assetAtype) {
-      setAssetAtotal(rightInputAmt)
-    }
-    if (rightSelectVal === assetBtype) {
-      setAssetBtotal(rightInputAmt)
+      setAssetAtotal(rightInputAmt);
+    } else if (rightSelectVal === assetBtype) {
+      setAssetBtotal(rightInputAmt);
     }
   }, [rightInputAmt]);
 
-
-
-
   // preview swap when asset amounts are recorded
-  useEffect(async () => {
-    let ef;
-    assetA.amount = assetAtotal;
-    assetB.amount = assetBtotal;
-    if (leftSelectVal === assetAtype) {
-      ef = await processSwap(assetA, assetB, {
-        swapTo: assetB,
-        slippageTolerance: 0,
-      });
-    }
-    if (leftSelectVal === assetBtype) {
-      ef = await processSwap(assetA, assetB, {
-        swapTo: assetA,
-        slippageTolerance: 0,
-      });
-    }
-    console.log(ef);
-    setSwapEffect(ef);
-  }, [assetAtotal])
-
-  useEffect(async () => {
-    let ef;
-    assetA.amount = assetAtotal;
-    assetB.amount = assetBtotal;
-    if (leftSelectVal === assetAtype) {
-      ef = await processSwap(assetA, assetB, {
-        swapTo: assetB,
-        slippageTolerance: 0,
-      });
-    }
-    if (leftSelectVal === assetBtype) {
-      ef = await processSwap(assetA, assetB, {
-        swapTo: assetA,
-        slippageTolerance: 0,
-      });
-    }
-    console.log(ef);
-    setSwapEffect(ef);
-  }, [assetBtotal])
 
   // convert to dollars when inputs change
   useEffect(() => {
@@ -305,58 +271,8 @@ export default function SwapDetails() {
   }, [rightInputAmt]);
 
   useEffect(() => {
-    console.log("swap effect has been altered", swapEffect)
-    if (swapEffect !== null && swapEffect.calcResult !== undefined) {
-      setRightInputAmt(parseFloat(swapEffect.calcResult))
-      rightInputField.value = swapEffect.calcResult
-    }
-    if (swapEffect !== null && parseFloat(swapEffect.calcResult) === 0) {
-      setRightInputAmt(0)
-      rightInputField.value = 0;
-    }
+    // do something with swap effect
   }, [swapEffect]);
-
-
-
-
-
-  // function handleSwap(e) {
-  //   const leftSelect = document.querySelector("#left-select");
-  //   const rightSelect = document.querySelector("#right-select");
-  //   setAssetAtype(leftSelect.value);
-  //   setAssetBtype(rightSelect.value);
-  // }
-
-    // let res = convertToDollars(rightInputAmt)
-    // console.log(res);
-    // if (leftSelect.value !== rightSelect.value) {
-    //   // either use pact swap function to set swap effect
-    //   // or use estimateReturn to set the inputs, pact swap
-    //   // to set pact swap anyway async -> front end preview uses
-    //   // local function updated live via interval and query blockchain
-    //   // or
-    //   const assetA = {
-    //     type: assetAtype,
-    //     amount: assetAtotal,
-    //     id: assetAtype === assets[0] ? assetIds[0] : assetIds[1],
-    //   };
-    //   const assetB = {
-    //     type: assetBtype,
-    //     amount: assetBtotal,
-    //     id: assetBtype === assets[1] ? assetIds[1] : assetIds[0],
-    //   };
-    //   const params = {
-    //     swapTo: rightSelect.value === assets[1] ? assets[1] : assets[0],
-    //     slippageTolerance: slippageTolerance,
-    //   };
-    //   // const effect1 = await previewPoolSwap(leftSelect.value, e.target.)
-    //   const effect = await processSwap(assetA, assetB, params);
-    //   setSwapEffect(effect);
-    // }
-
-
-  // state update of estimated return
-  // wallet info effect
 
   useEffect(() => {
     let balX = mAlgosToAlgos(getWalletInfo().amount);
@@ -364,16 +280,6 @@ export default function SwapDetails() {
     setBalanceX(balX);
     setBalanceY(balY);
   }, []);
-
-  const testObj = {
-    algoGardRatio: algoToGardRatio,
-    totals: totals,
-    balanceX: balanceX,
-    balanceY: balanceY,
-    assets: assets,
-    allpools: allpools,
-    gardpool: gardpool,
-  };
 
   return (
     <div>
@@ -383,15 +289,14 @@ export default function SwapDetails() {
           ids={["left-select", "left-input"]}
           type={left}
           assets={assets}
-          effect={{ title: "$Value: ", val: leftDollars }}
-          onOptionSelect={handleSelect}
-          onInputChange={handleInput}
-          balances={[balanceX, balanceY]}
-          totals={totals}
+          selectVal={leftSelectVal}
+          inputVal={leftInputAmt}
+          effect={leftDollars}
+          onOptionSelect={handleLeftSelect}
+          onInputChange={handleLeftInput}
+          // balances={[balanceX, balanceY]}
+          // totals={totals}
         ></ExchangeFields>
-        {/* <TestInput
-                  onChange={handleSwap}
-                ></TestInput> */}
         <div
           style={{
             display: "flex",
@@ -406,11 +311,13 @@ export default function SwapDetails() {
           ids={["right-select", "right-input"]}
           type={right}
           assets={assets}
-          effect={{ title: "$Value: ", val: rightDollars }}
-          onOptionSelect={handleSelect}
-          onInputChange={handleInput}
-          balances={[balanceX, balanceY]}
-          totals={totals}
+          selectVal={rightSelectVal}
+          inputVal={rightInputAmt}
+          effect={rightDollars}
+          onOptionSelect={handleRightSelect}
+          onInputChange={handleRightInput}
+          // balances={[balanceX, balanceY]}
+          // totals={totals}
         ></ExchangeFields>
       </ExchangeBar>
       <DetailsContainer>
@@ -428,24 +335,12 @@ export default function SwapDetails() {
               })
             : null}
         </Details>
-        {/* <SlippageField value={slippageTolerance}></SlippageField> */}
       </DetailsContainer>
     </div>
   );
 }
 
 const InputTitle = styled.text``;
-
-const TestInput = styled.input`
-  appearance: none;
-  background: #0d1227;
-  text-decoration: underline;
-  color: #999696;
-  width: 16vw;
-  height: 6vh;
-  border: 1px transparent;
-  opacity: 65%;
-`;
 
 const SlippageField = styled(InputField)`
   appearance: none;
@@ -484,33 +379,6 @@ const Details = styled.div`
   align-items: flex-start;
 `;
 
-const TestButton = styled.button`
-  appearance: none;
-  background: fuchsia;
-  border: linear-gradient(
-      217deg,
-      rgba(255, 0, 0, 0.8),
-      rgba(255, 0, 0, 0) 70.71%
-    ),
-    linear-gradient(127deg, rgba(0, 255, 0, 0.8), rgba(0, 255, 0, 0) 70.71%),
-    linear-gradient(336deg, #392fff, rgba(0, 0, 255, 0) 70.71%);
-  color: #2fe7ff;
-  text-decoration: dashed;
-  animation-duration: 2s;
-  animation-name: bounce;
-
-  @keyframes bounce {
-    from {
-      margin-left: 100%;
-      width: 300%;
-    }
-    to {
-      margin-left: 0%;
-      width: 100%;
-    }
-  }
-`;
-
 const ExchangeBar = styled.div`
   display: flex;
   flex-direction: row;
@@ -527,14 +395,7 @@ const ExchangeFields = styled(ExchangeField)`
 const SwapButton = styled.img`
   max-width: 75px;
   max-height: 75px;
-  /* background-color: #019fff;
-
-    padding: 8px 18px;
-    display: flex;
-    justify-content: center;
-    align-items: center; */
   cursor: pointer;
-  /* border-radius: 30px; */
   &:hover {
     transform: rotate(180deg);
   }
@@ -645,4 +506,36 @@ const SwapButton = styled.img`
   setModalVisible(true);
 }
 
+ */
+
+/**
+ * unused effect hooks
+ useEffect(() => {
+   if (leftSelectVal === assetAtype) {
+     setAssetAtotal(leftInputAmt);
+   } else {
+     setAssetBtotal(leftSelectVal);
+   }
+ }, [leftSelectVal]);
+
+ useEffect(() => {
+   if (rightSelectVal === assetAtype) {
+     setAssetAtotal(rightInputAmt);
+   } else {
+     setAssetBtotal(rightInputAmt);
+   }
+ }, [rightSelectVal]);
+
+
+ test data ->
+
+   const testObj = {
+    algoGardRatio: algoToGardRatio,
+    totals: totals,
+    balanceX: balanceX,
+    balanceY: balanceY,
+    assets: assets,
+    allpools: allpools,
+    gardpool: gardpool,
+  };
  */
