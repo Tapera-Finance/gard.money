@@ -213,6 +213,9 @@ export default function Topbar({ contentName, setMainContent }) {
           </SimplePressable>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ paddingRight: 20 }}>
+            <ALGOPrice />
+          </div>
           <div>
             <PrimaryButton
               variant={walletAddress}
