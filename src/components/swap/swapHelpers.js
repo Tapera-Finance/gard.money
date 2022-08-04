@@ -5,6 +5,7 @@ import {
   getPools,
 } from "../../transactions/swap";
 import pactsdk from "@pactfi/pactsdk";
+import { gardID } from "../../transactions/ids";
 
 export const mAlgosToAlgos = (num) => {
   return num / 1000000;
@@ -60,15 +61,21 @@ export function calcTransResult(amount, totalX, totalY, slippageTolerance) {
 
 export async function processSwap(assetA, assetB, params) {
   const pools = await getPools();
+  let poolToUse;
 
+  if (assetA.id === 0 && assetB.id === gardID || assetA.id === gardID && assetB.id === 0) {
+    poolToUse = gardpool
+  }
 
   const { swapTo, slippageTolerance } = params;
   const from = swapTo.type === assetA.type ? assetB : assetA;
 
+
+
   const calcResult = calcTransResult(
     from.amount,
-    pools[swapTo.id],
-    pools[from.id],
+    parseFloat(poolToUse.state.totalPrimary),
+    parseFloat(poolToUse.state.totalSecondary),
     slippageTolerance,
   );
 
@@ -85,4 +92,4 @@ export async function processSwap(assetA, assetB, params) {
     calcResult: calcResult,
     pactResult: pactResult,
   };
-}
+  }

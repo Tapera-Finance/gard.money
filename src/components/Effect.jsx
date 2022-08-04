@@ -3,23 +3,25 @@ import ToolTip from "./ToolTip";
 import * as tips from "../assets/tooltiptext";
 import styled, {css} from "styled-components";
 
-export default function Effect({title, val,  hasToolTip}) {
+export default function Effect({title, val,  hasToolTip, className}) {
  return (
-    <div style={{
-      display: "flex",
-      justifyContent: "space-between",
-      flexDirection: "column",
-      alignItems: "center"
-    }} >
+    <EffectContainer  className={className}>
       {hasToolTip ? (
-        <NewToolTip toolTip={title} toolTipText={tips[title]}></NewToolTip>
+        <NewToolTip className={className} toolTip={title} toolTipText={tips[title]}></NewToolTip>
       ) : (
-        <Text>{title}</Text>
+        <Text className={className}>{title}</Text>
       )}
-      <Result>{val}</Result>
-    </div>
+      <Result className={className}>{val}</Result>
+    </EffectContainer>
   );
 }
+
+const EffectContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+`
 
 const Text = styled.text`
   text-decoration: underline;

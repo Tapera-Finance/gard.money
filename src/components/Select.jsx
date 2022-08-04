@@ -3,16 +3,21 @@ import styled, { css } from "styled-components";
 
 export default function Select({
   id,
+  className,
   value,
   options,
   callback,
+  ref
 }) {
   return (
     <Dropdown
       id={id}
+      className={className}
       value={value}
       onChange={callback}
+      ref={ref}
     >
+      <option value="" selected disabled hidden>Select</option>
       {options.length > 0 ? (
         options.map((opt, idx) => {
           return <option key={idx}>{opt}</option>;
@@ -25,7 +30,7 @@ export default function Select({
 }
 
 const Dropdown = styled.select`
-  background: #0d1227;
+  background: #0d122713;
   color: #01d1ff;
   border: 1px transparent;
   border-radius: 4px;
@@ -40,6 +45,6 @@ const Dropdown = styled.select`
   width: max-content;
   height: max-content;
   padding: 5px;
-  opacity: 65%;
   white-space: nowrap;
 `;
+

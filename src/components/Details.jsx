@@ -10,9 +10,9 @@ export default function Details({ className, details }) {
       <Items
       >
         {details.length && details.length > 0 ?
-        details.map((d) => {
+        details.map((d, i) => {
             return (
-                <Item>
+                <Item key={i}>
                     <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
                 </Item>
             )
