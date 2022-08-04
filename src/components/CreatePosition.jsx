@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import InputField from "../components/InputField";
+import InputField from "./InputField";
 import styled, {css} from "styled-components";
 import Effect from "./Effect";
 import ToolTip from "./ToolTip";
@@ -7,7 +7,7 @@ import PrimaryButton from "./PrimaryButton";
 
 
 
-export default function InputContainer({balance, price}){
+export default function CreatePositon({balance, price}){
     const [supplyInput, setSupplyInput] = useState(0);
     const [supplyPrice, setSupplyPrice] = useState(0);
     const [borrowInput, setBorrowInput] = useState(0);
@@ -47,15 +47,12 @@ export default function InputContainer({balance, price}){
             val: `${0.00}%`,
             hasToolTip: true,
         },];
-    return <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(2, 49%)",
-        columnGap: "2%",
-    }}>
-        <div style={{postion:"relative"}}>
-            <div style={{display: "flex", flexDirection: "column", marginTop: 30, background: "#131c44", borderRadius: 10,}}>
-                <div style={{display: "flex", justifyContent: "center", textAlign: "center", fontStyle: "center", paddingTop: 20, paddingBottom: 20, }}>Supply ALGO</div>
-                <div style={{display: "flex", flexDirection: "column", background: "rgba(13, 18, 39, .75)", borderRadius: 10,}}>
+        
+    return <Container>
+        <SubContainer>
+            <Background>
+                <Title>Supply ALGO</Title>
+                <InputContainer>
                     <div style={{display: "flex"}}>
                         <InputField id={"inputContainer"} placeholder={"enter amount"}/>
                         <MaxButton>
@@ -63,14 +60,7 @@ export default function InputContainer({balance, price}){
                         </MaxButton>
                     </div>
                     <Valuation>$Value: ${(supplyInput * supplyPrice).toFixed(2)}</Valuation>
-                    <div style={{
-                    display: "grid",
-                    gridTemplateColumns:"repeat(3, 30%)", 
-                    rowGap: 30, 
-                    justifyContent: "center",
-                    paddingTop: 30,
-                    paddingBottom: 30,
-                    borderRadius: 10}}>
+                    <InputDetails>
                         {supplyDetails.length && supplyDetails.length > 0 ?
                         supplyDetails.map((d) => {
                             return (
@@ -81,15 +71,15 @@ export default function InputContainer({balance, price}){
                         })
                         : null
         }
-                    </div>
-                </div>
-            </div>
+                    </InputDetails>
+                </InputContainer>
+            </Background>
             <PrimaryButton positioned={true} text="Supply"/>
-        </div>
-        <div style={{postion:"relative"}}>
-            <div style={{display: "flex", flexDirection: "column", marginTop: 30, background: "#131c44", borderRadius: 10,}}>
-                <div style={{display: "flex", justifyContent: "center", textAlign: "center", fontStyle: "center", paddingTop: 20, paddingBottom: 20, }}>Borrow GARD</div>
-                <div style={{display: "flex", flexDirection: "column", background: "rgba(13, 18, 39, .75)", borderRadius: 10,}}>
+        </SubContainer>
+        <SubContainer>
+            <Background>
+                <Title>Borrow GARD</Title>
+                <InputContainer>
                     <div style={{display: "flex"}}>
                         <InputField id={"inputContainer"} placeholder={"enter amount"}/>
                         <MaxButton>
@@ -97,14 +87,7 @@ export default function InputContainer({balance, price}){
                         </MaxButton>
                     </div>
                     <Valuation>$Value: ${(supplyInput * supplyPrice).toFixed(2)}</Valuation>
-                    <div style={{
-                    display: "grid",
-                    gridTemplateColumns:"repeat(3, 30%)", 
-                    rowGap: 30, 
-                    justifyContent: "center",
-                    paddingTop: 30,
-                    paddingBottom: 30,
-                    borderRadius: 10}}>
+                    <InputDetails>
                         {borrowDetails.length && borrowDetails.length > 0 ?
                         borrowDetails.map((d) => {
                             return (
@@ -115,13 +98,47 @@ export default function InputContainer({balance, price}){
                         })
                         : null
         }
-                    </div>
-                </div>
-            </div>
+                    </InputDetails>
+                </InputContainer>
+            </Background>
             <PrimaryButton positioned={true} text="Borrow" disabled={true} />
-        </div>
-    </div>
+        </SubContainer>
+    </Container>
 }
+const Container = styled.div`
+    display: grid;
+    grid-template-columns: repeat(2, 49%);
+    column-gap: 2%;
+`
+
+const SubContainer = styled.div`
+    position: relative;
+`
+const Background = styled.div`
+    margin-top: 30px;
+    background: #131c44; 
+    border-radius: 10px;
+`
+const Title = styled.div`
+    display: flex;
+    justify-content: center; 
+    text-align: center; 
+    padding: 20px 0px 20px;
+`
+
+const InputContainer = styled.div`
+    background: rgba(13, 18, 39, .75); 
+    border-radius: 10px;
+`
+
+const InputDetails = styled.div`
+display: grid;
+grid-template-columns:repeat(3, 30%); 
+row-gap: 30px; 
+justify-content: center;
+padding: 30px 0px 30px;
+border-radius: 10px;
+`
 
 const Item = styled.div`
     display: flex;

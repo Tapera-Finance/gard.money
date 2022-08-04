@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
-import InputContainer from "../components/InputContainer";
+import CreatePosition from "../components/CreatePosition";
 import RewardNotice from "../components/RewardNotice";
 import Details from "../components/Details";
 import Positions from "../components/Positions";
@@ -124,7 +124,7 @@ export default function BorrowContent(){
         estimatedRewards={"12% - 33% APR Rewards"}
         action={"Borrow ALGO to Claim Rewards"}
         />
-        <InputContainer 
+        <CreatePosition 
         balance={balance} 
         price={price}
         />
