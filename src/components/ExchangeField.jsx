@@ -24,8 +24,6 @@ export default function ExchangeField({
   onOptionSelect,
   onInputChange,
 }) {
-  const optionSelectRef = createRef();
-  const optionSelectRef2 = createRef();
   return (
     <div>
       <div>
@@ -40,12 +38,7 @@ export default function ExchangeField({
                   value={selectVal}
                   callback={onOptionSelect}
                 />
-                <Arrow
-                  src={chevronDown}
-                  onClick={() => {
-                    optionSelectRef.focus();
-                  }}
-                ></Arrow>
+                <Arrow src={chevronDown}></Arrow>
               </SelectContainer>
               <InputContainer>
                 <ExchangeInput
@@ -69,12 +62,7 @@ export default function ExchangeField({
                   value={selectVal}
                   callback={onOptionSelect}
                 />
-                <Arrow
-                  src={chevronDown}
-                  onClick={() => {
-                    optionSelectRef2.current?.focus();
-                  }}
-                ></Arrow>
+                <Arrow src={chevronDown}></Arrow>
               </SelectContainer>
               <InputContainer>
                 <ExchangeInput

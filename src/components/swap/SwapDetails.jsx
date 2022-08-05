@@ -12,7 +12,6 @@ import TransactionSummary from "../TransactionSummary";
 import Modal from "../Modal";
 import { gardID } from "../../transactions/ids";
 import { getPrice } from "../../transactions/cdp";
-const allpools = await getPools();
 
 /**
  * local utils
@@ -32,7 +31,6 @@ const pools = [defaultPool];
 const slippageTolerance = 0.005;
 
 export default function SwapDetails() {
-  const [totals, setTotals] = useState(null);
   const [loading, setLoading] = useState(false);
   const [waitingText, setWaitingText] = useState("fetching...");
   const [left, setLeft] = useState(0);
@@ -71,10 +69,8 @@ export default function SwapDetails() {
   const [feeRate, setFeeRate] = useState(0);
   const [minimumReceived, setMinimumReceived] = useState(0);
 
-  const leftSelectEl = document.querySelector("#left-select");
-  const rightSelectEl = document.querySelector("#right-select");
-  const leftInputField = document.querySelector("#left-input");
-  const rightInputField = document.querySelector("#right-input");
+  const [rightChange, setRightChange] = useState(false);
+  const [leftChange, setLeftChange] = useState(false);
 
   const effects = [
     {
@@ -111,15 +107,11 @@ export default function SwapDetails() {
 
   const variableViewer = {
     selects: {
-      leftEl: leftSelectEl,
       leftVal: leftSelectVal,
-      rightEl: rightSelectEl,
       rightVal: rightSelectVal,
     },
     inputs: {
-      leftField: leftInputField,
       leftVal: leftInputAmt,
-      rightField: rightInputField,
       rightVal: rightInputAmt,
     },
     appState: {
@@ -141,7 +133,6 @@ export default function SwapDetails() {
 
   function convertToDollars(amt, idx) {
     let result = formatToDollars(amt * prices[idx]);
-    console.log("result in convert func", result);
     return result;
   }
   const assetA = {
@@ -156,6 +147,7 @@ export default function SwapDetails() {
   };
 
   function handleSwapButton() {
+    // todo
     console.log("flip");
     console.log("asset type A", assetAtype);
     console.log("asset type B", assetBtype);
@@ -168,8 +160,8 @@ export default function SwapDetails() {
       return;
     }
     setLeftSelectVal(e.target.value);
-    setLeftInputAmt(rightInputAmt)
-    setRightInputAmt(leftInputAmt)
+    setLeftInputAmt(rightInputAmt);
+    setRightInputAmt(leftInputAmt);
     setRightSelectVal(leftSelectVal);
   }
 
@@ -178,8 +170,8 @@ export default function SwapDetails() {
       return;
     }
     setRightSelectVal(e.target.value);
-    setLeftInputAmt(leftInputAmt)
-    setRightInputAmt(rightInputAmt)
+    setLeftInputAmt(leftInputAmt);
+    setRightInputAmt(rightInputAmt);
     setLeftSelectVal(rightSelectVal);
   }
 
@@ -187,49 +179,41 @@ export default function SwapDetails() {
     e.preventDefault();
     console.log(e.target.value);
     setLeftInputAmt(e.target.value);
-
+    setLeftChange(true);
     if (leftSelectVal === assetAtype) {
       setAssetAtotal(e.target.value);
     } else if (leftSelectVal === assetBtype) {
       setAssetBtotal(e.target.value);
     }
     if (e.target.value === 0 || e.target.value === "") {
-      setRightInputAmt(0);
+      setRightInputAmt("");
+      setLeftInputAmt("");
     }
     console.log("variables: ", variableViewer);
   }
 
-  // theres an issue with the conditional logic around the select values
-  // when left is algo and right is gard, the inputs get set alternatively as they should
-  // when the user changes the select however, left calculates in place and right calculates in place
-  // right input handler focuses on what the right select is
-  // maybe the way asset totals A & B are set to go left or right is the issue
-  // the effect for the totals is not bidirectional
-  // instead of using the fact that the totals changed in the input functions
-  // create a left changed and right changed flag, so that the inputs
-  // are not tied to a or b but rather if left or right changes
-  // if left, calculate right
-  // if right, calc left
-
   function handleRightInput(e) {
-    e.preventDefault()
+    e.preventDefault();
     console.log(e.target.value);
     setRightInputAmt(e.target.value);
+    setRightChange(true);
     if (rightSelectVal === assetAtype) {
       setAssetAtotal(e.target.value);
-      // setAssetBtotal()
     } else if (rightSelectVal === assetBtype) {
       setAssetBtotal(e.target.value);
     }
 
     if (e.target.value === 0 || e.target.value === "") {
-      setLeftInputAmt(0);
+      setRightInputAmt("");
+      setLeftInputAmt("");
     }
 
     console.log("variables: ", variableViewer);
   }
 
+  // set right if left changes
   useEffect(async () => {
+    setLeftChange(false);
     assetA.amount = assetAtotal;
     assetB.amount = assetBtotal;
     let newRight = await processSwap(assetA, assetB, {
@@ -241,9 +225,11 @@ export default function SwapDetails() {
       // setSwapEffect(newLeft.pactResult);
       setLoading(false);
     }
-  }, [assetAtotal]);
+  }, [leftChange]);
 
+  // set left if right changes
   useEffect(async () => {
+    setRightChange(false);
     assetA.amount = assetAtotal;
     assetB.amount = assetBtotal;
     let newLeft = await processSwap(assetA, assetB, {
@@ -255,7 +241,7 @@ export default function SwapDetails() {
       // setSwapEffect(newRight.pactResult);
       setLoading(false);
     }
-  }, [assetBtotal]);
+  }, [rightChange]);
 
   useEffect(() => {
     if (!loading) {
@@ -276,8 +262,6 @@ export default function SwapDetails() {
       setAlgoToGardRatio(ratio);
     }
   }, [algoToGardRatio]);
-
-
 
   // convert to dollars when inputs change
   useEffect(() => {
@@ -424,6 +408,23 @@ const SwapButton = styled.img`
 // jsx for the transaction container to open on execute
 
 /**
+ *
+ * note from aug 4 - fixing conditionals
+ *
+ *   // theres an issue with the conditional logic around the select values
+  // when left is algo and right is gard, the inputs get set alternatively as they should
+  // when the user changes the select however, left calculates in place and right calculates in place
+  // right input handler focuses on what the right select is
+  // maybe the way asset totals A & B are set to go left or right is the issue
+  // the effect for the totals is not bidirectional
+  // instead of using the fact that the totals changed in the input functions
+  // create a left changed and right changed flag, so that the inputs
+  // are not tied to a or b but rather if left or right changes
+  // if left, calculate right
+  // if right, calc left
+ *
+  update ^ this worked
+
  * <div style={{ marginBottom: 50 }}>
         <TransactionContainer>
           <Modal
