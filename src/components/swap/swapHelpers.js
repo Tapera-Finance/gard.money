@@ -79,17 +79,17 @@ export async function processSwap(assetA, assetB, params) {
     slippageTolerance,
   );
 
-  const pactResult = previewPoolSwap(
-    gardpool,
-    from.id,
-    from.amount,
-    slippageTolerance,
-    true,
-  );
+  // const pactResult = previewPoolSwap(
+  //   gardpool,
+  //   from.id,
+  //   from.amount,
+  //   slippageTolerance,
+  //   true,
+  // );
   // const swap = new pactsdk.Swap()
 
   return {
     calcResult: calcResult,
-    pactResult: pactResult,
+    // pactResult: pactResult,
   };
   }

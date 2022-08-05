@@ -168,6 +168,8 @@ export default function SwapDetails() {
       return;
     }
     setLeftSelectVal(e.target.value);
+    setLeftInputAmt(rightInputAmt)
+    setRightInputAmt(leftInputAmt)
     setRightSelectVal(leftSelectVal);
   }
 
@@ -176,47 +178,83 @@ export default function SwapDetails() {
       return;
     }
     setRightSelectVal(e.target.value);
+    setLeftInputAmt(leftInputAmt)
+    setRightInputAmt(rightInputAmt)
     setLeftSelectVal(rightSelectVal);
   }
 
-  async function handleLeftInput(e) {
+  function handleLeftInput(e) {
+    e.preventDefault();
+    console.log(e.target.value);
+    setLeftInputAmt(e.target.value);
+
+    if (leftSelectVal === assetAtype) {
+      setAssetAtotal(e.target.value);
+    } else if (leftSelectVal === assetBtype) {
+      setAssetBtotal(e.target.value);
+    }
     if (e.target.value === 0 || e.target.value === "") {
       setRightInputAmt(0);
     }
+    console.log("variables: ", variableViewer);
+  }
+
+  // theres an issue with the conditional logic around the select values
+  // when left is algo and right is gard, the inputs get set alternatively as they should
+  // when the user changes the select however, left calculates in place and right calculates in place
+  // right input handler focuses on what the right select is
+  // maybe the way asset totals A & B are set to go left or right is the issue
+  // the effect for the totals is not bidirectional
+  // instead of using the fact that the totals changed in the input functions
+  // create a left changed and right changed flag, so that the inputs
+  // are not tied to a or b but rather if left or right changes
+  // if left, calculate right
+  // if right, calc left
+
+  function handleRightInput(e) {
+    e.preventDefault()
+    console.log(e.target.value);
+    setRightInputAmt(e.target.value);
+    if (rightSelectVal === assetAtype) {
+      setAssetAtotal(e.target.value);
+      // setAssetBtotal()
+    } else if (rightSelectVal === assetBtype) {
+      setAssetBtotal(e.target.value);
+    }
+
+    if (e.target.value === 0 || e.target.value === "") {
+      setLeftInputAmt(0);
+    }
+
+    console.log("variables: ", variableViewer);
+  }
+
+  useEffect(async () => {
+    assetA.amount = assetAtotal;
+    assetB.amount = assetBtotal;
     let newRight = await processSwap(assetA, assetB, {
-      swapTo: rightSelectVal === assetB.type ? assetB : assetA,
+      swapTo: rightSelectVal === assetA.type ? assetA : assetB,
     });
     setLoading(true);
     if (newRight.calcResult) {
       setRightInputAmt(parseFloat(newRight.calcResult));
-      setSwapEffect(newRight.pactResult);
+      // setSwapEffect(newLeft.pactResult);
       setLoading(false);
     }
-    console.log("variables: ", variableViewer);
-  }
+  }, [assetAtotal]);
 
-  async function handleRightInput(e) {
-    if (e.target.value === 0 || e.target.value === "") {
-      setLeftInputAmt(0);
-    }
+  useEffect(async () => {
+    assetA.amount = assetAtotal;
+    assetB.amount = assetBtotal;
     let newLeft = await processSwap(assetA, assetB, {
-      swapTo: leftSelectVal === assetA.type ? assetA : assetB,
+      swapTo: rightSelectVal === assetA.type ? assetB : assetA,
     });
     setLoading(true);
     if (newLeft.calcResult) {
       setLeftInputAmt(parseFloat(newLeft.calcResult));
-      setSwapEffect(newLeft.pactResult);
+      // setSwapEffect(newRight.pactResult);
       setLoading(false);
     }
-    console.log("variables: ", variableViewer);
-  }
-
-  useEffect(() => {
-    assetA.amount = assetAtotal;
-  }, [assetAtotal]);
-
-  useEffect(() => {
-    assetB.amount = assetBtotal;
   }, [assetBtotal]);
 
   useEffect(() => {
@@ -239,25 +277,7 @@ export default function SwapDetails() {
     }
   }, [algoToGardRatio]);
 
-  // set asset amounts to be input amounts
 
-  useEffect(() => {
-    if (leftSelectVal === assetAtype) {
-      setAssetAtotal(leftInputAmt);
-    } else if (leftSelectVal === assetBtype) {
-      setAssetBtotal(leftInputAmt);
-    }
-  }, [leftInputAmt]);
-
-  useEffect(() => {
-    if (rightSelectVal === assetAtype) {
-      setAssetAtotal(rightInputAmt);
-    } else if (rightSelectVal === assetBtype) {
-      setAssetBtotal(rightInputAmt);
-    }
-  }, [rightInputAmt]);
-
-  // preview swap when asset amounts are recorded
 
   // convert to dollars when inputs change
   useEffect(() => {

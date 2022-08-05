@@ -16,6 +16,14 @@ export default function InputField({
       placeholder={placeholder}
       value={value}
       onChange={callback}
+      onKeyPress={(event) => {
+        if (!/[0-9]/.test(event.key)) {
+          if(event.key === '.'){
+            return
+          }
+          event.preventDefault();
+        }
+      }}
     />
   );
 }
