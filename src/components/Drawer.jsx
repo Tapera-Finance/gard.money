@@ -298,7 +298,7 @@ const SocialMediaButton = styled.div`
   cursor: pointer;
 `;
 const SocialMediaIcon = styled.img`
-  height: 25px;
+  height: 30px;
   color: white;
   ${SocialMediaButton}:hover & {
     opacity: 0.5;
