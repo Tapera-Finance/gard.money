@@ -23,6 +23,7 @@ export default function ExchangeField({
   effect,
   onOptionSelect,
   onInputChange,
+  balances,
 }) {
   return (
     <div>
@@ -40,6 +41,17 @@ export default function ExchangeField({
                 />
                 <Arrow src={chevronDown}></Arrow>
               </SelectContainer>
+              <Text>{
+                // `${balances["assetA"].type}`
+              `You have
+              ${
+                balances[
+                  balances["assetA"].type === assets[0]
+                    ? ["assetA"]
+                    : ["assetB"]
+                ].amount
+              } to offer`
+              }</Text>
               <InputContainer>
                 <ExchangeInput
                   id={ids[1]}
@@ -64,6 +76,19 @@ export default function ExchangeField({
                 />
                 <Arrow src={chevronDown}></Arrow>
               </SelectContainer>
+              <Text>
+                {
+                  // `${balances}`
+                `You have
+              ${
+                balances[
+                  ["assetB"].type === assets[1]
+                    ? ["assetA"]
+                    : ["assetB"]
+                ].amount
+              } already`
+
+              }</Text>
               <InputContainer>
                 <ExchangeInput
                   id={ids[1]}
@@ -90,8 +115,9 @@ const Container = styled.div`
   border-radius: 8px;
 `;
 
-const InputTitle = styled.text`
-  /*  */
+const Text = styled.text`
+  font-size: 10pt;
+  align-self: flex-end;
 `;
 
 const DollarEffect = styled(Effect)`
