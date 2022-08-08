@@ -226,7 +226,7 @@ export default function Drawer({
               window.open("https://www.algogard.com/app-terms-of-use.html")
             }
             >
-              Terms of Service</ToS>
+              Terms & Conditions</ToS>
             <div style={{color: "white", fontSize: 12}}>|</div>
             <ToS
             onClick={() =>
