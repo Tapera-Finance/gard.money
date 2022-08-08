@@ -6,36 +6,46 @@ import {
   pactGARDID,
   pactAlgoGardPoolAddress,
 } from "./ids";
-import { accountInfo, getParams, sendTxn, signGroup, algodClient } from "../wallets/wallets";
+import { accountInfo, getParams, sendTxn, signGroup, algodClient,  handleTxError } from "../wallets/wallets";
 import { verifyOptIn } from "./cdp";
 import { updateDBWebActions } from "../components/Firebase";
-
+import { VERSION } from "../globals";
 
 
 import pactsdk from "@pactfi/pactsdk";
 import { mAlgosToAlgos, mGardToGard } from "../components/swap/swapHelpers";
 
 export const pactClient = new pactsdk.PactClient(algodClient);
+// console.log("pact client from swap.js",pactClient)
 
 // export const AGpool = await pactClient.fetchPoolsByAssets(algo, gard);
 
 export const gardpool = await pactClient.fetchPoolById(pactGARDID)
 
 export async function previewPoolSwap(pool, assetDeposited, amount, slippagePct, swapForExact) {
-    const swap = pool.prepareSwap({
-        assetDeposited: assetDeposited,
-        amount: amount,
-        slippagePct: slippagePct,
-        swapForExact: swapForExact
-    })
+  // console.log(pool, assetDeposited, amount, slippagePct , swapForExact)
+
+  // const obj = {
+  //   pool: pool, assetDeposited: assetDeposited, amount: amount, slippagePct: slippagePct , swapForExact: swapForExact
+  // }
+  // for (let key in obj) {
+  //   console.log(key, obj[key]);
+  // }
+  await pool.updateState()
+  console.log(pool.state)
+  const swap = gardpool.prepareSwap({
+    assetDeposited: assetDeposited,
+    amount: amount,
+    slippagePct: 1,
+    swapForExact: swapForExact
+  })
+
     return swap.effect
 }
 
 export async function getPools() {
     return await pactClient.listPools()
 }
-
-
 
 
 export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
@@ -61,6 +71,38 @@ export function estimateReturn(input, totalX, totalY) {
   return parseInt(receivedAmount);
 }
 
+export async function executePactSwap(assetA, assetB, params) {
+  let poolToUse;
+
+  if (assetA.id === 0 && assetB.id === gardID || assetA.id === gardID && assetB.id === 0) {
+    poolToUse = gardpool
+  }
+
+  const { swapTo, slippageTolerance } = params;
+
+  const assetAfromPool = await pactClient.fetchAsset(assetA.id)
+  const assetBfromPool = await pactClient.fetchAsset(assetB.id)
+
+  const fromAsset = swapTo.type === assetA.type ? assetBfromPool : assetAfromPool;
+  const fromAmount = swapTo.type === assetA.type ? assetB.amount : assetA.amount;
+
+
+  const pactResult = previewPoolSwap(
+    gardpool,
+    fromAsset,
+    parseFloat(fromAmount),
+    5,
+    true,
+  );
+
+  return {
+    pactResult: pactResult
+  }
+}
+
+
+
+
 /**
  * Session Helpers
  */
@@ -81,6 +123,56 @@ sessionStorage.setItem = function (key, value) {
 
 const setLoadingStage = (stage) =>
   sessionStorage.setItem("loadingStage", JSON.stringify(stage));
+
+
+export async function swap(assetA, assetB, params) {
+  const infoPromise = accountInfo();
+  const info = await infoPromise;
+  let poolToUse;
+
+  if (assetA.id === 0 && assetB.id === gardID || assetA.id === gardID && assetB.id === 0) {
+    poolToUse = gardpool
+  }
+
+  const { swapTo, slippageTolerance } = params;
+
+  const assetAfromPool = poolToUse.primaryAsset
+  const assetBfromPool = poolToUse.secondaryAsset
+
+  const fromAsset = swapTo.type === assetA.type ? assetBfromPool : assetAfromPool;
+  const fromAmount = swapTo.type === assetA.type ? parseInt(assetB.amount) : parseInt(assetA.amount);
+
+  let payload;
+  try {
+    if (VERSION !== "MAINNET") {
+      throw new Error("Unable to swap on TESTNET")
+    }
+    if (fromAsset.name === assetA.type && swapTo.type === assetB.type) {
+      payload = await swapAlgoToGard(fromAmount, // refactor this to not call hardcoded txn fn
+        parseInt(
+          1e6 *
+            parseFloat(assetB.amount.split()[0]) *
+            (1 - slippageTolerance),
+        ),
+        )
+    } else if (fromAsset.name === assetB.type && swapTo.type === assetA.type) {
+      await swapGardToAlgo(fromAmount, // refactor this to not call hardcoded txn fn
+        parseInt(
+          1e6 *
+            parseFloat(assetA.amount.split()[0]) *
+            (1 - slippageTolerance),
+        ),
+        )
+    }
+    // if (payload.alert) {
+    //   return payload.text
+    // }
+    return
+  } catch (e) {
+    handleTxError(e, "Error exchanging assets")
+  }
+}
+
 
 /**
  *

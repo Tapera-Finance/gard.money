@@ -3,6 +3,7 @@ import {
   previewPoolSwap,
   gardpool,
   getPools,
+  pactClient,
 } from "../../transactions/swap";
 import pactsdk from "@pactfi/pactsdk";
 import { gardID } from "../../transactions/ids";
@@ -21,6 +22,8 @@ export const mGardToGard = (num) => {
 
 export const targetPool = (assetNameX, assetNameY) =>
   `${assetNameX}/${assetNameY}`;
+
+export const empty = (value) => (value === 0 || value === "")
 
 /**
  * Component Helpers
@@ -59,8 +62,7 @@ export function calcTransResult(amount, totalX, totalY, slippageTolerance) {
    * also independent of what these assets are
 */
 
-export async function processSwap(assetA, assetB, params) {
-  const pools = await getPools();
+export function previewSwap(assetA, assetB, params) {
   let poolToUse;
 
   if (assetA.id === 0 && assetB.id === gardID || assetA.id === gardID && assetB.id === 0) {
@@ -79,17 +81,11 @@ export async function processSwap(assetA, assetB, params) {
     slippageTolerance,
   );
 
-  // const pactResult = previewPoolSwap(
-  //   gardpool,
-  //   from.id,
-  //   from.amount,
-  //   slippageTolerance,
-  //   true,
-  // );
-  // const swap = new pactsdk.Swap()
+
 
   return {
     calcResult: calcResult,
-    // pactResult: pactResult,
+
   };
-  }
+}
+
