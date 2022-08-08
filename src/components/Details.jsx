@@ -36,11 +36,13 @@ const Items = styled.div`
     grid-template-columns: repeat(4, 20%);
     row-gap: 30;
     justify-content: center;
+
 `
 
 const Item = styled.div`
     display: flex;
     flex-direction: column;
+    color: #ffffff;
 `
 const Text = styled.text`
     //
