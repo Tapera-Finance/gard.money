@@ -108,7 +108,7 @@ export default function Drawer({
                   <NavButton
                     style={{
                       paddingLeft: "3vw",
-                      displey: "flex",
+                      display: "flex",
                       alignItems: "center",
                       ...(selected === v.name
                         ? { backgroundColor: '#172756' }
@@ -160,93 +160,6 @@ export default function Drawer({
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-            marginTop: 10,
-          }}
-        >
-          <SocialMediaContainer
-            style={{
-              paddingTop: 8,
-              paddingBottom: 8,
-              borderTop: 0,
-            }}
-          >
-            <SocialMediaButton
-              style={{ display: "flex", alignItems: "center" }}
-              onClick={() =>
-                window.open(
-                  "https://www.youtube.com/channel/UCEVv90DTh3gRNH4YweMnBTA",
-                )
-              }
-            >
-              <SocialMediaIcon src={TutorialIcon} />
-              <div style={{ marginLeft: 5 }}>
-                <LinkText>Tutorial</LinkText>
-              </div>
-            </SocialMediaButton>
-          </SocialMediaContainer>
-          <SocialMediaContainer
-            style={{
-              paddingTop: 8,
-              justifyContent: "space-between",
-              paddingBottom: 8,
-            }}
-          >
-            <SocialMediaButton
-              onClick={() => window.open("https://twitter.com/algogard")}
-            >
-              <SocialMediaIcon src={TwitterIcon} />
-            </SocialMediaButton>
-            <SocialMediaButton
-              onClick={() => window.open("https://www.reddit.com/r/AlgoGARD")}
-            >
-              <SocialMediaIcon src={RedditIcon} />
-            </SocialMediaButton>
-            <SocialMediaButton
-              onClick={() => window.open("https://t.me/AlgoGARD")}
-            >
-              <SocialMediaIcon src={TelegramIcon} />
-            </SocialMediaButton>
-            <SocialMediaButton
-              onClick={() => window.open("https://discord.gg/y6rTK5S22a")}
-            >
-              <SocialMediaIcon src={DiscordIcon} />
-            </SocialMediaButton>
-          </SocialMediaContainer>
-          <SocialMediaContainer
-            style={{
-              paddingTop: 8,
-              paddingBottom: 8,
-            }}
-          >
-            <SocialMediaButton
-              style={{ display: "flex", alignItems: "center" }}
-              onClick={() =>
-                window.open("https://www.algogard.com/app-terms-of-use.html")
-              }
-            >
-              <SocialMediaIcon src={DocumentIcon} />
-              <div style={{ marginLeft: 5 }}>
-                <LinkText>Terms of Service</LinkText>
-              </div>
-            </SocialMediaButton>
-            <SocialMediaButton
-              style={{ display: "flex", alignItems: "center" }}
-              onClick={() =>
-                window.open("https://algogard.com/app-privacy-policy.html")
-              }
-            >
-              <SocialMediaIcon src={DocumentIcon} />
-              <div style={{ marginLeft: 5 }}>
-                <LinkText>Privacy Policy</LinkText>
-              </div>
-            </SocialMediaButton>
-          </SocialMediaContainer>
-        </div>
-        <div
-          style={{
-            display: "flex",
             justifyContent: "flex-end",
           }}
         >
@@ -262,6 +175,90 @@ export default function Drawer({
               style={{ transform: "rotate(90deg)" }}
             />
           </HideNavButton>
+        </div>
+        <div style={{position:"absolute", top: 650, left: 0, right: 0}}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              marginTop: 10,
+            }}
+          >
+            <SocialMediaContainer
+              style={{
+                paddingTop: 8,
+                paddingBottom: 8,
+                borderTop: 0,
+              }}
+            >
+              <SocialMediaButton
+                onClick={() =>
+                  window.open(
+                    "https://www.youtube.com/channel/UCEVv90DTh3gRNH4YweMnBTA",
+                  )
+                }
+              >
+                <div>
+                  <LinkText>Tutorial</LinkText>
+                </div>
+              </SocialMediaButton>
+              <SocialMediaButton
+                onClick={() =>
+                  window.open(
+                    "https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/web-application/gard-overview",
+                  )
+                }
+              >
+                <div>
+                  <LinkText>Gitbook</LinkText>
+                </div>
+              </SocialMediaButton>
+            </SocialMediaContainer>
+            <SocialMediaContainer
+              style={{
+                paddingTop: 12,
+                paddingBottom: 12,
+              }}
+            >
+              <ToS
+              onClick={() =>
+              window.open("https://www.algogard.com/app-terms-of-use.html")
+            }
+            >
+              Terms of Service</ToS>
+            <div style={{color: "white", fontSize: 12}}>|</div>
+            <ToS
+            onClick={() =>
+              window.open("https://algogard.com/app-privacy-policy.html")
+            }
+            >
+              Privacy Policy</ToS>
+            </SocialMediaContainer>
+            <SocialMediaContainer
+              style={{
+                paddingTop: 8,
+                justifyContent: "space-evenly",
+                paddingBottom: 8,
+              }}
+            >
+              <SocialMediaButton
+                onClick={() => window.open("https://discord.gg/y6rTK5S22a")}
+              >
+                <SocialMediaIcon src={DiscordIcon} />
+              </SocialMediaButton>
+              <SocialMediaButton
+                onClick={() => window.open("https://www.reddit.com/r/AlgoGARD")}
+              >
+                <SocialMediaIcon src={RedditIcon} />
+              </SocialMediaButton>
+              <SocialMediaButton
+                onClick={() => window.open("https://twitter.com/algogard")}
+              >
+                <SocialMediaIcon src={TwitterIcon} />
+              </SocialMediaButton>
+            </SocialMediaContainer>
+          </div>
         </div>
       </DrawerDiv>
     </div>
@@ -292,10 +289,10 @@ const DrawerDiv = styled.div`
     `}
 `;
 const SocialMediaContainer = styled.div`
-  border-top: 1px solid white;
   width: 80%;
   display: flex;
   flex-direction: row;
+  justify-content: space-evenly;
 `;
 const SocialMediaButton = styled.div`
   cursor: pointer;
@@ -308,10 +305,20 @@ const SocialMediaIcon = styled.img`
   }
 `;
 const LinkText = styled.text`
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   color: #ffffff;
   ${SocialMediaButton}:hover & {
+    opacity: 0.5;
+  }
+`;
+const ToS = styled.text`
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 500;
+  cursor: pointer;
+  color: #ffffff;
+  :hover& {
     opacity: 0.5;
   }
 `;
@@ -421,7 +428,7 @@ const NavButton = styled.button`
 const ButtonText = styled.text`
   color: #ffffff;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
 `;
 const ButtonIcon = styled.img`
   height: 24px;
@@ -430,7 +437,7 @@ const ButtonChevronIcon = styled.img`
   height: 20px;
 `;
 const NavLogo = styled.img`
-  height: 45px;
+  height: 50px;
 `;
 
 // items for our drawer method
