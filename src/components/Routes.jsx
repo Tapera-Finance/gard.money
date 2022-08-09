@@ -1,6 +1,6 @@
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AlgoGovernanceContent from "../pages/AlgoGovernanceContent";
+import GovernContent from "../pages/GovernContent";
 import AuctionsContent from "../pages/AuctionsContent";
 import DaoContent from "../pages/DaoContent";
 import DashboardContent from "../pages/DashboardContent";
@@ -27,8 +27,8 @@ export default function AppRoutes() {
         <Route path="/swap" element={Main(SwapContent, "Swap")} />
         <Route path="/dao" element={Main(DaoContent, "DAO")} />
         <Route
-          path="/algo-governance"
-          element={Main(AlgoGovernanceContent, "Algo Governance")}
+          path="/govern"
+          element={Main(GovernContent, "Govern")}
         />
       </Routes>
     </BrowserRouter>

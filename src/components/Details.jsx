@@ -2,12 +2,13 @@ import React from "react";
 import styled, { css } from "styled-components";
 import Effect from "./Effect";
 
-export default function Details({ className, details }) {
+export default function Details({ className, details, governPage }) {
   return (
     <Container
       className={className}
     >
       <Items
+      governPage={governPage}
       >
         {details.length && details.length > 0 ?
         details.map((d) => {
@@ -33,9 +34,13 @@ const Container = styled.div`
 
 const Items = styled.div`
     display: grid;
-    grid-template-columns: repeat(4, 20%);
+    grid-template-columns: repeat(4, 22%);
     row-gap: 30px;
     justify-content: center;
+    ${(props) =>
+    props.governPage === true && css`
+    column-gap: 2%;
+    `}
 `
 
 const Item = styled.div`

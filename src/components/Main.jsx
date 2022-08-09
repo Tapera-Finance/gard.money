@@ -11,7 +11,7 @@ import RepayContent from "../pages/RepayContent";
 import AuctionsContent from "../pages/AuctionsContent";
 import SwapContent from "../pages/SwapContent";
 import DaoContent from "../pages/DaoContent";
-import AlgoGovernanceContent from "../pages/AlgoGovernanceContent";
+import GovernContent from "../pages/GovernContent";
 import PrimaryButton from "./PrimaryButton";
 import helpIcon from "../assets/icons/help_icon.png";
 import { useForceUpdate, useWindowSize } from "../hooks";
@@ -214,7 +214,7 @@ function MainContentHandler({ content, walletAddress }) {
     case CONTENT_NAMES.DAO:
       return <DaoContent />;
     case CONTENT_NAMES.ALGO_GOVERNANCE:
-      return <AlgoGovernanceContent />;
+      return <GovernContent />;
 
     default:
       return <div></div>;
