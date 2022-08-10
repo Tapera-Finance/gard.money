@@ -30,7 +30,7 @@ export default function ExchangeField({
       <div>
         {type === 0 ? (
           <div>
-            <Span for={ids[0]}>You Put Up</Span>
+            <Span htmlFor={ids[0]}>You Put Up</Span>
             <Container>
               <SelectContainer>
                 <ExchangeSelect
@@ -42,7 +42,6 @@ export default function ExchangeField({
                 <Arrow src={chevronDown}></Arrow>
               </SelectContainer>
               <Text>{
-                // `${balances["assetA"].type}`
               `You have
               ${
                 balances[
