@@ -68,6 +68,7 @@ export default function BorrowContent(){
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [balance, setBalance] = useState("...");
   const [price, setPrice] = useState(0);
   const [supplyPrice, setSupplyPrice] = useState(0);
   const [borrowPrice, setBorrowPrice] = useState(0); 
