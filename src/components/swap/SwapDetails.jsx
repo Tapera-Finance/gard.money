@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer } from "react";
 import styled, { css } from "styled-components";
 import ExchangeField from "../ExchangeField";
 import InputField from "../InputField";
-import { mAlgosToAlgos, algosTomAlgos, previewSwap } from "./swapHelpers";
+import { mAlgosToAlgos, algosTomAlgos, previewSwap, empty } from "./swapHelpers";
 import {
   getGARDInWallet,
   getWalletInfo,
@@ -86,6 +86,8 @@ export default function SwapDetails() {
 
   const [rightChange, setRightChange] = useState(false);
   const [leftChange, setLeftChange] = useState(false);
+  const [disabled, setDisabled] = useState(true)
+  const [getBal, setGetBal] = useState(false)
   const dispatch = useDispatch();
 
   const assets = ["ALGO", "GARD"];
@@ -226,6 +228,7 @@ export default function SwapDetails() {
     if (e.target.value === 0 || e.target.value === "") {
       setRightInputAmt("");
       setLeftInputAmt("");
+      setDisabled(true)
     }
   }
 
@@ -242,6 +245,7 @@ export default function SwapDetails() {
     if (e.target.value === 0 || e.target.value === "") {
       setRightInputAmt("");
       setLeftInputAmt("");
+      setDisabled(true)
     }
   }
 
@@ -299,13 +303,20 @@ export default function SwapDetails() {
   useEffect(() => {
     let dollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
     setLeftDollars(dollars);
+    if (!empty(leftInputAmt) && !empty(rightInputAmt)) {
+      setDisabled(false)
+    }
   }, [leftInputAmt]);
 
   useEffect(() => {
     let dollars = convertToDollars(rightInputAmt, rightSelectVal.toLowerCase());
     setRightDollars(dollars);
+    if (!empty(leftInputAmt) && !empty(rightInputAmt)) {
+      setDisabled(false)
+    }
   }, [rightInputAmt]);
 
+  // set details when swap preview is registered
   useEffect(() => {
     let calculate = swapEffect && swapEffect.amountDeposited > 0 ? true : false;
     setPriceImpactA(
@@ -330,6 +341,10 @@ export default function SwapDetails() {
     );
   }, [swapEffect]);
 
+  // useEffect(() => {
+
+  // }, [leftInputAmt])
+
   useEffect(() => {
     let balX = getWalletInfo()
       ? mAlgosToAlgos(getWalletInfo().amount).toFixed(2)
@@ -339,7 +354,8 @@ export default function SwapDetails() {
       : 0;
     setBalanceX(balX);
     setBalanceY(balY);
-  }, []);
+    setGetBal(false);
+  }, [getBal]);
 
   return (
     <div>
@@ -400,6 +416,7 @@ export default function SwapDetails() {
         <ExchangeButton
           text="Execute Swap"
           onClick={handleSwap}
+         disabled={disabled ? true : false}
         ></ExchangeButton>
       </BtnBox>
       <DetailsContainer>
@@ -430,30 +447,12 @@ export default function SwapDetails() {
             specifics={[
               {
                 title: "You are offering ",
-                value: `${
-                  previewSwap(assetA, assetB, {
-                    swapTo: rightSelectVal === assetB.type ? assetA : assetB,
-                  }).calcResult
-                    ? previewSwap(assetA, assetB, {
-                        swapTo:
-                          rightSelectVal === assetB.type ? assetA : assetB,
-                      }).calcResult
-                    : leftInputAmt
-                } ${leftSelectVal}`,
+                value: `${leftInputAmt} ${leftSelectVal}`,
                 token: `${leftSelectVal}`,
               },
               {
                 title: "You are receiving a minimum of ",
-                value: `${
-                  previewSwap(assetA, assetB, {
-                    swapTo: rightSelectVal === assetA.type ? assetA : assetB,
-                  }).calcResult
-                    ? previewSwap(assetA, assetB, {
-                        swapTo:
-                          rightSelectVal === assetA.type ? assetA : assetB,
-                      }).calcResult
-                    : rightInputAmt
-                } ${rightSelectVal}`,
+                value: `${rightInputAmt} ${rightSelectVal}`,
                 token: `${rightSelectVal}`,
               },
               {
@@ -501,6 +500,7 @@ export default function SwapDetails() {
               }
               setModalCanAnimate(false)
               setLoading(false)
+              setGetBal(true)
               // await swap(assetA, assetB, {
               //   swapTo: rightSelectVal === assetA.type ? assetA : assetB,
               //   slippageTolerance: 1,

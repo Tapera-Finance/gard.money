@@ -34,12 +34,3 @@ export default function SwapContainer() {
   );
 }
 
-
-// math for slippage (mult by estimated result)
-/**
- *
- * (1e6 * (1 - slippageTolerance))) /
-                            1e6
-                          ).toFixed(6)
- *
- */
