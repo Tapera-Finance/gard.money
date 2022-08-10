@@ -29,6 +29,7 @@ import { setAlert } from "../../redux/slices/alertSlice";
 /**
  * local utils
  */
+
 const prices = {
   algo: gardpool.calculator.primaryAssetPrice,
   gard: gardpool.calculator.secondaryAssetPrice,
@@ -112,12 +113,12 @@ export default function SwapDetails() {
     {
       title: "Price Impact A",
       val: `${assetA.type} : ${priceImpactA * 100}%`,
-      hasToolTip: false,
+      hasToolTip: true,
     },
     {
       title: "Price Impact B",
       val: `${assetB.type} : ${priceImpactB * 100}%`,
-      hasToolTip: false,
+      hasToolTip: true,
     },
     {
       title: "Exchange Rate",
@@ -137,7 +138,7 @@ export default function SwapDetails() {
     {
       title: "Fee Rate",
       val: feeRate,
-      hasToolTip: true,
+      hasToolTip: false,
     },
     {
       title: "Minimum Recieved",

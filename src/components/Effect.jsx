@@ -3,11 +3,15 @@ import ToolTip from "./ToolTip";
 import * as tips from "../assets/tooltiptext";
 import styled, {css} from "styled-components";
 
+function titleToToolTip(str) {
+  return str.split(" ").map((term) => term.slice(0, 1).toLowerCase() + term.slice(1, term.length)).join("_");
+}
+
 export default function Effect({title, val,  hasToolTip, className}) {
  return (
     <EffectContainer  className={className}>
       {hasToolTip ? (
-        <NewToolTip className={className} toolTip={title} toolTipText={tips[title]}></NewToolTip>
+        <NewToolTip className={className} toolTip={title} toolTipText={tips[titleToToolTip(title)]}></NewToolTip>
       ) : (
         <Text className={className}>{title}</Text>
       )}
