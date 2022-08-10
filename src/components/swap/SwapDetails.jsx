@@ -23,20 +23,12 @@ import TransactionSummary from "../TransactionSummary";
 import PrimaryButton from "../PrimaryButton";
 import Modal from "../Modal";
 import LoadingOverlay from "../LoadingOverlay";
-import { gardID, pactGARDID } from "../../transactions/ids";
-import { getPrice } from "../../transactions/cdp";
-import pactsdk from "@pactfi/pactsdk";
+import { gardID } from "../../transactions/ids";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../redux/slices/alertSlice";
 /**
  * local utils
  */
-async function price() {
-  let price = await getPrice();
-  return price;
-}
-
-const algoPrice = await getPrice().then((val) => val.toFixed(5));
 const prices = {
   algo: gardpool.calculator.primaryAssetPrice,
   gard: gardpool.calculator.secondaryAssetPrice,
@@ -161,7 +153,7 @@ export default function SwapDetails() {
     let effect = initEffectState;
     let a =
       rightSelectVal === assetA.type ? pool.secondaryAsset : pool.primaryAsset;
-    console.log("what a is in local preview", a);
+    // console.log("what a is in local preview", a);
     let val =
       rightSelectVal === assetA.type
         ? parseInt(assetB.amount)
@@ -261,7 +253,6 @@ export default function SwapDetails() {
     let newRight = previewSwap(assetA, assetB, {
       swapTo: rightSelectVal === assetA.type ? assetA : assetB,
     });
-    // setLoading(true);
     if (newRight.calcResult) {
       setRightInputAmt(parseFloat(newRight.calcResult));
       localPreviewSwap();
@@ -277,7 +268,6 @@ export default function SwapDetails() {
     let newLeft = previewSwap(assetA, assetB, {
       swapTo: rightSelectVal === assetA.type ? assetB : assetA,
     });
-    // setLoading(true);
     if (newLeft.calcResult) {
       setLeftInputAmt(parseFloat(newLeft.calcResult));
       localPreviewSwap();
@@ -333,8 +323,8 @@ export default function SwapDetails() {
     setExchangeRate(
       calculate
         ? exchangeRatioAssetXtoAssetY(
-            pool.primaryAssetPrice,
-            pool.secondaryAssetPrice,
+            swapEffect.primaryAssetPriceAfterSwap,
+            swapEffect.secondaryAssetPriceAfterSwap,
           )
         : 0,
     );
