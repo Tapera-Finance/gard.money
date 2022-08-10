@@ -374,7 +374,7 @@ var borrowDetails = [
               <PrimaryButton 
               positioned={true} 
               text="Borrow" 
-              disabled={mGARD == ""}
+              disabled={cAlgos == ""}
               onClick={() => {
                 setCanAnimate(true);
                 setModalVisible(true);
