@@ -2,14 +2,8 @@ import React, { useState, useEffect, useReducer } from "react";
 import styled, { css } from "styled-components";
 import ExchangeField from "../ExchangeField";
 import InputField from "../InputField";
+import { mAlgosToAlgos, algosTomAlgos, previewSwap } from "./swapHelpers";
 import {
-  mAlgosToAlgos,
-  algosTomAlgos,
-  previewSwap,
-  empty,
-} from "./swapHelpers";
-import {
-  algodClient,
   getGARDInWallet,
   getWalletInfo,
   handleTxError,
@@ -17,22 +11,23 @@ import {
 import { formatToDollars } from "../../utils";
 import swapIcon from "../../assets/icons/swap_icon_v2.png";
 import {
-  pactClient,
   gardpool,
   algoGardRatio,
-  executePactSwap,
-  exchangeRatioAssetXtoAssetY,
   swap,
+  exchangeRatioAssetXtoAssetY,
+  swapAlgoToGard,
+  swapGardToAlgo,
 } from "../../transactions/swap";
 import Effect from "../Effect";
 import TransactionSummary from "../TransactionSummary";
 import PrimaryButton from "../PrimaryButton";
 import Modal from "../Modal";
-import LoadingOverlay from "../LoadingOverlay"
+import LoadingOverlay from "../LoadingOverlay";
 import { gardID, pactGARDID } from "../../transactions/ids";
 import { getPrice } from "../../transactions/cdp";
 import pactsdk from "@pactfi/pactsdk";
-
+import { useDispatch } from "react-redux";
+import { setAlert } from "../../redux/slices/alertSlice";
 /**
  * local utils
  */
@@ -59,7 +54,6 @@ const initEffectState = {
 
 export default function SwapDetails() {
   const [loading, setLoading] = useState(false);
-  const [calcEffect, setCalcEffect] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
 
@@ -80,10 +74,9 @@ export default function SwapDetails() {
 
   const [assetAid, setAssetAid] = useState(0);
   const [assetBid, setAssetBid] = useState(gardID);
-
   const [pool, setPool] = useState(gardpool);
-
   const [swapEffect, setSwapEffect] = useState(initEffectState);
+
   const [leftSelectVal, setLeftSelectVal] = useState("ALGO");
   const [rightSelectVal, setRightSelectVal] = useState("GARD");
   const [leftInputAmt, setLeftInputAmt] = useState(0);
@@ -91,6 +84,17 @@ export default function SwapDetails() {
 
   const [rightDollars, setRightDollars] = useState(0);
   const [leftDollars, setLeftDollars] = useState(0);
+  const [priceImpactA, setPriceImpactA] = useState(0);
+  const [priceImpactB, setPriceImpactB] = useState(0);
+  const [liquidityFee, setLiquidityFee] = useState(0);
+  const [exchangeRate, setExchangeRate] = useState(0);
+  const [slippageTolerance, setSlippageTolerance] = useState(0.005);
+  const [feeRate, setFeeRate] = useState(0.01);
+  const [minimumReceived, setMinimumReceived] = useState(0);
+
+  const [rightChange, setRightChange] = useState(false);
+  const [leftChange, setLeftChange] = useState(false);
+  const dispatch = useDispatch();
 
   const assets = ["ALGO", "GARD"];
 
@@ -109,17 +113,6 @@ export default function SwapDetails() {
     amount: assetBtotal,
     id: assetBid,
   };
-
-  const [priceImpactA, setPriceImpactA] = useState(0);
-  const [priceImpactB, setPriceImpactB] = useState(0);
-  const [liquidityFee, setLiquidityFee] = useState(0);
-  const [exchangeRate, setExchangeRate] = useState(0);
-  const [slippageTolerance, setSlippageTolerance] = useState(0.1);
-  const [feeRate, setFeeRate] = useState(0.01);
-  const [minimumReceived, setMinimumReceived] = useState(0);
-
-  const [rightChange, setRightChange] = useState(false);
-  const [leftChange, setLeftChange] = useState(false);
 
   const effects = [
     {
@@ -164,11 +157,6 @@ export default function SwapDetails() {
     return result;
   }
 
-  // function updatePrice(a, b) {
-  //   let res = pool.calculator.getSwapPrice(a, BigInt(b));
-  //   return res;
-  // }
-
   function localPreviewSwap() {
     let effect = initEffectState;
     let a =
@@ -186,7 +174,6 @@ export default function SwapDetails() {
         slippagePct: 1,
       });
       effect = swap.effect;
-      console.log("preview res", effect);
     }
     setSwapEffect(effect);
   }
@@ -194,13 +181,10 @@ export default function SwapDetails() {
   function handleSwap() {
     localPreviewSwap();
     setModalCanAnimate(true);
-    // setLoading(true);
     setModalVisible(true);
   }
 
   function handleSwapButton() {
-    setRight(left);
-    setLeft(right);
     setLeftSelectVal(rightSelectVal);
     setLeftInputAmt(rightInputAmt);
     setRightSelectVal(leftSelectVal);
@@ -270,9 +254,8 @@ export default function SwapDetails() {
   }
 
   // set right if left changes
-  useEffect( () => {
+  useEffect(() => {
     setLeftChange(false);
-    setCalcEffect(true);
     assetA.amount = assetAtotal;
     assetB.amount = assetBtotal;
     let newRight = previewSwap(assetA, assetB, {
@@ -287,9 +270,8 @@ export default function SwapDetails() {
   }, [leftChange]);
 
   // set left if right changes
-  useEffect( () => {
+  useEffect(() => {
     setRightChange(false);
-    setCalcEffect(true);
     assetA.amount = assetAtotal;
     assetB.amount = assetBtotal;
     let newLeft = previewSwap(assetA, assetB, {
@@ -350,10 +332,10 @@ export default function SwapDetails() {
     setLiquidityFee(calculate ? mAlgosToAlgos(swapEffect.fee) : 0);
     setExchangeRate(
       calculate
-        ? parseFloat(
-            swapEffect.primaryAssetPriceAfterSwap.toFixed(4) /
-              swapEffect.secondaryAssetPriceAfterSwap.toFixed(4),
-          ).toFixed(4)
+        ? exchangeRatioAssetXtoAssetY(
+            pool.primaryAssetPrice,
+            pool.secondaryAssetPrice,
+          )
         : 0,
     );
   }, [swapEffect]);
@@ -371,7 +353,7 @@ export default function SwapDetails() {
 
   return (
     <div>
-     {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
       <ExchangeBar>
         <ExchangeFields
           ids={["left-select", "left-input"]}
@@ -458,7 +440,16 @@ export default function SwapDetails() {
             specifics={[
               {
                 title: "You are offering ",
-                value: `${leftInputAmt}${" " + leftSelectVal}`,
+                value: `${
+                  previewSwap(assetA, assetB, {
+                    swapTo: rightSelectVal === assetB.type ? assetA : assetB,
+                  }).calcResult
+                    ? previewSwap(assetA, assetB, {
+                        swapTo:
+                          rightSelectVal === assetB.type ? assetA : assetB,
+                      }).calcResult
+                    : leftInputAmt
+                } ${leftSelectVal}`,
                 token: `${leftSelectVal}`,
               },
               {
@@ -467,6 +458,11 @@ export default function SwapDetails() {
                   previewSwap(assetA, assetB, {
                     swapTo: rightSelectVal === assetA.type ? assetA : assetB,
                   }).calcResult
+                    ? previewSwap(assetA, assetB, {
+                        swapTo:
+                          rightSelectVal === assetA.type ? assetA : assetB,
+                      }).calcResult
+                    : rightInputAmt
                 } ${rightSelectVal}`,
                 token: `${rightSelectVal}`,
               },
@@ -476,16 +472,53 @@ export default function SwapDetails() {
               },
             ]}
             transactionFunc={async () => {
-              setLoading(true)
-              await swap(assetA, assetB, {
-                swapTo: rightSelectVal === assetA.type ? assetA : assetB,
-                slippageTolerance: 1,
-              });
-              if (swap) {
-                setLoading(false);
+              setModalCanAnimate(true);
+              setModalVisible(false);
+              setLoading(true);
+              try {
+                let res;
+                if (
+                  leftSelectVal === assetA.type &&
+                  rightSelectVal === assetB.type
+                ) {
+                  res = await swapAlgoToGard(
+                    algosTomAlgos(parseInt(assetA.amount)),
+                    parseInt(
+                      1e6 *
+                        parseFloat(assetB.amount) *
+                        (1 - slippageTolerance),
+                    ),
+                  );
+                } else if (
+                  leftSelectVal === assetB.type &&
+                  rightSelectVal === assetA.type
+                ) {
+                  res = await swapGardToAlgo(
+                    algosTomAlgos(parseInt(assetB.amount)),
+                    parseInt(
+                      1e6 *
+                        parseFloat(assetA.amount) *
+                        (1 - slippageTolerance),
+                    ),
+                  );
+                }
+                if (res.alert) {
+                  dispatch(setAlert(res.text));
+                  setLoading(false)
+                }
+              } catch (e) {
+                handleTxError(e, "Error exchanging assets");
               }
+              setModalCanAnimate(false)
+              setLoading(false)
+              // await swap(assetA, assetB, {
+              //   swapTo: rightSelectVal === assetA.type ? assetA : assetB,
+              //   slippageTolerance: 1,
+              // });
+              // if (swap) {
+              //   setLoading(false);
+              // } // uncomment with working asset agnostic swap when ready
             }}
-
             cancelCallback={() => setModalVisible(false)}
           ></TransactionSummary>
         </Modal>
@@ -567,4 +600,3 @@ const SwapButton = styled.img`
     transform: rotate(180deg);
   }
 `;
-
