@@ -2,7 +2,12 @@ import React, { useState, useEffect, useReducer } from "react";
 import styled, { css } from "styled-components";
 import ExchangeField from "../ExchangeField";
 import InputField from "../InputField";
-import { mAlgosToAlgos, algosTomAlgos, previewSwap, empty } from "./swapHelpers";
+import {
+  mAlgosToAlgos,
+  algosTomAlgos,
+  previewSwap,
+  empty,
+} from "./swapHelpers";
 import {
   getGARDInWallet,
   getWalletInfo,
@@ -15,8 +20,6 @@ import {
   algoGardRatio,
   swap,
   exchangeRatioAssetXtoAssetY,
-  swapAlgoToGard,
-  swapGardToAlgo,
 } from "../../transactions/swap";
 import Effect from "../Effect";
 import TransactionSummary from "../TransactionSummary";
@@ -87,8 +90,8 @@ export default function SwapDetails() {
 
   const [rightChange, setRightChange] = useState(false);
   const [leftChange, setLeftChange] = useState(false);
-  const [disabled, setDisabled] = useState(true)
-  const [getBal, setGetBal] = useState(false)
+  const [disabled, setDisabled] = useState(true);
+  const [getBal, setGetBal] = useState(false);
   const dispatch = useDispatch();
 
   const assets = ["ALGO", "GARD"];
@@ -154,22 +157,31 @@ export default function SwapDetails() {
 
   function localPreviewSwap() {
     let effect = initEffectState;
+    let swap;
     let a =
       rightSelectVal === assetA.type ? pool.secondaryAsset : pool.primaryAsset;
-    // console.log("what a is in local preview", a);
     let val =
       rightSelectVal === assetA.type
         ? parseInt(assetB.amount)
         : parseInt(assetA.amount);
-    console.log("val is", val);
+    let otherVal =
+      leftSelectVal === assetA.type
+        ? parseInt(assetB.amount)
+        : parseInt(assetA.amount);
     if (typeof val === "number" && val > 0) {
-      const swap = pool.prepareSwap({
+      swap = pool.prepareSwap({
         asset: a,
         amount: val,
         slippagePct: 1,
       });
-      effect = swap.effect;
+    } else if (typeof otherVal === "number" && otherVal > 0) {
+      swap = pool.prepareSwap({
+        asset: a,
+        amount: otherVal,
+        slippagePct: 1,
+      });
     }
+    effect = swap ? swap.effect : effect;
     setSwapEffect(effect);
   }
 
@@ -229,7 +241,7 @@ export default function SwapDetails() {
     if (e.target.value === 0 || e.target.value === "") {
       setRightInputAmt("");
       setLeftInputAmt("");
-      setDisabled(true)
+      setDisabled(true);
     }
   }
 
@@ -246,7 +258,7 @@ export default function SwapDetails() {
     if (e.target.value === 0 || e.target.value === "") {
       setRightInputAmt("");
       setLeftInputAmt("");
-      setDisabled(true)
+      setDisabled(true);
     }
   }
 
@@ -305,7 +317,7 @@ export default function SwapDetails() {
     let dollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
     setLeftDollars(dollars);
     if (!empty(leftInputAmt) && !empty(rightInputAmt)) {
-      setDisabled(false)
+      setDisabled(false);
     }
   }, [leftInputAmt]);
 
@@ -313,7 +325,7 @@ export default function SwapDetails() {
     let dollars = convertToDollars(rightInputAmt, rightSelectVal.toLowerCase());
     setRightDollars(dollars);
     if (!empty(leftInputAmt) && !empty(rightInputAmt)) {
-      setDisabled(false)
+      setDisabled(false);
     }
   }, [rightInputAmt]);
 
@@ -341,10 +353,6 @@ export default function SwapDetails() {
         : 0,
     );
   }, [swapEffect]);
-
-  // useEffect(() => {
-
-  // }, [leftInputAmt])
 
   useEffect(() => {
     let balX = getWalletInfo()
@@ -417,7 +425,7 @@ export default function SwapDetails() {
         <ExchangeButton
           text="Execute Swap"
           onClick={handleSwap}
-         disabled={disabled ? true : false}
+          disabled={disabled ? true : false}
         ></ExchangeButton>
       </BtnBox>
       <DetailsContainer>
@@ -467,48 +475,37 @@ export default function SwapDetails() {
               setLoading(true);
               try {
                 let res;
+                let swapTo;
+
                 if (
                   leftSelectVal === assetA.type &&
                   rightSelectVal === assetB.type
                 ) {
-                  res = await swapAlgoToGard(
-                    algosTomAlgos(parseInt(assetA.amount)),
-                    parseInt(
-                      1e6 *
-                        parseFloat(assetB.amount) *
-                        (1 - slippageTolerance),
-                    ),
-                  );
+                  swapTo = assetB;
                 } else if (
                   leftSelectVal === assetB.type &&
                   rightSelectVal === assetA.type
                 ) {
-                  res = await swapGardToAlgo(
-                    algosTomAlgos(parseInt(assetB.amount)),
-                    parseInt(
-                      1e6 *
-                        parseFloat(assetA.amount) *
-                        (1 - slippageTolerance),
-                    ),
-                  );
+                  swapTo = assetA;
                 }
+                res = await swap(
+                  assetA,
+                  assetB,
+                  leftInputAmt,
+                  rightInputAmt,
+                  swapTo,
+                  slippageTolerance,
+                );
                 if (res.alert) {
                   dispatch(setAlert(res.text));
-                  setLoading(false)
+                  setLoading(false);
                 }
               } catch (e) {
                 handleTxError(e, "Error exchanging assets");
               }
-              setModalCanAnimate(false)
-              setLoading(false)
-              setGetBal(true)
-              // await swap(assetA, assetB, {
-              //   swapTo: rightSelectVal === assetA.type ? assetA : assetB,
-              //   slippageTolerance: 1,
-              // });
-              // if (swap) {
-              //   setLoading(false);
-              // } // uncomment with working asset agnostic swap when ready
+              setModalCanAnimate(false);
+              setLoading(false);
+              setGetBal(true);
             }}
             cancelCallback={() => setModalVisible(false)}
           ></TransactionSummary>

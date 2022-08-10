@@ -19,7 +19,11 @@ import { updateDBWebActions } from "../components/Firebase";
 import { VERSION } from "../globals";
 
 import pactsdk from "@pactfi/pactsdk";
-import { mAlgosToAlgos, mGardToGard } from "../components/swap/swapHelpers";
+import {
+  algosTomAlgos,
+  mAlgosToAlgos,
+  mGardToGard,
+} from "../components/swap/swapHelpers";
 
 export const pactClient = new pactsdk.PactClient(algodClient);
 export const gardpool = await pactClient.fetchPoolById(pactGARDID);
@@ -32,7 +36,6 @@ export async function previewPoolSwap(
   swapForExact,
 ) {
   await pool.updateState();
-  console.log(pool.state);
   const swap = gardpool.prepareSwap({
     assetDeposited: assetDeposited,
     amount: amount,
@@ -62,7 +65,7 @@ export const algoGardRatio = async () =>
  */
 
 /**
- * Global Helpers
+ * Helpers
  */
 
 export function estimateReturn(input, totalX, totalY) {
@@ -72,38 +75,10 @@ export function estimateReturn(input, totalX, totalY) {
   return parseInt(receivedAmount);
 }
 
-export async function executePactSwap(assetA, assetB, params) {
-  let poolToUse;
-
-  if (
-    (assetA.id === 0 && assetB.id === gardID) ||
-    (assetA.id === gardID && assetB.id === 0)
-  ) {
-    poolToUse = gardpool;
-  }
-
-  const { swapTo, slippageTolerance } = params;
-
-  const assetAfromPool = await pactClient.fetchAsset(assetA.id);
-  const assetBfromPool = await pactClient.fetchAsset(assetB.id);
-
-  const fromAsset =
-    swapTo.type === assetA.type ? assetBfromPool : assetAfromPool;
-  const fromAmount =
-    swapTo.type === assetA.type ? assetB.amount : assetA.amount;
-
-  const pactResult = previewPoolSwap(
-    gardpool,
-    fromAsset,
-    parseFloat(fromAmount),
-    5,
-    true,
-  );
-
-  return {
-    pactResult: pactResult,
-  };
-}
+const formatAmt = (amt) =>
+  typeof amt === "string"
+    ? parseInt(algosTomAlgos(parseFloat(amt)))
+    : algosTomAlgos(amt);
 
 /**
  * Session Helpers
@@ -126,80 +101,54 @@ sessionStorage.setItem = function (key, value) {
 const setLoadingStage = (stage) =>
   sessionStorage.setItem("loadingStage", JSON.stringify(stage));
 
-export async function swap(assetA, assetB, params) {
+export async function swap(
+  assetA,
+  assetB,
+  fromAmt,
+  toAmt,
+  swapTo,
+  slippagePct,
+) {
   const infoPromise = accountInfo();
+  const paramsPromise = getParams(1500);
   const info = await infoPromise;
+  const params = await paramsPromise;
+  const f_a = [0, assetB.id];
+  const enc = new TextEncoder();
   let poolToUse;
-
   if (
     (assetA.id === 0 && assetB.id === gardID) ||
     (assetA.id === gardID && assetB.id === 0)
   ) {
     poolToUse = gardpool;
   }
-
-  const { swapTo, slippageTolerance } = params;
-
   const assetAfromPool = poolToUse.primaryAsset;
   const assetBfromPool = poolToUse.secondaryAsset;
 
   const fromAsset =
     swapTo.type === assetA.type ? assetBfromPool : assetAfromPool;
-  const fromAmount =
-    swapTo.type === assetA.type
-      ? parseInt(assetB.amount)
-      : parseInt(assetA.amount);
+  const toAsset = swapTo.type === assetA.type ? assetAfromPool : assetBfromPool;
 
-  let payload;
-  try {
-    if (VERSION !== "MAINNET") {
-      throw new Error("Unable to swap on TESTNET");
-    }
-    if (fromAsset.name === assetA.type && swapTo.type === assetB.type) {
-      payload = await swapAlgoToGard(
-        fromAmount, // refactor this to not call hardcoded txn fn
-        parseInt(
-          1e6 * parseFloat(assetB.amount.split()[0]) * (1 - slippageTolerance),
-        ),
-      );
-    } else if (fromAsset.name === assetB.type && swapTo.type === assetA.type) {
-      await swapGardToAlgo(
-        fromAmount, // refactor this to not call hardcoded txn fn
-        parseInt(
-          1e6 * parseFloat(assetA.amount.split()[0]) * (1 - slippageTolerance),
-        ),
-      );
-    }
-    return;
-  } catch (e) {
-    handleTxError(e, "Error exchanging assets");
-  }
-}
+  const formattedAmount = formatAmt(fromAmt);
+  const formattedMin = formatAmt(toAmt);
+  const minimum = Math.trunc((formattedMin * (1 - slippagePct)) / 1e6);
+  const opted = verifyOptIn(info, toAsset.index);
 
-/**
- *
- @function swapAlgoToGard - create and send transaction to swap ALGO for GARD on Pact DEX
-  *    @param {amount} {Number} - representing how many microalgo to send
-  *    @param {minimum} {Number} - representing minimu microGard to be received for success
-  *    @returns {transactionSummary} - returns details of the exchange to allow for execution
- */
-export async function swapAlgoToGard(amount, minimum) {
-  setLoadingStage("Loading...");
-
-  const infoPromise = accountInfo();
-  const paramsPromise = getParams(1500);
-  const info = await infoPromise;
-  const params = await paramsPromise;
-  const f_a = [0, gardID];
-  const enc = new TextEncoder();
-  const opted = verifyOptIn(info, gardID);
-
-  let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: pactAlgoGardPoolAddress,
-    amount: amount,
-    suggestedParams: params,
-  });
+  let txn1 =
+    fromAsset.index === 0
+      ? algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+          from: info.address,
+          to: pactAlgoGardPoolAddress,
+          amount: formattedAmount,
+          suggestedParams: params,
+        })
+      : algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+          from: info.address,
+          to: pactAlgoGardPoolAddress,
+          amount: formattedAmount,
+          suggestedParams: params,
+          assetIndex: fromAsset.index,
+        });
 
   let txn2 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
@@ -216,77 +165,25 @@ export async function swapAlgoToGard(amount, minimum) {
         to: info.address,
         amount: 0,
         suggestedParams: params,
-        assetIndex: gardID,
+        assetIndex: toAsset.index,
       });
-  let txns = optTxn.concat([txn1, txn2]);
-  algosdk.assignGroupID(txns);
 
-  setLoadingStage("Awaiting Signature from Algorand Wallet...");
-
-  const signedGroup = await signGroup(info, txns);
-
-  setLoadingStage("Waiting for Confirmation...");
-
-  const stxns = [signedGroup[0].blob, signedGroup[1].blob];
-
-  const response = await sendTxn(
-    stxns,
-    "Successfully swapped " + amount / 1e6 + " ALGO.",
-  );
-
-  setLoadingStage(null);
-  updateDBWebActions(8, null, -amount, minimum, 0, 1, 3000);
-  return response;
-}
-
-/**
- * @function swapGardToAlgo - create and send transaction to swap GARD FOR ALGO on Pact DEX
- *    @param {amount} {number} - representing how many microgard to send
- *    @param {minimum} {number} - representing minimum acceptable microAlgos for swap to succeed
- *    @returns {transactionSummary} - returns details of the exchange to allow for execution
- */
-export async function swapGardToAlgo(amount, minimum) {
-  setLoadingStage("Loading...");
-
-  const infoPromise = accountInfo();
-  const paramsPromise = getParams(1500);
-  const info = await infoPromise;
-  const params = await paramsPromise;
-  const f_a = [0, gardID];
-  const enc = new TextEncoder();
-
-  let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: pactAlgoGardPoolAddress,
-    amount: amount,
-    suggestedParams: params,
-    assetIndex: gardID,
-  });
-  let txn2 = algosdk.makeApplicationCallTxnFromObject({
-    from: info.address,
-    appIndex: pactGARDID,
-    onComplete: 0,
-    appArgs: [enc.encode("SWAP"), algosdk.encodeUint64(minimum)],
-    foreignAssets: f_a,
-    suggestedParams: params,
-  });
-
-  let txns = [txn1, txn2];
+  let txns = Array.isArray(optTxn) ? optTxn.concat([txn1, txn2]) : [txn1, txn2];
   algosdk.assignGroupID(txns);
 
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   const signedGroup = await signGroup(info, txns);
-
   setLoadingStage("Waiting for Confirmation...");
 
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
-
   const response = await sendTxn(
     stxns,
-    "Successfully swapped " + amount / 1e6 + " GARD.",
+    "Successfully swapped " +
+      formattedAmount / 1e6 +
+      fromAsset.name.toLocaleUpperCase(),
   );
 
   setLoadingStage(null);
-  updateDBWebActions(8, null, minimum, -amount, 0, 1, 3000);
+  updateDBWebActions(8, null, minimum, -fromAmt, 0, 1, 3000);
   return response;
 }

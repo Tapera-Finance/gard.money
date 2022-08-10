@@ -41,16 +41,14 @@ export default function ExchangeField({
                 />
                 <Arrow src={chevronDown}></Arrow>
               </SelectContainer>
-              <Text>{
-              `You have
+              <Text>{`You have
               ${
                 balances[
                   balances["assetA"].type === assets[0]
                     ? ["assetA"]
                     : ["assetB"]
                 ].amount
-              } to offer`
-              }</Text>
+              } to offer`}</Text>
               <InputContainer>
                 <ExchangeInput
                   id={ids[1]}
@@ -64,7 +62,7 @@ export default function ExchangeField({
           </div>
         ) : (
           <div>
-            <Span for={ids[0]}>You'll Receive</Span>
+            <Span htmlFor={ids[0]}>You'll Receive</Span>
             <Container>
               <SelectContainer>
                 <ExchangeSelect
@@ -78,16 +76,14 @@ export default function ExchangeField({
               <Text>
                 {
                   // `${balances}`
-                `You have
+                  `You have
               ${
                 balances[
-                  ["assetB"].type === assets[1]
-                    ? ["assetA"]
-                    : ["assetB"]
+                  ["assetB"].type === assets[1] ? ["assetA"] : ["assetB"]
                 ].amount
               } already`
-
-              }</Text>
+                }
+              </Text>
               <InputContainer>
                 <ExchangeInput
                   id={ids[1]}
