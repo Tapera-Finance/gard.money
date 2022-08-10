@@ -14,7 +14,7 @@ export const mAlgosToAlgos = (num) => {
 
 export const algosTomAlgos = (num) => {
   return num * 1000000;
-}
+};
 
 export const mGardToGard = (num) => {
   return num / 1000000;
@@ -23,7 +23,7 @@ export const mGardToGard = (num) => {
 export const targetPool = (assetNameX, assetNameY) =>
   `${assetNameX}/${assetNameY}`;
 
-export const empty = (value) => (value === 0 || value === "")
+export const empty = (value) => value === 0 || value === "";
 
 /**
  * Component Helpers
@@ -51,41 +51,47 @@ export function calcTransResult(amount, totalX, totalY, slippageTolerance) {
  * @param {object} assetA - has type, amount, id
  * @param {object} assetB
  * /**
-   * assetA.type === ALGO || GARD
-   * assetB.type === ALGO || GARD
-   * pass to calculator with amount to swap, pool total
-   * of id of the received assed, pool total of id of
-   * the given asset, params.
-   * ensures that estimate return always receives
-   * arguments the same way independent of frontend
-   * state
-   * also independent of what these assets are
-*/
+ * assetA.type === ALGO || GARD
+ * assetB.type === ALGO || GARD
+ * pass to calculator with amount to swap, pool total
+ * of id of the received assed, pool total of id of
+ * the given asset, params.
+ * ensures that estimate return always receives
+ * arguments the same way independent of frontend
+ * state
+ * also independent of what these assets are
+ */
 
 export function previewSwap(assetA, assetB, params) {
   let poolToUse;
 
-  if (assetA.id === 0 && assetB.id === gardID || assetA.id === gardID && assetB.id === 0) {
-    poolToUse = gardpool
+  if (
+    (assetA.id === 0 && assetB.id === gardID) ||
+    (assetA.id === gardID && assetB.id === 0)
+  ) {
+    poolToUse = gardpool;
   }
 
   const { swapTo, slippageTolerance } = params;
   const from = swapTo.type === assetA.type ? assetB : assetA;
-
-
-
-  const calcResult = calcTransResult(
-    from.amount,
-    parseFloat(poolToUse.state.totalPrimary),
-    parseFloat(poolToUse.state.totalSecondary),
-    slippageTolerance,
-  );
-
-
+  let calcResult;
+  if (from.type === assetB.type) {
+    calcResult = calcTransResult(
+      from.amount,
+      parseFloat(poolToUse.state.totalSecondary),
+      parseFloat(poolToUse.state.totalPrimary),
+      slippageTolerance,
+    );
+  } else {
+    calcResult = calcTransResult(
+      from.amount,
+      parseFloat(poolToUse.state.totalPrimary),
+      parseFloat(poolToUse.state.totalSecondary),
+      slippageTolerance,
+    );
+  }
 
   return {
     calcResult: calcResult,
-
   };
 }
-
