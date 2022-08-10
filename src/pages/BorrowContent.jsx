@@ -1,26 +1,25 @@
-import React, { useEffect, useState, useReducer, useContext } from "react";
-import styled, { keyframes, css } from "styled-components";
-import Modal from "../components/Modal";
-import PrimaryButton from "../components/PrimaryButton";
-import TransactionSummary from "../components/TransactionSummary";
+import React, { useEffect, useState} from "react";
+import styled from "styled-components";
+import Details from "../components/Details";
+import Effect from "../components/Effect";
 import LoadingOverlay from "../components/LoadingOverlay";
+import Modal from "../components/Modal";
+import Positions from "../components/Positions";
+import PrimaryButton from "../components/PrimaryButton";
+import RewardNotice from "../components/RewardNotice";
+import ToolTip from "../components/ToolTip";
+import TransactionSummary from "../components/TransactionSummary";
 import {
   getWallet,
   getWalletInfo,
   handleTxError,
   updateWalletInfo,
 } from "../wallets/wallets";
-import { calcDevFees, getPrice, calcRatio } from "../transactions/cdp.js";
-import { openCDP } from "../transactions/cdp";
-import { useAlert } from "../hooks";
+import { calcDevFees, calcRatio, getCDPs, getPrice, openCDP } from "../transactions/cdp.js";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
-import CreatePosition from "../components/CreatePosition";
-import RewardNotice from "../components/RewardNotice";
-import Details from "../components/Details";
-import Positions from "../components/Positions";
 
 
 function displayRatio() {
@@ -64,71 +63,610 @@ function getCollateral() {
 }
 
 export default function BorrowContent(){
-    const [balance, setBalance] = useState("...");
-    const [price, setPrice] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [canAnimate, setCanAnimate] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [price, setPrice] = useState(0);
+  const [supplyPrice, setSupplyPrice] = useState(0);
+  const [borrowPrice, setBorrowPrice] = useState(0); 
+  const cdps = CDPsToList();
+  
+    //initial code snippets
+  const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState(null);
+  const [cAlgos, setCollateral] = useState("");
+  const [maxCollateral, setMaxCollateral] = useState(0);
+  const [mGARD, setGARD] = useState("");
+  const [maxGARD, setMaxGARD] = useState(0);
+  const [commitChecked, setCommitChecked] = useState(false);
+  const [toWallet, setToWallet] = useState(false);
+
+  const [createPositionShown, setCreatePositionShown] = useState(false)
+
+  const handleCheckboxChange = () => {
+    setCommitChecked(!commitChecked);
+  };
+
+  const handleCheckboxChange1 = () => {
+    setToWallet(!toWallet);
+  };
+  
+  useEffect(() => {
+    if (cdps == dummyCDPs){
+      setCreatePositionShown(true)
+    }
+  }, [])
+
+  useEffect(async () => {
+    setPrice(await getPrice());
+    await updateWalletInfo();
+    getWallet();
+    setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+    setMaxCollateral(
+      mAlgosToAlgos(
+        getWalletInfo()["amount"] -
+          calcDevFees(algosToMAlgos(mGARD || 1)) -
+          307000 -
+          100000 * (getWalletInfo()["assets"].length + 4),
+      ).toFixed(3),
+    );
+  }, []);
+
+  useEffect(() => {
+    setSupplyPrice(price)
+  }, [price])
+
+  
+  const handleSupplyChange = (event) => {
+    setCollateral(event.target.value === "" ? "" : Number(event.target.value));
+    let max =
+      Math.trunc(
+        (100 *
+          ((algosToMAlgos(price) * algosToMAlgos(Number(event.target.value))) /
+            1000000)) /
+          1.4 /
+          1000000,
+      ) / 100;
+    setMaxGARD(max);
+    if (mGARD > max) {
+      setGARD(max < 1 ? 1 : max);
+    }
+  };
+
+  const handleMaxCollateral = () => {
+      setCollateral(maxCollateral)
+      let max =
+        Math.trunc(
+          (100 *
+            ((algosToMAlgos(price) * algosToMAlgos(maxCollateral)) /
+              1000000)) /
+            1.4 /
+            1000000,
+        ) / 100;
+      setMaxGARD(max);
+      if (mGARD > max) {
+        setGARD(max < 1 ? 1 : max);
+      }
+      console.log("collateral" ,cAlgos)
+    }
+  
 
 
-    useEffect(async () => {
-        setPrice(await getPrice());
-        await updateWalletInfo();
-        getWallet();
-        setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
-    }, []);
+  const handleBorrowChange = (event) => {
+    setGARD(
+      event.target.value === ""
+        ? ""
+        : Number(event.target.value) < 1
+        ? 1
+        : Number(event.target.value),
+    );
+    let max = mAlgosToAlgos(
+      getWalletInfo()["amount"] -
+        calcDevFees(algosToMAlgos(mGARD)) -
+        307000 -
+        100000 * (getWalletInfo()["assets"].length + 4),
+    ).toFixed(3);
+    setMaxCollateral(max);
+    if (isNaN(cAlgos)) {
+      console.log("heyy");
+      return;
+    }
+    if (cAlgos > max) {
+      setCollateral(max);
+    }
+  };
 
-    var details = [
-        {
-            title: "Collateral",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "Received DAI",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "Liquidation Price",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "Received DAI",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "ETH exposure",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "Stability Fee",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "Liquidation ratio",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "DAI avaible from ETH",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-    ]
+  const handleMaxBorrow = () => {
+    setGARD(maxGARD)
+    let max = mAlgosToAlgos(
+      getWalletInfo()["amount"] -
+        calcDevFees(algosToMAlgos(maxGARD)) -
+        307000 -
+        100000 * (getWalletInfo()["assets"].length + 4),
+    ).toFixed(3);
+    setMaxCollateral(max);
+    if (isNaN(cAlgos)) {
+      console.log("heyy");
+      return;
+    }
+    if (cAlgos > max) {
+      setCollateral(max);
+    }
+    console.log("gard" ,mGARD)
+  }
+
+  var sessionStorageSetHandler = function (e) {
+    setLoadingText(JSON.parse(e.value));
+  };
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+  var details = [
+    {
+        title: "Collateral",
+        val: `${cAlgos === "" ? "...": `$${(cAlgos * supplyPrice).toFixed(2)}`}`,
+        hasToolTip: true,
+    },
+    {
+        title: "Received DAI",
+        val: `${0.00}%`,
+        hasToolTip: true,
+    },
+    {
+        title: "Liquidation Price",
+        val: `${getMinted() == null || getCollateral() == null
+          ? "..."
+          : displayLiquidationPrice()}`,
+        hasToolTip: true,
+    },
+    {
+        title: "Bitcoin Factor",
+        val: `${0.00}%`,
+        hasToolTip: true,
+    },
+    {
+        title: "ETH exposure",
+        val: `${0.00}%`,
+        hasToolTip: true,
+    },
+    {
+        title: "Stability Fee",
+        val: `${getMinted() == null || getCollateral() == null
+          ? "..."
+          : displayFees()}`,
+        hasToolTip: true,
+    },
+    {
+        title: "Liquidation ratio",
+        val: `${getMinted() == null || getCollateral() == null
+          ? "..."
+          : displayRatio()}`,
+        hasToolTip: true,
+    },
+    {
+        title: "DAI avaible from ETH",
+        val: `${0.00}%`,
+        hasToolTip: true,
+    },
+]
+
+var supplyDetails = [
+  {
+      title: "Borrow Limit",
+      val: `${maxGARD}`,
+      hasToolTip: true,
+  },
+  {
+      title: "Supply APY",
+      val: `${0.00}%`,
+      hasToolTip: true,
+  },
+  {
+      title: "Supply Rewards",
+      val: `${0.00}%`,
+      hasToolTip: true,
+  },];
+var borrowDetails = [
+    {
+        title: "Supply Limit",
+        val: `$${maxCollateral}`,
+        hasToolTip: true,
+    },
+    {
+        title: "Borrow APR",
+        val: `${0.00}%`,
+        hasToolTip: true,
+    },
+    {
+        title: "Borrow Limit",
+        val: `$${0.00}%`,
+        hasToolTip: true,
+    },];
     return <div>
+        {loading ? <LoadingOverlay text={loadingText} /> : <></>}
         <RewardNotice 
         program={"Governance Rewards"} 
         timespan={"Now - October 22, 2022"}
         estimatedRewards={"12% - 33% APR Rewards"}
         action={"Borrow ALGO to Claim Rewards"}
         />
-        <CreatePosition 
-        balance={balance} 
-        price={price}
-        />
-        <Details className={"borrow"} details={details}/>
+        {createPositionShown ? <div><Container>
+          <SubContainer>
+              <Background>
+                  <Title>Supply ALGO</Title>
+                  <InputContainer>
+                      <div style={{display: "flex"}}>
+                          <Input
+                          autoComplete="off"
+                          display="none"
+                          placeholder={"enter amount"}
+                          type='number'
+                          min="0.00"
+                          id="collateral"
+                          value={cAlgos}
+                          onChange={handleSupplyChange}
+                          />
+                          <MaxButton
+                          onClick={handleMaxCollateral}>
+                              <ToolTip 
+                              toolTip={"+MAX"} 
+                              toolTipText={"Click to lend maximum amount"}
+                              />
+                          </MaxButton>
+                      </div>
+                      <Valuation>$Value: ${cAlgos === "..." ? 0.00 : (cAlgos * supplyPrice).toFixed(2)}</Valuation>
+                      <InputDetails>
+                          {supplyDetails.length && supplyDetails.length > 0 ?
+                          supplyDetails.map((d) => {
+                              return (
+                                  <Item key={d.title}>
+                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
+                                  </Item>
+                              )
+                          })
+                          : null
+          }
+                      </InputDetails>
+                  </InputContainer>
+              </Background>
+              <PrimaryButton positioned={true} text="Supply"/>
+          </SubContainer>
+          <SubContainer>
+              <Background>
+                  <Title>Borrow GARD</Title>
+                  <InputContainer>
+                      <div style={{display: "flex"}}>
+                          <Input
+                          autoComplete="off" 
+                          placeholder={"enter amount"}
+                          type='number'
+                          min="1.00"
+                          step="1"
+                          id="minted"
+                          value={mGARD}
+                          size="small"
+                          onChange={handleBorrowChange}
+                          />
+                          <MaxButton 
+                          onClick={handleMaxBorrow}>
+                              <ToolTip
+                              toolTip={"+MAX"} 
+                              toolTipText={"Click to borrow maximum amount"}
+                              />
+                          </MaxButton>
+                      </div>
+                      <Valuation>$Value: ${mGARD === "" ? 0 : mGARD}</Valuation>
+                      <InputDetails>
+                          {borrowDetails.length && borrowDetails.length > 0 ?
+                          borrowDetails.map((d) => {
+                              return (
+                                  <Item key={d.title}>
+                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
+                                  </Item>
+                              )
+                          })
+                          : null
+          }
+                      </InputDetails>
+                  </InputContainer>
+              </Background>
+              <PrimaryButton 
+              positioned={true} 
+              text="Borrow" 
+              disabled={mGARD == ""}
+              onClick={() => {
+                setCanAnimate(true);
+                setModalVisible(true);
+              }}
+              />
+          </SubContainer>
+      </Container> 
+      <Details className={"borrow"} details={details}/> 
+      </div> :
+      <></> }
+      {cdps == dummyCDPs ? <></> :
+      <div>
         <Positions/>
+        <PrimaryButton
+        text="Create Position"
+        positioned={true}
+        onClick={() => {
+          setCreatePositionShown(true)
+          window.scrollTo(0, 0)
+        }}
+        />
+      </div>}
+      
+      <Modal
+        visible={modalVisible}
+        close={() => setModalVisible(false)}
+        animate={canAnimate}
+        title="Are you sure you want to proceed?"
+        subtitle="Review the details of this transaction to the right and
+                    click “Confirm Transaction” to proceed."
+      
+        mint = {Date.now() < commitmentPeriodEnd}
+      >
+        {Date.now() < commitmentPeriodEnd ? (
+          <div style={{ marginBottom: 6 }}>
+            <div style={{ marginBottom: 4 }}>
+              <InputTitle>
+                Optional: Commit CDP balance to governance?
+              </InputTitle>
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "flex",
+                  alignContent: "center",
+                }}
+              >
+                <input
+                  type={"checkbox"}
+                  checked={commitChecked}
+                  onChange={handleCheckboxChange}
+                />
+                <InputSubtitle>
+                  {" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {commitChecked === false ? 0 : cAlgos}{" "}
+                  </span>{" "}
+                  Algos will be committed
+                </InputSubtitle>
+              </label>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+        {commitChecked ? (
+          <div style={{ marginBottom: 6 }}>
+            <div style={{ marginBottom: 4 }}>
+              <InputTitle>
+                Send governance rewards directly to your ALGO wallet?
+              </InputTitle>
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "flex",
+                  alignContent: "center",
+                }}
+              >
+                <input
+                  type={"checkbox"}
+                  checked={toWallet}
+                  onChange={handleCheckboxChange1}
+                />
+                <InputSubtitle>
+                  Governance rewards will be sent to your{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {toWallet ? "ALGO Wallet" : "CDP"}
+                  </span>
+                </InputSubtitle>
+              </label>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+
+        <TransactionSummary
+          specifics={dummyTrans()}
+          transactionFunc={async () => {
+            if (getMinted() != null && getCollateral() != null) {
+              setCanAnimate(true);
+              setModalVisible(false);
+              setLoading(true);
+              try {
+                const res = await openCDP(
+                  getCollateral(),
+                  getMinted(),
+                  commitChecked,
+                  toWallet,
+                );
+                if (res.alert) {
+                  navigate("/manage");
+                  dispatch(setAlert(res.text));
+                }
+              } catch (e) {
+                handleTxError(e, "Error minting CDP");
+              }
+              setCanAnimate(false);
+              setLoading(false);
+            }
+          }}
+          cancelCallback={() => setModalVisible(false)}
+        
+          commit={commitChecked}
+        />
+      </Modal>
     </div>
 }
+
+const Container = styled.div`
+    display: grid;
+    grid-template-columns: repeat(2, 49%);
+    column-gap: 2%;
+`
+
+const SubContainer = styled.div`
+    position: relative;
+`
+const Background = styled.div`
+    margin-top: 30px;
+    background: #131c44; 
+    border-radius: 10px;
+`
+const Title = styled.div`
+    display: flex;
+    justify-content: center; 
+    text-align: center; 
+    padding: 20px 0px 20px;
+`
+
+const InputContainer = styled.div`
+    background: rgba(13, 18, 39, .75); 
+    border-radius: 10px;
+`
+
+const InputDetails = styled.div`
+display: grid;
+grid-template-columns:repeat(3, 30%); 
+row-gap: 30px; 
+justify-content: center;
+padding: 30px 0px 30px;
+border-radius: 10px;
+`
+
+const Item = styled.div`
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+`
+const MaxButton = styled.button`
+    color: #01d1ff;
+    background: none;
+    border: none;
+    margin-top: 50px;
+    cursor: pointer;
+    font-size: 12px;
+`
+const Valuation = styled.div`
+    margin-left: 25px;
+    margin-top: 3px;
+    font-size: 12px;
+    color: #999696;
+`
+const Input = styled.input`
+  padding-top: 35px;
+  border-radius: 0;
+  height: 30px;
+  width 80%;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-bottom 2px solid #01d1ff;
+  opacity: 100%;
+  font-size: 20px;
+  background: none;
+  margin-left: 25px;
+  &:focus {
+      outline-width: 0;
+    }
+`
+
+//modal stuff
+const InputTitle = styled.text`
+  font-weight: bold;
+  font-size: 16px;
+`;
+const InputSubtitle = styled.text`
+  font-weight: normal;
+  font-size: 12px;
+  margin: 3px 3px 3px 4px;
+`;
+
+function dummyTrans() {
+  if (getMinted() == null || getCollateral() == null) {
+    return [
+      {
+        title: "Collateral Staked",
+        value: "x Algos",
+      },
+      {
+        title: "GARD to Be Minted",
+        value: "Minimum 1 GARD",
+      },
+      {
+        title: "Collateralization Ratio",
+        value: "...",
+      },
+      {
+        title: "Liquidation Price (in ALGO/USD)",
+        value: "...",
+      },
+      {
+        title: "Transaction Fee",
+        value: "...",
+      },
+    ];
+  } else {
+    return [
+      {
+        title: "Collateral Staked",
+        value: getCollateral() + " Algos",
+      },
+      {
+        title: "GARD to Be Minted",
+        value: getMinted() + " GARD",
+      },
+      {
+        title: "Collateralization Ratio",
+        value: displayRatio(),
+      },
+      {
+        title: "Liquidation Price",
+        value: displayLiquidationPrice(),
+      },
+      {
+        title: "Transaction Fee",
+        value: displayFees(),
+      },
+    ];
+  }
+}
+
+export function CDPsToList() {
+  const CDPs = getCDPs();
+  let res = [];
+  if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
+      const accountCDPs = CDPs[getWalletInfo().address];
+      for (const [cdpID, value] of Object.entries(accountCDPs)) {
+      if (value["state"] == "open") {
+          res.push({
+          id: cdpID,
+          liquidationPrice: (
+              (1.15 * value["debt"]) /
+              value["collateral"]
+          ).toFixed(4),
+          collateral: value["collateral"],
+          debt: value["debt"],
+          committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
+          });
+      }
+      }
+  }
+  if (res.length == 0) {
+      res = dummyCDPs;
+  }
+  return res;
+}
+const dummyCDPs = [
+  {
+    id: "N/A",
+    liquidationPrice: 0,
+    collateral: 0,
+    debt: 0,
+  },
+];

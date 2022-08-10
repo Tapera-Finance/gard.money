@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
-import TextButton from "./TextButton";
-import styled, { css } from "styled-components";
+import { microalgosToAlgos } from "algosdk";
+import styled from "styled-components";
 import { getCDPs, getPrice } from "../transactions/cdp";
 import { getWalletInfo } from "../wallets/wallets";
-import { microalgosToAlgos } from "algosdk";
 import { Slider, ThemeProvider } from "@mui/material";
 import { ThemeContext } from "../contexts/ThemeContext";
+import Details from "./Details";
+import ManageCDP from "./ManageCDP";
+import PrimaryButton from "./PrimaryButton";
+import TextButton from "./TextButton";
 
 const mGardToGard = (num) => {
     return num / 1000000;
@@ -47,9 +50,52 @@ const dummyCDPs = [
   
 
 export default function Positions() {
+    var details = [
+        {
+            title: "Collateral",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Received DAI",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Liquidation Price",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Received DAI",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "ETH exposure",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Stability Fee",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Liquidation ratio",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "DAI avaible from ETH",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+    ]
     const {theme} = useContext(ThemeContext);
     const [price, setPrice] = useState(0)
     const loadedCDPs = CDPsToList();
+    const [currentCDP, setCurrentCDP] = useState(null)
     useEffect(async () => {
         setPrice(await getPrice());
     }, []);
@@ -84,7 +130,27 @@ export default function Positions() {
                         
                     </div>
                 </PositionInfo>
-                <TextButton positioned={true} text="Click to Expand"/>
+                {cdp.id === currentCDP ? <div>
+                    <ManageCDP cdpID={currentCDP}/>
+                    <div style={{position:"relative", top:-65}}>
+                        <Details details={details}/>
+                        <PrimaryButton
+                        positioned={true}
+                        exit={true}
+                        text="Exit"
+                        onClick={() => {
+                            setCurrentCDP(null)
+                        }}
+                        />
+                    </div>
+                    
+                </div> :<TextButton
+                 positioned={true} 
+                 text="Click to Expand"
+                 onClick={() => {
+                    setCurrentCDP(cdp.id)
+                 }}
+                 />}
             </Position>
              )
             })
@@ -104,7 +170,7 @@ const Header = styled.div`
 `
 
 const Container = styled.div`
-    margin: 10px 0px 80px;
+    margin: 10px 0px 40px;
 `
 
 const Position = styled.div`
