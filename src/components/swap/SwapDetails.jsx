@@ -275,7 +275,7 @@ export default function SwapDetails() {
     assetA.amount = assetAtotal;
     assetB.amount = assetBtotal;
     let newLeft = previewSwap(assetA, assetB, {
-      swapTo: rightSelectVal === assetB.type ? assetB : assetA,
+      swapTo: rightSelectVal === assetA.type ? assetB : assetA,
     });
     // setLoading(true);
     if (newLeft.calcResult) {
