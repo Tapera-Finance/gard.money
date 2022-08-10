@@ -254,7 +254,7 @@ export default function BorrowContent(){
 var supplyDetails = [
   {
       title: "Borrow Limit",
-      val: `${maxGARD}`,
+      val: `$${maxGARD}`,
       hasToolTip: true,
   },
   {
@@ -279,8 +279,8 @@ var borrowDetails = [
         hasToolTip: true,
     },
     {
-        title: "Borrow Limit",
-        val: `$${0.00}%`,
+        title: "Borrow Rewards",
+        val: `${0.00}%`,
         hasToolTip: true,
     },];
     return <div>
