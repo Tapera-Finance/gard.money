@@ -2,6 +2,7 @@ export const CONTENT_NAMES = {
   HOME: "Home",
   DASHBOARD: "Dashboard",
   WALLET: "Wallet",
+  ACTIONS: "Actions",
   MINT: "New CDP",
   REPAY: "Manage CDPs",
   AUCTIONS: "Auctions",
@@ -31,7 +32,3 @@ if (localStorageVersion != VERSION) {
   localStorage.clear();
 }
 localStorage.setItem("version", VERSION);
-
-
-// develop swap in parallel to live app, use flag to change which component connects to router
-export const APPVERSION = "V2";
