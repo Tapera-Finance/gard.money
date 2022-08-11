@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import PageToggle from "./PageToggle";
-import LoadingOverlay from "../LoadingOverlay";
-import SwapDetails from "./SwapDetails";
-
+import PageToggle from "../components/PageToggle";
+import LoadingOverlay from "../components/LoadingOverlay";
+import SwapDetails from "../components/swap/SwapDetails";
+import PoolDetails from "../components/pool/PoolDetails"
 /**
  * Components
  * @component SwapContainer
  * container for Swap & Pool, to go on page SwapContent
  */
 
-export default function SwapContainer() {
+export default function ActionsContainer() {
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [selectedTab, setSelectedTab] = useState("swap");

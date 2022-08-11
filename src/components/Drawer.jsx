@@ -452,7 +452,7 @@ const menuItems = [
     name: CONTENT_NAMES.ACTIONS,
     icon: swapIcon,
     subOptions: [],
-    route: "/swap",
+    route: "/actions",
   },
   {
     name: CONTENT_NAMES.WALLET,

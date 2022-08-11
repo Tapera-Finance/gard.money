@@ -9,7 +9,7 @@ import WalletContent from "../pages/WalletContent";
 import MintContent from "../pages/MintContent";
 import RepayContent from "../pages/RepayContent";
 import AuctionsContent from "../pages/AuctionsContent";
-import SwapContent from "../pages/SwapContent";
+import ActionsContent from "../pages/ActionsContent";
 import DaoContent from "../pages/DaoContent";
 import AlgoGovernanceContent from "../pages/AlgoGovernanceContent";
 import PrimaryButton from "./PrimaryButton";
@@ -210,8 +210,8 @@ function MainContentHandler({ content, walletAddress }) {
       return <RepayContent />;
     case CONTENT_NAMES.AUCTIONS:
       return <AuctionsContent />;
-    case CONTENT_NAMES.SWAP:
-      return <SwapContent />;
+    case CONTENT_NAMES.ACTIONS:
+      return <ActionsContent />;
     case CONTENT_NAMES.DAO:
       return <DaoContent />;
     case CONTENT_NAMES.ALGO_GOVERNANCE:

@@ -18,7 +18,6 @@ import {
 } from "./swapHelpers";
 import {
   gardpool,
-  algoGardRatio,
   swap,
   exchangeRatioAssetXtoAssetY,
 } from "../../transactions/swap";
