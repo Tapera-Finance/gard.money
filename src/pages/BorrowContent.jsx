@@ -3,12 +3,10 @@ import styled from "styled-components";
 import Details from "../components/Details";
 import Effect from "../components/Effect";
 import LoadingOverlay from "../components/LoadingOverlay";
-import Modal from "../components/Modal";
 import Positions from "../components/Positions";
 import PrimaryButton from "../components/PrimaryButton";
 import RewardNotice from "../components/RewardNotice";
 import ToolTip from "../components/ToolTip";
-import TransactionSummary from "../components/TransactionSummary";
 import {
   getWallet,
   getWalletInfo,
@@ -374,10 +372,24 @@ var borrowDetails = [
               <PrimaryButton 
               positioned={true} 
               text="Borrow" 
-              disabled={cAlgos == ""}
-              onClick={() => {
-                setCanAnimate(true);
-                setModalVisible(true);
+              disabled={cAlgos == "" || mGARD == ""}
+              onClick={async () => {
+                setLoading(true)
+                try {
+                  const res = await openCDP(
+                    getCollateral(),
+                    getMinted(),
+                    commitChecked,
+                    toWallet,
+                  );
+                  if (res.alert) {
+                    setCreatePositionShown(false)
+                    dispatch(setAlert(res.text));
+                  }
+                } catch (e) {
+                  handleTxError(e, "Error minting CDP");
+                }
+                setLoading(false)
               }}
               />
           </SubContainer>
@@ -397,111 +409,6 @@ var borrowDetails = [
         }}
         />
       </div>}
-      
-      <Modal
-        visible={modalVisible}
-        close={() => setModalVisible(false)}
-        animate={canAnimate}
-        title="Are you sure you want to proceed?"
-        subtitle="Review the details of this transaction to the right and
-                    click “Confirm Transaction” to proceed."
-      
-        mint = {Date.now() < commitmentPeriodEnd}
-      >
-        {Date.now() < commitmentPeriodEnd ? (
-          <div style={{ marginBottom: 6 }}>
-            <div style={{ marginBottom: 4 }}>
-              <InputTitle>
-                Optional: Commit CDP balance to governance?
-              </InputTitle>
-            </div>
-            <div>
-              <label
-                style={{
-                  display: "flex",
-                  alignContent: "center",
-                }}
-              >
-                <input
-                  type={"checkbox"}
-                  checked={commitChecked}
-                  onChange={handleCheckboxChange}
-                />
-                <InputSubtitle>
-                  {" "}
-                  <span style={{ fontWeight: "bold" }}>
-                    {commitChecked === false ? 0 : cAlgos}{" "}
-                  </span>{" "}
-                  Algos will be committed
-                </InputSubtitle>
-              </label>
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
-        {commitChecked ? (
-          <div style={{ marginBottom: 6 }}>
-            <div style={{ marginBottom: 4 }}>
-              <InputTitle>
-                Send governance rewards directly to your ALGO wallet?
-              </InputTitle>
-            </div>
-            <div>
-              <label
-                style={{
-                  display: "flex",
-                  alignContent: "center",
-                }}
-              >
-                <input
-                  type={"checkbox"}
-                  checked={toWallet}
-                  onChange={handleCheckboxChange1}
-                />
-                <InputSubtitle>
-                  Governance rewards will be sent to your{" "}
-                  <span style={{ fontWeight: "bold" }}>
-                    {toWallet ? "ALGO Wallet" : "CDP"}
-                  </span>
-                </InputSubtitle>
-              </label>
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
-
-        <TransactionSummary
-          specifics={dummyTrans()}
-          transactionFunc={async () => {
-            if (getMinted() != null && getCollateral() != null) {
-              setCanAnimate(true);
-              setModalVisible(false);
-              setLoading(true);
-              try {
-                const res = await openCDP(
-                  getCollateral(),
-                  getMinted(),
-                  commitChecked,
-                  toWallet,
-                );
-                if (res.alert) {
-                  navigate("/manage");
-                  dispatch(setAlert(res.text));
-                }
-              } catch (e) {
-                handleTxError(e, "Error minting CDP");
-              }
-              setCanAnimate(false);
-              setLoading(false);
-            }
-          }}
-          cancelCallback={() => setModalVisible(false)}
-        
-          commit={commitChecked}
-        />
-      </Modal>
     </div>
 }
 

@@ -131,7 +131,7 @@ export default function Positions() {
                     </div>
                 </PositionInfo>
                 {cdp.id === currentCDP ? <div>
-                    <ManageCDP cdpID={currentCDP}/>
+                    <ManageCDP cdp={cdp} price={price} setCurrentCDP={setCurrentCDP}/>
                     <div style={{position:"relative", top:-65}}>
                         <Details details={details}/>
                         <PrimaryButton

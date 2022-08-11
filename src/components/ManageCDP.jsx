@@ -5,14 +5,12 @@ import styled, {css} from "styled-components";
 import Effect from "./Effect";
 import ToolTip from "./ToolTip";
 import PrimaryButton from "./PrimaryButton";
-import Modal from "./Modal";
-import TransactionSummary from "./TransactionSummary";
-import { addCollateral } from "../transactions/cdp";
-import WrappedSummary from "./WrappedSummary";
+import { addCollateral, mint } from "../transactions/cdp";
 import { handleTxError } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
+import LoadingOverlay from "./LoadingOverlay";
 
-export default function ManageCDP({cdpID}){
+export default function ManageCDP({cdp, price, setCurrentCDP}){
     const [supplyInput, setSupplyInput] = useState(0);
     const [supplyPrice, setSupplyPrice] = useState(0);
     const [borrowInput, setBorrowInput] = useState(0);
@@ -38,7 +36,14 @@ export default function ManageCDP({cdpID}){
     var supplyDetails = [
         {
             title: "Borrow Limit",
-            val: `${0.00}%`,
+            val: `${Math.max(
+                0,
+                Math.trunc(
+                  (100 * ((price * cdp.collateral) / 1000000)) /
+                    1.4 -
+                    (100 * cdp.debt) / 1000000,
+                ) / 100,
+              )}`,
             hasToolTip: true,
         },
         {
@@ -67,8 +72,16 @@ export default function ManageCDP({cdpID}){
             val: `${0.00}%`,
             hasToolTip: true,
         },];
-        
+
+    var sessionStorageSetHandler = function (e) {
+        setLoadingText(JSON.parse(e.value));
+        };
+    
+        document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+    
+    
     return <div>
+            {loading ? <LoadingOverlay text={loadingText} /> : <></>}
             <Container>
             <SubContainer>
                 <Background>
@@ -89,7 +102,7 @@ export default function ManageCDP({cdpID}){
                                 <ToolTip toolTip={"+MAX"} toolTipText={"Click to lend maximum amount"}/>
                             </MaxButton>
                         </div>
-                        <Valuation>$Value: ${(supplyInput * supplyPrice).toFixed(2)}</Valuation>
+                        <Valuation>$Value: ${(additionalSupply * price).toFixed(2)}</Valuation>
                         <InputDetails>
                             {supplyDetails.length && supplyDetails.length > 0 ?
                             supplyDetails.map((d) => {
@@ -107,10 +120,22 @@ export default function ManageCDP({cdpID}){
                 <PrimaryButton
                 positioned={true}
                 text="Supply More"
-                onClick={() => {
-                    setModalVisible(true);
-                    setModalCanAnimate(true);
-                  }}
+                onClick={ async () => {
+                    setLoading(true);
+                    try {
+                        let res = await addCollateral(
+                          cdp.id,
+                          additionalSupply,
+                        );
+                        if (res.alert) {
+                          dispatch(setAlert(res.text));
+                        }
+                      } catch (e) {
+                        handleTxError(e, "Error minting from CDP");
+                      }
+                    setLoading(false);
+                    setCurrentCDP(null);
+                }}
                 />
             </SubContainer>
             <SubContainer>
@@ -132,7 +157,7 @@ export default function ManageCDP({cdpID}){
                                 <ToolTip toolTip={"+MAX"} toolTipText={"Click to lend maximum amount"}/>
                             </MaxButton>
                         </div>
-                        <Valuation>$Value: ${(supplyInput * supplyPrice).toFixed(2)}</Valuation>
+                        <Valuation>$Value: ${(additionalBorrow * 1).toFixed(2)}</Valuation>
                         <InputDetails>
                             {borrowDetails.length && borrowDetails.length > 0 ?
                             borrowDetails.map((d) => {
@@ -150,47 +175,25 @@ export default function ManageCDP({cdpID}){
                 <PrimaryButton
                 positioned={true}
                 text="Borrow More"
-                onClick={() => {
-                    console.log("borrow", additionalBorrow);
+                onClick={ async () => {
+                    setLoading(true);
+                    try {
+                        let res = await mint(
+                          cdp.id,
+                          additionalBorrow,
+                        );
+                        if (res.alert) {
+                          dispatch(setAlert(res.text));
+                        }
+                      } catch (e) {
+                        handleTxError(e, "Error minting from CDP");
+                      }
+                    setLoading(false);
+                    setCurrentCDP(null);
                 }}
                 />
             </SubContainer>
         </Container>
-        <Modal
-        title={"Supply More ALGOs"}
-        subtitle={"Complete the details of this transaction to the right and click “Confirm Transaction” to supply more ALGO."}
-        animate={modalCanAnimate}
-        visible={modalVisible}
-        close={() => setModalVisible(false)}
-    >
-        <TransactionSummary
-              specifics={[]}
-              transactionFunc={async () => {
-                setModalCanAnimate(true);
-                setModalVisible(false);
-                setLoading(true);
-                try {
-                  let res = await addCollateral(
-                    cdpID,
-                    additionalSupply,
-                  );
-                  if (res.alert) {
-                    dispatch(setAlert(res.text));
-                  }
-                } catch (e) {
-                  handleTxError(e, "Error minting from CDP");
-                }
-                setModalCanAnimate(false);
-                setLoading(false);
-              }}
-              cancelCallback={() => setModalVisible(false)}
-            >
-              <WrappedSummary
-                context="add_collateral"
-                transactionData={1}
-              ></WrappedSummary>
-            </TransactionSummary>
-    </Modal>
 </div>
     
 }
