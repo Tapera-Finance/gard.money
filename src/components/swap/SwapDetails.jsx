@@ -1,45 +1,28 @@
-import React, { useState, useEffect, useReducer } from "react";
-import styled, { css } from "styled-components";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setAlert } from "../../redux/slices/alertSlice";
+import styled from "styled-components";
 import ExchangeField from "../ExchangeField";
-import InputField from "../InputField";
+import Effect from "../Effect";
+import PrimaryButton from "../PrimaryButton";
+import LoadingOverlay from "../LoadingOverlay";
+import swapIcon from "../../assets/icons/swap_icon_v2.png";
+import { handleTxError } from "../../wallets/wallets";
+import { gardID } from "../../transactions/ids";
 import {
   mAlgosToAlgos,
-  algosTomAlgos,
   previewSwap,
   empty,
+  getBalances,
+  convertToDollars,
 } from "./swapHelpers";
-import {
-  getGARDInWallet,
-  getWalletInfo,
-  handleTxError,
-} from "../../wallets/wallets";
-import { formatToDollars } from "../../utils";
-import swapIcon from "../../assets/icons/swap_icon_v2.png";
 import {
   gardpool,
   algoGardRatio,
   swap,
   exchangeRatioAssetXtoAssetY,
 } from "../../transactions/swap";
-import Effect from "../Effect";
-import TransactionSummary from "../TransactionSummary";
-import PrimaryButton from "../PrimaryButton";
-import Modal from "../Modal";
-import LoadingOverlay from "../LoadingOverlay";
-import { gardID } from "../../transactions/ids";
-import { useDispatch } from "react-redux";
-import { setAlert } from "../../redux/slices/alertSlice";
-/**
- * local utils
- */
 
-const prices = {
-  algo: gardpool.calculator.primaryAssetPrice,
-  gard: gardpool.calculator.secondaryAssetPrice,
-};
-const defaultPool = "ALGO/GARD";
-const pools = [defaultPool];
-const slippageTolerance = 0.005;
 const initEffectState = {
   primaryAssetPriceAfterSwap: 0.0,
   secondaryAssetPriceAfterSwap: 0.0,
@@ -50,34 +33,28 @@ const initEffectState = {
 
 export default function SwapDetails() {
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalCanAnimate, setModalCanAnimate] = useState(false);
-
-  const [waitingText, setWaitingText] = useState("fetching...");
   const [loadingText, setLoadingText] = useState(null);
 
+  // input hooks
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState(1);
-  const [algoToGardRatio, setAlgoToGardRatio] = useState("Loading...");
+
+  // account
   const [balanceX, setBalanceX] = useState("...");
   const [balanceY, setBalanceY] = useState("...");
 
+  // assets
+  const [algoToGardRatio, setAlgoToGardRatio] = useState("Loading...");
   const [assetAtype, setAssetAtype] = useState("ALGO");
   const [assetBtype, setAssetBtype] = useState("GARD");
-
   const [assetAtotal, setAssetAtotal] = useState(0);
   const [assetBtotal, setAssetBtotal] = useState(0);
-
   const [assetAid, setAssetAid] = useState(0);
   const [assetBid, setAssetBid] = useState(gardID);
   const [pool, setPool] = useState(gardpool);
   const [swapEffect, setSwapEffect] = useState(initEffectState);
 
-  const [leftSelectVal, setLeftSelectVal] = useState("ALGO");
-  const [rightSelectVal, setRightSelectVal] = useState("GARD");
-  const [leftInputAmt, setLeftInputAmt] = useState(0);
-  const [rightInputAmt, setRightInputAmt] = useState(0);
-
+  // effects
   const [rightDollars, setRightDollars] = useState(0);
   const [leftDollars, setLeftDollars] = useState(0);
   const [priceImpactA, setPriceImpactA] = useState(0);
@@ -88,8 +65,13 @@ export default function SwapDetails() {
   const [feeRate, setFeeRate] = useState(0.01);
   const [minimumReceived, setMinimumReceived] = useState(0);
 
-  const [rightChange, setRightChange] = useState(false);
+  // form control
+  const [leftSelectVal, setLeftSelectVal] = useState("ALGO");
+  const [rightSelectVal, setRightSelectVal] = useState("GARD");
+  const [leftInputAmt, setLeftInputAmt] = useState(0);
+  const [rightInputAmt, setRightInputAmt] = useState(0);
   const [leftChange, setLeftChange] = useState(false);
+  const [rightChange, setRightChange] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [getBal, setGetBal] = useState(false);
   const dispatch = useDispatch();
@@ -150,11 +132,6 @@ export default function SwapDetails() {
     },
   ];
 
-  function convertToDollars(amt, idx) {
-    let result = formatToDollars(amt * prices[idx]);
-    return result;
-  }
-
   function localPreviewSwap() {
     let effect = initEffectState;
     let swap;
@@ -185,10 +162,37 @@ export default function SwapDetails() {
     setSwapEffect(effect);
   }
 
-  function handleSwap() {
-    localPreviewSwap();
-    setModalCanAnimate(true);
-    setModalVisible(true);
+  async function handleSwap() {
+    setLoading(true);
+    try {
+      let res;
+      let swapTo;
+
+      if (leftSelectVal === assetA.type && rightSelectVal === assetB.type) {
+        swapTo = assetB;
+      } else if (
+        leftSelectVal === assetB.type &&
+        rightSelectVal === assetA.type
+      ) {
+        swapTo = assetA;
+      }
+      res = await swap(
+        assetA,
+        assetB,
+        leftInputAmt,
+        rightInputAmt,
+        swapTo,
+        slippageTolerance,
+      );
+      if (res.alert) {
+        dispatch(setAlert(res.text));
+        setLoading(false);
+      }
+    } catch (e) {
+      handleTxError(e, "Error exchanging assets");
+    }
+    setLoading(false);
+    setGetBal(true);
   }
 
   function handleSwapButton() {
@@ -292,14 +296,6 @@ export default function SwapDetails() {
     }
   }, [rightChange]);
 
-  useEffect(() => {
-    if (!loading) {
-      setWaitingText("");
-    } else {
-      setWaitingText("fetching...");
-    }
-  }, [loading]);
-
   // fetch ratio
   useEffect(async () => {
     let ratio = await algoGardRatio();
@@ -355,15 +351,10 @@ export default function SwapDetails() {
   }, [swapEffect]);
 
   useEffect(() => {
-    let balX = getWalletInfo()
-      ? mAlgosToAlgos(getWalletInfo().amount).toFixed(2)
-      : 0;
-    let balY = getWalletInfo()
-      ? mAlgosToAlgos(getGARDInWallet()).toFixed(2)
-      : 0;
+    let balX = getBalances()[leftSelectVal.toLowerCase()];
+    let balY = getBalances()[rightSelectVal.toLowerCase()];
     setBalanceX(balX);
     setBalanceY(balY);
-    setGetBal(false);
   }, [getBal]);
 
   return (
@@ -444,91 +435,9 @@ export default function SwapDetails() {
             : null}
         </Details>
       </DetailsContainer>
-      <TransactionContainer>
-        <Modal
-          title="Are you sure you want to proceed?"
-          subtitle="Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
-          visible={modalVisible}
-          animate={modalCanAnimate}
-          close={() => setModalVisible(false)}
-        >
-          <TransactionSummary
-            specifics={[
-              {
-                title: "You are offering ",
-                value: `${leftInputAmt} ${leftSelectVal}`,
-                token: `${leftSelectVal}`,
-              },
-              {
-                title: "You are receiving a minimum of ",
-                value: `${rightInputAmt} ${rightSelectVal}`,
-                token: `${rightSelectVal}`,
-              },
-              {
-                title: "Transaction Fee",
-                value: `${feeRate} Algos`,
-              },
-            ]}
-            transactionFunc={async () => {
-              setModalCanAnimate(true);
-              setModalVisible(false);
-              setLoading(true);
-              try {
-                let res;
-                let swapTo;
-
-                if (
-                  leftSelectVal === assetA.type &&
-                  rightSelectVal === assetB.type
-                ) {
-                  swapTo = assetB;
-                } else if (
-                  leftSelectVal === assetB.type &&
-                  rightSelectVal === assetA.type
-                ) {
-                  swapTo = assetA;
-                }
-                res = await swap(
-                  assetA,
-                  assetB,
-                  leftInputAmt,
-                  rightInputAmt,
-                  swapTo,
-                  slippageTolerance,
-                );
-                if (res.alert) {
-                  dispatch(setAlert(res.text));
-                  setLoading(false);
-                }
-              } catch (e) {
-                handleTxError(e, "Error exchanging assets");
-              }
-              setModalCanAnimate(false);
-              setLoading(false);
-              setGetBal(true);
-            }}
-            cancelCallback={() => setModalVisible(false)}
-          ></TransactionSummary>
-        </Modal>
-      </TransactionContainer>
     </div>
   );
 }
-
-const TransactionContainer = styled.div``;
-
-const InputTitle = styled.text``;
-
-const SlippageField = styled(InputField)`
-  appearance: none;
-  background: #0d1227;
-  width: 16vw;
-  height: 6vh;
-  border-radius: 8px;
-  border: 1px transparent;
-  opacity: 65%;
-  text-decoration: underline;
-`;
 
 const BtnBox = styled.div`
   display: flex;

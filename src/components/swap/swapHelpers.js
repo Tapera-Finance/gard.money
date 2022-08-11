@@ -1,12 +1,12 @@
-import {
-  estimateReturn,
-  previewPoolSwap,
-  gardpool,
-  getPools,
-  pactClient,
-} from "../../transactions/swap";
-import pactsdk from "@pactfi/pactsdk";
+import { estimateReturn, gardpool } from "../../transactions/swap";
+import { getWalletInfo, getGARDInWallet } from "../../wallets/wallets";
 import { gardID } from "../../transactions/ids";
+import { formatToDollars } from "../../utils";
+
+const prices = {
+  algo: gardpool.calculator.primaryAssetPrice,
+  gard: gardpool.calculator.secondaryAssetPrice,
+};
 
 export const mAlgosToAlgos = (num) => {
   return num / 1000000;
@@ -16,14 +16,21 @@ export const algosTomAlgos = (num) => {
   return num * 1000000;
 };
 
-export const mGardToGard = (num) => {
-  return num / 1000000;
-};
-
-export const targetPool = (assetNameX, assetNameY) =>
-  `${assetNameX}/${assetNameY}`;
-
 export const empty = (value) => value === 0 || value === "";
+
+export const convertToDollars = (amt, idx) =>
+  formatToDollars(amt * prices[idx]);
+
+export const getBalances = () =>
+  !getWalletInfo()
+    ? {
+        algo: mAlgosToAlgos(getWalletInfo().amount).toFixed(2),
+        gard: mAlgosToAlgos(getGARDInWallet()).toFixed(2),
+      }
+    : {
+        algo: 0,
+        gard: 0,
+      };
 
 /**
  * Component Helpers
@@ -46,8 +53,7 @@ export function calcTransResult(amount, totalX, totalY, slippageTolerance) {
 }
 
 /**
- * use asset pairings to logically determine direction of swap, decoupling it from the front end state
- *
+ * preview based on selected asset pairning, input, pool amounts
  * @param {object} assetA - has type, amount, id
  * @param {object} assetB
  * /**
@@ -56,10 +62,6 @@ export function calcTransResult(amount, totalX, totalY, slippageTolerance) {
  * pass to calculator with amount to swap, pool total
  * of id of the received assed, pool total of id of
  * the given asset, params.
- * ensures that estimate return always receives
- * arguments the same way independent of frontend
- * state
- * also independent of what these assets are
  */
 
 export function previewSwap(assetA, assetB, params) {

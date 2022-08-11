@@ -57,7 +57,7 @@ export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
 export const algoGardRatio = async () =>
   exchangeRatioAssetXtoAssetY(
     mAlgosToAlgos(gardpool.calculator.primaryAssetPrice),
-    mGardToGard(gardpool.calculator.secondaryAssetPrice),
+    mAlgosToAlgos(gardpool.calculator.secondaryAssetPrice),
   );
 
 /**
