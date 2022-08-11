@@ -381,7 +381,7 @@ var borrowDetails = [
       {cdps == dummyCDPs ? <></> :
       <div>
         <PrimaryButton
-        text={createPositionShown ? "Exit" : "Create Position"}
+        text={createPositionShown ? "Exit" : "Create New Position"}
         purple={!createPositionShown}
         positioned={createPositionShown}
         onClick={() => {
