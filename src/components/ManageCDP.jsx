@@ -210,7 +210,7 @@ const SubContainer = styled.div`
 `
 const Background = styled.div`
     margin-top: 30px;
-    background: #131c44; 
+    background: #1b2d65;
     border-radius: 10px;
 `
 const Title = styled.div`
