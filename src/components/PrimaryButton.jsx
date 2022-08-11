@@ -6,10 +6,10 @@ import styled, { css } from "styled-components";
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit }) {
+export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, govern }) {
 
   return (
-    <Button variant={variant} disabled={disabled} positioned={positioned} exit={exit} onClick={() => onClick()}>
+    <Button variant={variant} disabled={disabled} positioned={positioned} exit={exit} govern={govern} onClick={() => onClick()}>
       <ButtonText variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
@@ -47,6 +47,12 @@ const Button = styled.button`
       background-color: #7c52ff;
       border: none;
       z-index: 1;
+    `}
+  ${(props) =>
+    props.govern &&
+    css`
+      border: none;
+      background-color: #019fff;
     `}
   ${(props) =>
     props.disabled &&

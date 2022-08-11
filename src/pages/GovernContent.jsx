@@ -106,21 +106,12 @@ const CountText = styled.text`
   `
 const dummyCommits = [
 {
-    Account: "Lorem ippsum dol...",
-    Balance: "Dec 29, 2021",
-    APY: "59%",
-    "" : (
-    <PrimaryButton
-        text="Commit"
-    />
-    )
-},
-{
     Account: "123456",
     Balance: "Dec 29, 2021",
-    APY: "59%",
+    APY: "4.5%",
     "" : (
     <PrimaryButton
+      govern={true}
         text="Commit"
     />
     )
@@ -128,9 +119,10 @@ const dummyCommits = [
 {
     Account: "123456",
     Balance: "Closed",
-    APY: "59%",
+    APY: "4.5%",
     "" : (
     <PrimaryButton
+      govern={true}
         text="Commit"
     />
     )
@@ -145,28 +137,31 @@ const dummyVotes = [
       votesOutstanding: "37%",
       "" : (
         <PrimaryButton
+          govern={true}
           text="Vote"
         />
       )
     },
     {
-      nameOfProposal: "123456",
+      nameOfProposal: "Lorem ippsum dol...",
       votesCloses: "Dec 29, 2021",
       votesInFavor: "59%",
       votesOutstanding: "37%",
       "" : (
         <PrimaryButton
+          govern={true}
           text="Vote"
         />
       )
     },
     {
-      nameOfProposal: "123456",
+      nameOfProposal: "Lorem ippsum dol...",
       votesCloses: "Closed",
       votesInFavor: "59%",
       votesOutstanding: "36%",
       "" : (
         <PrimaryButton
+          govern={true}
           text="Vote"
         />
       )
