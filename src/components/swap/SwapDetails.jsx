@@ -8,7 +8,7 @@ import PrimaryButton from "../PrimaryButton";
 import LoadingOverlay from "../LoadingOverlay";
 import swapIcon from "../../assets/icons/swap_icon_v2.png";
 import { getWalletInfo, handleTxError } from "../../wallets/wallets";
-import { gardID } from "../../transactions/ids";
+import { gardID, usdcID } from "../../transactions/ids";
 import {
   mAlgosToAlgos,
   previewSwap,
@@ -19,6 +19,7 @@ import {
 import {
   gardpool,
   swap,
+  pactClient,
   exchangeRatioAssetXtoAssetY,
 } from "../../transactions/swap";
 
@@ -31,7 +32,17 @@ const initEffectState = {
 };
 
 
+
+
+
 export default function SwapDetails() {
+  (async () => {
+
+    console.log(await pactClient.fetchPoolsByAssets(0, 31566704))
+    console.log("ahh ",await pactClient.fetchPoolsByAssets(usdcID, gardID))
+  })()
+
+
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
 

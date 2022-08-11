@@ -3,7 +3,7 @@ import {
   gardID,
   gainID,
   gardianID,
-  pactGARDID,
+  pactALGOGARDID,
   pactAlgoGardPoolAddress,
 } from "./ids";
 import {
@@ -26,7 +26,7 @@ import {
 } from "../components/swap/swapHelpers";
 
 export const pactClient = new pactsdk.PactClient(algodClient);
-export const gardpool = await pactClient.fetchPoolById(pactGARDID);
+export const gardpool = await pactClient.fetchPoolById(pactALGOGARDID);
 
 export async function previewPoolSwap(
   pool,
@@ -152,7 +152,7 @@ export async function swap(
 
   let txn2 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
-    appIndex: pactGARDID,
+    appIndex: pactALGOGARDID,
     onComplete: 0,
     appArgs: [enc.encode("SWAP"), algosdk.encodeUint64(minimum)],
     foreignAssets: f_a,

@@ -4,6 +4,12 @@ import { VERSION } from "../globals";
 let _gainID = 73680771;
 let _gardID = 73680809;
 let _gardianID = 692432647;
+let _usdcID;
+
+// pact pool ids
+let _pactALGOGARDID;
+let _pactUSDCGARDID;
+let _pactALGOUSDID;
 
 // App ids
 let _stakingID;
@@ -13,7 +19,6 @@ let _managerID;
 let _validatorID;
 let _treasuryID;
 let _oracleID;
-let _pactGARDID;
 let _checkerID;
 
 // swap recipients
@@ -25,6 +30,13 @@ if (VERSION == "MAINNET") {
   _gainID = 684649672;
   _gardID = 684649988;
   _gardianID = 692432647;
+  _usdcID = 31566704;
+
+// pact app ids
+  _pactUSDCGARDID = 701249684
+  _pactALGOGARDID = 801613881;
+  _pactALGOUSDID = 620995314;
+
 
   // App ids
   _stakingID = 684649809;
@@ -34,7 +46,6 @@ if (VERSION == "MAINNET") {
   _validatorID = 684650147;
   _treasuryID = 684650318;
   _oracleID = 673925841;
-  _pactGARDID = 801613881;
   _checkerID = 787191335;
 } else if (VERSION == "TESTNET1") {
   // ASAs
@@ -50,7 +61,6 @@ if (VERSION == "MAINNET") {
   _validatorID = 73680824;
   _treasuryID = 73680850;
   _oracleID = 53083112;
-  _pactGARDID = 801613881;
   _checkerID = 96679309;
 }
 
@@ -58,6 +68,13 @@ if (VERSION == "MAINNET") {
 export const gainID = _gainID;
 export const gardID = _gardID;
 export const gardianID = _gardianID;
+export const usdcID = _usdcID;
+
+// pact pool ids
+export const pactUSDCGARD = _pactUSDCGARDID;
+export const pactALGOGARDID = _pactALGOGARDID;
+export const pactALGOUSDID = _pactALGOUSDID
+
 
 // App ids
 export const stakingID = _stakingID;
@@ -67,7 +84,6 @@ export const managerID = _managerID;
 export const validatorID = _validatorID;
 export const treasuryID = _treasuryID;
 export const oracleID = _oracleID;
-export const pactGARDID = _pactGARDID;
 export const checkerID = _checkerID;
 
 // swap AlgoGardPoolAddress
