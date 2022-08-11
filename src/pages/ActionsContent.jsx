@@ -6,7 +6,7 @@ import PoolDetails from "../components/pool/PoolDetails"
 /**
  * Components
  * @component SwapContainer
- * container for Swap & Pool, to go on page SwapContent
+ * container for Swap & Pool, to go on page ActionsContent
  */
 
 export default function ActionsContainer() {

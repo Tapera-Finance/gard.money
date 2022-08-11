@@ -1,5 +1,5 @@
-import React, { createRef } from "react";
-import styled, { css } from "styled-components";
+import React from "react";
+import styled from "styled-components";
 import Select from "./Select";
 import InputField from "./InputField";
 import Effect from "./Effect";
@@ -75,7 +75,6 @@ export default function ExchangeField({
               </SelectContainer>
               <Text>
                 {
-                  // `${balances}`
                   `You have
               ${
                 balances[
@@ -188,7 +187,6 @@ const ExchangeSelect = styled(Select)`
   }
   &:hover {
     color: #ffffff;
-    /* border: 1px solid #01d1ff; */
   }
 `;
 
@@ -197,7 +195,6 @@ const Span = styled.label`
   color: #ffffff;
   margin-left: 15px;
   margin-bottom: -20px;
-  /* margin-bottom: */
 `;
 
 const Arrow = styled.img`
