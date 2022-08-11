@@ -15,7 +15,7 @@ export default function Select({
       value={value}
       onChange={callback}
     >
-      <option value="" selected disabled hidden>Select</option>
+      <option defaultValue="" disabled hidden>Select</option>
       {options.length > 0 ? (
         options.map((opt, idx) => {
           return <option key={idx}>{opt}</option>;

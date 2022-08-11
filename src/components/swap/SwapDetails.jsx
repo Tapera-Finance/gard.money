@@ -7,7 +7,7 @@ import Effect from "../Effect";
 import PrimaryButton from "../PrimaryButton";
 import LoadingOverlay from "../LoadingOverlay";
 import swapIcon from "../../assets/icons/swap_icon_v2.png";
-import { handleTxError } from "../../wallets/wallets";
+import { getWalletInfo, handleTxError } from "../../wallets/wallets";
 import { gardID } from "../../transactions/ids";
 import {
   mAlgosToAlgos,
@@ -30,6 +30,7 @@ const initEffectState = {
   liquidityFee: 0.0,
   exchangeRate: 0.0,
 };
+
 
 export default function SwapDetails() {
   const [loading, setLoading] = useState(false);
@@ -296,18 +297,6 @@ export default function SwapDetails() {
     }
   }, [rightChange]);
 
-  // fetch ratio
-  useEffect(async () => {
-    let ratio = await algoGardRatio();
-    if (algoToGardRatio !== "Loading...") {
-      setTimeout(() => {
-        setAlgoToGardRatio(ratio);
-      }, 180000);
-    } else if (ratio) {
-      setAlgoToGardRatio(ratio);
-    }
-  }, [algoToGardRatio]);
-
   // convert to dollars when inputs change
   useEffect(() => {
     let dollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
@@ -351,10 +340,12 @@ export default function SwapDetails() {
   }, [swapEffect]);
 
   useEffect(() => {
-    let balX = getBalances()[leftSelectVal.toLowerCase()];
-    let balY = getBalances()[rightSelectVal.toLowerCase()];
-    setBalanceX(balX);
-    setBalanceY(balY);
+    if (getWalletInfo()) {
+      let balX = getBalances()[leftSelectVal.toLowerCase()];
+      let balY = getBalances()[rightSelectVal.toLowerCase()];
+      setBalanceX(balX);
+      setBalanceY(balY);
+    }
   }, [getBal]);
 
   return (

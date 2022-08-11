@@ -168,7 +168,7 @@ export async function swap(
         assetIndex: toAsset.index,
       });
 
-  let txns = Array.isArray(optTxn) ? optTxn.concat([txn1, txn2]) : [txn1, txn2];
+  let txns = Array.isArray(optTxn) ? [txn1, txn2]  : optTxn.concat([txn1, txn2]);
   algosdk.assignGroupID(txns);
 
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
@@ -179,7 +179,7 @@ export async function swap(
   const response = await sendTxn(
     stxns,
     "Successfully swapped " +
-      formattedAmount / 1e6 +
+      formattedAmount / 1e6 + " " +
       fromAsset.name.toLocaleUpperCase(),
   );
 

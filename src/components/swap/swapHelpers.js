@@ -21,17 +21,12 @@ export const empty = (value) => value === 0 || value === "";
 export const convertToDollars = (amt, idx) =>
   formatToDollars(amt * prices[idx]);
 
-export const getBalances = () =>
-  !getWalletInfo()
-    ? {
-        algo: mAlgosToAlgos(getWalletInfo().amount).toFixed(2),
-        gard: mAlgosToAlgos(getGARDInWallet()).toFixed(2),
-      }
-    : {
-        algo: 0,
-        gard: 0,
-      };
-
+export const getBalances = () => {
+  return {
+    algo: mAlgosToAlgos(getWalletInfo().amount).toFixed(2),
+    gard: mAlgosToAlgos(getGARDInWallet()).toFixed(2),
+  };
+};
 /**
  * Component Helpers
  */

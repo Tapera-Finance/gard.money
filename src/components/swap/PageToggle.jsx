@@ -18,7 +18,7 @@ const [pool, setPool] = useState(false)
           }
         }} >Swap</Btn>
       </Box>
-      {/* <Box selected={pool}>
+      <Box selected={pool}>
         <Btn
         selected={pool}
         onClick={() => {
@@ -29,7 +29,7 @@ const [pool, setPool] = useState(false)
           }
         }}
         >Pool</Btn>
-      </Box> */}
+      </Box>
     </Bar>
   );
 }
