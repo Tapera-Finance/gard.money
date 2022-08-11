@@ -6,10 +6,10 @@ import styled, { css } from "styled-components";
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled, positioned }) {
+export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit }) {
 
   return (
-    <Button variant={variant} disabled={disabled} positioned={positioned}  onClick={() => onClick()}>
+    <Button variant={variant} disabled={disabled} positioned={positioned} exit={exit} onClick={() => onClick()}>
       <ButtonText variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
@@ -27,7 +27,7 @@ const Button = styled.button`
   cursor: pointer;
   border-radius: 6px;
   &:hover {
-    background-color: #381d77;
+    background-color: #6941c6;
   }
   ${(props) =>
     props.variant &&
@@ -44,8 +44,9 @@ const Button = styled.button`
       position: relative;
       bottom: 20px;
       margin: auto;
-      background-color: #6941c6;
+      background-color: #7c52ff;
       border: none;
+      z-index: 1;
     `}
   ${(props) =>
     props.disabled &&
@@ -53,6 +54,15 @@ const Button = styled.button`
       border: none;
       background-color: #999999;
       pointer-events: none;
+    `}
+  ${(props) =>
+    props.exit &&
+    css`
+      border: 1px solid #ffffff;
+      background-color: #172756;
+      &:hover {
+        background-color: #23325e;
+      }
     `}
 `;
 const ButtonText = styled.text`
