@@ -40,8 +40,8 @@ export default function SwapDetails() {
   const [right, setRight] = useState(1);
 
   // account
-  const [balanceX, setBalanceX] = useState("...");
-  const [balanceY, setBalanceY] = useState("...");
+  const [balanceX, setBalanceX] = useState(getBalances()["algo"]);
+  const [balanceY, setBalanceY] = useState(getBalances()["gard"]);
 
   // assets
   const [algoToGardRatio, setAlgoToGardRatio] = useState("Loading...");
