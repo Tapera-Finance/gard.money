@@ -18,7 +18,7 @@ export default function PrimaryButton({ text, onClick, variant, disabled, positi
 }
 
 const Button = styled.button`
-  background-color: transparent;
+  background-color: #172756;
   border: 1px solid #ffffff;
   padding: 8px 18px;
   display: flex;

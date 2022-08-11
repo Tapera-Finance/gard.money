@@ -217,9 +217,10 @@ const CountText = styled.text`
 `
 
 const HeaderRow = styled.tr`
-  background: rgba(13, 18, 39, .75);
+  background: #1b2d65;
   border-radius: 10px;
   height: 44px;
+  border-bottom: 1px solid #ffffff;
 `
 const HeaderElement = styled.th`
   font-weight: 500;
@@ -239,6 +240,7 @@ const HeaderElement = styled.th`
 `;
 const TableRow = styled.tr`
   height: 60px;
+  background: #1b2d65;
 `;
 const Cell = styled.td`
   font-weight: 500;
