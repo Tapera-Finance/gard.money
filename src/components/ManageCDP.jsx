@@ -35,6 +35,22 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
 
     var supplyDetails = [
         {
+            title: "Supply Limit",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Supply APR",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },
+        {
+            title: "Supply Rewards",
+            val: `${0.00}%`,
+            hasToolTip: true,
+        },];
+    var borrowDetails = [
+        {
             title: "Borrow Limit",
             val: `${Math.max(
                 0,
@@ -47,28 +63,12 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
             hasToolTip: true,
         },
         {
-            title: "Supply APY",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "Supply Rewards",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },];
-    var borrowDetails = [
-        {
-            title: "Supply Limit",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
             title: "Borrow APR",
             val: `${0.00}%`,
             hasToolTip: true,
         },
         {
-            title: "Borrow Limit",
+            title: "Borrow Rewards",
             val: `${0.00}%`,
             hasToolTip: true,
         },];
@@ -118,6 +118,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                     </InputContainer>
                 </Background>
                 <PrimaryButton
+                purple={true}
                 positioned={true}
                 text="Supply More"
                 onClick={ async () => {
@@ -173,6 +174,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                     </InputContainer>
                 </Background>
                 <PrimaryButton
+                purple={true}
                 positioned={true}
                 text="Borrow More"
                 onClick={ async () => {

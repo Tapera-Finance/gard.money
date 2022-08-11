@@ -14,6 +14,7 @@ export default function RewardNotice({program, timespan, estimatedRewards, actio
             paddingBottom: 10,
             paddingLeft: 20,
             paddingRight: 20,
+            marginBottom: 20,
         }}>
             <div>
                 <div>{program}</div>

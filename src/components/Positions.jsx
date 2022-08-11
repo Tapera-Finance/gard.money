@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { microalgosToAlgos } from "algosdk";
 import styled from "styled-components";
-import { getCDPs, getPrice } from "../transactions/cdp";
+import { getCDPs, getPrice, calcRatio } from "../transactions/cdp";
 import { getWalletInfo } from "../wallets/wallets";
 import { Slider, ThemeProvider } from "@mui/material";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -57,22 +57,7 @@ export default function Positions() {
             hasToolTip: true,
         },
         {
-            title: "Received DAI",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
             title: "Liquidation Price",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "Received DAI",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "ETH exposure",
             val: `${0.00}%`,
             hasToolTip: true,
         },
@@ -83,11 +68,6 @@ export default function Positions() {
         },
         {
             title: "Liquidation ratio",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "DAI avaible from ETH",
             val: `${0.00}%`,
             hasToolTip: true,
         },
@@ -117,15 +97,19 @@ export default function Positions() {
                     </div>
                     <div>APR 123%</div>
                     <div style={{display: "flex", flexDirection: "column"}}>    
-                        <div>Health {`(100%)`}</div>
+                        <div>
+                            Health {`(${calcRatio(cdp.collateral * 1e6, cdp.debt / 1e6,true,)})`}
+                        </div>
                         <ThemeProvider theme={theme}>
                             <Slider
                                 color="primary"
+                                max={600}
+                                value={calcRatio(cdp.collateral * 1e6, cdp.debt / 1e6, false,)}
                             />
                         </ThemeProvider>
                         <SliderRange>
-                            <div>minimum:$0</div>
-                            <div>maximum:$0</div>
+                            <div>minimum: 115%</div>
+                            <div>max: 600+%</div>
                         </SliderRange>
                         
                     </div>
@@ -189,5 +173,5 @@ const PositionInfo = styled.div`
 const SliderRange = styled.div`
     display: flex;
     justify-content: space-between;
-    font-size: 1px;
+    font-size: 11px;
 `
