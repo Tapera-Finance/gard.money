@@ -98,13 +98,14 @@ export default function Positions() {
                     <div>APR 123%</div>
                     <div style={{display: "flex", flexDirection: "column"}}>    
                         <div>
-                            Health {`(${calcRatio(cdp.collateral * 1e6, cdp.debt / 1e6,true,)})`}
+                            Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,true,)})`}
                         </div>
                         <ThemeProvider theme={theme}>
                             <Slider
                                 color="primary"
+                                min={115}
                                 max={600}
-                                value={calcRatio(cdp.collateral * 1e6, cdp.debt / 1e6, false,)}
+                                value={calcRatio(cdp.collateral, cdp.debt / 1e6, false,)}
                             />
                         </ThemeProvider>
                         <SliderRange>
