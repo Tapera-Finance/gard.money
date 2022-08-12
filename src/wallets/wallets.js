@@ -41,7 +41,7 @@ if (!testnet) {
   _nodeServer = "https://mainnet-algorand.api.purestake.io/ps2";
 }
 const nodeServer = _nodeServer;
-const algodClient = new algosdk.Algodv2(psToken, nodeServer, "");
+export const algodClient = new algosdk.Algodv2(psToken, nodeServer, "");
 
 export async function accountInfo(address = null) {
   // XXX: Assumes the wallet is set

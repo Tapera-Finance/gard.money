@@ -3,22 +3,42 @@ import ToolTip from "./ToolTip";
 import * as tips from "../assets/tooltiptext";
 import styled, {css} from "styled-components";
 
-export default function Effect({title, val,  hasToolTip}) {
+function titleToToolTip(str) {
+  return str.split(" ").map((term) => term.slice(0, 1).toLowerCase() + term.slice(1, term.length)).join("_");
+}
+
+export default function Effect({title, val,  hasToolTip, className}) {
  return (
-    <div>
+    <EffectContainer  className={className}>
       {hasToolTip ? (
-        <ToolTip toolTip={title} toolTipText={tips[title]}></ToolTip>
+        <NewToolTip className={className} toolTip={title} toolTipText={tips[titleToToolTip(title)]}></NewToolTip>
       ) : (
-        <Text>{title}</Text>
+        <Text className={className}>{title}</Text>
       )}
-      <Result>{val}</Result>
-    </div>
+      <Result className={className}>{val}</Result>
+    </EffectContainer>
   );
 }
 
-const Text = styled.text`
+const EffectContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+`
 
+const Text = styled.text`
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  margin: auto;
+  color: #ffffff;
 `
 const Result = styled.text`
-
+  color: #999696;
+`
+const NewToolTip = styled(ToolTip)`
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  margin: auto;
+  color: #ffffff;
 `

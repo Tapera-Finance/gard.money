@@ -3,54 +3,69 @@ import {
   gardID,
   gainID,
   gardianID,
-  pactGARDID,
+  pactALGOGARDID,
   pactAlgoGardPoolAddress,
 } from "./ids";
-import { accountInfo, getParams, sendTxn, signGroup } from "../wallets/wallets";
+import {
+  accountInfo,
+  getParams,
+  sendTxn,
+  signGroup,
+  algodClient,
+  handleTxError,
+} from "../wallets/wallets";
 import { verifyOptIn } from "./cdp";
 import { updateDBWebActions } from "../components/Firebase";
+import { VERSION } from "../globals";
 
-const axios = require("axios");
+import pactsdk from "@pactfi/pactsdk";
+import {
+  algosTomAlgos,
+  mAlgosToAlgos,
+  mGardToGard,
+} from "../components/swap/swapHelpers";
+
+export const pactClient = new pactsdk.PactClient(algodClient);
+export const gardpool = await pactClient.fetchPoolById(pactALGOGARDID);
+
+export async function previewPoolSwap(
+  pool,
+  assetDeposited,
+  amount,
+  slippagePct,
+  swapForExact,
+) {
+  await pool.updateState();
+  const swap = gardpool.prepareSwap({
+    assetDeposited: assetDeposited,
+    amount: amount,
+    slippagePct: 1,
+    swapForExact: swapForExact,
+  });
+
+  return swap.effect;
+}
+
+export async function getPools() {
+  return await pactClient.listPools();
+}
+
+export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
+  return parseFloat(assetX / assetY).toFixed(4);
+};
+
+export const algoGardRatio = async () =>
+  exchangeRatioAssetXtoAssetY(
+    mAlgosToAlgos(gardpool.calculator.primaryAssetPrice),
+    mAlgosToAlgos(gardpool.calculator.secondaryAssetPrice),
+  );
 
 /**
  ********** Swap & Exchange **********
  */
 
 /**
- * @interface poolShark (not)
- * @method getGard
- * @returns {Promise} - fetch GARD in Pact Algo/Gard pool
- *
- * @method getAlgo
- * @returns {Promise} - fetch ALGO in Pact Algo/Gard pool
- * Queery object used to get and set exchange rate, used to fetch and pass blockchain data to component
- */
-
-const poolShark = {
-  getGard: async () => {
-    try {
-      const response = await axios.get(
-        `https://node.algoexplorerapi.io/v2/accounts/${pactAlgoGardPoolAddress}/assets/${gardID}`,
-      );
-      return response.data;
-    } catch (e) {
-      console.log("can't fetch algo/gard pool", e);
-    }
-  },
-  getAlgo: async () => {
-    try {
-      const response = await axios.get(
-        `https://node.algoexplorerapi.io/v2/accounts/${pactAlgoGardPoolAddress}`,
-      );
-      return response.data;
-    } catch (e) {
-      console.log("can't fetch algo/gard Pact LP info");
-    }
-  },
-};
-
-/**
- * Global Helpers
+ * Helpers
  */
 
 export function estimateReturn(input, totalX, totalY) {
@@ -60,38 +75,10 @@ export function estimateReturn(input, totalX, totalY) {
   return parseInt(receivedAmount);
 }
 
-/**
- *
- *
- * @function queryAndConvertTotals - queer blockchain data
- * snag Pact's asset pool exchange rate given two assets (ALGO, GARD)
- * @returns {Object} algo + gard totals for algo/gard pool
- *
- */
-export async function queryAndConvertTotals() {
-  let result;
-
-  // ALGO/GARD pool
-  const algoInPool = await poolShark.getAlgo();
-  const gardInPool = await poolShark.getGard();
-  const algoGardPool = {
-    algo: algoInPool.amount,
-    gard: gardInPool["asset-holding"].amount,
-  };
-  // as pools are added, add poolShark calls to get those token totals and pass to corresponding result[asset/asset]
-  result = {
-    "ALGO/GARD": {
-      algo: algoGardPool.algo,
-      gard: algoGardPool.gard,
-    },
-    "GARD/ALGO": {
-      algo: algoGardPool.algo,
-      gard: algoGardPool.gard,
-    }, // same pool as fallback in case targetPool string is reversed
-    // as pools are added, add property to result object that matches the format of string returned from SwapContent's targetPool function, this will be used to dynamically key into each pool total
-  };
-  return result;
-}
+const formatAmt = (amt) =>
+  typeof amt === "string"
+    ? parseInt(algosTomAlgos(parseFloat(amt)))
+    : algosTomAlgos(amt);
 
 /**
  * Session Helpers
@@ -114,34 +101,58 @@ sessionStorage.setItem = function (key, value) {
 const setLoadingStage = (stage) =>
   sessionStorage.setItem("loadingStage", JSON.stringify(stage));
 
-/**
- *
- @function swapAlgoToGard - create and send transaction to swap ALGO for GARD on Pact DEX
-  *    @param {amount} {Number} - representing how many microalgo to send
-  *    @param {minimum} {Number} - representing minimu microGard to be received for success
-  *    @returns {transactionSummary} - returns details of the exchange to allow for execution
- */
-export async function swapAlgoToGard(amount, minimum) {
-  setLoadingStage("Loading...");
-
+export async function swap(
+  assetA,
+  assetB,
+  fromAmt,
+  toAmt,
+  swapTo,
+  slippagePct,
+) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(1500);
   const info = await infoPromise;
   const params = await paramsPromise;
-  const f_a = [0, gardID];
+  const f_a = [0, assetB.id];
   const enc = new TextEncoder();
-  const opted = verifyOptIn(info, gardID);
+  let poolToUse;
+  if (
+    (assetA.id === 0 && assetB.id === gardID) ||
+    (assetA.id === gardID && assetB.id === 0)
+  ) {
+    poolToUse = gardpool;
+  }
+  const assetAfromPool = poolToUse.primaryAsset;
+  const assetBfromPool = poolToUse.secondaryAsset;
 
-  let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: pactAlgoGardPoolAddress,
-    amount: amount,
-    suggestedParams: params,
-  });
+  const fromAsset =
+    swapTo.type === assetA.type ? assetBfromPool : assetAfromPool;
+  const toAsset = swapTo.type === assetA.type ? assetAfromPool : assetBfromPool;
+
+  const formattedAmount = formatAmt(fromAmt);
+  const formattedMin = formatAmt(toAmt);
+  const minimum = Math.trunc((formattedMin * (1 - slippagePct)) / 1e6);
+  const opted = verifyOptIn(info, toAsset.index);
+
+  let txn1 =
+    fromAsset.index === 0
+      ? algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+          from: info.address,
+          to: pactAlgoGardPoolAddress,
+          amount: formattedAmount,
+          suggestedParams: params,
+        })
+      : algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+          from: info.address,
+          to: pactAlgoGardPoolAddress,
+          amount: formattedAmount,
+          suggestedParams: params,
+          assetIndex: fromAsset.index,
+        });
 
   let txn2 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
-    appIndex: pactGARDID,
+    appIndex: pactALGOGARDID,
     onComplete: 0,
     appArgs: [enc.encode("SWAP"), algosdk.encodeUint64(minimum)],
     foreignAssets: f_a,
@@ -154,77 +165,28 @@ export async function swapAlgoToGard(amount, minimum) {
         to: info.address,
         amount: 0,
         suggestedParams: params,
-        assetIndex: gardID,
+        assetIndex: toAsset.index,
       });
-  let txns = optTxn.concat([txn1, txn2]);
-  algosdk.assignGroupID(txns);
 
-  setLoadingStage("Awaiting Signature from Algorand Wallet...");
-
-  const signedGroup = await signGroup(info, txns);
-
-  setLoadingStage("Waiting for Confirmation...");
-
-  const stxns = [signedGroup[0].blob, signedGroup[1].blob];
-
-  const response = await sendTxn(
-    stxns,
-    "Successfully swapped " + amount / 1e6 + " ALGO.",
-  );
-
-  setLoadingStage(null);
-  updateDBWebActions(8, null, -amount, minimum, 0, 1, 3000);
-  return response;
-}
-
-/**
- * @function swapGardToAlgo - create and send transaction to swap GARD FOR ALGO on Pact DEX
- *    @param {amount} {number} - representing how many microgard to send
- *    @param {minimum} {number} - representing minimum acceptable microAlgos for swap to succeed
- *    @returns {transactionSummary} - returns details of the exchange to allow for execution
- */
-export async function swapGardToAlgo(amount, minimum) {
-  setLoadingStage("Loading...");
-
-  const infoPromise = accountInfo();
-  const paramsPromise = getParams(1500);
-  const info = await infoPromise;
-  const params = await paramsPromise;
-  const f_a = [0, gardID];
-  const enc = new TextEncoder();
-
-  let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: pactAlgoGardPoolAddress,
-    amount: amount,
-    suggestedParams: params,
-    assetIndex: gardID,
-  });
-  let txn2 = algosdk.makeApplicationCallTxnFromObject({
-    from: info.address,
-    appIndex: pactGARDID,
-    onComplete: 0,
-    appArgs: [enc.encode("SWAP"), algosdk.encodeUint64(minimum)],
-    foreignAssets: f_a,
-    suggestedParams: params,
-  });
-
-  let txns = [txn1, txn2];
+  let txns = !Array.isArray(optTxn)
+    ? [txn1, txn2]
+    : optTxn.concat([txn1, txn2]);
   algosdk.assignGroupID(txns);
 
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   const signedGroup = await signGroup(info, txns);
-
   setLoadingStage("Waiting for Confirmation...");
 
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
-
   const response = await sendTxn(
     stxns,
-    "Successfully swapped " + amount / 1e6 + " GARD.",
+    "Successfully swapped " +
+      formattedAmount / parseInt(`1e${fromAsset.decimals}`) +
+      " " +
+      fromAsset.name.toLocaleUpperCase(),
   );
 
   setLoadingStage(null);
-  updateDBWebActions(8, null, minimum, -amount, 0, 1, 3000);
+  updateDBWebActions(8, null, minimum, -fromAmt, 0, 1, 3000);
   return response;
 }
