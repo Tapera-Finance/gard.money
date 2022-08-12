@@ -455,12 +455,6 @@ const menuItems = [
     route: "/actions",
   },
   {
-    name: CONTENT_NAMES.WALLET,
-    icon: walletIcon,
-    subOptions: [],
-    route: "/wallet",
-  },
-  {
     name: CONTENT_NAMES.MINT,
     icon: mintIcon,
     subOptions: [],
@@ -489,5 +483,11 @@ const menuItems = [
     icon: algoGovernanceIcon,
     subOptions: [],
     route: "/algo-governance",
+  },
+  {
+    name: CONTENT_NAMES.ACCOUNT,
+    icon: walletIcon,
+    subOptions: [],
+    route: "/account",
   },
 ];

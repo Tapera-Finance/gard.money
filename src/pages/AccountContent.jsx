@@ -6,8 +6,11 @@ import copyIconDark from "../assets/icons/copy_icon_dark.png";
 import linkIconWhite from "../assets/icons/link_icon_white.png";
 import { getWallet, getWalletInfo, updateWalletInfo } from "../wallets/wallets";
 import Table from "../components/Table";
+import PageToggle from "../components/PageToggle";
 import { formatToDollars } from "../utils";
 import { getPrice } from "../transactions/cdp";
+import TransactionHistory from "../components/TransactionHistory";
+
 
 
 function getAssets() {
@@ -34,6 +37,17 @@ function getAssets() {
   return assets;
 }
 
+const assets = getAssets()
+
+const Holdings = styled(Table)`
+  /*  */
+`
+
+const tabs = {
+  one: <Holdings data={assets} title="Holdings and Positions" />,
+  two: <TransactionHistory />,
+};
+
 /**
  * Content for the wallet navigation option
  */
@@ -43,6 +57,7 @@ export default function AccountContent() {
   const [acctInfo, setAcctInfo] = useState(null);
   const [balance, setBalance] = useState("...");
   const [rewards, setRewards] = useState("...");
+  const [selectedTab, setSelectedTab] = useState("one");
   const [pendingRewards, setPendingRewards] = useState("...");
   const [currentPrice, setPrice] = useState("Loading...");
 
@@ -241,13 +256,15 @@ export default function AccountContent() {
           overflow: "auto",
         }}
       >
-        <Table data={assets} title="Assets" />
+        <PageToggle selectedTab={setSelectedTab} tabs={{one: "Holdings", two: "Transactions"}} />
+        {tabs[selectedTab]}
       </div>
     </div>
   );
 }
 
 // syled components for our wallet content
+
 const AccountContainer = styled.div`
   background: rgba(13, 18, 39, .75);
   padding: 5vw 4vw;

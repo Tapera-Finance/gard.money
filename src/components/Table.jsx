@@ -23,7 +23,8 @@ export default function Table({
   headerColor,
   tableColor,
   columns,
-  noID
+  noID,
+  className
 }) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [shownRows, setShownRows] = useState(data.slice(0, 10));
@@ -51,7 +52,7 @@ export default function Table({
   }, [data]);
 
   return (
-    <div>
+    <div className={className} >
       {title ? (
         <div
           style={{

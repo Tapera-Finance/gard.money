@@ -12,11 +12,11 @@ import PoolDetails from "../components/pool/PoolDetails"
 export default function ActionsContainer() {
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("swap");
+  const [selectedTab, setSelectedTab] = useState("one");
 
   const Tabs = {
-    swap: <SwapDetails />,
-    pool: <PoolDetails />,
+    one: <SwapDetails />,
+    two: <PoolDetails />,
   };
 
 
@@ -28,7 +28,9 @@ export default function ActionsContainer() {
   return (
     <div>
       {loading ? <LoadingOverlay text={loadingText} /> : <></>}
-      <PageToggle selectedTab={setSelectedTab}></PageToggle>
+      <PageToggle selectedTab={setSelectedTab}
+      tabs={{one: "Swap", two: "Pool"}}
+      ></PageToggle>
       {Tabs[selectedTab]}
     </div>
   );
