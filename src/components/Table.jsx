@@ -104,9 +104,6 @@ export default function Table({
                   key={index}
                   style={{
                     background: tableColor,
-                    borderBottom: "solid",
-                    borderBottomWidth: 1,
-                    borderColor: "#F9F9F9",
                   }}
                 >
                   {keys.map((keyVal, keyIndex) => {
@@ -241,6 +238,7 @@ const HeaderElement = styled.th`
 const TableRow = styled.tr`
   height: 60px;
   background: #1b2d65;
+  border: 2px solid #172756;
 `;
 const Cell = styled.td`
   font-weight: 500;

@@ -6,10 +6,10 @@ import styled, { css } from "styled-components";
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, govern }) {
+export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, govern, toggle }) {
 
   return (
-    <Button variant={variant} disabled={disabled} positioned={positioned} exit={exit} govern={govern} onClick={() => onClick()}>
+    <Button variant={variant} disabled={disabled} positioned={positioned} exit={exit} govern={govern} toggle={toggle} onClick={() => onClick()}>
       <ButtonText variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
@@ -68,6 +68,16 @@ const Button = styled.button`
       background-color: #172756;
       &:hover {
         background-color: #23325e;
+      }
+    `}
+  ${(props) =>
+    props.toggle &&
+    css`
+      border: none;
+      background-color: transparent;
+      color: #999696;
+      &:hover {
+        background-color: transparent;
       }
     `}
 `;
