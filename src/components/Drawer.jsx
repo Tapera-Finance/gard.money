@@ -117,12 +117,13 @@ export default function Drawer({
                     onClick={() => {
                       if (
                         [
-                          "Wallet",
+                          "Account",
                           "Manage CDPs",
                           "New CDP",
                           "Algo Governance",
                           "Auctions",
                           "Swap",
+
                         ].includes(v.name) &&
                         !walletAddress
                       )
@@ -449,12 +450,6 @@ const menuItems = [
     route: "/dashboard",
   },
   {
-    name: CONTENT_NAMES.WALLET,
-    icon: walletIcon,
-    subOptions: [],
-    route: "/wallet",
-  },
-  {
     name: CONTENT_NAMES.MINT,
     icon: mintIcon,
     subOptions: [],
@@ -477,6 +472,12 @@ const menuItems = [
     icon: swapIcon,
     subOptions: [],
     route: "/swap",
+  },
+  {
+    name: CONTENT_NAMES.ACCOUNT,
+    icon: walletIcon,
+    subOptions: [],
+    route: "/account",
   },
   {
     name: CONTENT_NAMES.DAO,

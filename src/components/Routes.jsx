@@ -9,7 +9,7 @@ import Main from "./Main";
 import MintContent from "../pages/MintContent";
 import RepayContent from "../pages/RepayContent";
 import SwapContent from "../pages/SwapContent";
-import WalletContent from "../pages/WalletContent";
+import AccountContent from "../pages/AccountContent";
 
 export default function AppRoutes() {
   return (
@@ -20,7 +20,7 @@ export default function AppRoutes() {
           path="/dashboard"
           element={Main(DashboardContent, "Dashboard")}
         />
-        <Route path="/wallet" element={Main(WalletContent, "Wallet")} />
+        <Route path="/account" element={Main(AccountContent, "Wallet")} />
         <Route path="/new-cdp" element={Main(MintContent, "New CDP")} />
         <Route path="/manage" element={Main(RepayContent, "Manage CDPs")} />
         <Route path="/auctions" element={Main(AuctionsContent, "Auctions")} />

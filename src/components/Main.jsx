@@ -5,7 +5,7 @@ import Drawer from "./Drawer";
 import Topbar from "./Topbar";
 import { CONTENT_NAMES } from "../globals";
 import DashboardContent from "../pages/DashboardContent";
-import WalletContent from "../pages/WalletContent";
+import AccountContent from "../pages/AccountContent";
 import MintContent from "../pages/MintContent";
 import RepayContent from "../pages/RepayContent";
 import AuctionsContent from "../pages/AuctionsContent";
@@ -201,8 +201,8 @@ function MainContentHandler({ content, walletAddress }) {
       return <HomeContent />;
     case CONTENT_NAMES.DASHBOARD:
       return <DashboardContent />;
-    case CONTENT_NAMES.WALLET:
-      return <WalletContent walletAddress={walletAddress} />;
+    case CONTENT_NAMES.ACCOUNT:
+      return <AccountContent walletAddress={walletAddress} />;
     case CONTENT_NAMES.MINT:
       return <MintContent />;
     case CONTENT_NAMES.REPAY:
