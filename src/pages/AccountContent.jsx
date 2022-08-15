@@ -10,6 +10,7 @@ import PageToggle from "../components/PageToggle";
 import { formatToDollars } from "../utils";
 import { getPrice } from "../transactions/cdp";
 import TransactionHistory from "../components/TransactionHistory";
+import AccountCard from "../components/AccountCard";
 
 
 
@@ -106,6 +107,7 @@ export default function AccountContent() {
   if (!walletAddress) return <div></div>;
   return (
     <div>
+      <AccountCard />
       <div style={{
         display: "flex",
         flexDirection: "row",
