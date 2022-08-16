@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import styled, {css} from "styled-components";
 
 
 export default function RewardNotice({program, timespan, estimatedRewards, action}){
-    return <div style={{
+    const [showNotice, setShowNotice]= useState(true)
+    return <div>
+        {showNotice ? <div>
+        <div style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -15,6 +18,7 @@ export default function RewardNotice({program, timespan, estimatedRewards, actio
             paddingLeft: 20,
             paddingRight: 20,
             marginBottom: 20,
+            position: "relative"
         }}>
             <div>
                 <div>{program}</div>
@@ -27,6 +31,14 @@ export default function RewardNotice({program, timespan, estimatedRewards, actio
                 {action}
             </div>
         </div>
+        <button 
+        onClick={() => {
+            setShowNotice(false)
+        }}
+         style={{background: "transparent", border: "none", position:"relative", left:"98%", bottom: 80, cursor: "pointer"}}>x</button>
+        </div>:
+        <></>}
+    </div>
 }
 
 const TimeSpan = styled.text`
