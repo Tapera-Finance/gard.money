@@ -36,7 +36,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
     var supplyDetails = [
         {
             title: "Supply Limit",
-            val: `${0.00}%`,
+            val: `${0.00} ALGOs`,
             hasToolTip: true,
         },
         {
@@ -59,7 +59,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                     1.4 -
                     (100 * cdp.debt) / 1000000,
                 ) / 100,
-              )}`,
+              )} GARD`,
             hasToolTip: true,
         },
         {

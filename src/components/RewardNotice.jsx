@@ -35,7 +35,16 @@ export default function RewardNotice({program, timespan, estimatedRewards, actio
         onClick={() => {
             setShowNotice(false)
         }}
-         style={{background: "transparent", border: "none", position:"relative", left:"98%", bottom: 80, cursor: "pointer"}}>x</button>
+         style={{
+            background: "transparent", 
+            border: "none", 
+            position:"relative", 
+            left:"98%", 
+            bottom: 80, 
+            cursor: "pointer",
+        }}>
+            x
+        </button>
         </div>:
         <></>}
     </div>

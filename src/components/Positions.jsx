@@ -90,6 +90,7 @@ export default function Positions() {
                 loadedCDPs.map((cdp) => {
                     return (
             <Position key={cdp.id}>
+                <div style={{position: "relative", left: "93%", bottom: -25, fontSize:14, color:"#FF00FF"}}>v1 CDP</div>
                 <PositionInfo>
                     <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>    
                         <div>Supplied: ${(microalgosToAlgos(cdp.collateral) * price).toFixed(2)} in ALGOs</div>

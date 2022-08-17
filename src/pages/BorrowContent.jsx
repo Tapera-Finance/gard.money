@@ -232,7 +232,7 @@ export default function BorrowContent(){
 var supplyDetails = [
   {
     title: "Supply Limit",
-    val: `$${maxCollateral}`,
+    val: `${maxCollateral} ALGOs`,
     hasToolTip: true,
   },
   {
@@ -248,7 +248,7 @@ var supplyDetails = [
 var borrowDetails = [
   {
     title: "Borrow Limit",
-    val: `$${maxGARD}`,
+    val: `${maxGARD} GARD`,
     hasToolTip: true,
   },
   {
@@ -308,7 +308,7 @@ var borrowDetails = [
                       </InputDetails>
                   </InputContainer>
               </Background>
-              <PrimaryButton positioned={true} purple={true} text="Supply"/>
+              <PrimaryButton positioned={true} purple={true} text="Supply" onClick={()=>{cAlgos !== "" ? setGARD(1): null}}/>
           </SubContainer>
           <SubContainer>
               <Background>

@@ -19,9 +19,14 @@ a {
 }
 
 span.MuiSlider-thumb{
-  background-color: white;
+  background: none;
+  pointer-events: none;
+  overflow: hidden;
+  transition: none;
 }
-
+span.MuiSlider-root {
+  pointer-events: none;
+}
 span.MuiSlider-rail {
   height: 3px;
 }
