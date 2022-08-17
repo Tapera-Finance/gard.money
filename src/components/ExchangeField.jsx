@@ -39,7 +39,6 @@ export default function ExchangeField({
                   value={selectVal}
                   callback={onOptionSelect}
                 />
-                <Arrow src={chevronDown}></Arrow>
               </SelectContainer>
               <Text>{`You have
               ${
@@ -71,7 +70,6 @@ export default function ExchangeField({
                   value={selectVal}
                   callback={onOptionSelect}
                 />
-                <Arrow src={chevronDown}></Arrow>
               </SelectContainer>
               <Text>
                 {
@@ -176,17 +174,11 @@ const SelectContainer = styled.div`
 const ExchangeSelect = styled(Select)`
   font-size: 14pt;
   margin: 0px 0px 0px 12px;
-  &:focus {
-    color: #ffffff;
-  }
-  &:visited {
-    color: #ffffff;
-  }
-  &:active {
-    color: #ffffff;
-  }
+  border: 1px solid #01d1ff;
   &:hover {
-    color: #ffffff;
+    color: black;
+    border: none;
+    background-color: #01d1ff;
   }
 `;
 
@@ -195,15 +187,4 @@ const Span = styled.label`
   color: #ffffff;
   margin-left: 15px;
   margin-bottom: -20px;
-`;
-
-const Arrow = styled.img`
-  filter: invert(38%) sepia(82%) saturate(1518%) hue-rotate(181deg)
-    brightness(104%) contrast(106%);
-  transform: rotate(270deg);
-
-  &:hover {
-    color: #ffffff;
-    transform: unset;
-  }
 `;
