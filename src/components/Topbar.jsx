@@ -5,6 +5,7 @@ import syncIconWhite from "../assets/icons/sync_icon_white.png";
 import Modal from "./Modal";
 import ALGOPrice from "./ALGOPrice";
 import PrimaryButton from "./PrimaryButton";
+import AccountCard from "./AccountCard";
 import arrow from "../assets/whitearrow.png";
 import {
   displayWallet,
@@ -246,6 +247,7 @@ export default function Topbar({ contentName, setMainContent }) {
             <></>
           )}
         </div>
+        <AccountCard />
       </TopBar>
       <Modal
         visible={modalVisible}

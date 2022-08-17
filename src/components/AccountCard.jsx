@@ -73,19 +73,20 @@ export default function AccountCard() {
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      <MenuItem>
+      <MenuItem onClick={() => window.open("http://localhost:3000/account")} >
         <Avatar/> Wallet
       </MenuItem>
       <Divider />
       <MenuItem>
         Asset Balances:
       </MenuItem>
-      <MenuItem>
-        <IconButton onClick={() => window.navigator.navigate("https://algoexplorer.io/")} >ALGO: {balances['algo']}</IconButton>
+      <MenuItem >
+        <IconButton onClick={() => window.open("https://algoexplorer.io/")}  >ALGO: {balances['algo']}</IconButton>
       </MenuItem>
-      <MenuItem>
-        <IconButton onClick={() => window.navigator.navigate("https://algoexplorer.io/asset/" + gardID)}>GARD: {balances['gard']}</IconButton>
+      <MenuItem >
+        <IconButton onClick={() => window.open("https://algoexplorer.io/asset/" + gardID)}>GARD: {balances['gard']}</IconButton>
       </MenuItem>
     </Menu>
     </div>;
 }
+
