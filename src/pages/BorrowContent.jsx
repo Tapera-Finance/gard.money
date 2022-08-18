@@ -242,8 +242,9 @@ var supplyDetails = [
   },
   {
       title: "Supply Rewards",
-      val: `${0.00}%`,
+      val: `+${0.00}% Algo Rewards`,
       hasToolTip: true,
+      rewards: true,
   },];
 var borrowDetails = [
   {
@@ -258,8 +259,9 @@ var borrowDetails = [
   },
   {
       title: "Borrow Rewards",
-      val: `${0.00}%`,
+      val: `+${0.02}% Algo Rewards`,
       hasToolTip: true,
+      rewards: true,
   },];
     return <div>
         {loading ? <LoadingOverlay text={loadingText} /> : <></>}
@@ -298,8 +300,8 @@ var borrowDetails = [
                           {supplyDetails.length && supplyDetails.length > 0 ?
                           supplyDetails.map((d) => {
                               return (
-                                  <Item key={d.title}>
-                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
+                               <Item key={d.title}>
+                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
                                   </Item>
                               )
                           })
@@ -340,7 +342,7 @@ var borrowDetails = [
                           borrowDetails.map((d) => {
                               return (
                                   <Item key={d.title}>
-                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
+                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
                                   </Item>
                               )
                           })
@@ -421,7 +423,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(3, 30%); 
+grid-template-columns:repeat(3, 32%); 
 row-gap: 30px; 
 justify-content: center;
 padding: 30px 0px 30px;
