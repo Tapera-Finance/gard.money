@@ -12,9 +12,17 @@ const theme = createTheme({
     primary: {
       main: "#01d1ff",
     },
-    secondary: {
+    danger: {
       // This is green.A700 as hex.
-      main: '#11cb5f',
+      main: 'rgba(255, 0, 0, 0.8);',
+    },
+    moderate: {
+      // This is green.A700 as hex.
+      main: '#ffff00',
+    },
+    healthy: {
+      // This is green.A700 as hex.
+      main: '#00ff00',
     },
   },
 });
