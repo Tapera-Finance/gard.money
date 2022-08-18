@@ -12,7 +12,6 @@ import {
   sendTxn,
   signGroup,
   algodClient,
-  handleTxError,
 } from "../wallets/wallets";
 import { verifyOptIn } from "./cdp";
 import { updateDBWebActions } from "../components/Firebase";
@@ -20,9 +19,7 @@ import { VERSION } from "../globals";
 
 import pactsdk from "@pactfi/pactsdk";
 import {
-  algosTomAlgos,
-  mAlgosToAlgos,
-  mGardToGard,
+  formatAmt
 } from "../components/swap/swapHelpers";
 
 export const pactClient = new pactsdk.PactClient(algodClient);
@@ -32,7 +29,6 @@ export async function previewPoolSwap(
   pool,
   assetDeposited,
   amount,
-  slippagePct,
   swapForExact,
 ) {
   await pool.updateState();
@@ -50,39 +46,11 @@ export async function getPools() {
   return await pactClient.listPools();
 }
 
-export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
-  return parseFloat(assetX / assetY).toFixed(4);
-};
-
-export const algoGardRatio = async () =>
-  exchangeRatioAssetXtoAssetY(
-    mAlgosToAlgos(gardpool.calculator.primaryAssetPrice),
-    mAlgosToAlgos(gardpool.calculator.secondaryAssetPrice),
-  );
-
-/**
- ********** Swap & Exchange **********
- */
-
-/**
- * Helpers
- */
-
-export function estimateReturn(input, totalX, totalY) {
-  let receivedAmount =
-    (((1e6 * (input * totalY)) / Math.floor(input * 1e6 + totalX)) * 9900) /
-    10000;
-  return parseInt(receivedAmount);
-}
-
-const formatAmt = (amt) =>
-  typeof amt === "string"
-    ? parseInt(algosTomAlgos(parseFloat(amt)))
-    : algosTomAlgos(amt);
 
 /**
  * Session Helpers
  */
+
 //initial store
 const originalSetItem = sessionStorage.setItem;
 
@@ -100,6 +68,17 @@ sessionStorage.setItem = function (key, value) {
 
 const setLoadingStage = (stage) =>
   sessionStorage.setItem("loadingStage", JSON.stringify(stage));
+
+/**
+ * @function swap - execute swap on pact.fi with given assets, direction, and slippage
+ * @param {Asset} assetA
+ * @param {Asset} assetB
+ * @param {number | string} fromAmt
+ * @param {number | string} toAmt
+ * @param {Asset} swapTo
+ * @param {number} slippagePct
+ * @returns transaction result object
+*/
 
 export async function swap(
   assetA,

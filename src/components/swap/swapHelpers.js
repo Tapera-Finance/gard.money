@@ -1,4 +1,4 @@
-import { estimateReturn, gardpool } from "../../transactions/swap";
+import { gardpool } from "../../transactions/swap";
 import { getWalletInfo, getGARDInWallet } from "../../wallets/wallets";
 import { gardID } from "../../transactions/ids";
 import { formatToDollars } from "../../utils";
@@ -8,6 +8,28 @@ const prices = {
   gard: gardpool.calculator.secondaryAssetPrice,
 };
 
+/**
+ * swap utils
+ */
+
+export const convertToDollars = (amt, idx) =>
+  formatToDollars(amt * prices[idx]);
+
+export const formatPrice = (num) => {
+  let cut = 3
+  let p = num.toString();
+  let ar = p.split("");
+  let newStr = ""
+  for (let i = 0; i < ar.length; i++) {
+    let cur = ar[i];
+    if (i !== 0 && i % cut === 0) {
+      newStr += ","
+    }
+    newStr += cur
+  }
+  return newStr
+}
+
 export const mAlgosToAlgos = (num) => {
   return num / 1000000;
 };
@@ -16,10 +38,12 @@ export const algosTomAlgos = (num) => {
   return num * 1000000;
 };
 
-export const empty = (value) => value === 0 || value === "";
+export const empty = (value) => value === 0 || value === "" || value === undefined;
 
-export const convertToDollars = (amt, idx) =>
-  formatToDollars(amt * prices[idx]);
+export const formatAmt = (amt) =>
+  typeof amt === "string"
+    ? parseInt(algosTomAlgos(parseFloat(amt)))
+    : algosTomAlgos(amt);
 
 export const getBalances = () => {
   return {
@@ -27,6 +51,18 @@ export const getBalances = () => {
     gard: mAlgosToAlgos(getGARDInWallet()).toFixed(2),
   };
 };
+
+export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
+  return parseFloat(assetX / assetY).toFixed(4);
+};
+
+export const algoGardRatio = async () =>
+  exchangeRatioAssetXtoAssetY(
+    mAlgosToAlgos(gardpool.calculator.primaryAssetPrice),
+    mAlgosToAlgos(gardpool.calculator.secondaryAssetPrice),
+  );
+
+
 /**
  * Component Helpers
  */
@@ -36,15 +72,21 @@ export const getBalances = () => {
  * @param {Number || String} amount - input in asset unit
  * @param {Number} totalX - total asset X in pool
  * @param {Number} totalY - total asset Y in pool
- * @param {Object} transaction - data obj acc.
  * @returns estimated return of swap between x & y
  */
-export function calcTransResult(amount, totalX, totalY, slippageTolerance) {
+export function calcTransResult(amount, totalX, totalY) {
   if (amount > 0) {
     return (estimateReturn(parseFloat(amount), totalX, totalY) / 1e6).toFixed(
       6,
     );
   }
+}
+
+ export function estimateReturn(input, totalX, totalY) {
+  let receivedAmount =
+    (((1e6 * (input * totalY)) / Math.floor(input * 1e6 + totalX)) * 9900) /
+    10000;
+  return parseInt(receivedAmount);
 }
 
 /**

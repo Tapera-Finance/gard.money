@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../redux/slices/alertSlice";
+import * as tips from "../../assets/tooltiptext";
 import styled from "styled-components";
 import ExchangeField from "../ExchangeField";
+import ToolTip from "../ToolTip";
 import Effect from "../Effect";
 import PrimaryButton from "../PrimaryButton";
 import LoadingOverlay from "../LoadingOverlay";
@@ -15,13 +17,15 @@ import {
   empty,
   getBalances,
   convertToDollars,
+  formatPrice,
+  exchangeRatioAssetXtoAssetY,
+  formatAmt,
 } from "./swapHelpers";
 import {
   gardpool,
   swap,
-  pactClient,
-  exchangeRatioAssetXtoAssetY,
 } from "../../transactions/swap";
+import { titleToToolTip } from "../../utils";
 
 const initEffectState = {
   primaryAssetPriceAfterSwap: 0.0,
@@ -32,17 +36,7 @@ const initEffectState = {
 };
 
 
-
-
-
 export default function SwapDetails() {
-  (async () => {
-
-    console.log(await pactClient.fetchPoolsByAssets(0, 31566704))
-    console.log("ahh ",await pactClient.fetchPoolsByAssets(usdcID, gardID))
-  })()
-
-
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
 
@@ -94,6 +88,8 @@ export default function SwapDetails() {
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
+  console.log("format check", formatPrice(514873518546))
+
   const assetA = {
     type: assetAtype,
     amount: assetAtotal,
@@ -107,13 +103,17 @@ export default function SwapDetails() {
 
   const effects = [
     {
-      title: "Price Impact A",
-      val: `${assetA.type} : ${priceImpactA * 100}%`,
-      hasToolTip: true,
+      title: "Asset A Total",
+      val: `${assetA.type}: ${formatPrice(pool.state.totalPrimary)}`,
+      hasToolTip: false
     },
     {
-      title: "Price Impact B",
-      val: `${assetB.type} : ${priceImpactB * 100}%`,
+      title: "Asset B Total",
+      val: `${assetB.type}: ${formatPrice(pool.state.totalSecondary)}`
+    },
+    {
+      title: "Price Impact",
+      val: `${(priceImpactA * 100).toFixed(4)}%`,
       hasToolTip: true,
     },
     {
@@ -142,6 +142,7 @@ export default function SwapDetails() {
       hasToolTip: false,
     },
   ];
+
 
   function localPreviewSwap() {
     let effect = initEffectState;
@@ -174,11 +175,14 @@ export default function SwapDetails() {
   }
 
   async function handleSwap() {
+    if (formatAmt(leftInputAmt) > formatAmt(balanceX)) {
+        dispatch(setAlert(`Cannot send more ${leftSelectVal} than available balance`))
+        return
+    }
     setLoading(true);
     try {
       let res;
       let swapTo;
-
       if (leftSelectVal === assetA.type && rightSelectVal === assetB.type) {
         swapTo = assetB;
       } else if (
@@ -311,7 +315,15 @@ export default function SwapDetails() {
   useEffect(() => {
     let dollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
     setLeftDollars(dollars);
-    if (!empty(leftInputAmt) && !empty(rightInputAmt)) {
+    if (
+      !empty(leftInputAmt) &&
+      !empty(rightInputAmt) &&
+      !(
+        (typeof leftInputAmt === "string"
+          ? parseFloat(leftInputAmt).toFixed(2)
+          : leftInputAmt) > balanceX
+      )
+    ) {
       setDisabled(false);
     }
   }, [leftInputAmt]);
@@ -357,6 +369,16 @@ export default function SwapDetails() {
       setBalanceY(balY);
     }
   }, [getBal]);
+
+  useEffect(() => {
+    let defaultSlip = document.querySelector("#default-slippage");
+    if (!empty(defaultSlip)) {
+      if (slippageTolerance !== 0.01 && slippageTolerance !== 0.1) {
+        defaultSlip.focus()
+      }
+    }
+  }, [slippageTolerance])
+
 
   return (
     <div>
@@ -423,11 +445,31 @@ export default function SwapDetails() {
       <DetailsContainer>
         <Details>
           {effects.length > 0
-            ? effects.map((item, idx) => {
+            ? effects.map((item) => {
+              if (item.title === "Slippage Tolerance") {
+                return (
+                  <SlippageEffect key={Math.random()} >
+                    <NewToolTip toolTip={item.title} toolTipText={tips[titleToToolTip(item.title)]}></NewToolTip>
+                  <EffectContainer>
+                    <EffText></EffText>
+                    <SlippageBtn id="slippage-001" onClick={() => setSlippageTolerance(0.01)}>
+                      0.01
+                    </SlippageBtn>
+                    <SlippageBtn id="default-slippage"onClick={() => setSlippageTolerance(0.05)}>
+                      0.05
+                    </SlippageBtn>
+                    <SlippageBtn id="slippage-010" onClick={() => setSlippageTolerance(0.1)}>
+                      0.1
+                    </SlippageBtn>
+                    <Text>{slippageTolerance}</Text>
+                  </EffectContainer>
+                  </SlippageEffect>
+                )
+              }
                 return (
                   <Effect
                     title={item.title}
-                    key={idx}
+                    key={Math.random()}
                     val={item.val}
                     hasToolTip={item.hasToolTip}
                   />
@@ -439,6 +481,64 @@ export default function SwapDetails() {
     </div>
   );
 }
+
+const SlippageEffect = styled.div`
+  /* display: flex; */
+  /* justify-content: space-around; */
+  /* flex-direction: column; */
+  /* align-items: center; */
+  /* flex-basis: 3; */
+`
+
+const Text = styled.text`
+  margin: 4px;
+`
+
+const EffectContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+`
+
+const EffText = styled.text`
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  margin: auto;
+  color: #ffffff;
+`
+const EffResult = styled.text`
+  color: #999696;
+`
+const SlippageBtn = styled.button`
+  appearance: none;
+  border: 1px solid #01d1ff;
+  background-color: #01d1ff;
+  color: black;
+  display: flex;
+  font-size: smaller;
+  max-width: max-content;
+  justify-content: center;
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: 8px;
+  &:focus {
+    background-color: #ffffff;
+    color: black;
+  }
+  &:hover {
+    background-color: #ffffff;
+    color: black;
+  }
+`
+
+const NewToolTip = styled(ToolTip)`
+  flex-basis: 200px;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  margin: auto;
+  color: #ffffff;
+`
 
 const BtnBox = styled.div`
   display: flex;
