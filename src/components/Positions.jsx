@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { microalgosToAlgos } from "algosdk";
 import styled from "styled-components";
-import { getCDPs, getPrice } from "../transactions/cdp";
+import { getCDPs, getPrice, calcRatio } from "../transactions/cdp";
 import { getWalletInfo } from "../wallets/wallets";
 import { Slider, ThemeProvider } from "@mui/material";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -9,6 +9,25 @@ import Details from "./Details";
 import ManageCDP from "./ManageCDP";
 import PrimaryButton from "./PrimaryButton";
 import TextButton from "./TextButton";
+
+const axios = require("axios");
+
+async function getAlgoGovAPR() {
+    let response;
+    try {
+        response = await axios.get(
+            "https://governance.algorand.foundation/api/periods/statistics/",
+        );
+    } catch (ex) {
+        response = null;
+        console.log(ex);
+    }
+    if (response) {
+        const APR = ((parseInt(response["data"]["periods"][0].algo_amount_in_reward_pool) / parseInt(response["data"]["periods"][0].total_committed_stake)) * 400).toFixed(2)
+        return APR
+    }
+    return null;
+  }
 
 const mGardToGard = (num) => {
     return num / 1000000;
@@ -57,22 +76,7 @@ export default function Positions() {
             hasToolTip: true,
         },
         {
-            title: "Received DAI",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
             title: "Liquidation Price",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "Received DAI",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
-        {
-            title: "ETH exposure",
             val: `${0.00}%`,
             hasToolTip: true,
         },
@@ -86,46 +90,49 @@ export default function Positions() {
             val: `${0.00}%`,
             hasToolTip: true,
         },
-        {
-            title: "DAI avaible from ETH",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },
     ]
     const {theme} = useContext(ThemeContext);
     const [price, setPrice] = useState(0)
+    const [apr, setAPR] = useState(0)
     const loadedCDPs = CDPsToList();
     const [currentCDP, setCurrentCDP] = useState(null)
     useEffect(async () => {
+        setAPR(await getAlgoGovAPR())
         setPrice(await getPrice());
     }, []);
     return <div>
         <Header>
             <b>Your Positions</b>
-            <b>Rewards</b>
-            <b>Total Balance</b>
+            <b style={{textAlign: "center"}}>Rewards</b>
+            <b style={{textAlign: "center"}}>CDP Health</b>
         </Header>
         <Container>
             {loadedCDPs.length && loadedCDPs.length > 0 ?
                 loadedCDPs.map((cdp) => {
                     return (
             <Position key={cdp.id}>
+                <div style={{position: "relative", left: "93%", bottom: -25, fontSize:14, color:"#FF00FF"}}>v1 CDP</div>
                 <PositionInfo>
                     <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>    
-                        <div>Supplied: ${(microalgosToAlgos(cdp.collateral) * price).toFixed(2)} in ALGOs</div>
-                        <div>Borrowed: ${mGardToGard(cdp.debt)} in GARD</div>
+                        <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
+                        <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
                     </div>
-                    <div>APR 123%</div>
+                    <div style={{alignSelf:"center", textAlign:"center"}}>APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
                     <div style={{display: "flex", flexDirection: "column"}}>    
-                        <div>Health {`(100%)`}</div>
+                        <div>
+                            Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,true,)})`}
+                        </div>
                         <ThemeProvider theme={theme}>
                             <Slider
-                                color="primary"
+                                color={calcRatio(cdp.collateral, cdp.debt / 1e6, false,) < 140 ? "danger": calcRatio(cdp.collateral, cdp.debt / 1e6, false,) < 250 ? "moderate" : "healthy"}
+                                min={115}
+                                max={600}
+                                value={calcRatio(cdp.collateral, cdp.debt / 1e6, false,)}
                             />
                         </ThemeProvider>
                         <SliderRange>
-                            <div>minimum:$0</div>
-                            <div>maximum:$0</div>
+                            <div>minimum: 115%</div>
+                            <div>max: 600+%</div>
                         </SliderRange>
                         
                     </div>
@@ -189,5 +196,5 @@ const PositionInfo = styled.div`
 const SliderRange = styled.div`
     display: flex;
     justify-content: space-between;
-    font-size: 1px;
+    font-size: 11px;
 `

@@ -35,19 +35,12 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
 
     var supplyDetails = [
         {
-            title: "Borrow Limit",
-            val: `${Math.max(
-                0,
-                Math.trunc(
-                  (100 * ((price * cdp.collateral) / 1000000)) /
-                    1.4 -
-                    (100 * cdp.debt) / 1000000,
-                ) / 100,
-              )}`,
+            title: "Supply Limit",
+            val: `${0.00} ALGOs`,
             hasToolTip: true,
         },
         {
-            title: "Supply APY",
+            title: "Supply APR",
             val: `${0.00}%`,
             hasToolTip: true,
         },
@@ -58,8 +51,15 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
         },];
     var borrowDetails = [
         {
-            title: "Supply Limit",
-            val: `${0.00}%`,
+            title: "Borrow Limit",
+            val: `${Math.max(
+                0,
+                Math.trunc(
+                  (100 * ((price * cdp.collateral) / 1000000)) /
+                    1.4 -
+                    (100 * cdp.debt) / 1000000,
+                ) / 100,
+              )} GARD`,
             hasToolTip: true,
         },
         {
@@ -68,7 +68,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
             hasToolTip: true,
         },
         {
-            title: "Borrow Limit",
+            title: "Borrow Rewards",
             val: `${0.00}%`,
             hasToolTip: true,
         },];
@@ -118,6 +118,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                     </InputContainer>
                 </Background>
                 <PrimaryButton
+                purple={true}
                 positioned={true}
                 text="Supply More"
                 onClick={ async () => {
@@ -173,6 +174,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                     </InputContainer>
                 </Background>
                 <PrimaryButton
+                purple={true}
                 positioned={true}
                 text="Borrow More"
                 onClick={ async () => {
@@ -210,7 +212,7 @@ const SubContainer = styled.div`
 `
 const Background = styled.div`
     margin-top: 30px;
-    background: #131c44; 
+    background: #1b2d65;
     border-radius: 10px;
 `
 const Title = styled.div`

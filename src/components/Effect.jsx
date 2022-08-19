@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import ToolTip from "./ToolTip";
 import * as tips from "../assets/tooltiptext";
 import styled, {css} from "styled-components";
+import RewardWrapper from "./RewardWrapper";
 
-export default function Effect({title, val, hasToolTip}) {
+export default function Effect({title, val, hasToolTip, rewards}) {
  return (
     <div style={{
       display: "flex",
@@ -17,7 +18,11 @@ export default function Effect({title, val, hasToolTip}) {
       ) : (
         <Text>{title}</Text>
       )}
+      {rewards ? 
+        <RewardWrapper text={val}/>
+      :
       <Result>{val}</Result>
+      }
     </div>
   );
 }

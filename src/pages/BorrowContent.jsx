@@ -207,25 +207,10 @@ export default function BorrowContent(){
         hasToolTip: true,
     },
     {
-        title: "Received DAI",
-        val: `${0.00}%`,
-        hasToolTip: true,
-    },
-    {
         title: "Liquidation Price",
         val: `${getMinted() == null || getCollateral() == null
           ? "..."
           : displayLiquidationPrice()}`,
-        hasToolTip: true,
-    },
-    {
-        title: "Bitcoin Factor",
-        val: `${0.00}%`,
-        hasToolTip: true,
-    },
-    {
-        title: "ETH exposure",
-        val: `${0.00}%`,
         hasToolTip: true,
     },
     {
@@ -242,18 +227,13 @@ export default function BorrowContent(){
           : displayRatio()}`,
         hasToolTip: true,
     },
-    {
-        title: "DAI avaible from ETH",
-        val: `${0.00}%`,
-        hasToolTip: true,
-    },
 ]
 
 var supplyDetails = [
   {
-      title: "Borrow Limit",
-      val: `$${maxGARD}`,
-      hasToolTip: true,
+    title: "Supply Limit",
+    val: `${maxCollateral} ALGOs`,
+    hasToolTip: true,
   },
   {
       title: "Supply APY",
@@ -262,25 +242,27 @@ var supplyDetails = [
   },
   {
       title: "Supply Rewards",
-      val: `${0.00}%`,
+      val: `+${0.00}% Algo Rewards`,
       hasToolTip: true,
+      rewards: true,
   },];
 var borrowDetails = [
-    {
-        title: "Supply Limit",
-        val: `$${maxCollateral}`,
-        hasToolTip: true,
-    },
-    {
-        title: "Borrow APR",
-        val: `${0.00}%`,
-        hasToolTip: true,
-    },
-    {
-        title: "Borrow Rewards",
-        val: `${0.00}%`,
-        hasToolTip: true,
-    },];
+  {
+    title: "Borrow Limit",
+    val: `${maxGARD} GARD`,
+    hasToolTip: true,
+  },
+  {
+      title: "Borrow APR",
+      val: `${0.00}%`,
+      hasToolTip: true,
+  },
+  {
+      title: "Borrow Rewards",
+      val: `+${0.02}% Algo Rewards`,
+      hasToolTip: true,
+      rewards: true,
+  },];
     return <div>
         {loading ? <LoadingOverlay text={loadingText} /> : <></>}
         <RewardNotice 
@@ -318,8 +300,8 @@ var borrowDetails = [
                           {supplyDetails.length && supplyDetails.length > 0 ?
                           supplyDetails.map((d) => {
                               return (
-                                  <Item key={d.title}>
-                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
+                               <Item key={d.title}>
+                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
                                   </Item>
                               )
                           })
@@ -328,7 +310,7 @@ var borrowDetails = [
                       </InputDetails>
                   </InputContainer>
               </Background>
-              <PrimaryButton positioned={true} text="Supply"/>
+              <PrimaryButton positioned={true} purple={true} text="Supply" onClick={()=>{cAlgos !== "" ? setGARD(1): null}}/>
           </SubContainer>
           <SubContainer>
               <Background>
@@ -360,7 +342,7 @@ var borrowDetails = [
                           borrowDetails.map((d) => {
                               return (
                                   <Item key={d.title}>
-                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
+                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
                                   </Item>
                               )
                           })
@@ -370,6 +352,7 @@ var borrowDetails = [
                   </InputContainer>
               </Background>
               <PrimaryButton 
+              purple={true}
               positioned={true} 
               text="Borrow" 
               disabled={cAlgos == "" || mGARD == ""}
@@ -399,15 +382,15 @@ var borrowDetails = [
       <></> }
       {cdps == dummyCDPs ? <></> :
       <div>
-        <Positions/>
         <PrimaryButton
-        text="Create Position"
-        positioned={true}
+        text={createPositionShown ? "Exit" : "Create New Position"}
+        purple={!createPositionShown}
+        positioned={createPositionShown}
         onClick={() => {
-          setCreatePositionShown(true)
-          window.scrollTo(0, 0)
+          setCreatePositionShown(!createPositionShown)
         }}
         />
+        <Positions/>
       </div>}
     </div>
 }
@@ -423,7 +406,7 @@ const SubContainer = styled.div`
 `
 const Background = styled.div`
     margin-top: 30px;
-    background: #131c44; 
+    background: #1b2d65;
     border-radius: 10px;
 `
 const Title = styled.div`
@@ -440,7 +423,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(3, 30%); 
+grid-template-columns:repeat(3, 32%); 
 row-gap: 30px; 
 justify-content: center;
 padding: 30px 0px 30px;
