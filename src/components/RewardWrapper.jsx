@@ -2,13 +2,14 @@ import React from "react";
 import rewardsIcon from "../assets/icons/rewards_icon.png"
 
 export default function RewardWrapper({text}){
-    return <div>
+    return <div style={{position: "relative"}}>
         <div 
         style={{
             height: 17,
             border: "1px solid #80deff", 
+            maxWidth: 160,
             color:"#80deff", 
-            textAlign: "right", 
+            textAlign: "center", 
             borderRadius: 10, 
             position:"relative",
             paddingTop: 6,
@@ -20,7 +21,7 @@ export default function RewardWrapper({text}){
             fontWeight: 600,
             }}>
             {text}
-            <span style={{position: "relative", bottom: 30, left: 20}}><img style={{height: "27px"}} src={rewardsIcon}/></span>
+            <span style={{position: "absolute", bottom: ".5rem", right: "-.85rem"}}><img style={{height: "27px"}} src={rewardsIcon}/></span>
         </div>
     </div>
 }

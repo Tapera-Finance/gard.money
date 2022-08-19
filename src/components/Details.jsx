@@ -14,7 +14,7 @@ export default function Details({ className, details, governPage }) {
         details.map((d) => {
             return (
                 <Item key={d.title}>
-                    <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
+                    <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
                 </Item>
             )
         })
