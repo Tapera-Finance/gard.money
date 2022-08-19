@@ -26,7 +26,7 @@ export default function Details({ className, details, governPage }) {
 }
 
 const Container = styled.div`
-  background: rgba(13, 18, 39, 0.75);
+  background: #0E1834;
   padding-top: 30px;
   padding-bottom: 30px;
   border-radius: 10px;

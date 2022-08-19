@@ -10,37 +10,67 @@ import { loadFireStoreCDPs } from "../components/Firebase";
 import { cdpGen } from "../transactions/contracts";
 import { getWallet } from "../wallets/wallets";
 import { commitmentPeriodEnd } from "../globals";
+import CountdownTimer from "../components/CountdownTimer";
 
+const axios = require("axios");
+
+async function getGovernanceInfo() {
+    let response;
+    try {
+        response = await axios.get(
+            "https://governance.algorand.foundation/api/periods/statistics/",
+        );
+    } catch (ex) {
+        response = null;
+        console.log(ex);
+    }
+    if (response) {
+        console.log(response)
+        const governorCount = parseInt(response["data"].unique_governors_count);
+        const enrollmentEnd = response["data"]["periods"][0].registration_end_datetime;
+        return [governorCount, enrollmentEnd];
+    }
+    return null;
+  }
 
 export default function Govern() {
   const [commitment, setCommitment] = useState(undefined);
   const [maxBal, setMaxBal] = useState("");
   const [selectedAccount, setSelectedAccount] = useState("");
   const [refresh, setRefresh] = useState(0);
-  const [shownAll, setAllVotes] = useState(true)
+  const [shownAll, setAllVotes] = useState(true);
+  const [governors, setGovernors] = useState("...");
+  const [enrollmentEnd, setEnrollmentEnd] = useState("");
 
   var details = [
       {
-          title: "Governors",
-          val: `123,400 Governors`,
+          title: "Total Vaulted",
+          val: `${88.3}M ALGO`,
           hasToolTip: true,
       },
       {
-          title: "Governance APY",
-          val: `${0.03}% per transaction`,
-          hasToolTip: true,
+        title: "Governance APY",
+        val: `${0.03}% per transaction`,
+        hasToolTip: true,
       },
       {
-          title: "Enrollment Countdown",
-          val: `${0.00}%`,
-          hasToolTip: true,
+        title: "GARD Governors",
+        val: `${governors} Governors`,
+        hasToolTip: true,
       },
       {
           title: "Governance Rewards",
-          val: `${0.00}%`,
+          val: `+${0.00}% Algo Rewards`,
           hasToolTip: true,
+          rewards: true,
       },
   ]
+  useEffect(async () => {
+    const govInfo = await getGovernanceInfo()
+    setGovernors((parseInt(govInfo[0])).toLocaleString("en-US"))
+    console.log("2", govInfo[1])
+  }, []);
+
   useEffect(async () => {
     setCommitment(await loadFireStoreCDPs());
   }, [refresh]);
@@ -102,18 +132,25 @@ export default function Govern() {
   });
   console.log("cdps", cdps)
   return <div>
-          <RewardNotice 
+          {/* <RewardNotice 
           program={"Governance Rewards"} 
           timespan={"Now - October 22, 2022"}
           estimatedRewards={"12% - 33% APR Rewards"}
           action={"Borrow ALGO to Claim Rewards"}
-          />
-          <div style={{marginTop: 20}}>
+          /> */}
+          <div style={{display: "flex", flexDirection: "column", borderRadius: 10, justifyContent: "space-between", background: "#0E1834", padding: "20px 20px 0px"}}>
+            <div>Governance Period #4</div>
+            <CountDownContainer>
+              <CountdownTimer targetDate={1661180257000}/>
+            </CountDownContainer>
+          </div>
+          
+          <div>
               <Details details={details} governPage={true}/>
               <TextButton text="See More Info" positioned={true}/>
           </div>
 
-          <div style={{ height: 70, borderRadius: 10, backgroundColor: "rgba(13,18,39,0.75)", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <div style={{ height: 70, borderRadius: 10, backgroundColor: "#0E1834", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
               <div style={{ display: "flex", justifyContent: "center"}}>
                   <div style={{ marginLeft: 25, marginRight: 8 }}>
                   <Title>
@@ -134,7 +171,7 @@ export default function Govern() {
           data={cdps}
           />
 
-          <div style={{ height: 70, borderRadius: 10, backgroundColor: "rgba(13,18,39,0.75)", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <div style={{ height: 70, borderRadius: 10, backgroundColor: "#0E1834", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
               <div style={{ display: "flex", justifyContent: "center"}}>
                   <div style={{ marginLeft: 25, marginRight: 8 }}>
                   <Title>
@@ -169,6 +206,14 @@ export default function Govern() {
           />
       </div>
 }
+
+const CountDownContainer = styled.div`
+  background: #0E1834;
+  height: 128px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+`
 
 const Title = styled.text`
   font-weight: 500;
