@@ -2,17 +2,20 @@ import React, { useEffect, useState } from "react";
 import ToolTip from "./ToolTip";
 import * as tips from "../assets/tooltiptext";
 import styled, {css} from "styled-components";
-import { titleToToolTip } from "../utils";
 
 export default function Effect({title, val,  hasToolTip, className}) {
  return (
     <EffectContainer  className={className}>
       {hasToolTip ? (
-        <NewToolTip className={className} toolTip={title} toolTipText={tips[titleToToolTip(title)]}></NewToolTip>
+        <NewToolTip className={className} toolTip={title} toolTipText={tips[title]}></NewToolTip>
       ) : (
         <Text className={className}>{title}</Text>
       )}
-      <Result className={className}>{val}</Result>
+      {rewards ?
+        <RewardWrapper text={val}/>
+      :
+      <Result>{val}</Result>
+      }
     </EffectContainer>
   );
 }
