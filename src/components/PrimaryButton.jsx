@@ -6,10 +6,10 @@ import styled, { css } from "styled-components";
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled }) {
+export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, purple }) {
 
   return (
-    <Button variant={variant} disabled={disabled}  onClick={() => onClick()}>
+    <Button variant={variant} disabled={disabled} positioned={positioned} exit={exit} purple={purple} onClick={() => onClick()}>
       <ButtonText variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
@@ -18,7 +18,8 @@ export default function PrimaryButton({ text, onClick, variant, disabled }) {
 }
 
 const Button = styled.button`
-  background-color: #6941c6;
+  margin: auto;
+  background-color: #172756;
   border: 1px solid #ffffff;
   padding: 8px 18px;
   display: flex;
@@ -27,23 +28,53 @@ const Button = styled.button`
   cursor: pointer;
   border-radius: 6px;
   &:hover {
-    background-color: #381d77;
+    background-color: #6941c6;
   }
   ${(props) =>
     props.variant &&
     css`
       background-color: transparent;
-      border: 1px solid #6941c6;
+      border: 1px solid white;
       &:hover {
         background-color: #6941c6;
       }
     `}
   ${(props) =>
+    props.purple &&
+    css`
+    background-color: #7c52ff;
+  `}
+  ${(props) =>
+    props.positioned &&
+    css`
+      position: relative;
+      bottom: 20px;
+      margin: auto;
+      background-color: #7c52ff;
+      border: none;
+      z-index: 1;
+    `}
+  ${(props) =>
+    !props.purple &&
+    css`
+    background-color: #172756;
+    border: 1px solid white;
+  `}
+  ${(props) =>
     props.disabled &&
     css`
-      border: 1px solid #999999;
-      background-color: #cccccc;
+      border: none;
+      background-color: #999999;
       pointer-events: none;
+    `}
+  ${(props) =>
+    props.exit &&
+    css`
+      border: 1px solid #ffffff;
+      background-color: #172756;
+      &:hover {
+        background-color: #23325e;
+      }
     `}
 `;
 const ButtonText = styled.text`
@@ -53,14 +84,4 @@ const ButtonText = styled.text`
   ${Button}:hover & {
     color: #ffffff;
   }
-  ${(props) =>
-    props.variant &&
-    css`
-      color: #6941c6;
-    `}
-  ${(props) =>
-    props.disabled &&
-    css`
-      color: #666666;
-    `}
 `;
