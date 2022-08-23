@@ -219,7 +219,6 @@ export default function Topbar({ contentName, setMainContent }) {
           </div>
           <div>
             <PrimaryButton
-              variant={walletAddress}
               text={walletAddress || "Connect Wallet"}
               onClick={() => {
                 if (walletAddress) {
@@ -235,7 +234,6 @@ export default function Topbar({ contentName, setMainContent }) {
           {walletAddress ? (
             <div style={{ marginLeft: 12 }}>
               <PrimaryButton
-                variant={true}
                 text="Disconnect Wallet"
                 onClick={() => {
                   disconnectWallet();

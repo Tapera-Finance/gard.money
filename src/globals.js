@@ -3,7 +3,7 @@ export const CONTENT_NAMES = {
   DASHBOARD: "Dashboard",
   ACCOUNT: "Account",
   ACTIONS: "Actions",
-  MINT: "New CDP",
+  MINT: "Borrow",
   REPAY: "Manage CDPs",
   AUCTIONS: "Auctions",
   SWAP: "Swap",

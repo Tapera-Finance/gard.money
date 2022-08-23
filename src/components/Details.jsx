@@ -10,9 +10,9 @@ export default function Details({ className, details }) {
       <Items
       >
         {details.length && details.length > 0 ?
-        details.map((d, i) => {
+        details.map((d) => {
             return (
-                <Item key={i}>
+                <Item key={d.title}>
                     <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
                 </Item>
             )
@@ -26,23 +26,21 @@ export default function Details({ className, details }) {
 
 const Container = styled.div`
   background: rgba(13, 18, 39, 0.75);
-  padding-top: 30;
-  padding-bottom: 30;
-  border-radius: 10;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  border-radius: 10px;
 `;
 
 const Items = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 20%);
-    row-gap: 30;
+    row-gap: 30px;
     justify-content: center;
-
 `
 
 const Item = styled.div`
     display: flex;
     flex-direction: column;
-    color: #ffffff;
 `
 const Text = styled.text`
     //

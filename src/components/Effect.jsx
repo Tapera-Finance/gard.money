@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ToolTip from "./ToolTip";
 import * as tips from "../assets/tooltiptext";
 import styled, {css} from "styled-components";
+import RewardWrapper from "./RewardWrapper";
 import { titleToToolTip } from "../utils";
 
 export default function Effect({title, val,  hasToolTip, className}) {

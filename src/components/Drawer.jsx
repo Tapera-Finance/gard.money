@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import styled, { css, keyframes } from "styled-components";
 import dashboardIcon from "../assets/icons/dashboard_icon.png";
-import algoGovernanceIcon from "../assets/icons/algo_governance_icon.png";
+import borrowIcon from "../assets/icons/algo_governance_icon.png";
 import auctionsIcon from "../assets/icons/auctions_icon.png";
 import daoIcon from "../assets/icons/dao_icon.png";
 import mintIcon from "../assets/icons/mint_icon.png";
@@ -119,7 +119,7 @@ export default function Drawer({
                         [
                           "Account",
                           "Manage CDPs",
-                          "New CDP",
+                          "Borrow",
                           "Actions",
                           "Algo Governance",
                           "Auctions",
@@ -456,9 +456,9 @@ const menuItems = [
   },
   {
     name: CONTENT_NAMES.MINT,
-    icon: mintIcon,
+    icon: borrowIcon,
     subOptions: [],
-    route: "/new-cdp",
+    route: "/borrow",
   },
   {
     name: CONTENT_NAMES.REPAY,
@@ -480,7 +480,7 @@ const menuItems = [
   },
   {
     name: CONTENT_NAMES.ALGO_GOVERNANCE,
-    icon: algoGovernanceIcon,
+    icon: borrowIcon,
     subOptions: [],
     route: "/algo-governance",
   },

@@ -6,7 +6,7 @@ import DaoContent from "../pages/DaoContent";
 import DashboardContent from "../pages/DashboardContent";
 import HomeContent from "../pages/HomeContent";
 import Main from "./Main";
-import MintContent from "../pages/MintContent";
+import BorrowContent from "../pages/BorrowContent";
 import RepayContent from "../pages/RepayContent";
 import ActionsContent from "../pages/ActionsContent";
 import AccountContent from "../pages/AccountContent";
@@ -21,7 +21,7 @@ export default function AppRoutes() {
           element={Main(DashboardContent, "Dashboard")}
         />
         <Route path="/account" element={Main(AccountContent, "Wallet")} />
-        <Route path="/new-cdp" element={Main(MintContent, "New CDP")} />
+        <Route path="/borrow" element={Main(BorrowContent, "Borrow")} />
         <Route path="/manage" element={Main(RepayContent, "Manage CDPs")} />
         <Route path="/auctions" element={Main(AuctionsContent, "Auctions")} />
         <Route path="/actions" element={Main(ActionsContent, "Actions")} />
