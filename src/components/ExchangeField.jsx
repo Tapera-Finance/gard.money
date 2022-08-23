@@ -100,7 +100,7 @@ export default function ExchangeField({
 
 const Container = styled.div`
   display: flex;
-  background: #0d122788;
+  background: #0f1733;
   justify-content: space-between;
   height: 12vh;
   width: 30vw;

@@ -558,8 +558,7 @@ const DetailsContainer = styled.div`
   justify-content: center;
   width: 80%;
   height: 30vh;
-  background: #0d1227;
-  opacity: 65%;
+  background:#0f1733;
   border-radius: 10px;
   margin: auto;
   margin-top: 30px;
