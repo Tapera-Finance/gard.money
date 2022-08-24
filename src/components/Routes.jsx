@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AlgoGovernanceContent from "../pages/AlgoGovernanceContent";
 import AuctionsContent from "../pages/AuctionsContent";
 import DaoContent from "../pages/DaoContent";
-import DashboardContent from "../pages/DashboardContent";
+import AnalyticsContent from "../pages/AnalyticsContent";
 import HomeContent from "../pages/HomeContent";
 import Main from "./Main";
 import BorrowContent from "../pages/BorrowContent";
@@ -16,10 +16,6 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={Main(HomeContent, "Home")} />
-        <Route
-          path="/dashboard"
-          element={Main(DashboardContent, "Dashboard")}
-        />
         <Route path="/wallet" element={Main(WalletContent, "Wallet")} />
         <Route path="/borrow" element={Main(BorrowContent, "Borrow")} />
         <Route path="/manage" element={Main(RepayContent, "Manage CDPs")} />
@@ -29,6 +25,10 @@ export default function AppRoutes() {
         <Route
           path="/algo-governance"
           element={Main(AlgoGovernanceContent, "Algo Governance")}
+        />
+        <Route
+          path="/analytics"
+          element={Main(AnalyticsContent, "Analytics")}
         />
       </Routes>
     </BrowserRouter>

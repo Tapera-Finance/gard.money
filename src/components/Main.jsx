@@ -4,7 +4,7 @@ import HomeContent from "../pages/HomeContent";
 import Drawer from "./Drawer";
 import Topbar from "./Topbar";
 import { CONTENT_NAMES } from "../globals";
-import DashboardContent from "../pages/DashboardContent";
+import AnalyticsContent from "../pages/AnalyticsContent";
 import WalletContent from "../pages/WalletContent";
 import BorrowContent from "../pages/BorrowContent";
 import RepayContent from "../pages/RepayContent";
@@ -199,8 +199,6 @@ function MainContentHandler({ content, walletAddress }) {
   switch (content) {
     case CONTENT_NAMES.HOME:
       return <HomeContent />;
-    case CONTENT_NAMES.DASHBOARD:
-      return <DashboardContent />;
     case CONTENT_NAMES.WALLET:
       return <WalletContent walletAddress={walletAddress} />;
     case CONTENT_NAMES.MINT:
@@ -215,6 +213,8 @@ function MainContentHandler({ content, walletAddress }) {
       return <DaoContent />;
     case CONTENT_NAMES.ALGO_GOVERNANCE:
       return <AlgoGovernanceContent />;
+    case CONTENT_NAMES.ANALYTICS:
+      return <AnalyticsContent />;
 
     default:
       return <div></div>;
