@@ -11,6 +11,9 @@ import { cdpGen } from "../transactions/contracts";
 import { getWallet } from "../wallets/wallets";
 import { commitmentPeriodEnd } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
+import Effect from "../components/Effect";
+import { textAlign } from "@mui/system";
+import { Switch } from "@mui/material";
 
 const axios = require("axios");
 
@@ -50,19 +53,13 @@ export default function Govern() {
       },
       {
         title: "Governance APY",
-        val: `${0.03}% per transaction`,
+        val: `${34.3}%`,
         hasToolTip: true,
       },
       {
         title: "GARD Governors",
         val: `${governors} Governors`,
         hasToolTip: true,
-      },
-      {
-          title: "Governance Rewards",
-          val: `+${0.00}% Algo Rewards`,
-          hasToolTip: true,
-          rewards: true,
       },
   ]
   useEffect(async () => {
@@ -138,19 +135,30 @@ export default function Govern() {
           estimatedRewards={"12% - 33% APR Rewards"}
           action={"Borrow ALGO to Claim Rewards"}
           /> */}
-          <div style={{display: "flex", flexDirection: "column", borderRadius: 10, justifyContent: "space-between", background: "#0E1834", padding: "20px 20px 0px"}}>
-            <div>Governance Period #4</div>
+          <div style={{display: "flex", flexDirection: "column", borderRadius: 10, justifyContent: "space-between", textAlign: "center", background: "#0E1834", padding: "20px 20px 0px"}}>
+            <h3>Governance Period #4</h3>
+            <div style={{fontSize: 11}}>Registration Ends</div>
             <CountDownContainer>
-              <CountdownTimer targetDate={1661180257000}/>
+              <CountdownTimer targetDate={1761180257000}/>
             </CountDownContainer>
           </div>
           
           <div>
-              <Details details={details} governPage={true}/>
-              <TextButton text="See More Info" positioned={true}/>
+              <GovernDetails>
+                  {details.length && details.length > 0 ?
+                  details.map((d) => {
+                      return (
+                        <Item key={d.title}>
+                              <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
+                          </Item>
+                      )
+                  })
+                  : null}
+              </GovernDetails>
+              <TextButton text="Learn More on ALGO Site" positioned={true}/>
           </div>
 
-          <div style={{ height: 70, borderRadius: 10, backgroundColor: "#0E1834", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <div style={{ height: 70, borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
               <div style={{ display: "flex", justifyContent: "center"}}>
                   <div style={{ marginLeft: 25, marginRight: 8 }}>
                   <Title>
@@ -170,8 +178,9 @@ export default function Govern() {
           <Table
           data={cdps}
           />
+          <PrimaryButton text="Deposit ALGOs" positioned={true}/>
 
-          <div style={{ height: 70, borderRadius: 10, backgroundColor: "#0E1834", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <div style={{ height: 70, borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
               <div style={{ display: "flex", justifyContent: "center"}}>
                   <div style={{ marginLeft: 25, marginRight: 8 }}>
                   <Title>
@@ -204,9 +213,25 @@ export default function Govern() {
           <Table
           data={dummyVotes}
           />
+          <PrimaryButton text="Submit All Votes" positioned={true}/>
+
       </div>
 }
-
+const GovernDetails = styled.div`
+display: grid;
+grid-template-columns:repeat(3, 20%); 
+text-align: center;
+row-gap: 30px; 
+justify-content: center;
+padding: 30px 0px 30px;
+border-radius: 10px;
+background: #0E1834;
+`
+const Item = styled.div`
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+`
 const CountDownContainer = styled.div`
   background: #0E1834;
   height: 128px;
@@ -264,10 +289,15 @@ const dummyVotes = [
       votesInFavor: "59%",
       votesOutstanding: "37%",
       "" : (
-        <PrimaryButton
-          govern={true}
-          text="Vote"
-        />
+        // <PrimaryButton
+        //   govern={true}
+        //   text="Vote"
+        // />
+        <div style={{display: "flex"}}>
+          <div style={{alignSelf: "center", color: "#01d1ff"}}>Yes</div>
+          <Switch />
+          <div style={{alignSelf: "center", color: "grey"}}>No</div>
+        </div>
       )
     },
     {
@@ -276,10 +306,15 @@ const dummyVotes = [
       votesInFavor: "59%",
       votesOutstanding: "37%",
       "" : (
-        <PrimaryButton
-          govern={true}
-          text="Vote"
-        />
+        // <PrimaryButton
+        //   govern={true}
+        //   text="Vote"
+        // />
+        <div style={{display: "flex"}}>
+          <div style={{alignSelf: "center", color: "#01d1ff"}}>Yes</div>
+          <Switch />
+          <div style={{alignSelf: "center", color: "grey"}}>No</div>
+        </div>
       )
     },
     {
@@ -288,10 +323,15 @@ const dummyVotes = [
       votesInFavor: "59%",
       votesOutstanding: "36%",
       "" : (
-        <PrimaryButton
-          govern={true}
-          text="Vote"
-        />
+        // <PrimaryButton
+        //   govern={true}
+        //   text="Vote"
+        // />
+        <div style={{display: "flex"}}>
+          <div style={{alignSelf: "center", color: "#01d1ff"}}>Yes</div>
+          <Switch />
+          <div style={{alignSelf: "center", color: "grey"}}>No</div>
+        </div>
       )
     },
   ]

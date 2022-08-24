@@ -30,7 +30,6 @@
     line-height: 1.75rem;
     padding: 0.5rem;
     border-radius: 10px;
-    background: #172756;
     text-decoration: none;
     color: white;
   }
@@ -51,10 +50,13 @@
   
   .show-counter .countdown {
     line-height: 1.25rem;
-    padding: 0 0.75rem 0 0.75rem;
+    padding: 0.5rem 0.75rem 0.5rem 0.75rem;
     align-items: center;
     display: flex;
     flex-direction: column;
+    background: #172756;
+    border-radius: 10px;
+    margin-right: 10px;
   }
   
   .show-counter .countdown > p {
