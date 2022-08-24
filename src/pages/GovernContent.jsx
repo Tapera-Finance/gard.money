@@ -251,7 +251,7 @@ const GovernDetails = styled.div`
 const Item = styled.div`
   display: flex;
   flex-direction: column;
-  font-size: 14px;
+  font-size: 15px;
 `;
 const CountDownContainer = styled.div`
   background: #0e1834;
