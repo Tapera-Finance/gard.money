@@ -10,6 +10,7 @@ import moment from "moment";
 import { loadDbActionAndMetrics } from "../components/Firebase";
 import { getWalletInfo } from "../wallets/wallets";
 import Effect from "../components/Effect";
+import PageToggle from "../components/PageToggle";
 
 // get webactions and metrics data
 const dbData =
@@ -38,8 +39,13 @@ export default function AnalyticsContent() {
       hasToolTip: true,
     },
   ]
+  const tabs = {
+    one: "System Metrics",
+    two: "Your Metrics",
+  };
   return (
     <div>
+      <PageToggle selectedTab={"one"} tabs={tabs}/>
       <div>
       <AnalyticsDetails>
             {details.length && details.length > 0 ?
@@ -77,6 +83,7 @@ justify-content: center;
 padding: 30px 0px 30px;
 border-radius: 10px;
 background: #0E1834;
+margin-top: 50px;
 margin-bottom: 50px;
 `
 const Item = styled.div`
