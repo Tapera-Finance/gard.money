@@ -78,7 +78,7 @@ const Box = styled.div`
   height: 30px;
   text-align: center;
   justify-content: center;
-  padding: 6px 2px 2px 6px;
+  padding: 10px 15px 3px;
   align-content: center;
   cursor: pointer;
   border-radius: 10px;
@@ -87,14 +87,7 @@ const Box = styled.div`
     css`
       border: 1px solid #ffffff;
       background: #172756;
-      padding: 6px 0px 0px 6px;
-      &:hover {
-        border: unset;
-      }
     `}
-  &:hover {
-    border: 1px solid #ffffff;
-  }
 `;
 
 const Btn = styled.text`
@@ -111,6 +104,7 @@ const Bar = styled.div`
   min-width: 74px;
   max-width: max-content;
   background: #0E1834;
-  border-radius: 6px;
+  border-radius: 10px;
+  padding: 3px;
   margin: auto;
 `;
