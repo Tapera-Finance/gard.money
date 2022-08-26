@@ -1,11 +1,21 @@
-
-
 td :first-child,
 th:first-child {
-    border-radius: 10px 0  0 10px;
+  border-radius: 10px 0 0 10px;
 }
 
 td:last-child,
 th:last-child {
-    border-radius: 0 10px 10px 0;
+  border-radius: 0 10px 10px 0;
+}
+
+tbody>th>:nth-child(1) {
+  color: white;
+}
+
+tbody>tr>:nth-child(1) {
+  color: #01c1ee;
+}
+
+.left-column-cell {
+  color: #01c1ee;
 }

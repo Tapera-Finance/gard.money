@@ -11,6 +11,7 @@ import { gardID } from "../transactions/ids";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import gardIcon from "../assets/icons/gardlogo_icon_small.png"
 import PrimaryButton from "./PrimaryButton";
+import {useNavigate} from "react-router";
 
 const theme = createTheme({
   components: {
@@ -28,11 +29,12 @@ const menuStyle = {
   color: "#01c7f3"
 }
 
-const balances = getBalances();
+// const balances = getBalances();
 
 export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
 
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget)
@@ -44,10 +46,6 @@ export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
 
   return <div>
     <ThemeProvider theme={theme}>
-    <PrimaryButton
-      text={walletAddress || "Connect Wallet"}
-      onClick={() => connectFn()}
-      />
     <IconButton
       onClick={handleClick}
       size="small"
@@ -56,9 +54,25 @@ export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
       aria-haspopup="true"
       aria-expanded={open ? 'true' : undefined}
     >
+      {/* <div style={{display: "flex", flexDirection: "row", justifyContent: "space-evenly"}}> */}
       <AvatarBox>
         <GardIcon src={gardIcon} />
       </AvatarBox>
+    {/* <PrimaryButton
+      text={walletAddress || "Connect Wallet"}
+      onClick={() => connectFn()}
+      />
+        {walletAddress ? (
+            <div style={{ marginLeft: 12 }}>
+              <PrimaryButton
+                text="Disconnect Wallet"
+                onClick={() =>  disconnectFn()}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
+      </div> */}
 
     </IconButton>
     <Menu
@@ -101,7 +115,7 @@ export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      <MenuItem opt onClick={() => window.open("http://localhost:3000/account", "_self")} >
+      <MenuItem opt onClick={() => navigate("/account")}>
       <AvatarBox>
         <GardIcon src={gardIcon} />
         <Text>View Wallet</Text>
@@ -112,10 +126,10 @@ export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
         Asset Balances:
       </MenuItem>
       <MenuItem opt>
-        <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/")} >ALGO: {balances['algo']}</IconButton>
+        {/* <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/")} >ALGO: {balances['algo']}</IconButton> */}
       </MenuItem>
       <MenuItem opt>
-        <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/asset/" + gardID)}>GARD: {balances['gard']}</IconButton>
+        {/* <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/asset/" + gardID)}>GARD: {balances['gard']}</IconButton> */}
       </MenuItem>
     </Menu>
     </ThemeProvider>

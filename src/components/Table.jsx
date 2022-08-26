@@ -20,6 +20,7 @@ import "../styles/table.css"
 export default function Table({
   data,
   title,
+  subtitle,
   countSubtitle,
   columns,
   noID,
@@ -65,6 +66,9 @@ export default function Table({
           <div style={{ marginRight: 8 }}>
             <Title>{title}</Title>
           </div>
+          <div style={{ marginRight: 8 }}>
+            <Total>{subtitle}</Total>
+          </div>
           <CountContainer>
             <CountText>
               {countSubtitle || `${data.length} ${title}`}
@@ -105,6 +109,9 @@ export default function Table({
                 >
                   {keys.map((keyVal, keyIndex) => {
                     if (keyVal == "id" && noID) return;
+                    if (keyVal === "name" || keyVal === "id") {
+                      <Cell key={keyIndex} className="left-column-cell">{value[keyVal]}</Cell>
+                    }
                     return <Cell key={keyIndex}>{value[keyVal]}</Cell>;
                   })}
                 </TableRow>
@@ -191,15 +198,6 @@ export default function Table({
     </div>
   );
 }
-/**
- * style={{
-                    background: tableColor,
-                    borderBottom: "solid",
-                    borderBottomWidth: 1,
-                    borderColor: "#F9F9F9",
-                  }}
- */
-
 
 const TableGrid = styled.table`
   border: 1px transparent;
@@ -211,9 +209,14 @@ const TableGrid = styled.table`
 
 // styled components
 const Title = styled.text`
-  font-weight: 500;
+  font-weight: 600;
   font-size: 18px;
 `;
+
+const Total = styled.text`
+  font-weight: 600;
+  /* font */
+`
 
 const CountContainer = styled.div`
   background: #ffffff;

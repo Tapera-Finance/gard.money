@@ -97,7 +97,6 @@ function formatHistory(documents) {
     const newTableEntry = {
       transactionType: actionToLabel(entry.actionType),
       totalValue: 0,
-      // id: entry.actionType === 0 ? cdpIds[idx].id : 0,
       tokenAmountA: formattedAlgo
         ? formattedAlgo
         : mAlgosToAlgos(entry.microAlgos).toFixed(3),
@@ -392,24 +391,15 @@ const TableRow = styled.tr`
   background: #0f1733;
   border-bottom: 4px transparent #172756;
   background-clip: padding-box;
-  /* border-radius: 5px; */
-  --moz-background-clip: padding-box;
-  --webkit-background-clip: padding-box;
+
 `;
 export const Cell = styled.td`
   border-bottom: 4px solid #172756;
   background-clip: padding-box;
-  /* border-radius: 5px; */
-  --moz-background-clip: padding-box;
-  --webkit-background-clip: padding-box;
-
   font-weight: 500;
   font-size: 14px;
   height: 44px;
   padding-left: 16px;
-  /* border-radius: 8px;
-  border-left: none;
-  border-top: 1px solid #172756; */
   text-align: left;
   ${(props) =>
     props.className && props.className === "negative"

@@ -17,11 +17,6 @@ import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
 
 
-
-const holdingsTabs = {
-  one: null,
-}
-
 const tabs = {
   one: <Holdings />,
   two: <TransactionHistory />,
@@ -37,9 +32,7 @@ export default function AccountContent() {
   const [balance, setBalance] = useState("...");
   const [rewards, setRewards] = useState(0);
   const [selectedTab, setSelectedTab] = useState("one");
-  const [pendingRewards, setPendingRewards] = useState("...");
   const [currentPrice, setPrice] = useState("Loading...");
-  const [APR, setAPR] = useState(0);
 
   const prices = {
     algo: currentPrice,
@@ -50,7 +43,7 @@ export default function AccountContent() {
   useEffect(async () => {
     let apr = await getAlgoGovAPR();
     let price = await getPrice();
-    setAPR(apr);
+    // setAPR(apr);
     setPrice(price);
   }, []);
   useEffect(() => {
@@ -73,20 +66,15 @@ export default function AccountContent() {
     setAcctInfo(getWalletInfo());
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
     setRewards((getWalletInfo()["rewards"] / 1000000).toFixed(3));
-    setPendingRewards(
-      (getWalletInfo()["pending-rewards"] / 1000000).toFixed(3),
-    );
+    // setPendingRewards(
+    //   (getWalletInfo()["pending-rewards"] / 1000000).toFixed(3),
+    // );
   }, []);
   useEffect(() => {
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
   const algoLink = `https://algoexplorer.io/address/${getWallet().address}`;
-  // let assets = dummyAssets.map((value, index) => {
-  //   return {
-  //     ...value,
-  //     amount: `${value.amount}`,
-  //   };
-  // });
+
 
   if (!walletAddress) return <div></div>;
   return (
@@ -133,14 +121,13 @@ export default function AccountContent() {
               marginBottom: window.innerWidth < 900 ? 5 : 15,
             }}
           >
-            <div style={{ alignSelf: "center", textAlign: "center" }}>
+            {/* <div style={{ alignSelf: "center", textAlign: "center" }}>
               APR: <span style={{ color: "#01d1ff" }}>{APR}%</span>
             </div>
             <div style={{ alignSelf: "center", textAlign: "center" }}>
               Pending: <span style={{ color: "#01d1ff" }}>{rewards}</span>
-            </div>
+            </div> */}
           </div>
-
           <div
             style={{
               display: "flex",
@@ -162,38 +149,21 @@ export default function AccountContent() {
             alignItems: "center",
           }}
         >
-          {window.innerWidth >= 900 ? (
-            <LinkButton
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-              onClick={() => {
-                window.open(algoLink);
-              }}
-            >
-              <div style={{ paddingRight: 15 }}>
-                <LinkButtonText>View Account on Algo Explorer</LinkButtonText>
-              </div>
-              <div>
-                <img src={linkIconWhite} alt="link-icon-white" />
-              </div>
-            </LinkButton>
-          ) : (
-            <></>
-          )}
         </div>
       </AccountContainer>
       <div
         style={{
           maxWidth: window.innerWidth - 0.14 * window.innerWidth,
           overflow: "auto",
+          marginBottom: 8
         }}
       >
         <PageToggle
           selectedTab={setSelectedTab}
           tabs={{ one: "Holdings", two: "Transactions" }}
+          style={{
+            marginBottom: 12
+          }}
         />
         {tabs[selectedTab]}
       </div>

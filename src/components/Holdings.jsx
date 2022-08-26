@@ -8,16 +8,18 @@ import { getWallet, getWalletInfo} from "../wallets/wallets";
 import { CDPsToList } from "../pages/BorrowContent";
 
 const WalletTable = styled(Table)`
-
+  margin-top: 12px;
 `
 const BorrowTable = styled(Table)`
-
+  margin-top: 12px;
 `
 const SubToggle = styled(PageToggle)`
   float: right;
   background: transparent;
+  margin-bottom: 6px;
   text {
     text-decoration: unset;
+
   }
 `
 
@@ -30,7 +32,6 @@ function getAssets() {
     if ([684649988, 684649672, 692432647].includes(x[i]["asset-id"])) {
       let amnt = (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3);
       assets.push({
-        // id: x[i]["asset-id"],
         name: x[i]["name"],
         amount: amnt,
         value: formatToDollars(parseFloat(amnt) * parseFloat(price)),
@@ -49,18 +50,47 @@ function getAssets() {
   return assets;
 }
 
-const assets = getAssets();
-const cdps = CDPsToList()
 
-const holdColumns = ["Asset", "Token Amount", "Token Value"];
-const borrowColumns = ["Borrow Positions", "Collateral Amount", "Collateral Value", "Debt Amount", "Net Value"];
-const tabs = {
-    one: <div>stake</div>,
-    two: <WalletTable data={assets} title="Positions" columns={holdColumns} />,
-    three: <BorrowTable data={cdps} title="Borrow Positions" columns={borrowColumns} />
+const accumulateTotal = (arr, prop) => {
+  return arr.reduce((acc, curr) => {
+    return acc + parseFloat(curr[prop])
+  }, 0)
 }
 
+
 export default function Holdings() {
+  const [walletTotal, setWalletTotal] = useState(0);
+  const [borrowTotal, setBorrowTotal] = useState(0);
+
+  const assets = getAssets();
+  const cdps = CDPsToList();
+
+  const holdColumns = ["Asset", "Token Amount", "Token Value"];
+  const borrowColumns = ["Borrow Positions", "Collateral Amount", "Collateral Value", "Debt Amount", "Net Value"];
+
+  useEffect(() => {
+    let walletSum = accumulateTotal(assets, "amount");
+    let netBorrowSum = accumulateTotal(cdps, "collateral");
+    setWalletTotal(walletSum);
+    setBorrowTotal(netBorrowSum / 1e6);
+  }, [])
+
+
+  const tabs = {
+    one: <div>stake</div>,
+    two: (
+      <WalletTable
+        data={assets}
+        title="Wallet"
+        subtitle={`(${formatToDollars(walletTotal.toString())} Total Value)`}
+        columns={holdColumns}
+      />
+    ),
+    three: (
+      <BorrowTable data={cdps} title="Borrow Positions" subtitle={`(${formatToDollars(borrowTotal.toString())}) Total Value`} columns={borrowColumns} />
+    ),
+  };
+
     const [currentPrice, setPrice] = useState("Loading...");
     const [selectedTab, setSelectedTab] = useState("one")
     useEffect(async () => {
