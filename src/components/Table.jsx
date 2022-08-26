@@ -20,8 +20,6 @@ export default function Table({
   data,
   title,
   countSubtitle,
-  headerColor,
-  tableColor,
   columns,
   noID,
   className
@@ -76,10 +74,9 @@ export default function Table({
         <></>
       )}
       <div style={{ marginBottom: 64 }}>
-        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+        <TableGrid>
           <tbody>
             <HeaderRow
-              style={{ background: headerColor }}
             >
               {columns
                 ? columns.map((value, index) => {
@@ -103,12 +100,7 @@ export default function Table({
               return (
                 <TableRow
                   key={index}
-                  style={{
-                    background: tableColor,
-                    borderBottom: "solid",
-                    borderBottomWidth: 1,
-                    borderColor: "#F9F9F9",
-                  }}
+
                 >
                   {keys.map((keyVal, keyIndex) => {
                     if (keyVal == "id" && noID) return;
@@ -118,7 +110,7 @@ export default function Table({
               );
             })}
           </tbody>
-        </table>
+        </TableGrid>
         {data.length > 10 ? (
           <PaginationBar
             style={{
@@ -198,6 +190,23 @@ export default function Table({
     </div>
   );
 }
+/**
+ * style={{
+                    background: tableColor,
+                    borderBottom: "solid",
+                    borderBottomWidth: 1,
+                    borderColor: "#F9F9F9",
+                  }}
+ */
+
+
+const TableGrid = styled.table`
+  border: 1px transparent;
+  width: 100%;
+  margin: 10px;
+  border-collapse: separate;
+  border-spacing: 0px;
+`
 
 // styled components
 const Title = styled.text`
@@ -218,9 +227,9 @@ const CountText = styled.text`
 `
 
 const HeaderRow = styled.tr`
-  background: rgba(13, 18, 39, .75);
-  border-radius: 10px;
+  background: #0f1733;
   height: 44px;
+  border-radius: 8px;
 `
 const HeaderElement = styled.th`
   font-weight: 500;
@@ -228,6 +237,8 @@ const HeaderElement = styled.th`
   color: white;
   height: 44px;
   padding-left: 16px;
+  border-left: none;
+  border-top: 1px solid #172756;
   text-align: left;
   :first-child{
     border-top-left-radius: 10px;
@@ -240,8 +251,12 @@ const HeaderElement = styled.th`
 `;
 const TableRow = styled.tr`
   height: 60px;
+  border-radius: 8px;
+  background: #0f1733;
+  border-bottom: 4px transparent #172756;
 `;
 const Cell = styled.td`
+  border-bottom: 4px solid #172756;
   font-weight: 500;
   font-size: 14px;
   height: 44px;

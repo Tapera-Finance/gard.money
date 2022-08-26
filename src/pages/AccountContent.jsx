@@ -11,18 +11,23 @@ import { formatToDollars } from "../utils";
 import { getPrice } from "../transactions/cdp";
 import TransactionHistory from "../components/TransactionHistory";
 import AccountCard from "../components/AccountCard";
+import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
+import gardLogo from "../assets/icons/gardlogo_icon_small.png"
+import { getAlgoGovAPR } from "../components/Positions";
 
-
+const price = await getPrice()
 
 function getAssets() {
   var assets = [];
   let x = getWalletInfo()["assets"];
   for (var i = 0, len = x.length; i < len; i++) {
     if ([684649988, 684649672, 692432647].includes(x[i]["asset-id"])) {
+      let amnt = (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3)
       assets.push({
-        id: x[i]["asset-id"],
+        // id: x[i]["asset-id"],
         name: x[i]["name"],
-        amount: (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3),
+        amount: amnt,
+        value: formatToDollars((parseFloat(amnt) * parseFloat(price)))
       });
     }
   }
@@ -43,9 +48,9 @@ const assets = getAssets()
 const Holdings = styled(Table)`
   /*  */
 `
-
+const holdColumns = ["Asset", "Token Amount", "Token Value"]
 const tabs = {
-  one: <Holdings data={assets} title="Holdings and Positions" />,
+  one: <Holdings data={assets} title="Positions" columns={holdColumns} />,
   two: <TransactionHistory />,
 };
 
@@ -57,10 +62,11 @@ export default function AccountContent() {
   const navigate = useNavigate();
   const [acctInfo, setAcctInfo] = useState(null);
   const [balance, setBalance] = useState("...");
-  const [rewards, setRewards] = useState("...");
+  const [rewards, setRewards] = useState(0);
   const [selectedTab, setSelectedTab] = useState("one");
   const [pendingRewards, setPendingRewards] = useState("...");
   const [currentPrice, setPrice] = useState("Loading...");
+  const [APR, setAPR] = useState(0);
 
   const prices = {
     algo: currentPrice
@@ -69,6 +75,12 @@ export default function AccountContent() {
   const convertToDollars = (amt, idx) =>
   formatToDollars(amt * prices[idx]);
 
+  useEffect(async () => {
+    let apr = await getAlgoGovAPR();
+    let price = await getPrice()
+    setAPR(apr);
+    setPrice(price)
+  }, [])
   useEffect(() => {
     const interval = setInterval(() => {
       getPrice().then((val) => {
@@ -132,7 +144,7 @@ export default function AccountContent() {
           <div>
 
               <AccountNumber>
-                {getWallet() == null ? "N/A" : getWallet().address.slice(0, 9) + '...'}
+                {getWallet() == null ? "N/A" : getWallet().address.slice(0, 10) + '...'}
               </AccountNumber>
 
             <AccountButton
@@ -141,6 +153,14 @@ export default function AccountContent() {
               <img src={copyIconDark} />
             </AccountButton>
           </div>
+          <div style={{
+              display: "flex",
+              flexDirection: "column",
+              marginBottom: window.innerWidth < 900 ? 5 : 15 }}>
+          <div style={{alignSelf:"center", textAlign:"center"}}>APR: <span style={{color:"#01d1ff"}}>{APR}%</span></div>
+          <div style={{alignSelf:"center", textAlign:"center"}}>Pending: <span style={{color:"#01d1ff"}}>{rewards}</span></div>
+              </div>
+
             <div style={{
               display: "flex",
               flexDirection: "column",
@@ -162,7 +182,7 @@ export default function AccountContent() {
           }}
         >
 
-          {window.innerWidth < 900 ? (
+          {/* {window.innerWidth < 900 ? (
             <LinkButton
               style={{
                 display: "flex",
@@ -187,8 +207,8 @@ export default function AccountContent() {
             </LinkButton>
           ) : (
             <></>
-          )}
-          <div
+          )} */}
+          {/* <div
             style={{
               display: "flex",
               flexDirection: window.innerWidth < 900 ? "column" : "row",
@@ -226,7 +246,7 @@ export default function AccountContent() {
                 </AccountInfoData>
               </div>
             </div>
-          </div>
+          </div> */}
           {window.innerWidth >= 900 ? (
             <LinkButton
               style={{
