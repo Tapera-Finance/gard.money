@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
 
-export default function PageToggle({ selectedTab, tabs }) {
+export default function PageToggle({ selectedTab, tabs, className }) {
   const [one, setOne] = useState(true);
   const [two, setTwo] = useState(false);
   const [three, setThree] = useState(false);
   const [four, setFour] = useState(false);
   return (
-    <Bar>
+    <Bar className={className} >
       <Box
         selected={one}
         onClick={() => {
@@ -76,10 +76,10 @@ const Box = styled.div`
   display: flex;
   border: 1px transparent;
   height: 30px;
-  max-width: fit-content;
+  max-width: max-content;
   text-align: center;
   justify-content: center;
-  padding: 6px 2px 2px 6px;
+  padding: 8px 2px 2px 8px;
   align-content: center;
   cursor: pointer;
   border-radius: 3px;
@@ -88,7 +88,7 @@ const Box = styled.div`
     css`
       border: 1px solid #ffffff;
       background: #172756;
-      padding: 6px 0px 0px 6px;
+      padding: 8px 2px 2px 8px;
       &:hover {
         border: unset;
       }
@@ -102,7 +102,7 @@ const Btn = styled.text`
   text-decoration: underline;
   text-decoration-style: dotted;
   max-width: max-content;
-  padding: 0px 2px 2px 0px;
+  padding: 2px 12px 8px 6px;
 `;
 const Bar = styled.div`
   display: flex;
@@ -111,7 +111,7 @@ const Bar = styled.div`
   min-height: 40px;
   min-width: 74px;
   max-width: max-content;
-  background: #000000;
+  background: #0f1733;
   border-radius: 6px;
   margin: auto;
 `;

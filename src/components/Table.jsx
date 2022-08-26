@@ -4,6 +4,7 @@ import copyIconSmall from "../assets/icons/copy_icon_small.png";
 import { camelToWords } from "../utils";
 import PrimaryButton from "./PrimaryButton";
 import chevron from "../assets/icons/tablePag_icon.png";
+import "../styles/table.css"
 
 /**
  * This renders a table with the given data
