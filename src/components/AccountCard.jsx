@@ -1,20 +1,36 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import ToolTip from "./ToolTip";
-import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import { getBalances } from "./swap/swapHelpers";
 import * as tips from "../assets/tooltiptext"
-import { titleToToolTip } from "../utils";
 import { gardID } from "../transactions/ids";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import gardIcon from "../assets/icons/gardlogo_icon_small.png"
+import PrimaryButton from "./PrimaryButton";
+
+const theme = createTheme({
+  components: {
+    AccountCard: {
+      styleOverrides: {
+        root: {
+          background: "#0f1733",
+        },
+      },
+    },
+  },
+});
+
+const menuStyle = {
+  color: "#01c7f3"
+}
 
 const balances = getBalances();
 
-export default function AccountCard() {
+export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -27,7 +43,11 @@ export default function AccountCard() {
   }
 
   return <div>
-    <ToolTip toolTip="Account Info" toolTipText={tips[titleToToolTip("Account Info")]} />
+    <ThemeProvider theme={theme}>
+    <PrimaryButton
+      text={walletAddress || "Connect Wallet"}
+      onClick={() => connectFn()}
+      />
     <IconButton
       onClick={handleClick}
       size="small"
@@ -36,7 +56,10 @@ export default function AccountCard() {
       aria-haspopup="true"
       aria-expanded={open ? 'true' : undefined}
     >
-      <Avatar sx={{ width: 32, height: 32 }}>A</Avatar>
+      <AvatarBox>
+        <GardIcon src={gardIcon} />
+      </AvatarBox>
+
     </IconButton>
     <Menu
       anchorEl={anchorEl}
@@ -50,6 +73,8 @@ export default function AccountCard() {
           overflow: 'visible',
           filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
           mt: 1.5,
+          bgcolor: '#0f1733',
+          color: "#ffffff",
           '& .MuiAvatar-root': {
             width: 32,
             height: 32,
@@ -64,29 +89,54 @@ export default function AccountCard() {
             right: 14,
             width: 10,
             height: 10,
-            bgcolor: 'background.paper',
+            bgcolor: '#0f1733',
             transform: 'translateY(-50%) rotate(45deg)',
             zIndex: 0,
+          },
+          "[opt]" : {
+            border: "1px solid #01c7f3"
           },
         },
       }}
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      <MenuItem onClick={() => window.open("http://localhost:3000/account")} >
-        <Avatar/> Wallet
+      <MenuItem opt onClick={() => window.open("http://localhost:3000/account", "_self")} >
+      <AvatarBox>
+        <GardIcon src={gardIcon} />
+        <Text>View Wallet</Text>
+      </AvatarBox>
       </MenuItem>
       <Divider />
       <MenuItem>
         Asset Balances:
       </MenuItem>
-      <MenuItem >
-        <IconButton onClick={() => window.open("https://algoexplorer.io/")}  >ALGO: {balances['algo']}</IconButton>
+      <MenuItem opt>
+        <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/")} >ALGO: {balances['algo']}</IconButton>
       </MenuItem>
-      <MenuItem >
-        <IconButton onClick={() => window.open("https://algoexplorer.io/asset/" + gardID)}>GARD: {balances['gard']}</IconButton>
+      <MenuItem opt>
+        <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/asset/" + gardID)}>GARD: {balances['gard']}</IconButton>
       </MenuItem>
     </Menu>
+    </ThemeProvider>
     </div>;
 }
 
+const AvatarBox = styled.div`
+  display: flex;
+  /* justify-content: space-evenly; */
+  height: 25px;
+  width: 25px;
+  object-fit: contain;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+`
+const GardIcon = styled.img`
+  width: auto;
+  max-height: 100%;
+  margin-right: 8px;
+`
+const Text = styled.text`
+
+`

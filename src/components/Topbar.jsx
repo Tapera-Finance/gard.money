@@ -245,7 +245,7 @@ export default function Topbar({ contentName, setMainContent }) {
             <></>
           )}
         </div>
-        <AccountCard />
+        <AccountCard walletAddress={walletAddress} />
       </TopBar>
       <Modal
         visible={modalVisible}

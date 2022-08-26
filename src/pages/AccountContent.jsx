@@ -107,7 +107,7 @@ export default function AccountContent() {
   if (!walletAddress) return <div></div>;
   return (
     <div>
-      <AccountCard />
+      {/* <AccountCard /> */}
       <div style={{
         display: "flex",
         flexDirection: "row",

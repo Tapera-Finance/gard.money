@@ -16,6 +16,7 @@ export default function PageToggle({ selectedTab, tabs }) {
             setOne(true);
             setTwo(false);
             setThree(false);
+            setFour(false);
           }
         }}
       >
@@ -29,6 +30,7 @@ export default function PageToggle({ selectedTab, tabs }) {
             setOne(false);
             setTwo(true);
             setThree(false);
+            setFour(false);
           }
         }}
       >
@@ -43,12 +45,29 @@ export default function PageToggle({ selectedTab, tabs }) {
               setOne(false);
               setTwo(false);
               setThree(true);
+              setFour(false);
             }
           }}
         >
           <Btn selected={three}>{tabs.three}</Btn>
         </Box>
-      ) : null}
+      ) : tabs.four ? (
+        <Box
+          selected={four}
+          onClick={() => {
+            selectedTab("four");
+            if (four !== true) {
+              setOne(false);
+              setTwo(false);
+              setThree(false);
+              setFour(true);
+            }
+          }}
+        >
+          <Btn selected={four}>{tabs.four}</Btn>
+        </Box>
+      ) :
+      null}
     </Bar>
   );
 }
