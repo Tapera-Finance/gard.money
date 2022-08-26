@@ -120,9 +120,9 @@ export default function Drawer({
                           "Wallet",
                           "Manage CDPs",
                           "Borrow",
+                          "Actions",
                           "Algo Governance",
                           "Auctions",
-                          "Swap",
                         ].includes(v.name) &&
                         !walletAddress
                       )
@@ -443,6 +443,18 @@ const NavLogo = styled.img`
 // items for our drawer method
 const menuItems = [
   {
+    name: CONTENT_NAMES.DASHBOARD,
+    icon: dashboardIcon,
+    subOptions: [],
+    route: "/dashboard",
+  },
+  {
+    name: CONTENT_NAMES.ACTIONS,
+    icon: swapIcon,
+    subOptions: [],
+    route: "/actions",
+  },
+  {
     name: CONTENT_NAMES.WALLET,
     icon: walletIcon,
     subOptions: [],
@@ -465,12 +477,6 @@ const menuItems = [
     icon: auctionsIcon,
     subOptions: [],
     route: "/auctions",
-  },
-  {
-    name: CONTENT_NAMES.SWAP,
-    icon: swapIcon,
-    subOptions: [],
-    route: "/swap",
   },
   {
     name: CONTENT_NAMES.DAO,

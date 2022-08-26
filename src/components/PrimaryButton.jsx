@@ -6,10 +6,10 @@ import styled, { css } from "styled-components";
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, purple }) {
+export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, purple, className }) {
 
   return (
-    <Button variant={variant} disabled={disabled} positioned={positioned} exit={exit} purple={purple} onClick={() => onClick()}>
+    <Button className={className} variant={variant} disabled={disabled} positioned={positioned} exit={exit} purple={purple} onClick={() => onClick()}>
       <ButtonText variant={variant} disabled={disabled}>
         {text}
       </ButtonText>

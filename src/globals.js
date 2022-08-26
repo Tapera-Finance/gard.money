@@ -1,10 +1,11 @@
 export const CONTENT_NAMES = {
   HOME: "Home",
   WALLET: "Wallet",
+  ACTIONS: "Actions",
   MINT: "Borrow",
-  REPAY: "Manage CDPs",
   AUCTIONS: "Auctions",
   SWAP: "Swap",
+  REPAY: "Manage CDPs",
   DAO: "DAO",
   ALGO_GOVERNANCE: "Algo Governance",
   ANALYTICS: "Analytics",
