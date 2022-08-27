@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import styled, { css } from "styled-components";
 
-export default function ToolTip({toolTip, toolTipText}) {
-    return <Text> {toolTip}
+export default function ToolTip({toolTip, toolTipText, className}) {
+    return <Text className={className}> {toolTip}
         <ToolTipText>{toolTipText}</ToolTipText>
     </Text>;
 }
@@ -25,6 +25,7 @@ const ToolTipText = styled.span`
     padding: 10px 0;
     margin-left: 30px;
     bottom: 100%;
+
     position: absolute;
     z-index: 1;
     ${Text}:hover & {

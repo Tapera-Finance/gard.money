@@ -2,30 +2,31 @@ import React, { useEffect, useState } from "react";
 import ToolTip from "./ToolTip";
 import * as tips from "../assets/tooltiptext";
 import styled, {css} from "styled-components";
-import RewardWrapper from "./RewardWrapper";
+import RewardWrapper from './RewardWrapper'
 
-export default function Effect({title, val, hasToolTip, rewards}) {
+export default function Effect({title, val,  hasToolTip, className, rewards}) {
  return (
-    <div style={{
-      display: "flex",
-      justifyContent: "space-between",
-      flexDirection: "column",
-    }} >
+    <EffectContainer  className={className}>
       {hasToolTip ? (
-        <div style={{paddingBottom:8}}>
-          <NewToolTip toolTip={title} toolTipText={tips[title]}></NewToolTip>
-        </div>
+        <NewToolTip className={className} toolTip={title} toolTipText={tips[title]}></NewToolTip>
       ) : (
-        <Text>{title}</Text>
+        <Text className={className}>{title}</Text>
       )}
-      {rewards ? 
+      {rewards ?
         <RewardWrapper text={val}/>
       :
       <Result>{val}</Result>
       }
-    </div>
+    </EffectContainer>
   );
 }
+
+const EffectContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+`
 
 const Text = styled.text`
   text-decoration: underline;
