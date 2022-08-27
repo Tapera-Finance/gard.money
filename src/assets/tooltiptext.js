@@ -11,7 +11,7 @@ module.exports = {
     "Supply Limit" : "Maximum ALGOs you can supply",
     "Borrow APR" : "Estimated APR for borrowing",
     "Borrow Rewards" : "Estimated rewards for borrowing",
-
-    
-
+    "Total Value Locked (TVL)" : "Overall value of crypto assets deposited into the GARD Protocol system",
+    "Volume" : "Number of GARD exchanged in the pas week",
+    "Fees Received" : "Culmulative GARD Protocol Fees",
 }

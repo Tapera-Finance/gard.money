@@ -78,11 +78,12 @@ export default function Chart({ size, data }) {
         <CartesianGrid strokeDasharray="0" stroke="#fff" vertical={false} />
         <XAxis
           stroke="#fff"
-          axisLine= {false}
+          axisLine= {true}
           dataKey="name"
-          angle={45}
+          angle={0}
           dx={10}
           dy={14}
+          interval= {13}
           height={42}
           minTickGap={-25}
           tick={{ fontSize: 10 }}
