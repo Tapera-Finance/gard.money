@@ -443,12 +443,6 @@ const NavLogo = styled.img`
 // items for our drawer method
 const menuItems = [
   {
-    name: CONTENT_NAMES.DASHBOARD,
-    icon: dashboardIcon,
-    subOptions: [],
-    route: "/dashboard",
-  },
-  {
     name: CONTENT_NAMES.ACTIONS,
     icon: swapIcon,
     subOptions: [],
