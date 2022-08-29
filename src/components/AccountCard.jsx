@@ -29,7 +29,7 @@ const menuStyle = {
   color: "#01c7f3"
 }
 
-// const balances = getBalances();
+const balances = getBalances();
 
 export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -54,14 +54,14 @@ export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
       aria-haspopup="true"
       aria-expanded={open ? 'true' : undefined}
     >
-      {/* <div style={{display: "flex", flexDirection: "row", justifyContent: "space-evenly"}}> */}
+      <div style={{display: "flex", flexDirection: "row", justifyContent: "space-evenly"}}>
       <AvatarBox>
         <GardIcon src={gardIcon} />
       </AvatarBox>
     {/* <PrimaryButton
       text={walletAddress || "Connect Wallet"}
       onClick={() => connectFn()}
-      />
+      /> */}
         {walletAddress ? (
             <div style={{ marginLeft: 12 }}>
               <PrimaryButton
@@ -72,7 +72,7 @@ export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
           ) : (
             <></>
           )}
-      </div> */}
+      </div>
 
     </IconButton>
     <Menu
@@ -123,13 +123,17 @@ export default function AccountCard({walletAddress, connectFn, disconnectFn}) {
       </MenuItem>
       <Divider />
       <MenuItem>
+      {walletAddress}
+      </MenuItem>
+      <Divider />
+      <MenuItem>
         Asset Balances:
       </MenuItem>
       <MenuItem opt>
-        {/* <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/")} >ALGO: {balances['algo']}</IconButton> */}
+        <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/")} >ALGO: {balances['algo']}</IconButton>
       </MenuItem>
       <MenuItem opt>
-        {/* <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/asset/" + gardID)}>GARD: {balances['gard']}</IconButton> */}
+        <IconButton style={menuStyle}  onClick={() => window.open("https://algoexplorer.io/asset/" + gardID)}>GARD: {balances['gard']}</IconButton>
       </MenuItem>
     </Menu>
     </ThemeProvider>
