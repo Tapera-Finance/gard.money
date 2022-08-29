@@ -16,6 +16,7 @@ import hamburguerPurpleIcon from "../assets/icons/hamburger-purple_icon.png";
 import { CONTENT_NAMES } from "../globals";
 import TwitterIcon from "../assets/icons/twitter_icon.png";
 import RedditIcon from "../assets/icons/reddit_icon.png";
+import ALGOPrice from "./ALGOPrice";
 import TelegramIcon from "../assets/icons/telegram_icon.png";
 import DiscordIcon from "../assets/icons/discord_icon.png";
 import DocumentIcon from "../assets/icons/document_icon.png";
@@ -64,7 +65,7 @@ export default function Drawer({
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: "column",
             justifyContent: "space-between",
           }}
         >
@@ -82,6 +83,11 @@ export default function Drawer({
           >
             <NavLogo src={logo} alt="logo" />
           </LogoButton>
+          <div style={{display: "flex", justifyContent: "center", marginTop:"8px", marginBottom: "8px"}}>
+
+          <ALGOPrice style={{alignSelf: "center",
+        }} />
+          </div>
           {window.innerWidth < 900 ? (
             <HamburgerButton
               style={{ position: "relative" }}
@@ -443,12 +449,6 @@ const NavLogo = styled.img`
 // items for our drawer method
 const menuItems = [
   {
-    name: CONTENT_NAMES.DASHBOARD,
-    icon: dashboardIcon,
-    subOptions: [],
-    route: "/dashboard",
-  },
-  {
     name: CONTENT_NAMES.ACTIONS,
     icon: swapIcon,
     subOptions: [],
@@ -466,24 +466,24 @@ const menuItems = [
     subOptions: [],
     route: "/borrow",
   },
-  {
-    name: CONTENT_NAMES.REPAY,
-    icon: repayIcon,
-    subOptions: [],
-    route: "/manage",
-  },
+  // {
+  //   name: CONTENT_NAMES.REPAY,
+  //   icon: repayIcon,
+  //   subOptions: [],
+  //   route: "/manage",
+  // },
   {
     name: CONTENT_NAMES.AUCTIONS,
     icon: auctionsIcon,
     subOptions: [],
     route: "/auctions",
   },
-  {
-    name: CONTENT_NAMES.DAO,
-    icon: daoIcon,
-    subOptions: [],
-    route: "/dao",
-  },
+  // {
+  //   name: CONTENT_NAMES.DAO,
+  //   icon: daoIcon,
+  //   subOptions: [],
+  //   route: "/dao",
+  // },
   {
     name: CONTENT_NAMES.ALGO_GOVERNANCE,
     icon: borrowIcon,
