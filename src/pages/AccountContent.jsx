@@ -88,7 +88,7 @@ export default function AccountContent() {
         }}
       >
         <Label>Wallet</Label>
-        <Label>Rewards</Label>
+        {/* <Label>Rewards</Label> */}
         <Label>Total Balance</Label>
       </div>
       <AccountContainer>

@@ -35,11 +35,11 @@ import { style } from "@mui/system";
  */
 
 export default function Topbar({ contentName, setMainContent }) {
-  const [modalVisible, setModalVisible] = useState(false)
-  const [modalCanAnimate, setModalCanAnimate] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const dispatch = useDispatch()
-  const walletAddress = useSelector((state) => state.wallet.address)
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalCanAnimate, setModalCanAnimate] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const walletAddress = useSelector((state) => state.wallet.address);
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
       if (action === "options")
@@ -186,11 +186,11 @@ export default function Topbar({ contentName, setMainContent }) {
       )}
       <TopBar
         style={{
-          backgroundColor: '#172756',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          backgroundColor: "#172756",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
           paddingLeft: 36,
           paddingRight: window.innerWidth * 0.077,
         }}
@@ -245,7 +245,7 @@ export default function Topbar({ contentName, setMainContent }) {
             <></>
           )}
         </div>
-        <AccountCard walletAddress={walletAddress} />
+        {walletAddress ? <AccountCard walletAddress={walletAddress} /> : null}
       </TopBar>
       <Modal
         visible={modalVisible}
