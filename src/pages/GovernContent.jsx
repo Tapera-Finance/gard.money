@@ -172,7 +172,7 @@ export default function Govern() {
               })
             : null}
         </GovernDetails>
-        <TextButton text="Learn More on ALGO Site" positioned={true} />
+        <TextButton text="Learn More on ALGO Site" positioned={true} onClick={() => window.open("https://governance.algorand.foundation/governance-period-4/period-4-voting-session-1")}/>
       </div>
 
       <div
