@@ -6,9 +6,10 @@ import Details from "../components/Details";
 import CountdownTimer from "../components/CountdownTimer";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import { getAlgoGovAPR } from "../components/Positions";
-import { width } from "@mui/system";
+import WalletConnect from "../components/WalletConnect";
 
 const fetchTvl = async () => {
   try {
@@ -31,6 +32,7 @@ export default function HomeContent() {
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
   const navigate = useNavigate();
+  const walletAddress = useSelector(state => state.wallet.address)
 
   const homeDetails = [
     {
@@ -170,8 +172,11 @@ export default function HomeContent() {
         </Text>
       </div>
         <StepContainer>
-          <Step>STEP 0: Connect Wallet</Step>
-          {/* <ConnectWallet></ConnectWallet> */}
+          {!walletAddress ? (
+            <Step>STEP 0: Connect Wallet: {<WalletConnect style={{alignSelf: "flex-start"}} />}</Step>
+          ) : (
+            <></>
+          )}
           <Step>STEP 1: GET GARD</Step>
           <Step>STEP 2: GAIN REWARDS</Step>
           <Step>STEP 3: GAIN MORE</Step>
@@ -180,7 +185,6 @@ export default function HomeContent() {
   );
 }
 
-//
 
 const StepContainer = styled.div`
   display: flex;
