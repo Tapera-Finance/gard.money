@@ -2,22 +2,20 @@ import React, { useState, useReducer, useEffect } from "react";
 import styled from "styled-components";
 import Modal from "./Modal";
 import PrimaryButton from "./PrimaryButton";
-import {
-    displayWallet,
-    disconnectWallet,
-    getWallet,
-  } from "../wallets/wallets";
+import { displayWallet, disconnectWallet, getWallet } from "../wallets/wallets";
 import { connectWallet } from "../wallets/wallets";
 import AlgoSignerLogo from "../wallets/logos/algosigner.svg";
 import MyAlgoLogo from "../wallets/logos/myalgowallet.png";
 import PeraLogo from "../wallets/logos/pera.png";
-import { CONTENT_NAMES } from "../globals";
+import arrow from "../assets/arrow.png";
 import LoadingOverlay from "./LoadingOverlay";
 import { useDispatch, useSelector } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { setWallet } from "../redux/slices/walletSlice";
 import { userInDB, addUserToFireStore } from "../components/Firebase";
 import { getCDPs } from "../transactions/cdp";
+import { cdpGen } from "../transactions/contracts";
+import { useNavigate } from "react-router-dom";
 
 const instantiateUser = async (address) => {
   let accountCDPs = getCDPs()[address];
@@ -25,10 +23,7 @@ const instantiateUser = async (address) => {
   let owned = {};
   for (var i = 0; i < addrs.length; i++) {
     if (accountCDPs[addrs[i]].state == "open") {
-      let cdp_address = cdpGen(
-        address,
-        addrs[i],
-      ).address;
+      let cdp_address = cdpGen(address, addrs[i]).address;
       Object.assign(owned, {
         [cdp_address]: {
           lastCommitment: -1,
@@ -45,73 +40,72 @@ const instantiateUser = async (address) => {
     systemAssetVal: [0, 0],
     systemDebtVal: [0, 0],
   };
-  return user
-}
-
+  return user;
+};
 
 export default function WalletConnect() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const walletAddress = useSelector(state => state.wallet.address);
+  const navigate = useNavigate();
+  const walletAddress = useSelector((state) => state.wallet.address);
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
       if (action === "options")
-      return {
-        title: "Connect your wallet account",
-        subtitle: "Use the buttons to the right to connect your wallet.",
-        body: (
-          <WalletOptions
-            onClick={async (type) => {
-              if (type === "AlgorandWallet") {
-                try {
-                  const wallet = await connectWallet(type);
-                  if (!wallet.alert) {
-                    dispatch(setWallet({address: displayWallet()}))
-                    const owner_address = getWallet().address;
-                    let in_DB = await userInDB(owner_address);
-                    if (!in_DB) {
-                      const user = instantiateUser(owner_address);
-                      addUserToFireStore(user, owner_address);
+        return {
+          title: "Connect your wallet account",
+          subtitle: "Use the buttons to the right to connect your wallet.",
+          body: (
+            <WalletOptions
+              onClick={async (type) => {
+                if (type === "AlgorandWallet") {
+                  try {
+                    const wallet = await connectWallet(type);
+                    if (!wallet.alert) {
+                      dispatch(setWallet({ address: displayWallet() }));
+                      const owner_address = getWallet().address;
+                      let in_DB = await userInDB(owner_address);
+                      if (!in_DB) {
+                        const user = instantiateUser(owner_address);
+                        addUserToFireStore(user, owner_address);
+                      }
+                    } else {
+                      dispatch(setAlert(wallet.text));
                     }
-                  } else {
-                    dispatch(setAlert(wallet.text));
+                  } catch (e) {
+                    console.log("error connecting wallet: ", e);
                   }
-                } catch (e) {
-                  console.log("error connecting wallet: ", e)
-                }
-                setModalCanAnimate(true);
-                setModalVisible(false);
-                setLoading(false);
-              } else {
-                setModalCanAnimate(true);
-                setModalVisible(false);
-                setLoading(true);
-                try {
-                  const wallet = await connectWallet(type);
-                  if (!wallet.alert) {
-                    dispatch(setWallet({address: displayWallet()}));
-                    const owner_address = getWallet().address;
-                    let in_DB = await userInDB(owner_address);
-                    if (!in_DB) {
-                      const user = instantiateUser(owner_address);
-                      addUserToFireStore(user, owner_address);
+                  setModalCanAnimate(true);
+                  setModalVisible(false);
+                  setLoading(false);
+                } else {
+                  setModalCanAnimate(true);
+                  setModalVisible(false);
+                  setLoading(true);
+                  try {
+                    const wallet = await connectWallet(type);
+                    if (!wallet.alert) {
+                      dispatch(setWallet({ address: displayWallet() }));
+                      const owner_address = getWallet().address;
+                      let in_DB = await userInDB(owner_address);
+                      if (!in_DB) {
+                        const user = instantiateUser(owner_address);
+                        addUserToFireStore(user, owner_address);
+                      }
+                    } else {
+                      dispatch(setAlert(wallet.text));
                     }
-                  } else {
-                    dispatch(setAlert(wallet.text));
+                  } catch (e) {
+                    console.log("error connecting wallet: ", e);
                   }
-
-                } catch (e) {
-                  console.log("error connecting wallet: ", e)
+                  setModalCanAnimate(false);
+                  setLoading(false);
                 }
-                setModalCanAnimate(false);
-                setLoading(false);
-              }
-            }}
-          />
-        ),
-      };
+              }}
+            />
+          ),
+        };
       else
         return {
           title: "Terms of Service",
@@ -151,34 +145,35 @@ export default function WalletConnect() {
       ) : (
         <></>
       )}
-      <WalletConnect>
-      <div>
-        <PrimaryButton text={walletAddress || "Connect Wallet"}
-          onClick={() => {
-            // if (walletAddress) {
-            //   setMainContent(CONTENT_NAMES.WALLET);
-            // } else {
+      <WalletConnectDiv>
+        <div>
+          <PrimaryButton
+            text={walletAddress || "Connect Wallet"}
+            onClick={() => {
+              if (walletAddress) {
+                navigate("/wallet");
+              } else {
               reduceModalContent("terms");
               setModalCanAnimate(true);
               setModalVisible(true);
-            // }
-          }}
-        />
-      </div>
-      {walletAddress ? (
-        <div style={{marginLeft: 12}}>
-          <PrimaryButton
-            text="Disconnect Wallet"
-            onClick={() => {
-              disconnectWallet();
-              dispatch(setWallet({address: ""}))
+              }
             }}
           />
         </div>
-      ) : (
-        <></>
-      )}
-      </WalletConnect>
+        {walletAddress ? (
+          <div style={{ marginLeft: 12 }}>
+            <PrimaryButton
+              text="Disconnect Wallet"
+              onClick={() => {
+                disconnectWallet();
+                dispatch(setWallet({ address: "" }));
+              }}
+            />
+          </div>
+        ) : (
+          <></>
+        )}
+      </WalletConnectDiv>
       <Modal
         visible={modalVisible}
         animate={modalCanAnimate}
@@ -195,12 +190,17 @@ export default function WalletConnect() {
   );
 }
 
+const WalletConnectDiv = styled.div`
+  height: 96px;
+  display: flex;
+  flex-direction: row;
+`
 
 /**
  * Renders each wallet option inside de modal
  * @prop {function} onClick - callback function to handle clicking on a wallet option
  */
- function WalletOptions({ onClick }) {
+function WalletOptions({ onClick }) {
   return (
     <div>
       <WalletOption
@@ -273,7 +273,6 @@ const WalletOptionText = styled.text`
   font-size: 20px;
   color: white;
 `;
-
 
 // styled components for wallet form
 const CancelButton = styled.button`
