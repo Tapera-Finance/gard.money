@@ -151,7 +151,7 @@ export default function WalletConnect() {
             text={walletAddress || "Connect Wallet"}
             onClick={() => {
               if (walletAddress) {
-                navigate("/wallet");
+                navigate("/account");
               } else {
               reduceModalContent("terms");
               setModalCanAnimate(true);
