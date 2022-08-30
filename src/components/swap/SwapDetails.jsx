@@ -450,6 +450,7 @@ export default function SwapDetails() {
                 return (
                   <SlippageEffect key={Math.random()} >
                     <NewToolTip toolTip={item.title} toolTipText={tips[titleToToolTip(item.title)]}></NewToolTip>
+                    <hr style={{border: "dashed 1px"}} />
                   <EffectContainer>
                     <EffText></EffText>
                     <SlippageBtn id="slippage-001" onClick={() => setSlippageTolerance(0.01)}>
@@ -502,8 +503,6 @@ const EffectContainer = styled.div`
 `
 
 const EffText = styled.text`
-  text-decoration: underline;
-  text-decoration-style: dotted;
   margin: auto;
   color: #ffffff;
 `
@@ -534,8 +533,6 @@ const SlippageBtn = styled.button`
 
 const NewToolTip = styled(ToolTip)`
   flex-basis: 200px;
-  text-decoration: underline;
-  text-decoration-style: dotted;
   margin: auto;
   color: #ffffff;
 `
