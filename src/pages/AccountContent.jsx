@@ -73,8 +73,8 @@ export default function AccountContent() {
   useEffect(() => {
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
-  const algoLink = `https://algoexplorer.io/address/${getWallet().address}`;
 
+  // const algoLink = `https://algoexplorer.io/address/${getWallet().address}`;
 
   if (!walletAddress) return <div></div>;
   return (
