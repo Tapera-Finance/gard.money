@@ -119,10 +119,10 @@ export default function HomeContent() {
           <span style={{ color: "#172756" }}>Enrollment Countdown</span>
           <CountdownTimer targetDate={1761180257000} />
         </div>
-        <PrimaryButton
+        <EnrollButton
           text="Enroll"
           onClick={() => navigate("/borrow")}
-        ></PrimaryButton>
+        ></EnrollButton>
       </div>
       <div
         style={{
@@ -169,18 +169,49 @@ export default function HomeContent() {
           money!
         </Text>
       </div>
+        <StepContainer>
+          <Step>STEP 0: Connect Wallet</Step>
+          {/* <ConnectWallet></ConnectWallet> */}
+          <Step>STEP 1: GET GARD</Step>
+          <Step>STEP 2: GAIN REWARDS</Step>
+          <Step>STEP 3: GAIN MORE</Step>
+        </StepContainer>
     </div>
   );
 }
 
+//
+
+const StepContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+
+`
+
+const Step = styled.div`
+  display: flex;
+  justify-content: center;
+  text-align: left;
+  align-items: center;
+  background: #0f1733;
+  color: #019fff;
+  height: 100px;
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`
+
 const Text = styled.text`
   font-weight: 500px;
-  /* text-align: center; */
 `;
 
-// const Btn = styled.button`
-//   appearance: none;
-// `
+const EnrollButton = styled(PrimaryButton)`
+  appearance: none;
+  border: none;
+`
 
 // styled components
 const Title = styled.text`

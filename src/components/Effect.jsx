@@ -36,8 +36,7 @@ const EffectContainer = styled.div`
 `
 
 const Text = styled.text`
-  margin-bottom: 16px;
-  margin-top: 10px;
+  font-weight: bold;
   margin: auto;
   color: #ffffff;
 `
@@ -45,8 +44,7 @@ const Result = styled.text`
   color: #999696;
 `
 const NewToolTip = styled(ToolTip)`
-  margin-bottom: 16px;
-  margin-top: 10px;
+  font-weight: bold;
   margin: auto;
   color: #ffffff;
 `

@@ -533,6 +533,7 @@ const SlippageBtn = styled.button`
 
 const NewToolTip = styled(ToolTip)`
   flex-basis: 200px;
+  font-weight: bold;
   margin: auto;
   color: #ffffff;
 `
