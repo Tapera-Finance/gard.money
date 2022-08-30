@@ -1,0 +1,69 @@
+.expired-notice {
+    text-align: center;
+    padding: 2rem;
+    background: #172756;
+    border-radius: 10px;
+    margin: 0.5rem;
+  }
+
+  .expired-notice > span {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff00ff;
+  }
+
+  .expired-notice > p {
+    font-size: 1.5rem;
+  }
+
+  .show-counter {
+    padding: 0.5rem;
+  }
+
+  .show-counter .count-down-elements {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.75rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+  }
+  .show-counter .count-down-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    font-size: 1.10rem;
+    margin-right: .5rem;
+    line-height: 1.75rem;
+    padding: 0.5rem;
+    background: #172756;
+    text-decoration: none;
+    color: white;
+  }
+
+  .show-counter .countdown {
+    line-height: 1.25rem;
+    padding: 0.5rem 0.75rem 0.5rem 0.75rem;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    background: #172756;
+    border-radius: 10px;
+    margin-right: 10px;
+  }
+
+  .show-counter .countdown > p {
+    margin: 0;
+  }
+
+  .show-counter .countdown > span {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
