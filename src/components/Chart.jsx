@@ -66,29 +66,31 @@ export default function Chart({ size, data }) {
         data={data.length < 1 ? dummyData : data}
       >
         <defs>
-          <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#01d1ff" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#01d1ff" stopOpacity={0} />
-          </linearGradient>
         </defs>
         <Area
           type="monotone"
           dataKey={getDataKey()}
-          stroke="#01d1ff"
+          stroke="#7c52ff"
+          strokeWidth={"2px"}
           fillOpacity={1}
           fill="url(#colorPrice)"
         />
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <CartesianGrid strokeDasharray="0" stroke="#fff" vertical={false} />
         <XAxis
+          stroke="#fff"
+          axisLine= {true}
           dataKey="name"
-          angle={45}
+          angle={0}
           dx={10}
           dy={14}
+          interval= {13}
           height={42}
           minTickGap={-25}
           tick={{ fontSize: 10 }}
         />
         <YAxis
+          stroke="#fff"
+          axisLine= {false}
           domain={getBounds(getDataKey() === "price")}
           scale={"linear"}
           tick={{ fontSize: 10 }}
