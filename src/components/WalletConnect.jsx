@@ -194,6 +194,8 @@ const WalletConnectDiv = styled.div`
   height: 96px;
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
 `
 
 /**
