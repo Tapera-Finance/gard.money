@@ -79,10 +79,10 @@ const Box = styled.div`
   max-width: max-content;
   text-align: center;
   justify-content: center;
-  padding: 8px 2px 2px 8px;
+  padding: 10px 15px 3px;
   align-content: center;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 10px;
   ${(props) =>
     props.selected &&
     css`
