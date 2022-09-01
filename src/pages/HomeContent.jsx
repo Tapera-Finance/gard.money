@@ -86,7 +86,6 @@ export default function HomeContent() {
         flexDirection: "column",
       }}
     >
-
       <div
         style={{
           display: "flex",
@@ -171,16 +170,38 @@ export default function HomeContent() {
           money!
         </Text>
       </div>
-        <StepContainer>
-          {!walletAddress ? (
-            <Step>STEP 0: Connect Wallet: {<WalletConnect style={{alignSelf: "flex-start"}} />}</Step>
-          ) : (
-            <></>
-          )}
-          <Step>STEP 1: GET GARD</Step>
-          <Step>STEP 2: GAIN REWARDS</Step>
-          <Step>STEP 3: GAIN MORE</Step>
-        </StepContainer>
+      <StepContainer>
+        {!walletAddress ? (
+          <Step>
+            Step 0: Connect Wallet:{" "}
+            {<WalletConnect style={{ alignSelf: "flex-start" }} />}
+          </Step>
+        ) : (
+          <></>
+        )}
+
+        <StepItem
+          header="Step 1: Get Gard"
+          badges={["Aeneas"]}
+          subtitle="Exchange ALGO to borrow GARD"
+          text="Click the button below to be taken to the Borrow Page; Here you can open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin"
+          goTo="Borrow"
+        />
+        <StepItem
+          header="Step 2: Gain Rewards"
+          badges={["Aeneas", "LP"]}
+          subtitle="Add Liquidity to Pool"
+          text="Click the button below to be taken to the Swap Page; Here you can swap and pool with ASAs"
+          goTo="Swap"
+        />
+        <StepItem
+          header="Step 3: Gain More"
+          badges={["LP"]}
+          subtitle="Sell LP tokens"
+          text="Click the button below to be taken to the Sell LP Tokens Page; Here you can sell LP tokens accumulated through interfacing with our liquidity pools, as well as auction and sell CPDs/positions created on our Borrow Page"
+          goTo="Govern"
+        />
+      </StepContainer>
     </div>
   );
 }
@@ -191,22 +212,9 @@ const StepContainer = styled.div`
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-
+  margin-bottom: 50px;
 `
 
-const Step = styled.div`
-  display: flex;
-  justify-content: center;
-  text-align: left;
-  align-items: center;
-  background: #0f1733;
-  color: #019fff;
-  height: 100px;
-  width: 100%;
-  border-radius: 10px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-`
 
 const Text = styled.text`
   font-weight: 500px;
@@ -275,3 +283,129 @@ const LinkButtonTextBold = styled.text`
   font-size: 14px;
   color: #7c52ff; ;
 `;
+
+function StepItem({ header, badges, subtitle, text, goTo }) {
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate()
+
+  const handleOpen = () => {
+    setOpen(!open)
+  }
+
+  return (
+    <ExpandedStep open={open}>
+      <Step onClick={handleOpen} open={open}>
+        <div style={{ marginLeft: 8 }}>{header}</div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+          }}
+        >
+          {open ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
+              {badges.length > 0 ? (
+                badges.map((badge) => {
+                  <Badge type={badge} />;
+                })
+              ) : (
+                <></>
+              )}
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
+      </Step>
+      {open ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left",
+            alignItems: "left",
+            justifyContent: "space-evenly",
+          }}
+        >
+          <text style={{ fontWeight: "bolder", width: "40%", marginBottom: 12 }}>{subtitle}</text>
+          <text style={{ width: "60vw", marginBottom: 6, marginTop: 6 }}>{text}</text>
+          <div style={{ display: "flex", justifyContent: "left" }}>
+            <StepButton
+              text={`Go to ${goTo}`}
+              purple
+
+              onClick={() => navigate(`/${goTo.toLowerCase()}`)}
+            />
+            <div style={{ marginLeft: "75%" }}></div>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
+    </ExpandedStep>
+  );
+}
+
+const Step = styled.div`
+  display: flex;
+  /* justify-content: center; */
+  text-align: left;
+  align-items: center;
+  background: #0f1733;
+  color: #019fff;
+  height: 80px;
+  width: 60vw;
+  border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  ${(props) => props.open && css`
+    background: #019fff;
+    color: #0f1733;
+    width: 60vw;
+  `}
+`
+
+const StepButton = styled(PrimaryButton)`
+  appearance: none;
+  border: none;
+  margin-top: 8px;
+  margin: unset;
+`
+
+const ExpandedStep = styled.div`
+  width: 100%auto;
+`
+
+const Badge = ({type}) => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        background: "#0f1733",
+        border: "1px solid #80edff",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <text style={{ color: "#ffffff" }}>{type} Reward</text>
+          <hr style={{ border: "dashed 1px #019fff" }}></hr>
+        </div>
+        <text style={{ color: "#80edff" }}>0.03%</text>
+      </div>
+    </div>
+  );
+}
+
