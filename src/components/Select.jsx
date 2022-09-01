@@ -1,21 +1,12 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
-export default function Select({
-  id,
-  className,
-  value,
-  options,
-  callback,
-}) {
+export default function Select({ id, className, value, options, callback }) {
   return (
-    <Dropdown
-      id={id}
-      className={className}
-      value={value}
-      onChange={callback}
-    >
-      <option defaultValue="" disabled hidden>Select</option>
+    <Dropdown id={id} className={className} value={value} onChange={callback}>
+      <option defaultValue="" disabled hidden>
+        Select
+      </option>
       {options.length > 0 ? (
         options.map((opt, idx) => {
           return <option key={idx}>{opt}</option>;
@@ -45,4 +36,3 @@ const Dropdown = styled.select`
   padding: 5px;
   white-space: nowrap;
 `;
-

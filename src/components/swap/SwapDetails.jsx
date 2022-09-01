@@ -21,10 +21,7 @@ import {
   exchangeRatioAssetXtoAssetY,
   formatAmt,
 } from "./swapHelpers";
-import {
-  gardpool,
-  swap,
-} from "../../transactions/swap";
+import { gardpool, swap } from "../../transactions/swap";
 import { titleToToolTip } from "../../utils";
 
 const initEffectState = {
@@ -34,7 +31,6 @@ const initEffectState = {
   liquidityFee: 0.0,
   exchangeRate: 0.0,
 };
-
 
 export default function SwapDetails() {
   const [loading, setLoading] = useState(false);
@@ -88,7 +84,7 @@ export default function SwapDetails() {
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
-  console.log("format check", formatPrice(514873518546))
+  console.log("format check", formatPrice(514873518546));
 
   const assetA = {
     type: assetAtype,
@@ -105,11 +101,11 @@ export default function SwapDetails() {
     {
       title: "Asset A Total",
       val: `${assetA.type}: ${formatPrice(pool.state.totalPrimary)}`,
-      hasToolTip: false
+      hasToolTip: false,
     },
     {
       title: "Asset B Total",
-      val: `${assetB.type}: ${formatPrice(pool.state.totalSecondary)}`
+      val: `${assetB.type}: ${formatPrice(pool.state.totalSecondary)}`,
     },
     {
       title: "Price Impact",
@@ -143,7 +139,6 @@ export default function SwapDetails() {
     },
   ];
 
-
   function localPreviewSwap() {
     let effect = initEffectState;
     let swap;
@@ -176,8 +171,10 @@ export default function SwapDetails() {
 
   async function handleSwap() {
     if (formatAmt(leftInputAmt) > formatAmt(balanceX)) {
-        dispatch(setAlert(`Cannot send more ${leftSelectVal} than available balance`))
-        return
+      dispatch(
+        setAlert(`Cannot send more ${leftSelectVal} than available balance`),
+      );
+      return;
     }
     setLoading(true);
     try {
@@ -374,11 +371,10 @@ export default function SwapDetails() {
     let defaultSlip = document.querySelector("#default-slippage");
     if (!empty(defaultSlip)) {
       if (slippageTolerance !== 0.01 && slippageTolerance !== 0.1) {
-        defaultSlip.focus()
+        defaultSlip.focus();
       }
     }
-  }, [slippageTolerance])
-
+  }, [slippageTolerance]);
 
   return (
     <div>
@@ -446,27 +442,39 @@ export default function SwapDetails() {
         <Details>
           {effects.length > 0
             ? effects.map((item) => {
-              if (item.title === "Slippage Tolerance") {
-                return (
-                  <SlippageEffect key={Math.random()} >
-                    <NewToolTip toolTip={item.title} toolTipText={tips[titleToToolTip(item.title)]}></NewToolTip>
-                    <hr style={{border: "dashed 1px"}} />
-                  <EffectContainer>
-                    <EffText></EffText>
-                    <SlippageBtn id="slippage-001" onClick={() => setSlippageTolerance(0.01)}>
-                      0.01
-                    </SlippageBtn>
-                    <SlippageBtn id="default-slippage"onClick={() => setSlippageTolerance(0.05)}>
-                      0.05
-                    </SlippageBtn>
-                    <SlippageBtn id="slippage-010" onClick={() => setSlippageTolerance(0.1)}>
-                      0.1
-                    </SlippageBtn>
-                    <Text>{slippageTolerance}</Text>
-                  </EffectContainer>
-                  </SlippageEffect>
-                )
-              }
+                if (item.title === "Slippage Tolerance") {
+                  return (
+                    <SlippageEffect key={Math.random()}>
+                      <NewToolTip
+                        toolTip={item.title}
+                        toolTipText={tips[titleToToolTip(item.title)]}
+                      ></NewToolTip>
+                      <hr style={{ border: "dashed 1px" }} />
+                      <EffectContainer>
+                        <EffText></EffText>
+                        <SlippageBtn
+                          id="slippage-001"
+                          onClick={() => setSlippageTolerance(0.01)}
+                        >
+                          0.01
+                        </SlippageBtn>
+                        <SlippageBtn
+                          id="default-slippage"
+                          onClick={() => setSlippageTolerance(0.05)}
+                        >
+                          0.05
+                        </SlippageBtn>
+                        <SlippageBtn
+                          id="slippage-010"
+                          onClick={() => setSlippageTolerance(0.1)}
+                        >
+                          0.1
+                        </SlippageBtn>
+                        <Text>{slippageTolerance}</Text>
+                      </EffectContainer>
+                    </SlippageEffect>
+                  );
+                }
                 return (
                   <Effect
                     title={item.title}
@@ -489,26 +497,26 @@ const SlippageEffect = styled.div`
   /* flex-direction: column; */
   /* align-items: center; */
   /* flex-basis: 3; */
-`
+`;
 
 const Text = styled.text`
   margin: 4px;
-`
+`;
 
 const EffectContainer = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: row;
   align-items: center;
-`
+`;
 
 const EffText = styled.text`
   margin: auto;
   color: #ffffff;
-`
+`;
 const EffResult = styled.text`
   color: #999696;
-`
+`;
 const SlippageBtn = styled.button`
   appearance: none;
   border: 1px solid #01d1ff;
@@ -529,14 +537,14 @@ const SlippageBtn = styled.button`
     background-color: #ffffff;
     color: black;
   }
-`
+`;
 
 const NewToolTip = styled(ToolTip)`
   flex-basis: 200px;
   font-weight: bold;
   margin: auto;
   color: #ffffff;
-`
+`;
 
 const BtnBox = styled.div`
   display: flex;
@@ -556,7 +564,7 @@ const DetailsContainer = styled.div`
   justify-content: center;
   width: 80%;
   height: 30vh;
-  background:#0f1733;
+  background: #0f1733;
   border-radius: 10px;
   margin: auto;
   margin-top: 30px;

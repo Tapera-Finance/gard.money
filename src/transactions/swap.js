@@ -18,9 +18,7 @@ import { updateDBWebActions } from "../components/Firebase";
 import { VERSION } from "../globals";
 
 import pactsdk from "@pactfi/pactsdk";
-import {
-  formatAmt
-} from "../components/swap/swapHelpers";
+import { formatAmt } from "../components/swap/swapHelpers";
 
 export const pactClient = new pactsdk.PactClient(algodClient);
 export const gardpool = await pactClient.fetchPoolById(pactALGOGARDID);
@@ -45,7 +43,6 @@ export async function previewPoolSwap(
 export async function getPools() {
   return await pactClient.listPools();
 }
-
 
 /**
  * Session Helpers
@@ -78,7 +75,7 @@ const setLoadingStage = (stage) =>
  * @param {Asset} swapTo
  * @param {number} slippagePct
  * @returns transaction result object
-*/
+ */
 
 export async function swap(
   assetA,

@@ -183,9 +183,7 @@ export default function TransactionHistory({ headerColor, tableColor }) {
       <div style={{ marginBottom: 64 }}>
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <tbody>
-            <HeaderRow
-              style={{ background: headerColor }}
-            >
+            <HeaderRow style={{ background: headerColor }}>
               {keys.map((value, index) => {
                 if (value === "button") return;
                 return (
@@ -238,9 +236,7 @@ export default function TransactionHistory({ headerColor, tableColor }) {
               }}
             >
               <div style={{ marginRight: 8 }}>
-                <PaginationText>
-                  Rows per Page:
-                </PaginationText>
+                <PaginationText>Rows per Page:</PaginationText>
               </div>
               <div>
                 <PaginationSelect
@@ -255,8 +251,7 @@ export default function TransactionHistory({ headerColor, tableColor }) {
             </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
               <div style={{ marginRight: 40 }}>
-                <PaginationText
-                >{`${currentPageStart}-${
+                <PaginationText>{`${currentPageStart}-${
                   currentPageStart + rowsPerPage - 1 > documents.length
                     ? documents.length
                     : currentPageStart + rowsPerPage - 1
@@ -323,7 +318,7 @@ const CountText = styled.text`
 `;
 
 const HeaderRow = styled.tr`
-  background: rgba(13, 18, 39, .75);
+  background: rgba(13, 18, 39, 0.75);
   height: 44px;
 `;
 const HeaderElement = styled.th`
@@ -333,11 +328,11 @@ const HeaderElement = styled.th`
   height: 44px;
   padding-left: 16px;
   text-align: left;
-  :first-child{
+  :first-child {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
   }
-  :last-child{
+  :last-child {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }
@@ -368,7 +363,7 @@ export const Cell = styled.td`
 `;
 
 const PaginationBar = styled.div`
-  background: rgba(13, 18, 39, .65);
+  background: rgba(13, 18, 39, 0.65);
   height: 60px;
 `;
 const PaginationText = styled.text`

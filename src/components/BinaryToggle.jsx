@@ -1,45 +1,48 @@
 import React, { useState } from "react";
-import styled, {css} from "styled-components";
+import styled, { css } from "styled-components";
 
-export default function BinaryToggle({ optionA, optionB, selectedOption}) {
+export default function BinaryToggle({ optionA, optionB, selectedOption }) {
   const [a, setA] = useState(false);
   const [b, setB] = useState(false);
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center"
-    }}>
-
     <div
       style={{
         display: "flex",
-        justifyContent: "space-evenly",
-        width: "30%"
+        justifyContent: "center",
       }}
     >
-
-      <Text selected={a} >{optionA}</Text>
-    <Bar className="container">
-      <Box selected={a}
-      onClick={() => {
-        selectedOption(optionA)
-          if (a !== true) {
-            setA(true)
-            setB(false)
-          }
-        }}></Box>
-      <Box selected={b}
-      onClick={() => {
-        selectedOption(optionB)
-          if (b !== true) {
-            setA(false)
-            setB(true)
-          }
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-evenly",
+          width: "30%",
         }}
-      ></Box>
-    </Bar>
-    <Text selected={b} >{optionB}</Text>
-    </div>
+      >
+        <Text selected={a}>{optionA}</Text>
+        <Bar className="container">
+          <Box
+            selected={a}
+            onClick={() => {
+              selectedOption(optionA);
+              if (a !== true) {
+                setA(true);
+                setB(false);
+              }
+            }}
+          ></Box>
+          <Box
+            selected={b}
+            onClick={() => {
+              selectedOption(optionB);
+              if (b !== true) {
+                setA(false);
+                setB(true);
+              }
+            }}
+          ></Box>
+        </Bar>
+        <Text selected={b}>{optionB}</Text>
+      </div>
     </div>
   );
 }
@@ -53,7 +56,7 @@ const Bar = styled.div`
   background: #0f1733;
   border-radius: 10px;
   margin: auto;
-`
+`;
 
 const Box = styled.div`
   border: 1px transparent;
@@ -68,12 +71,11 @@ const Box = styled.div`
       &:hover {
         border: unset;
       }
-    `
-  }
+    `}
   &:hover {
     border: 1px solid #ffffff;
   }
-`
+`;
 
 const Text = styled.text`
   font-weight: 500px;
@@ -82,6 +84,5 @@ const Text = styled.text`
     props.selected &&
     css`
       color: #80edff;
-    `
-  }
-`
+    `}
+`;

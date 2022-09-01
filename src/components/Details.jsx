@@ -4,21 +4,21 @@ import Effect from "./Effect";
 
 export default function Details({ className, details }) {
   return (
-    <Container
-      className={className}
-    >
-      <Items
-      >
-        {details.length && details.length > 0 ?
-        details.map((d) => {
-            return (
+    <Container className={className}>
+      <Items>
+        {details.length && details.length > 0
+          ? details.map((d) => {
+              return (
                 <Item key={d.title}>
-                    <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip}></Effect>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                  ></Effect>
                 </Item>
-            )
-        })
-        : null
-    }
+              );
+            })
+          : null}
       </Items>
     </Container>
   );
@@ -32,16 +32,16 @@ const Container = styled.div`
 `;
 
 const Items = styled.div`
-    display: grid;
-    grid-template-columns: repeat(4, 20%);
-    row-gap: 30px;
-    justify-content: center;
-`
+  display: grid;
+  grid-template-columns: repeat(4, 20%);
+  row-gap: 30px;
+  justify-content: center;
+`;
 
 const Item = styled.div`
-    display: flex;
-    flex-direction: column;
-`
+  display: flex;
+  flex-direction: column;
+`;
 const Text = styled.text`
-    //
-`
+  //
+`;

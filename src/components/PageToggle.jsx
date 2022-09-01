@@ -2,33 +2,37 @@ import React, { useState } from "react";
 import styled, { css } from "styled-components";
 
 export default function PageToggle({ selectedTab }) {
-const [swap, setSwap] = useState(true)
-const [pool, setPool] = useState(false)
+  const [swap, setSwap] = useState(true);
+  const [pool, setPool] = useState(false);
   return (
-    <Bar
-    >
-      <Box selected={swap} >
+    <Bar>
+      <Box selected={swap}>
         <Btn
-        selected={swap}
-        onClick={() => {
-          selectedTab("swap")
-          if (swap !== true) {
-            setSwap(true)
-            setPool(false)
-          }
-        }} >Swap</Btn>
+          selected={swap}
+          onClick={() => {
+            selectedTab("swap");
+            if (swap !== true) {
+              setSwap(true);
+              setPool(false);
+            }
+          }}
+        >
+          Swap
+        </Btn>
       </Box>
       <Box selected={pool}>
         <Btn
-        selected={pool}
-        onClick={() => {
-          selectedTab("pool")
-          if (pool !== true) {
-            setSwap(false)
-            setPool(true)
-          }
-        }}
-        >Pool</Btn>
+          selected={pool}
+          onClick={() => {
+            selectedTab("pool");
+            if (pool !== true) {
+              setSwap(false);
+              setPool(true);
+            }
+          }}
+        >
+          Pool
+        </Btn>
       </Box>
     </Bar>
   );
@@ -51,19 +55,16 @@ const Box = styled.div`
       &:hover {
         border: unset;
       }
-    `
-  }
+    `}
   &:hover {
     border: 1px solid #ffffff;
   }
-
-`
+`;
 
 const Btn = styled.text`
   text-decoration: underline;
   text-decoration-style: dotted;
-
-`
+`;
 const Bar = styled.div`
   display: flex;
   justify-content: center;
@@ -74,5 +75,4 @@ const Bar = styled.div`
   background: #000000;
   border-radius: 6px;
   margin: auto;
-
-`
+`;

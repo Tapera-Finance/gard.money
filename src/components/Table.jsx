@@ -23,13 +23,12 @@ export default function Table({
   headerColor,
   tableColor,
   columns,
-  noID
+  noID,
 }) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [shownRows, setShownRows] = useState(data.slice(0, 10));
   const [currentPageStart, setCurrentPageStart] = useState(1);
   const keys = Object.keys(data[0]);
-
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -66,9 +65,7 @@ export default function Table({
             <Title>{title}</Title>
           </div>
           <CountContainer>
-            <CountText>
-              {countSubtitle || `${data.length} ${title}`}
-            </CountText>
+            <CountText>{countSubtitle || `${data.length} ${title}`}</CountText>
           </CountContainer>
         </div>
       ) : (
@@ -77,16 +74,10 @@ export default function Table({
       <div style={{ marginBottom: 64 }}>
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <tbody>
-            <HeaderRow
-              style={{ background: headerColor }}
-            >
+            <HeaderRow style={{ background: headerColor }}>
               {columns
                 ? columns.map((value, index) => {
-                    return (
-                      <HeaderElement key={index}>
-                        {value}
-                      </HeaderElement>
-                    );
+                    return <HeaderElement key={index}>{value}</HeaderElement>;
                   })
                 : keys.map((value, index) => {
                     if (value === "button") return;
@@ -208,19 +199,19 @@ const CountContainer = styled.div`
   background: #ffffff;
   border-radius: 16px;
   padding: 2px 8px;
-`
+`;
 
 const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: #999696;
-`
+`;
 
 const HeaderRow = styled.tr`
-  background: rgba(13, 18, 39, .75);
+  background: rgba(13, 18, 39, 0.75);
   border-radius: 10px;
   height: 44px;
-`
+`;
 const HeaderElement = styled.th`
   font-weight: 500;
   font-size: 14px;
@@ -228,11 +219,11 @@ const HeaderElement = styled.th`
   height: 44px;
   padding-left: 16px;
   text-align: left;
-  :first-child{
+  :first-child {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
   }
-  :last-child{
+  :last-child {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }

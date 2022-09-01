@@ -31,11 +31,10 @@ export default function HomeContent() {
   const [apy, setApy] = useState(8);
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
-  const [allOpen, setAllOpen] = useState(false)
+  const [allOpen, setAllOpen] = useState(false);
   const [difficulty, setDifficulty] = useState("Help Me Out");
   const navigate = useNavigate();
-  const walletAddress = useSelector(state => state.wallet.address)
-
+  const walletAddress = useSelector((state) => state.wallet.address);
 
   const homeDetails = [
     {
@@ -138,9 +137,12 @@ export default function HomeContent() {
           marginBottom: "18px",
         }}
       >
-        <div style={{margin: "8px 0px 8px 0px"}}>
-
-        <BinaryToggle optionA="Help Me Out" optionB="De-Fi Expert" selectedOption={setDifficulty}/>
+        <div style={{ margin: "8px 0px 8px 0px" }}>
+          <BinaryToggle
+            optionA="Help Me Out"
+            optionB="De-Fi Expert"
+            selectedOption={setDifficulty}
+          />
         </div>
 
         <Details details={homeDetails} />
@@ -151,78 +153,83 @@ export default function HomeContent() {
               textAlign: "center",
               fontWeight: "bolder",
             }}
-            onClick={() => console.log("seeing more metrics, eh?")}
+            // onClick={() => navigate("/analytics")}
           >
             {`See More Metrics ${">"}`}
           </Text>
         </div>
       </div>
       {difficulty === "Help Me Out" ? (
-      <div>
+        <div>
+          <div
+            style={{
+              display: "flex",
+              marginTop: "8px",
+              marginLeft: "14px",
+              marginBottom: "8px",
+              marginRight: "14px",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "0px 16px 0px 16px",
+              fontWeight: "bolder",
+            }}
+          >
+            <Text>
+              The GARD Protocol is the first of its kind to offer marry stable
+              coins, yield products, staking, and liquidity purchasing. To start
+              capitalizing off of this unique blend of capabilities, click
+              through the options below to see some of the common paths users
+              take to make money!
+            </Text>
+          </div>
+          <StepContainer>
+            <Text
+              style={{ color: "#80edff" }}
+              onClick={() => setAllOpen(!allOpen)}
+            >
+              {allOpen ? `Collapse` : `Expand`} All
+            </Text>
+            {!walletAddress ? (
+              <Step>
+                Step 0: Connect Wallet:{" "}
+                {<WalletConnect style={{ alignSelf: "flex-start" }} />}
+              </Step>
+            ) : (
+              <></>
+            )}
 
-      <div
-        style={{
-          display: "flex",
-          marginTop: "8px",
-          marginLeft: "14px",
-          marginBottom: "8px",
-          marginRight: "14px",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "0px 16px 0px 16px",
-          fontWeight: "bolder",
-        }}
-      >
-        <Text>
-          The GARD Protocol is the first of its kind to offer marry stable
-          coins, yield products, staking, and liquidity purchasing. To start
-          capitalizing off of this unique blend of capabilities, click through
-          the options below to see some of the common paths users take to make
-          money!
-        </Text>
-      </div>
-      <StepContainer>
-        <Text style={{color: "#80edff"}} onClick={() => setAllOpen(!allOpen)}>{allOpen ? `Collapse` : `Expand`} All</Text>
-        {!walletAddress ? (
-          <Step>
-            Step 0: Connect Wallet:{" "}
-            {<WalletConnect style={{ alignSelf: "flex-start" }} />}
-          </Step>
-        ) : (
-          <></>
-        )}
-
-        <Step
-          header="Step 1: Get Gard"
-          badges={["Aeneas"]}
-          subtitle="Exchange ALGO to borrow GARD"
-          text="Click the button below to be taken to the Borrow Page; Here you can open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin"
-          goTo="Borrow"
-          allOpen={allOpen}
-        />
-        <Step
-          header="Step 2: Gain Rewards"
-          badges={["Aeneas", "LP"]}
-          subtitle="Add Liquidity to Pool"
-          text="Click the button below to be taken to the Swap Page; Here you can swap and pool with ASAs"
-          goTo="Swap"
-          allOpen={allOpen}
-        />
-        <Step
-          header="Step 3: Gain More"
-          badges={["LP"]}
-          subtitle="Sell LP tokens"
-          text="Click the button below to be taken to the Sell LP Tokens Page; Here you can sell LP tokens accumulated through interfacing with our liquidity pools, as well as auction and sell CPDs/positions created on our Borrow Page"
-          goTo="Govern"
-          allOpen={allOpen}
-        />
-      </StepContainer>
-      </div>
-      ) : (<div>buttons here</div>)}
+            <Step
+              header="Step 1: Get Gard"
+              badges={["Aeneas"]}
+              subtitle="Exchange ALGO to borrow GARD"
+              text="Click the button below to be taken to the Borrow Page; Here you can open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin"
+              goTo="Borrow"
+              allOpen={allOpen}
+            />
+            <Step
+              header="Step 2: Gain Rewards"
+              badges={["Aeneas", "LP"]}
+              subtitle="Add Liquidity to Pool"
+              text="Click the button below to be taken to the Swap Page; Here you can swap and pool with ASAs"
+              goTo="Swap"
+              allOpen={allOpen}
+            />
+            <Step
+              header="Step 3: Gain More"
+              badges={["LP"]}
+              subtitle="Sell LP tokens"
+              text="Click the button below to be taken to the Sell LP Tokens Page; Here you can sell LP tokens accumulated through interfacing with our liquidity pools, as well as auction and sell CPDs/positions created on our Borrow Page"
+              goTo="Govern"
+              allOpen={allOpen}
+            />
+          </StepContainer>
+        </div>
+      ) : (
+        <div>buttons here</div>
+      )}
     </div>
   );
 }
-
 
 // styled components
 const StepContainer = styled.div`
@@ -231,7 +238,7 @@ const StepContainer = styled.div`
   justify-content: space-evenly;
   align-items: center;
   margin-bottom: 50px;
-`
+`;
 
 const Text = styled.text`
   font-weight: 500px;
@@ -240,5 +247,4 @@ const Text = styled.text`
 const EnrollButton = styled(PrimaryButton)`
   appearance: none;
   border: none;
-`
-
+`;

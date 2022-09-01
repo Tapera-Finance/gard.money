@@ -8,9 +8,9 @@ import styled, { css } from "styled-components";
  */
 export default function TextButton({ text, onClick, positioned }) {
   return (
-      <ButtonText positioned={positioned} onClick={() => onClick()}>
-        {text}
-      </ButtonText>
+    <ButtonText positioned={positioned} onClick={() => onClick()}>
+      {text}
+    </ButtonText>
   );
 }
 const ButtonText = styled.text`
@@ -22,7 +22,7 @@ const ButtonText = styled.text`
   color: #019fff;
   font-weight: 500;
   font-size: 16px;
-  :hover&{
+  :hover& {
     color: #ffffff;
   }
   ${(props) =>
@@ -32,4 +32,4 @@ const ButtonText = styled.text`
       bottom: 20px;
       margin: auto;
     `}
-  `
+`;

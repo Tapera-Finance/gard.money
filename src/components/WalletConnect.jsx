@@ -153,9 +153,9 @@ export default function WalletConnect() {
               if (walletAddress) {
                 navigate("/wallet");
               } else {
-              reduceModalContent("terms");
-              setModalCanAnimate(true);
-              setModalVisible(true);
+                reduceModalContent("terms");
+                setModalCanAnimate(true);
+                setModalVisible(true);
               }
             }}
           />
@@ -196,7 +196,7 @@ const WalletConnectDiv = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-`
+`;
 
 /**
  * Renders each wallet option inside de modal
