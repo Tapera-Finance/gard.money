@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled, {css} from "styled-components";
-import "../styles/ToggleSwitch.css"
 
 export default function BinaryToggle({ optionA, optionB, selectedOption}) {
   const [a, setA] = useState(false);
