@@ -1,9 +1,9 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import styled, {css} from "styled-components";
 import {useNavigate} from "react-router-dom";
 import PrimaryButton from "./PrimaryButton";
 
-export default function Step({ header, badges, subtitle, text, goTo }) {
+export default function Step({ header, badges, subtitle, text, goTo, allOpen }) {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate()
 
@@ -11,9 +11,13 @@ export default function Step({ header, badges, subtitle, text, goTo }) {
       setOpen(!open)
     }
 
+    useEffect(() => {
+        setOpen(allOpen)
+    }, [allOpen])
+
     return (
       <ExpandedStep open={open}>
-        <StepItem onClick={handleOpen} open={open}>
+        <StepItem onClick={handleOpen} open={open} >
           <div style={{ marginLeft: 8 }}>{header}</div>
           <div
             style={{
@@ -29,10 +33,10 @@ export default function Step({ header, badges, subtitle, text, goTo }) {
                   flexDirection: "row",
                   justifyContent: "center",
                 }}
-              >
+              > {console.log("badges?", badges)}
                 {badges.length > 0 ? (
                   badges.map((badge) => {
-                    <Badge type={badge} />;
+                    return (<Badge type={badge} key={Math.random()}/>);
                   })
                 ) : (
                   <></>
@@ -88,6 +92,11 @@ export default function Step({ header, badges, subtitle, text, goTo }) {
       color: #0f1733;
       width: 60vw;
     `}
+    ${(props) => props.allOpen && css`
+      background: #019fff;
+      color: #0f1733;
+      width: 60vw;
+    `}
   `
 
   const StepButton = styled(PrimaryButton)`
@@ -109,6 +118,9 @@ export default function Step({ header, badges, subtitle, text, goTo }) {
           justifyContent: "center",
           background: "#0f1733",
           border: "1px solid #80edff",
+          borderRadius: 8,
+          marginLeft: 12,
+          padding: 4
         }}
       >
         <div
@@ -118,8 +130,8 @@ export default function Step({ header, badges, subtitle, text, goTo }) {
           }}
         >
           <div>
-            <text style={{ color: "#ffffff" }}>{type} Reward</text>
-            <hr style={{ border: "dashed 1px #019fff" }}></hr>
+            <text style={{ color: "#ffffff", marginRight: 2 }}>{type} Reward</text>
+            <hr style={{ border: "dashed 1px #019fff", margin: "0px 0px 2px 0px" }}></hr>
           </div>
           <text style={{ color: "#80edff" }}>0.03%</text>
         </div>
