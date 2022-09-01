@@ -1,7 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
-import styled, { css } from "styled-components";
-import linkIconWhite from "../assets/icons/link_icon_white.png";
-import RewardNotice from "../components/RewardNotice";
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import Details from "../components/Details";
 import CountdownTimer from "../components/CountdownTimer";
 import PrimaryButton from "../components/PrimaryButton";
@@ -10,6 +8,8 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { getAlgoGovAPR } from "../components/Positions";
 import WalletConnect from "../components/WalletConnect";
+import Step from "../components/Step";
+import BinaryToggle from "../components/BinaryToggle";
 
 const fetchTvl = async () => {
   try {
@@ -31,8 +31,11 @@ export default function HomeContent() {
   const [apy, setApy] = useState(8);
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
+  const [allOpen, setAllOpen] = useState(false)
+  const [difficulty, setDifficulty] = useState("Help Me Out");
   const navigate = useNavigate();
   const walletAddress = useSelector(state => state.wallet.address)
+
 
   const homeDetails = [
     {
@@ -135,6 +138,11 @@ export default function HomeContent() {
           marginBottom: "18px",
         }}
       >
+        <div style={{margin: "8px 0px 8px 0px"}}>
+
+        <BinaryToggle optionA="Help Me Out" optionB="De-Fi Expert" selectedOption={setDifficulty}/>
+        </div>
+
         <Details details={homeDetails} />
         <div>
           <Text
@@ -149,6 +157,9 @@ export default function HomeContent() {
           </Text>
         </div>
       </div>
+      {difficulty === "Help Me Out" ? (
+      <div>
+
       <div
         style={{
           display: "flex",
@@ -171,6 +182,7 @@ export default function HomeContent() {
         </Text>
       </div>
       <StepContainer>
+        <Text style={{color: "#80edff"}} onClick={() => setAllOpen(!allOpen)}>{allOpen ? `Collapse` : `Expand`} All</Text>
         {!walletAddress ? (
           <Step>
             Step 0: Connect Wallet:{" "}
@@ -180,33 +192,39 @@ export default function HomeContent() {
           <></>
         )}
 
-        <StepItem
+        <Step
           header="Step 1: Get Gard"
           badges={["Aeneas"]}
           subtitle="Exchange ALGO to borrow GARD"
           text="Click the button below to be taken to the Borrow Page; Here you can open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin"
           goTo="Borrow"
+          allOpen={allOpen}
         />
-        <StepItem
+        <Step
           header="Step 2: Gain Rewards"
           badges={["Aeneas", "LP"]}
           subtitle="Add Liquidity to Pool"
           text="Click the button below to be taken to the Swap Page; Here you can swap and pool with ASAs"
           goTo="Swap"
+          allOpen={allOpen}
         />
-        <StepItem
+        <Step
           header="Step 3: Gain More"
           badges={["LP"]}
           subtitle="Sell LP tokens"
           text="Click the button below to be taken to the Sell LP Tokens Page; Here you can sell LP tokens accumulated through interfacing with our liquidity pools, as well as auction and sell CPDs/positions created on our Borrow Page"
           goTo="Govern"
+          allOpen={allOpen}
         />
       </StepContainer>
+      </div>
+      ) : (<div>buttons here</div>)}
     </div>
   );
 }
 
 
+// styled components
 const StepContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -214,7 +232,6 @@ const StepContainer = styled.div`
   align-items: center;
   margin-bottom: 50px;
 `
-
 
 const Text = styled.text`
   font-weight: 500px;
@@ -224,188 +241,4 @@ const EnrollButton = styled(PrimaryButton)`
   appearance: none;
   border: none;
 `
-
-// styled components
-const Title = styled.text`
-  font-size: 30px;
-  font-weight: 700;
-  /* background: "linear-gradient(#80deff, #ffffff)" */
-`;
-const Subtitle = styled.text`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-`;
-const Paragraph = styled.text`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-`;
-
-const LinkButton = styled.button`
-  height: 20px;
-  border-width: 0;
-  background-color: transparent;
-  cursor: pointer;
-`;
-
-const LinkButtonText = styled.text`
-  font-weight: normal;
-  font-size: 14px;
-  color: #7c52ff;
-  ${LinkButton}:hover & {
-    text-decoration: underline;
-  }
-`;
-
-const PinnedText = styled.text`
-  font-weight: 500;
-  font-size: 12px;
-`;
-
-const NewsImage = styled.img`
-  height: 148px;
-  width: 148px;
-  object-fit: cover;
-`;
-
-const NewsHeadline = styled.text`
-  font-weight: bold;
-  font-size: 20px;
-`;
-const LinkButtonTextBold = styled.text`
-  font-weight: bold;
-  font-size: 14px;
-  color: #7c52ff; ;
-`;
-
-function StepItem({ header, badges, subtitle, text, goTo }) {
-  const [open, setOpen] = useState(false);
-  const navigate = useNavigate()
-
-  const handleOpen = () => {
-    setOpen(!open)
-  }
-
-  return (
-    <ExpandedStep open={open}>
-      <Step onClick={handleOpen} open={open}>
-        <div style={{ marginLeft: 8 }}>{header}</div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-around",
-          }}
-        >
-          {open ? (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              {badges.length > 0 ? (
-                badges.map((badge) => {
-                  <Badge type={badge} />;
-                })
-              ) : (
-                <></>
-              )}
-            </div>
-          ) : (
-            <></>
-          )}
-        </div>
-      </Step>
-      {open ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left",
-            alignItems: "left",
-            justifyContent: "space-evenly",
-          }}
-        >
-          <text style={{ fontWeight: "bolder", width: "40%", marginBottom: 12 }}>{subtitle}</text>
-          <text style={{ width: "60vw", marginBottom: 6, marginTop: 6 }}>{text}</text>
-          <div style={{ display: "flex", justifyContent: "left" }}>
-            <StepButton
-              text={`Go to ${goTo}`}
-              purple
-
-              onClick={() => navigate(`/${goTo.toLowerCase()}`)}
-            />
-            <div style={{ marginLeft: "75%" }}></div>
-          </div>
-        </div>
-      ) : (
-        <></>
-      )}
-    </ExpandedStep>
-  );
-}
-
-const Step = styled.div`
-  display: flex;
-  /* justify-content: center; */
-  text-align: left;
-  align-items: center;
-  background: #0f1733;
-  color: #019fff;
-  height: 80px;
-  width: 60vw;
-  border-radius: 10px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  ${(props) => props.open && css`
-    background: #019fff;
-    color: #0f1733;
-    width: 60vw;
-  `}
-`
-
-const StepButton = styled(PrimaryButton)`
-  appearance: none;
-  border: none;
-  margin-top: 8px;
-  margin: unset;
-`
-
-const ExpandedStep = styled.div`
-  width: 100%auto;
-`
-
-const Badge = ({type}) => {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        background: "#0f1733",
-        border: "1px solid #80edff",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <div>
-          <text style={{ color: "#ffffff" }}>{type} Reward</text>
-          <hr style={{ border: "dashed 1px #019fff" }}></hr>
-        </div>
-        <text style={{ color: "#80edff" }}>0.03%</text>
-      </div>
-    </div>
-  );
-}
 
