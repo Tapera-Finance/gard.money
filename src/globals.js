@@ -1,6 +1,5 @@
 export const CONTENT_NAMES = {
   HOME: "Home",
-  DASHBOARD: "Dashboard",
   WALLET: "Wallet",
   ACTIONS: "Actions",
   MINT: "Borrow",
@@ -9,6 +8,7 @@ export const CONTENT_NAMES = {
   REPAY: "Manage CDPs",
   DAO: "DAO",
   GOVERN: "Govern",
+  ANALYTICS: "Analytics",
 };
 
 export const AUCTIONS_CONTENT_NAMES = {

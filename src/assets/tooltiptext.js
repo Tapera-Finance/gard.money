@@ -13,8 +13,10 @@ module.exports = {
     "Supply Limit" : "Maximum ALGOs you can supply",
     "Borrow APR" : "Estimated APR for borrowing",
     "Borrow Rewards" : "Estimated rewards for borrowing",
+    "Total Value Locked (TVL)" : "Overall value of crypto assets deposited into the GARD Protocol system",
+    "Volume" : "Number of GARD exchanged in the pas week",
+    "Fees Received" : "Culmulative GARD Protocol Fees",
     "Total Vaulted" : "Amount of ALGOs from CDPs that are currently commited to governance",
     "Governance APY" : "Annual percentage yield recieved from participating in governance",
     "GARD Governors" : "Total number of governors participating in governance through gard",
-
 };

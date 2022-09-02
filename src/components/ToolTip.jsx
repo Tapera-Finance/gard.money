@@ -10,7 +10,8 @@ export default function ToolTip({toolTip, toolTipText, className}) {
 const Text = styled.div`
     position: relative;
     display: inline-block;
-    /* border-bottom: 2px dotted white; */
+    border-bottom: 2px dotted white;
+    cursor: help;
 `;
 const ToolTipText = styled.span`
     visibility: hidden;
