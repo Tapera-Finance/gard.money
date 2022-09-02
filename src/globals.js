@@ -17,8 +17,8 @@ export const AUCTIONS_CONTENT_NAMES = {
 };
 
 export const commitmentPeriodEnd = 1657814399000;
-export const periodFourStart =     1662379179000;
-export const periodFourEnd =       1663588779000;
+export const periodFourStart = 1662379179000;
+export const periodFourEnd = 1663588779000;
 
 export const VERSION = "MAINNET";
 // TESTNET1 = initial testnet release
