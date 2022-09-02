@@ -122,7 +122,7 @@ export default function Drawer({
                           "Manage CDPs",
                           "Borrow",
                           "Actions",
-                          "Algo Governance",
+                          "Govern",
                           "Auctions",
                         ].includes(v.name) &&
                         !walletAddress

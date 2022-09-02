@@ -214,7 +214,7 @@ function MainContentHandler({ content, walletAddress }) {
       return <ActionsContent />;
     case CONTENT_NAMES.DAO:
       return <DaoContent />;
-    case CONTENT_NAMES.ALGO_GOVERNANCE:
+    case CONTENT_NAMES.GOVERN:
       return <GovernContent />;
 
     default:
