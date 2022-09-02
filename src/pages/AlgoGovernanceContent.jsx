@@ -12,7 +12,7 @@ import { cdpGen } from "../transactions/contracts";
 import Table from "../components/Table";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { loadFireStoreCDPs } from "../components/Firebase";
-import { commitmentPeriodEnd } from "../globals";
+import { periodFourStart, periodFourEnd } from "../globals";
 
 function getGovernorPage(id) {
   return (
@@ -38,10 +38,10 @@ export default function AlgoGovernanceContent() {
   const [toWallet, setToWallet] = useState(false);
 
   const [measure1Vote, setM1Vote] = useState(
-    "Granting governor status and twice the voting power to qualified DeFi projects",
+    "Designating 7M ALGOs from the Q4 2022 governance rewards to DeFi governors",
   );
   const [measure2Vote, setM2Vote] = useState(
-    "Approve the mechanism for community proposals",
+    "Allow DEX Liquidity Providers that contribute ALGOs in pools to participate in governance for Q4 2022",
   );
 
   const handleCheckboxChange1 = () => {
@@ -103,7 +103,7 @@ export default function AlgoGovernanceContent() {
             // variant ={true}
             disabled={
               value.balance === value.committed ||
-              !(Date.now() < commitmentPeriodEnd)
+              (Date.now() > periodFourStart && Date.now() < periodFourEnd)
             }
           />
         ) : (
@@ -120,7 +120,7 @@ export default function AlgoGovernanceContent() {
               setMaxBal(value.balance);
             }}
             // variant ={true}
-            disabled={!(Date.now() < commitmentPeriodEnd)}
+            disabled={(Date.now() > periodFourStart && Date.now() < periodFourEnd)}
           />
         ),
       voted: (
@@ -194,12 +194,12 @@ export default function AlgoGovernanceContent() {
                   <h3>
                     <Link
                       darkToggle={theme === "dark"}
-                      href="https://algorand.foundation/algorand-governance-period3-voting-measure-1-defi-participation"
+                      href="https://algorand.foundation/governance-period-4/period-4-voting-session-1"
                       subtitle={true}
                     >
                       Measure #1:
                     </Link>{" "}
-                    Including DeFi Participants in Governance
+                    Designating 7M ALGOs from the Q4 2022 governance rewards to DeFi governors
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory darkToggle={theme === "dark"}>
@@ -213,11 +213,10 @@ export default function AlgoGovernanceContent() {
                     onChange={handleChangeMeasure1}
                   >
                     <option>
-                      "Granting governor status and twice the voting power to
-                      qualified DeFi projects"
+                    "Allocate 7M ALGOs from the rewards pool of Q4 2022 to DeFi governors"
                     </option>
                     <option>
-                      "Keeping the status quo, only Algo holders are governors"
+                    "Keep the status quo and distribute the entire pool of 70.5M ALGOs among all governors"
                     </option>
                   </Select>
                 </div>
@@ -237,7 +236,7 @@ export default function AlgoGovernanceContent() {
                     >
                       Measure #2:
                     </Link>{" "}
-                    XGovs: Proposing & Upvoting Measures
+                    Allow DEX Liquidity Providers that contribute ALGOs in pools to participate in governance for Q4 2022
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory darkToggle={theme === "dark"}>
@@ -251,11 +250,10 @@ export default function AlgoGovernanceContent() {
                     onChange={handleChangeMeasure2}
                   >
                     <option>
-                      "Approve the mechanism for community proposals"
+                    "Enable committing Algo LP tokens to governance"
                     </option>
                     <option>
-                      "Keeping for now the status quo, only the Foundation
-                      proposes measures"
+                    "Keep the status quo without including DEX LP tokens"
                     </option>
                   </Select>
                 </div>

@@ -892,7 +892,7 @@ export async function voteCDP(account_id, option1, option2) {
   params.fee = 0;
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    to: "UD33QBPIM4ZO4B2WK5Y5DYT5J5LYY5FA3IF3G4AVYSCWLCSMS5NYDRW6GE",
+    to: "UAME4M7T2NWECVNCUDGQX6LJ7OVDLZP234GFQL3TH6YZUPRV3VF5NGRSRI",
     amount: 0,
     note: note,
     suggestedParams: params,
