@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled, { css } from "styled-components";
 
 export default function BinaryToggle({ optionA, optionB, selectedOption }) {
-  const [a, setA] = useState(false);
+  const [a, setA] = useState(true);
   const [b, setB] = useState(false);
   return (
     <div
