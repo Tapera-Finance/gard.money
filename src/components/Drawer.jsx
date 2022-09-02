@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import styled, { css, keyframes } from "styled-components";
-import dashboardIcon from "../assets/icons/dashboard_icon.png";
+import analyticsIcon from "../assets/icons/dashboard_icon.png";
 import borrowIcon from "../assets/icons/algo_governance_icon.png";
 import auctionsIcon from "../assets/icons/auctions_icon.png";
 import daoIcon from "../assets/icons/dao_icon.png";
@@ -496,5 +496,11 @@ const menuItems = [
     icon: borrowIcon,
     subOptions: [],
     route: "/algo-governance",
+  },
+  {
+    name: CONTENT_NAMES.ANALYTICS,
+    icon: analyticsIcon,
+    subOptions: [],
+    route: "/analytics",
   },
 ];

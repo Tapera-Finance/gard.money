@@ -1,39 +1,73 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
 
-export default function PageToggle({ selectedTab }) {
-  const [swap, setSwap] = useState(true);
-  const [pool, setPool] = useState(false);
+export default function PageToggle({ selectedTab, tabs }) {
+  const [one, setOne] = useState(true);
+  const [two, setTwo] = useState(false);
+  const [three, setThree] = useState(false);
+  const [four, setFour] = useState(false);
   return (
     <Bar>
-      <Box selected={swap}>
-        <Btn
-          selected={swap}
+      <Box
+        selected={one}
+        onClick={() => {
+          selectedTab("one");
+          if (one !== true) {
+            setOne(true);
+            setTwo(false);
+            setThree(false);
+            setFour(false);
+          }
+        }}
+      >
+        <Btn selected={one}>{tabs.one}</Btn>
+      </Box>
+      <Box
+        selected={two}
+        onClick={() => {
+          selectedTab("two");
+          if (two !== true) {
+            setOne(false);
+            setTwo(true);
+            setThree(false);
+            setFour(false);
+          }
+        }}
+      >
+        <Btn selected={two}>{tabs.two}</Btn>
+      </Box>
+      {tabs.three ? (
+        <Box
+          selected={three}
           onClick={() => {
-            selectedTab("swap");
-            if (swap !== true) {
-              setSwap(true);
-              setPool(false);
+            selectedTab("three");
+            if (three !== true) {
+              setOne(false);
+              setTwo(false);
+              setThree(true);
+              setFour(false);
             }
           }}
         >
-          Swap
-        </Btn>
-      </Box>
-      <Box selected={pool}>
-        <Btn
-          selected={pool}
+          <Btn selected={three}>{tabs.three}</Btn>
+        </Box>
+      ) : tabs.four ? (
+        <Box
+          selected={four}
           onClick={() => {
-            selectedTab("pool");
-            if (pool !== true) {
-              setSwap(false);
-              setPool(true);
+            selectedTab("four");
+            if (four !== true) {
+              setOne(false);
+              setTwo(false);
+              setThree(false);
+              setFour(true);
             }
           }}
         >
-          Pool
-        </Btn>
-      </Box>
+          <Btn selected={four}>{tabs.four}</Btn>
+        </Box>
+      ) :
+      null}
     </Bar>
   );
 }
@@ -42,28 +76,25 @@ const Box = styled.div`
   display: flex;
   border: 1px transparent;
   height: 30px;
-  width: 65px;
   text-align: center;
   justify-content: center;
+  padding: 10px 15px 3px;
   align-content: center;
-  border-radius: 3px;
+  cursor: pointer;
+  border-radius: 10px;
   ${(props) =>
     props.selected &&
     css`
       border: 1px solid #ffffff;
       background: #172756;
-      &:hover {
-        border: unset;
-      }
     `}
-  &:hover {
-    border: 1px solid #ffffff;
-  }
 `;
 
 const Btn = styled.text`
   text-decoration: underline;
   text-decoration-style: dotted;
+  max-width: max-content;
+  padding: 0px 2px 2px 0px;
 `;
 const Bar = styled.div`
   display: flex;
@@ -72,7 +103,8 @@ const Bar = styled.div`
   min-height: 40px;
   min-width: 74px;
   max-width: max-content;
-  background: #000000;
-  border-radius: 6px;
+  background: #0E1834;
+  border-radius: 10px;
+  padding: 3px;
   margin: auto;
 `;
