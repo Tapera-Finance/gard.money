@@ -14,15 +14,15 @@ const theme = createTheme({
     },
     danger: {
       // This is green.A700 as hex.
-      main: 'rgba(255, 0, 0, 0.8);',
+      main: '#f04438',
     },
     moderate: {
       // This is green.A700 as hex.
-      main: '#ffff00',
+      main: '#f79009',
     },
     healthy: {
       // This is green.A700 as hex.
-      main: '#00ff00',
+      main: '#4bb543',
     },
   },
 });

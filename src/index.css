@@ -28,10 +28,11 @@ span.MuiSlider-root {
   pointer-events: none;
 }
 span.MuiSlider-rail {
-  height: 3px;
+  height: 7px;
+  color: #e8e8e8;
 }
 span.MuiSlider-track {
-  height: 1px;
+  height: 5px;
 }
 
 /* Chrome, Safari, Edge, Opera */

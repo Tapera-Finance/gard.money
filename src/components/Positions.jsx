@@ -9,6 +9,7 @@ import Details from "./Details";
 import ManageCDP from "./ManageCDP";
 import PrimaryButton from "./PrimaryButton";
 import TextButton from "./TextButton";
+import PageToggle from "./PageToggle"
 
 const axios = require("axios");
 
@@ -96,6 +97,18 @@ export default function Positions() {
     const [apr, setAPR] = useState(0)
     const loadedCDPs = CDPsToList();
     const [currentCDP, setCurrentCDP] = useState(null)
+    const [selectedTab, setSelectedTab] = useState("one");
+
+    // const Tabs = {
+    //     one: <SystemMetrics />,
+    //     two: <YourMetrics />,
+    // };
+    const tabs = {
+        one: "Borrow More",
+        two: "Repay Postion",
+        three: "Sell Position",
+        four: "Close Position",
+    };
     useEffect(async () => {
         setAPR(await getAlgoGovAPR())
         setPrice(await getPrice());
@@ -137,27 +150,26 @@ export default function Positions() {
                         
                     </div>
                 </PositionInfo>
+                <TextButton
+                 positioned={true} 
+                 text={cdp.id === currentCDP ? "Collapse" : "Manage Position"}
+                 onClick={cdp.id === currentCDP ? () => {
+                    setCurrentCDP(null)
+                 } : () => {
+                    setCurrentCDP(cdp.id)
+                 }
+                }
+                 />
                 {cdp.id === currentCDP ? <div>
-                    <ManageCDP cdp={cdp} price={price} setCurrentCDP={setCurrentCDP}/>
+                    <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
+                    <div style={{marginTop: 30}}>
+                        <ManageCDP cdp={cdp} price={price} setCurrentCDP={setCurrentCDP}/>
+                    </div>
                     <div style={{position:"relative", top:-65}}>
                         <Details details={details}/>
-                        <PrimaryButton
-                        positioned={true}
-                        exit={true}
-                        text="Exit"
-                        onClick={() => {
-                            setCurrentCDP(null)
-                        }}
-                        />
                     </div>
                     
-                </div> :<TextButton
-                 positioned={true} 
-                 text="Click to Expand"
-                 onClick={() => {
-                    setCurrentCDP(cdp.id)
-                 }}
-                 />}
+                </div> : <></>}
             </Position>
              )
             })
