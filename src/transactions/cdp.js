@@ -874,7 +874,7 @@ export async function voteCDP(account_id, option1, option2) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
-  const stringVal = "af/gov1:j[6,\"" + option1 + "\",\"" + option2 + "\"]";
+  const stringVal = "af/gov1:j[7,\"" + option1 + "\",\"" + option2 + "\"]";
 
   const note = enc.encode(stringVal);
 

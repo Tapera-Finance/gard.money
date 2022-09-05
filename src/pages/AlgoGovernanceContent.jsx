@@ -12,7 +12,7 @@ import { cdpGen } from "../transactions/contracts";
 import Table from "../components/Table";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { loadFireStoreCDPs } from "../components/Firebase";
-import { periodFourStart, periodFourEnd } from "../globals";
+import { commitmentPeriodEnd, periodFourStart, periodFourEnd } from "../globals";
 
 function getGovernorPage(id) {
   return (
@@ -38,10 +38,10 @@ export default function AlgoGovernanceContent() {
   const [toWallet, setToWallet] = useState(false);
 
   const [measure1Vote, setM1Vote] = useState(
-    "Designating 7M ALGOs from the Q4 2022 governance rewards to DeFi governors",
+    "Allocate 7M ALGOs from the rewards pool of Q4 2022 to DeFi governors",
   );
   const [measure2Vote, setM2Vote] = useState(
-    "Allow DEX Liquidity Providers that contribute ALGOs in pools to participate in governance for Q4 2022",
+    "Keep the status quo without including DEX LP tokens",
   );
 
   const handleCheckboxChange1 = () => {
@@ -103,7 +103,7 @@ export default function AlgoGovernanceContent() {
             // variant ={true}
             disabled={
               value.balance === value.committed ||
-              (Date.now() > periodFourStart && Date.now() < periodFourEnd)
+              !(Date.now() < commitmentPeriodEnd)
             }
           />
         ) : (
@@ -120,7 +120,7 @@ export default function AlgoGovernanceContent() {
               setMaxBal(value.balance);
             }}
             // variant ={true}
-            disabled={(Date.now() > periodFourStart && Date.now() < periodFourEnd)}
+            disabled={!(Date.now() < commitmentPeriodEnd)}
           />
         ),
       voted: (
@@ -135,7 +135,7 @@ export default function AlgoGovernanceContent() {
             setModalCanAnimate(true);
             setSelectedAccount(value.id);
           }}
-          disabled={true}
+          disabled={(Date.now() > periodFourStart && Date.now() < periodFourEnd)}
         />
       ),
       info: (
@@ -165,7 +165,7 @@ export default function AlgoGovernanceContent() {
               <text>Place your vote below for </text>
               <Link
                 darkToggle={theme === "dark"}
-                href="https://governance.algorand.foundation/governance-period-3/period-3-voting-session-1"
+                href="https://governance.algorand.foundation/governance-period-4/period-4-voting-session-1"
               >
                 Governance Period #4 Voting Session #1
               </Link>
@@ -194,7 +194,7 @@ export default function AlgoGovernanceContent() {
                   <h3>
                     <Link
                       darkToggle={theme === "dark"}
-                      href="https://algorand.foundation/governance-period-4/period-4-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-4/period-4-voting-session-1"
                       subtitle={true}
                     >
                       Measure #1:
@@ -231,7 +231,7 @@ export default function AlgoGovernanceContent() {
                   <h3>
                     <Link
                       darkToggle={theme === "dark"}
-                      href="https://algorand.foundation/algorand-governance-period3-voting-measure-2-xgov"
+                      href="https://www.algorand.foundation/community-governance-period4-voting-measures"
                       subtitle={true}
                     >
                       Measure #2:
@@ -275,11 +275,11 @@ export default function AlgoGovernanceContent() {
                     const res = await voteCDP(
                       selectedAccount,
                       measure1Vote ==
-                        "Granting governor status and twice the voting power to qualified DeFi projects"
+                        "Allocate 7M ALGOs from the rewards pool of Q4 2022 to DeFi governors"
                         ? "a"
                         : "b",
                       measure2Vote ==
-                        "Approve the mechanism for community proposals"
+                        "Enable committing Algo LP tokens to governance"
                         ? "a"
                         : "b",
                     );
