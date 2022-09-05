@@ -63,7 +63,7 @@ export default function AlgoGovernanceContent() {
   };
 
   const handleChangeMeasure2 = (event) => {
-    setM2Vote(event.target.valu);
+    setM2Vote(event.target.value);
   };
 
   useEffect(async () => {
@@ -139,8 +139,8 @@ export default function AlgoGovernanceContent() {
             setModalCanAnimate(true);
             setSelectedAccount(value.id);
           }}
-          disabled={Date.now() > periodFourStart && Date.now() < periodFourEnd}
-        />
+          disabled={!(Date.now() > periodFourStart && Date.now() < periodFourEnd)}
+        /> 
       ),
       info: (
         <PrimaryButton
