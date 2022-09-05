@@ -41,7 +41,7 @@ export default function AlgoGovernanceContent() {
     "Allocate 7M ALGOs from the rewards pool of Q4 2022 to DeFi governors",
   );
   const [measure2Vote, setM2Vote] = useState(
-    "Keep the status quo without including DEX LP tokens",
+    "Enable committing Algo LP tokens to governance",
   );
 
   const handleCheckboxChange1 = () => {
