@@ -12,7 +12,11 @@ import { cdpGen } from "../transactions/contracts";
 import Table from "../components/Table";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { loadFireStoreCDPs } from "../components/Firebase";
-import { commitmentPeriodEnd, periodFourStart, periodFourEnd } from "../globals";
+import {
+  commitmentPeriodEnd,
+  periodFourStart,
+  periodFourEnd,
+} from "../globals";
 
 function getGovernorPage(id) {
   return (
@@ -135,7 +139,7 @@ export default function AlgoGovernanceContent() {
             setModalCanAnimate(true);
             setSelectedAccount(value.id);
           }}
-          disabled={(Date.now() > periodFourStart && Date.now() < periodFourEnd)}
+          disabled={Date.now() > periodFourStart && Date.now() < periodFourEnd}
         />
       ),
       info: (
@@ -199,7 +203,8 @@ export default function AlgoGovernanceContent() {
                     >
                       Measure #1:
                     </Link>{" "}
-                    Designating 7M ALGOs from the Q4 2022 governance rewards to DeFi governors
+                    Designating 7M ALGOs from the Q4 2022 governance rewards to
+                    DeFi governors
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory darkToggle={theme === "dark"}>
@@ -213,10 +218,12 @@ export default function AlgoGovernanceContent() {
                     onChange={handleChangeMeasure1}
                   >
                     <option>
-                    "Allocate 7M ALGOs from the rewards pool of Q4 2022 to DeFi governors"
+                      "Allocate 7M ALGOs from the rewards pool of Q4 2022 to
+                      DeFi governors"
                     </option>
                     <option>
-                    "Keep the status quo and distribute the entire pool of 70.5M ALGOs among all governors"
+                      "Keep the status quo and distribute the entire pool of
+                      70.5M ALGOs among all governors"
                     </option>
                   </Select>
                 </div>
@@ -236,7 +243,8 @@ export default function AlgoGovernanceContent() {
                     >
                       Measure #2:
                     </Link>{" "}
-                    Allow DEX Liquidity Providers that contribute ALGOs in pools to participate in governance for Q4 2022
+                    Allow DEX Liquidity Providers that contribute ALGOs in pools
+                    to participate in governance for Q4 2022
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory darkToggle={theme === "dark"}>
@@ -250,10 +258,10 @@ export default function AlgoGovernanceContent() {
                     onChange={handleChangeMeasure2}
                   >
                     <option>
-                    "Enable committing Algo LP tokens to governance"
+                      "Enable committing Algo LP tokens to governance"
                     </option>
                     <option>
-                    "Keep the status quo without including DEX LP tokens"
+                      "Keep the status quo without including DEX LP tokens"
                     </option>
                   </Select>
                 </div>

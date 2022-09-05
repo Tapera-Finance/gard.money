@@ -407,7 +407,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
 
   const stringVal = toWallet
     ? `af/gov1:j{"com":${collateral + 300000},"bnf":"${info.address}"}`
-    : "af/gov1:j{\"com\":" + (collateral + 300000).toString() + "}";
+    : 'af/gov1:j{"com":' + (collateral + 300000).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -473,10 +473,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   ];
   let response = await sendTxn1Promise;
 
-  response = await sendTxn(
-    stxns2,
-    "Successfully opened a new CDP.",
-  );
+  response = await sendTxn(stxns2, "Successfully opened a new CDP.");
 
   addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, devFees);
 
@@ -743,10 +740,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
 
   let stxns = [stxn1.blob, stxn2.blob, stxn3.blob, stxn4.blob];
 
-  let response = await sendTxn(
-    stxns,
-    "Successfully closed your cdp.",
-  );
+  let response = await sendTxn(stxns, "Successfully closed your cdp.");
   setLoadingStage(null);
   removeCDP(info.address, accountID);
   updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee);
@@ -812,7 +806,7 @@ export async function commitCDP(account_id, amount, toWallet) {
 
   const stringVal = toWallet
     ? `af/gov1:j{"com":${parseInt(amount * 1000000)},"bnf":"${info.address}"}`
-    : "af/gov1:j{\"com\":" + parseInt(amount * 1000000).toString() + "}";
+    : 'af/gov1:j{"com":' + parseInt(amount * 1000000).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -853,10 +847,10 @@ export async function commitCDP(account_id, amount, toWallet) {
     "Succesfully committed your algos from cdp " +
       account_id +
       " to governance! You may verify" +
-      " <a href=\"" +
+      ' <a href="' +
       "https://governance.algorand.foundation/governance-period-4/governors/" +
       cdp.address +
-      "\">here</a>.\n",
+      '">here</a>.\n',
     true,
   );
   setLoadingStage(null);
@@ -874,7 +868,7 @@ export async function voteCDP(account_id, option1, option2) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
-  const stringVal = "af/gov1:j[7,\"" + option1 + "\",\"" + option2 + "\"]";
+  const stringVal = 'af/gov1:j[7,"' + option1 + '","' + option2 + '"]';
 
   const note = enc.encode(stringVal);
 
@@ -913,11 +907,7 @@ export async function voteCDP(account_id, option1, option2) {
   let stxns = [stxn1.blob, stxn2.blob];
   let response = await sendTxn(
     stxns,
-    "Successfully voted for options " +
-      option1 +
-      " and " +
-      option2 +
-      "."
+    "Successfully voted for options " + option1 + " and " + option2 + ".",
   );
   updateDBWebActions(6, account_id, 0, 0, 0, 0, 2000);
   setLoadingStage(null);
