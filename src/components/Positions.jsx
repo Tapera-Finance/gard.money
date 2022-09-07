@@ -194,10 +194,14 @@ export default function Positions() {
                             </div>
                             <div style={{color: "grey", textAlign: "center"}}> 4.33%</div>
                         </SalesInfo>
-                        <PrimaryButton text="List for Sale" positioned={true} purple={true} disabled={true} />
+                        <PrimaryButton text="List for Sale" purple={true} disabled={true} />
                 </div> 
                     : <div style={{marginTop: 40}}>
-                        <PrimaryButton text="Close Position" positioned={true} purple={true}/>
+                        <PrimaryButton 
+                        text="Close Position" 
+                        positioned={true} 
+                        purple={true}
+                        />
                     </div>}
                 </div> : <></>}
             </Position>
@@ -237,6 +241,7 @@ const SalesInfo = styled.div`
     border-radius: 10px;
     font-size: 18px;
     padding: 40px 0px 40px;
+    margin-bottom: 20px;
 `
 
 const Container = styled.div`

@@ -5,7 +5,7 @@ import styled, {css} from "styled-components";
 import Effect from "./Effect";
 import ToolTip from "./ToolTip";
 import PrimaryButton from "./PrimaryButton";
-import { addCollateral, mint } from "../transactions/cdp";
+import { addCollateral, closeCDP, mint } from "../transactions/cdp";
 import { handleTxError } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
@@ -16,15 +16,15 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
     const [loadingText, setLoadingText] = useState(null);
     const dispatch = useDispatch();
 
-    const [additionalSupply, setAdditionalSupply] = useState("")
-    const [additionalBorrow, setAdditionalBorrow] = useState("")
+    const [withdrawl, setWithdrawl] = useState("")
+    const [repayment, setRepayment] = useState("")
 
-    const handleAddSupply = (event) => {
-        setAdditionalSupply(event.target.value === "" ? "" : Number(event.target.value));
+    const handleWithdrawl = (event) => {
+        setWithdrawl(event.target.value === "" ? "" : Number(event.target.value));
       };
 
-    const handleAddBorrow = (event) => {
-    setAdditionalBorrow(event.target.value === "" ? "" : Number(event.target.value));
+    const handleRepay = (event) => {
+        setRepayment(event.target.value === "" ? "" : Number(event.target.value));
     };
 
 
@@ -50,15 +50,15 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
                             placeholder={"enter amount"}
                             type='number'
                             min="0.00"
-                            id="addCollateral"
-                            value={additionalSupply}
-                            onChange={handleAddSupply}
+                            id="withdrawl"
+                            value={withdrawl}
+                            onChange={handleWithdrawl}
                             />
                             <MaxButton>
                                 <ToolTip toolTip={"+MAX"} toolTipText={"Click to lend maximum amount"}/>
                             </MaxButton>
                         </div>
-                        <Valuation>$Value: ${(additionalSupply * price).toFixed(2)}</Valuation>
+                        <Valuation>$Value: ${(withdrawl * price).toFixed(2)}</Valuation>
                     </InputContainer>
                 </Background>
                 <PrimaryButton
@@ -66,20 +66,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
                 positioned={true}
                 text="Withdraw"
                 onClick={ async () => {
-                    setLoading(true);
-                    try {
-                        let res = await addCollateral(
-                          cdp.id,
-                          additionalSupply,
-                        );
-                        if (res.alert) {
-                          dispatch(setAlert(res.text));
-                        }
-                      } catch (e) {
-                        handleTxError(e, "Error minting from CDP");
-                      }
-                    setLoading(false);
-                    setCurrentCDP(null);
+                    setRepayment(cdp.debt/1000000)
                 }}
                 />
             </SubContainer>
@@ -94,27 +81,28 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
                             placeholder={"enter amount"}
                             type='number'
                             min="0.00"
-                            id="borrowMore"
-                            value={additionalBorrow}
-                            onChange={handleAddBorrow}
+                            id="repay"
+                            value={repayment}
+                            onChange={handleRepay}
                             />
                             <MaxButton>
                                 <ToolTip toolTip={"+MAX"} toolTipText={"Click to lend maximum amount"}/>
                             </MaxButton>
                         </div>
-                        <Valuation>$Value: ${(additionalBorrow * 1).toFixed(2)}</Valuation>
+                        <Valuation>$Value: ${(repayment * 1).toFixed(2)}</Valuation>
                     </InputContainer>
                 </Background>
                 <PrimaryButton
                 purple={true}
                 positioned={true}
                 text="Repay"
+                disabled={withdrawl === ""}
                 onClick={ async () => {
                     setLoading(true);
                     try {
-                        let res = await mint(
+                        let res = await closeCDP(
                           cdp.id,
-                          additionalBorrow,
+                          repayment * 1000000,
                         );
                         if (res.alert) {
                           dispatch(setAlert(res.text));
