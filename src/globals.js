@@ -6,7 +6,7 @@ export const CONTENT_NAMES = {
   AUCTIONS: "Auctions",
   SWAP: "Swap",
   DAO: "DAO",
-  ALGO_GOVERNANCE: "Algo Governance",
+  GOVERN: "Govern",
   ANALYTICS: "Analytics",
 };
 

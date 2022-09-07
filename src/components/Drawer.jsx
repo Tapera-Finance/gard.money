@@ -3,6 +3,7 @@ import styled, { css, keyframes } from "styled-components";
 import analyticsIcon from "../assets/icons/dashboard_icon.png";
 import borrowIcon from "../assets/icons/algo_governance_icon.png";
 import auctionsIcon from "../assets/icons/auctions_icon.png";
+import governIcon from "../assets/icons/auctions_icon.png";
 import daoIcon from "../assets/icons/dao_icon.png";
 import mintIcon from "../assets/icons/mint_icon.png";
 import repayIcon from "../assets/icons/repay_icon.png";
@@ -121,7 +122,7 @@ export default function Drawer({
                           "Manage CDPs",
                           "Borrow",
                           "Actions",
-                          "Algo Governance",
+                          "Govern",
                           "Auctions",
                         ].includes(v.name) &&
                         !walletAddress
@@ -455,6 +456,12 @@ const menuItems = [
     route: "/borrow",
   },
   {
+    name: CONTENT_NAMES.GOVERN,
+    icon: governIcon,
+    subOptions: [],
+    route: "/govern",
+  },
+  {
     name: CONTENT_NAMES.REPAY,
     icon: repayIcon,
     subOptions: [],
@@ -471,12 +478,6 @@ const menuItems = [
     icon: daoIcon,
     subOptions: [],
     route: "/dao",
-  },
-  {
-    name: CONTENT_NAMES.ALGO_GOVERNANCE,
-    icon: borrowIcon,
-    subOptions: [],
-    route: "/algo-governance",
   },
   {
     name: CONTENT_NAMES.ANALYTICS,

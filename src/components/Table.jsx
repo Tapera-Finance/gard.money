@@ -266,6 +266,11 @@ const Cell = styled.td`
   height: 44px;
   padding-left: 16px;
   text-align: left;
+  :last-child{
+    float: right;
+    margin-top: 10px;
+    margin-right: 20px;
+  }
 `;
 const PaginationBar = styled.div`
   background: #fcfcfd;
