@@ -104,9 +104,6 @@ export default function Table({
                   key={index}
                   style={{
                     background: tableColor,
-                    borderBottom: "solid",
-                    borderBottomWidth: 1,
-                    borderColor: "#F9F9F9",
                   }}
                 >
                   {keys.map((keyVal, keyIndex) => {
@@ -217,9 +214,10 @@ const CountText = styled.text`
 `
 
 const HeaderRow = styled.tr`
-  background: rgba(13, 18, 39, .75);
+  background: #1b2d65;
   border-radius: 10px;
   height: 44px;
+  border-bottom: 1px solid #ffffff;
 `
 const HeaderElement = styled.th`
   font-weight: 500;
@@ -239,6 +237,8 @@ const HeaderElement = styled.th`
 `;
 const TableRow = styled.tr`
   height: 60px;
+  background: #1b2d65;
+  border: 2px solid #172756;
 `;
 const Cell = styled.td`
   font-weight: 500;
@@ -246,6 +246,11 @@ const Cell = styled.td`
   height: 44px;
   padding-left: 16px;
   text-align: left;
+  :last-child{
+    float: right;
+    margin-top: 10px;
+    margin-right: 20px;
+  }
 `;
 const PaginationBar = styled.div`
   background: #fcfcfd;
