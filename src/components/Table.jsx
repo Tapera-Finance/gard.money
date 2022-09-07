@@ -4,6 +4,7 @@ import copyIconSmall from "../assets/icons/copy_icon_small.png";
 import { camelToWords } from "../utils";
 import PrimaryButton from "./PrimaryButton";
 import chevron from "../assets/icons/tablePag_icon.png";
+import "../styles/table.css"
 
 /**
  * This renders a table with the given data
@@ -19,11 +20,11 @@ import chevron from "../assets/icons/tablePag_icon.png";
 export default function Table({
   data,
   title,
+  subtitle,
   countSubtitle,
-  headerColor,
-  tableColor,
   columns,
-  noID
+  noID,
+  className
 }) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [shownRows, setShownRows] = useState(data.slice(0, 10));
@@ -51,7 +52,7 @@ export default function Table({
   }, [data]);
 
   return (
-    <div>
+    <div className={className} >
       {title ? (
         <div
           style={{
@@ -65,6 +66,9 @@ export default function Table({
           <div style={{ marginRight: 8 }}>
             <Title>{title}</Title>
           </div>
+          <div style={{ marginRight: 8 }}>
+            <Total>{subtitle}</Total>
+          </div>
           <CountContainer>
             <CountText>
               {countSubtitle || `${data.length} ${title}`}
@@ -75,10 +79,9 @@ export default function Table({
         <></>
       )}
       <div style={{ marginBottom: 64 }}>
-        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+        <TableGrid>
           <tbody>
             <HeaderRow
-              style={{ background: headerColor }}
             >
               {columns
                 ? columns.map((value, index) => {
@@ -102,19 +105,20 @@ export default function Table({
               return (
                 <TableRow
                   key={index}
-                  style={{
-                    background: tableColor,
-                  }}
+
                 >
                   {keys.map((keyVal, keyIndex) => {
                     if (keyVal == "id" && noID) return;
+                    if (keyVal === "name" || keyVal === "id") {
+                      <Cell key={keyIndex} className="left-column-cell">{value[keyVal]}</Cell>
+                    }
                     return <Cell key={keyIndex}>{value[keyVal]}</Cell>;
                   })}
                 </TableRow>
               );
             })}
           </tbody>
-        </table>
+        </TableGrid>
         {data.length > 10 ? (
           <PaginationBar
             style={{
@@ -195,11 +199,24 @@ export default function Table({
   );
 }
 
+const TableGrid = styled.table`
+  border: 1px transparent;
+  width: 100%;
+  margin: 10px;
+  border-collapse: separate;
+  border-spacing: 0px;
+`
+
 // styled components
 const Title = styled.text`
-  font-weight: 500;
+  font-weight: 600;
   font-size: 18px;
 `;
+
+const Total = styled.text`
+  font-weight: 600;
+  /* font */
+`
 
 const CountContainer = styled.div`
   background: #ffffff;
@@ -214,10 +231,9 @@ const CountText = styled.text`
 `
 
 const HeaderRow = styled.tr`
-  background: #1b2d65;
-  border-radius: 10px;
+  background: #0f1733;
   height: 44px;
-  border-bottom: 1px solid #ffffff;
+  border-radius: 8px;
 `
 const HeaderElement = styled.th`
   font-weight: 500;
@@ -225,6 +241,8 @@ const HeaderElement = styled.th`
   color: white;
   height: 44px;
   padding-left: 16px;
+  border-left: none;
+  border-top: 1px solid #172756;
   text-align: left;
   :first-child{
     border-top-left-radius: 10px;
@@ -237,10 +255,12 @@ const HeaderElement = styled.th`
 `;
 const TableRow = styled.tr`
   height: 60px;
-  background: #1b2d65;
-  border: 2px solid #172756;
+  border-radius: 8px;
+  background: #0f1733;
+  border-bottom: 4px transparent #172756;
 `;
 const Cell = styled.td`
+  border-bottom: 4px solid #172756;
   font-weight: 500;
   font-size: 14px;
   height: 44px;

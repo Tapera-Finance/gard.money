@@ -9,14 +9,14 @@ import Main from "./Main";
 import BorrowContent from "../pages/BorrowContent";
 import RepayContent from "../pages/RepayContent";
 import ActionsContent from "../pages/ActionsContent";
-import WalletContent from "../pages/WalletContent";
+import AccountContent from "../pages/AccountContent";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={Main(HomeContent, "Home")} />
-        <Route path="/wallet" element={Main(WalletContent, "Wallet")} />
+        <Route path="/account" element={Main(AccountContent, "Wallet")} />
         <Route path="/borrow" element={Main(BorrowContent, "Borrow")} />
         <Route path="/manage" element={Main(RepayContent, "Manage CDPs")} />
         <Route path="/auctions" element={Main(AuctionsContent, "Auctions")} />

@@ -2,6 +2,7 @@ module.exports = {
     "Price Impact": "Percentage asset price will change as a result of this swap",
     "Slippage Tolerance": "Amount to adjust for price change between user input and transaction submission. Set at 0.05%",
     "Liquidity Fee": "Fee from change to pool liquidity",
+    "Account Info": "Account Info",
     //borrow page tooltips
     "Collateral": "The amount of Algos you lend",
     "Liquidation Price" : "Price point at which you loan will be liquidated",
