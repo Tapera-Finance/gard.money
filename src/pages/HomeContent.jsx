@@ -23,6 +23,17 @@ const fetchTvl = async () => {
   }
 };
 
+const buttons = [
+  "Actions",
+  "Borrow",
+  "Govern",
+  "Analytics",
+  // "Auctions",
+  // "Pool",
+  // "Stake",
+  // "Trade CDP",
+]
+
 /**
  * Content found on home
  */
@@ -225,7 +236,18 @@ export default function HomeContent() {
           </StepContainer>
         </div>
       ) : (
-        <div>buttons here</div>
+        <div style={{
+          display: "flex",
+          justifyContent: "space-evenly",
+          alignItems: "center",
+          width: "80%"
+        }}>
+          {buttons.map((action) => {
+            return (
+              <PrimaryButton text={action} purple onClick={() => navigate(`/${action.toLowerCase()}`)} key={Math.random()} />
+            )
+          })}
+          </div>
       )}
     </div>
   );
