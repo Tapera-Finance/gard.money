@@ -10,7 +10,7 @@ export default function RewardNotice({program, timespan, estimatedRewards, actio
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            background: "#80deff",
+            background: "linear-gradient(to right, #019FFF, #ffffff)",
             borderRadius: 10,
             color: "#172756",
             paddingTop: 10,
