@@ -6,13 +6,19 @@ import { CDPsToList } from "../pages/RepayContent";
 import chevron from "../assets/icons/tablePag_icon.png";
 import { loadDbActionAndMetrics, queryUser } from "./Firebase";
 import { onSnapshot } from "firebase/firestore";
+import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
+import gardLogo from "../assets/icons/gardlogo_icon_small.png"
 
 function mAlgosToAlgos(num) {
   return num / 1000000;
 }
 
 function mAlgosToAlgosFixed(num) {
-  return mAlgosToAlgos(num).toFixed(3);
+  return mAlgosToAlgos(num).toFixed(1);
+}
+
+function totalVal(n) {
+  //
 }
 
 // only call db if wallet present
@@ -33,36 +39,37 @@ function formatTime(dateInMs) {
  * @param {string[]} classes
  * @returns {object} {...className, ...value}
  */
-function formatDataCell(val, formatter, classes) {
+function formatDataCell(val, formatter, classes, assetType) {
   let computed = formatter(val);
   return {
     className: computed == 0 ? "" : computed < 0 ? classes[0] : classes[1],
     value: computed,
+    assetType: assetType
   };
 }
 
 function actionToLabel(type_enum) {
   switch (type_enum) {
     case 0:
-      return "NEW CDP";
+      return "New Position";
     case 1:
-      return "CLOSE CDP";
+      return "Close Position";
     case 2:
-      return "ADD COLLATERAL";
+      return "Add Collateral";
     case 3:
-      return "MINT GARD";
+      return "Mint Gard";
     case 4:
-      return "COMMITMENT";
+      return "Governance";
     case 5:
-      return "DEBT REPAY";
+      return "Debt Repay";
     case 6:
-      return "VOTE";
+      return "Vote";
     case 7:
-      return "AUCTION BID";
+      return "Auction Bid";
     case 8:
-      return "SWAP";
+      return "Swap";
     default:
-      return "CDP";
+      return "Position";
   }
 }
 
@@ -74,29 +81,29 @@ function formatHistory(documents) {
   const dummy = documents.map((entry, idx) => {
     // commenting this out -> should be available for the sake of a link to the CDP on algoExplorer
     // let formattedAddress = entry.cdpAddress.slice(0, 10) + '...' + entry.cdpAddress.slice(entry.cdpAddress.length - 3, entry.cdpAddress.length - 1)
-    let formattedAlgo = formatDataCell(entry.microAlgos, mAlgosToAlgosFixed, [
-      "negative",
-      "positive",
-    ]);
-    let formattedGard = formatDataCell(entry.microGARD, mAlgosToAlgosFixed, [
-      "negative",
-      "positive",
-    ]);
+    let formattedAlgo = formatDataCell(
+      entry.microAlgos,
+      mAlgosToAlgosFixed,
+      ["negative", "positive"],
+      "Algo",
+    );
+    let formattedGard = formatDataCell(
+      entry.microGARD,
+      mAlgosToAlgosFixed,
+      ["negative", "positive"],
+      "Gard",
+    );
 
     const newTableEntry = {
-      description: actionToLabel(entry.actionType),
-      // id: entry.actionType === 0 ? cdpIds[idx].id : 0,
-      algos: formattedAlgo
+      transactionType: actionToLabel(entry.actionType),
+      totalValue: 0,
+      tokenAmountA: formattedAlgo
         ? formattedAlgo
         : mAlgosToAlgos(entry.microAlgos).toFixed(3),
-      gard: formattedGard
+      tokenAmountB: formattedGard
         ? formattedGard
         : mAlgosToAlgos(entry.microGARD).toFixed(3),
-      date: formatTime(entry.timestamp),
-      feesPaid: formatDataCell(-entry.feesPaid, mAlgosToAlgosFixed, [
-        "negative",
-        "positive",
-      ]),
+      timestamp: formatTime(entry.timestamp),
     };
     formattedHistory[hist_length - idx] = newTableEntry;
     return;
@@ -110,7 +117,7 @@ const formattedHistory = formatHistory(transHistory);
  * @prop {string} tableColor - background color for the rows in the table. If ommited default is used
  */
 
-export default function TransactionHistory({ headerColor, tableColor }) {
+export default function TransactionHistory() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPageStart, setCurrentPageStart] = useState(1);
   const [documents, setDocuments] = useState(formattedHistory);
@@ -167,8 +174,8 @@ export default function TransactionHistory({ headerColor, tableColor }) {
           marginBottom: 19,
         }}
       >
-        <div style={{ marginRight: 8 }}>
-          <Title>Transaction History</Title>
+        <div style={{ marginRight: 8, fontWeight: "bolder" }}>
+          <Title>Transactions</Title>
         </div>
         <CountContainer>
           <CountText>
@@ -181,9 +188,9 @@ export default function TransactionHistory({ headerColor, tableColor }) {
         </CountContainer>
       </div>
       <div style={{ marginBottom: 64 }}>
-        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+        <TableGrid>
           <tbody>
-            <HeaderRow style={{ background: headerColor }}>
+            <HeaderRow>
               {keys.map((value, index) => {
                 if (value === "button") return;
                 return (
@@ -195,19 +202,26 @@ export default function TransactionHistory({ headerColor, tableColor }) {
             </HeaderRow>
             {shownRows.map((value, index) => {
               return (
-                <TableRow
-                  key={index}
-                  style={{
-                    color: tableColor,
-                    borderBottom: "solid",
-                    borderBottomWidth: 1,
-                    borderColor: "#F9F9F9",
-                  }}
-                >
+                <TableRow key={index}>
                   {keys.map((keyVal, keyIndex) => {
                     return typeof value[keyVal] === "object" ? (
                       <Cell className={value[keyVal].className} key={keyIndex}>
                         {value[keyVal].value}
+                        {value[keyVal].assetType === "Algo" ? (
+                          <div style={{display: "flex", flexDirection: "row"}} >
+                          <div style={{height: "40px"}}>
+                            <AlgoImg src={algoLogo}></AlgoImg>
+                            </div>
+                            Algo
+                          </div>
+                        ) : (
+                          <div style={{display: "flex", flexDirection: "row"}} >
+                          <div style={{height: "40px"}}>
+                            <GardImg src={gardLogo}></GardImg>
+                          </div>
+                          Gard
+                          </div>
+                        )}
                       </Cell>
                     ) : (
                       <Cell key={keyIndex}>{value[keyVal]}</Cell>
@@ -217,24 +231,10 @@ export default function TransactionHistory({ headerColor, tableColor }) {
               );
             })}
           </tbody>
-        </table>
+        </TableGrid>
         {documents.length > 10 ? (
-          <PaginationBar
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              paddingLeft: 16,
-              paddingRight: 16,
-              justifyContent: "space-between",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
+          <PaginationBar>
+            <PaginationDiv>
               <div style={{ marginRight: 8 }}>
                 <PaginationText>Rows per Page:</PaginationText>
               </div>
@@ -248,8 +248,8 @@ export default function TransactionHistory({ headerColor, tableColor }) {
                   <option>50</option>
                 </PaginationSelect>
               </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "row" }}>
+            </PaginationDiv>
+            <PaginationDiv>
               <div style={{ marginRight: 40 }}>
                 <PaginationText>{`${currentPageStart}-${
                   currentPageStart + rowsPerPage - 1 > documents.length
@@ -257,7 +257,7 @@ export default function TransactionHistory({ headerColor, tableColor }) {
                     : currentPageStart + rowsPerPage - 1
                 } of ${documents.length} items`}</PaginationText>
               </div>
-              <div style={{ display: "flex", flexDirection: "row" }}>
+              <PaginationDiv>
                 <PaginationButton
                   style={{
                     marginRight: 20,
@@ -288,8 +288,8 @@ export default function TransactionHistory({ headerColor, tableColor }) {
                 >
                   <img src={chevron} style={{ height: 24 }} />
                 </PaginationButton>
-              </div>
-            </div>
+              </PaginationDiv>
+            </PaginationDiv>
           </PaginationBar>
         ) : (
           <></>
@@ -299,7 +299,52 @@ export default function TransactionHistory({ headerColor, tableColor }) {
   );
 }
 
+const PaginationDiv = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 // styled components
+const TableGrid = styled.table`
+  /* border-collapse: collapse; */
+  border: 1px transparent;
+  /* border-radius: 6px; */
+  width: 100%;
+  margin: 10px;
+  border-collapse: separate;
+  border-spacing: 0px;
+
+  /* top-left border-radius */
+  table tr:first-child th:first-child {
+    border-top-left-radius: 6px;
+  }
+
+  /* top-right border-radius */
+  table tr:first-child th:last-child {
+    border-top-right-radius: 6px;
+  }
+
+  /* bottom-left border-radius */
+  table tr:last-child td:first-child {
+    border-bottom-left-radius: 6px;
+  }
+
+  /* bottom-right border-radius */
+  table tr:last-child td:last-child {
+    border-bottom-right-radius: 6px;
+  }
+`;
+
+const AlgoImg = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  filter: invert();
+`
+const GardImg = styled.img`
+ max-width: 100%;
+  max-height: 100%;
+`
+
 const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
@@ -318,8 +363,9 @@ const CountText = styled.text`
 `;
 
 const HeaderRow = styled.tr`
-  background: rgba(13, 18, 39, 0.75);
+  background: #0f1733;
   height: 44px;
+  border-radius: 8px;
 `;
 const HeaderElement = styled.th`
   font-weight: 500;
@@ -327,20 +373,29 @@ const HeaderElement = styled.th`
   color: white;
   height: 44px;
   padding-left: 16px;
+  border-left: none;
+  border-top: 1px solid #172756;
   text-align: left;
   :first-child {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
+    /* border-top-left-radius: 10px; */
+    /* border-bottom-left-radius: 10px; */
   }
   :last-child {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
+    /* border-top-right-radius: 10px; */
+    /* border-bottom-right-radius: 10px; */
   }
 `;
 const TableRow = styled.tr`
   height: 60px;
+  border-radius: 8px;
+  background: #0f1733;
+  border-bottom: 4px transparent #172756;
+  background-clip: padding-box;
+
 `;
 export const Cell = styled.td`
+  border-bottom: 4px solid #172756;
+  background-clip: padding-box;
   font-weight: 500;
   font-size: 14px;
   height: 44px;
@@ -365,6 +420,12 @@ export const Cell = styled.td`
 const PaginationBar = styled.div`
   background: rgba(13, 18, 39, 0.65);
   height: 60px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 16;
+  padding-right: 16;
+  justify-content: space-between;
 `;
 const PaginationText = styled.text`
   font-weight: normal;

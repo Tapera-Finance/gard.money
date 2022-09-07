@@ -1,11 +1,10 @@
 export const CONTENT_NAMES = {
   HOME: "Home",
-  WALLET: "Wallet",
+  ACCOUNT: "Account",
   ACTIONS: "Actions",
   MINT: "Borrow",
   AUCTIONS: "Auctions",
   SWAP: "Swap",
-  REPAY: "Manage CDPs",
   DAO: "DAO",
   GOVERN: "Govern",
   ANALYTICS: "Analytics",

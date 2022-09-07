@@ -129,7 +129,7 @@ export default function Drawer({
                     onClick={() => {
                       if (
                         [
-                          "Wallet",
+                          "Account",
                           "Manage CDPs",
                           "Borrow",
                           "Actions",
@@ -463,12 +463,6 @@ const menuItems = [
     route: "/actions",
   },
   {
-    name: CONTENT_NAMES.WALLET,
-    icon: walletIcon,
-    subOptions: [],
-    route: "/wallet",
-  },
-  {
     name: CONTENT_NAMES.MINT,
     icon: borrowIcon,
     subOptions: [],
@@ -503,5 +497,11 @@ const menuItems = [
     icon: analyticsIcon,
     subOptions: [],
     route: "/analytics",
+  },
+  {
+    name: CONTENT_NAMES.ACCOUNT,
+    icon: walletIcon,
+    subOptions: [],
+    route: "/account",
   },
 ];

@@ -151,7 +151,7 @@ export default function WalletConnect() {
             text={walletAddress || "Connect Wallet"}
             onClick={() => {
               if (walletAddress) {
-                navigate("/wallet");
+                navigate("/account");
               } else {
                 reduceModalContent("terms");
                 setModalCanAnimate(true);
@@ -196,7 +196,7 @@ const WalletConnectDiv = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-`;
+`
 
 /**
  * Renders each wallet option inside de modal

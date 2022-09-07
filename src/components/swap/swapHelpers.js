@@ -47,10 +47,12 @@ export const formatAmt = (amt) =>
     : algosTomAlgos(amt);
 
 export const getBalances = () => {
-  return {
-    algo: mAlgosToAlgos(getWalletInfo().amount).toFixed(2),
-    gard: mAlgosToAlgos(getGARDInWallet()).toFixed(2),
-  };
+  if (!!getWalletInfo()) {
+    return {
+      algo: mAlgosToAlgos(getWalletInfo().amount).toFixed(2),
+      gard: mAlgosToAlgos(getGARDInWallet()).toFixed(2),
+    };
+  }
 };
 
 export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {

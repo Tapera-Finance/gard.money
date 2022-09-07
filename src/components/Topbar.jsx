@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import syncIcon from "../assets/icons/sync_icon.png";
 import syncIconWhite from "../assets/icons/sync_icon_white.png";
+import AccountCard from "./AccountCard";
 import WalletConnect from "./WalletConnect";
 /**
  * Bar on top of our main content
@@ -43,7 +44,8 @@ export default function Topbar({ contentName, setMainContent }) {
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <div style={{ paddingRight: 20 }}></div>
-          <WalletConnect />
+          <AccountCard />
+          {/* <WalletConnect /> */}
         </div>
       </TopBar>
     </div>
