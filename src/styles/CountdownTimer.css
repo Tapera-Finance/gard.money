@@ -5,21 +5,21 @@
     border-radius: 10px;
     margin: 0.5rem;
   }
-  
+
   .expired-notice > span {
     font-size: 1.5rem;
     font-weight: bold;
     color: #ff00ff;
   }
-  
+
   .expired-notice > p {
     font-size: 1.5rem;
   }
-  
+
   .show-counter {
     padding: 0.5rem;
   }
-  
+
   .show-counter .count-down-elements {
     display: flex;
     flex-direction: row;
@@ -47,7 +47,7 @@
     text-decoration: none;
     color: white;
   }
-  
+
   .show-counter .countdown {
     line-height: 1.25rem;
     padding: 0.5rem 0.75rem 0.5rem 0.75rem;
@@ -58,11 +58,11 @@
     border-radius: 10px;
     margin-right: 10px;
   }
-  
+
   .show-counter .countdown > p {
     margin: 0;
   }
-  
+
   .show-counter .countdown > span {
     font-size: 0.75rem;
     line-height: 1rem;

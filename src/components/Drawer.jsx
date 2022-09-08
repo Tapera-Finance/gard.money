@@ -17,6 +17,7 @@ import hamburguerPurpleIcon from "../assets/icons/hamburger-purple_icon.png";
 import { CONTENT_NAMES } from "../globals";
 import TwitterIcon from "../assets/icons/twitter_icon.png";
 import RedditIcon from "../assets/icons/reddit_icon.png";
+import ALGOPrice from "./ALGOPrice";
 import TelegramIcon from "../assets/icons/telegram_icon.png";
 import DiscordIcon from "../assets/icons/discord_icon.png";
 import DocumentIcon from "../assets/icons/document_icon.png";
@@ -65,7 +66,7 @@ export default function Drawer({
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: "column",
             justifyContent: "space-between",
           }}
         >
@@ -83,6 +84,16 @@ export default function Drawer({
           >
             <NavLogo src={logo} alt="logo" />
           </LogoButton>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "8px",
+              marginBottom: "8px",
+            }}
+          >
+            <ALGOPrice style={{ alignSelf: "center" }} />
+          </div>
           {window.innerWidth < 900 ? (
             <HamburgerButton
               style={{ position: "relative" }}
@@ -112,7 +123,7 @@ export default function Drawer({
                       display: "flex",
                       alignItems: "center",
                       ...(selected === v.name
-                        ? { backgroundColor: '#172756' }
+                        ? { backgroundColor: "#172756" }
                         : {}),
                     }}
                     onClick={() => {
@@ -177,7 +188,7 @@ export default function Drawer({
             />
           </HideNavButton>
         </div>
-        <div style={{position:"absolute", top: 650, left: 0, right: 0}}>
+        <div style={{ position: "absolute", top: 650, left: 0, right: 0 }}>
           <div
             style={{
               display: "flex",
@@ -223,18 +234,20 @@ export default function Drawer({
               }}
             >
               <ToS
-              onClick={() =>
-              window.open("https://www.algogard.com/app-terms-of-use.html")
-            }
-            >
-              Terms & Conditions</ToS>
-            <div style={{color: "white", fontSize: 12}}>|</div>
-            <ToS
-            onClick={() =>
-              window.open("https://algogard.com/app-privacy-policy.html")
-            }
-            >
-              Privacy Policy</ToS>
+                onClick={() =>
+                  window.open("https://www.algogard.com/app-terms-of-use.html")
+                }
+              >
+                Terms & Conditions
+              </ToS>
+              <div style={{ color: "white", fontSize: 12 }}>|</div>
+              <ToS
+                onClick={() =>
+                  window.open("https://algogard.com/app-privacy-policy.html")
+                }
+              >
+                Privacy Policy
+              </ToS>
             </SocialMediaContainer>
             <SocialMediaContainer
               style={{
@@ -473,12 +486,12 @@ const menuItems = [
     subOptions: [],
     route: "/auctions",
   },
-  {
-    name: CONTENT_NAMES.DAO,
-    icon: daoIcon,
-    subOptions: [],
-    route: "/dao",
-  },
+  // {
+  //   name: CONTENT_NAMES.DAO,
+  //   icon: daoIcon,
+  //   subOptions: [],
+  //   route: "/dao",
+  // },
   {
     name: CONTENT_NAMES.ANALYTICS,
     icon: analyticsIcon,

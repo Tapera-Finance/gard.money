@@ -31,7 +31,6 @@ export default function Table({
   const [currentPageStart, setCurrentPageStart] = useState(1);
   const keys = Object.keys(data[0]);
 
-
   useEffect(() => {
     window.scrollTo(0, 0);
     setShownRows(data.slice(0, rowsPerPage));
@@ -70,9 +69,7 @@ export default function Table({
             <Total>{subtitle}</Total>
           </div>
           <CountContainer>
-            <CountText>
-              {countSubtitle || `${data.length} ${title}`}
-            </CountText>
+            <CountText>{countSubtitle || `${data.length} ${title}`}</CountText>
           </CountContainer>
         </div>
       ) : (
@@ -85,11 +82,7 @@ export default function Table({
             >
               {columns
                 ? columns.map((value, index) => {
-                    return (
-                      <HeaderElement key={index}>
-                        {value}
-                      </HeaderElement>
-                    );
+                    return <HeaderElement key={index}>{value}</HeaderElement>;
                   })
                 : keys.map((value, index) => {
                     if (value === "button") return;
@@ -222,13 +215,13 @@ const CountContainer = styled.div`
   background: #ffffff;
   border-radius: 16px;
   padding: 2px 8px;
-`
+`;
 
 const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: #999696;
-`
+`;
 
 const HeaderRow = styled.tr`
   background: #0f1733;
@@ -244,11 +237,11 @@ const HeaderElement = styled.th`
   border-left: none;
   border-top: 1px solid #172756;
   text-align: left;
-  :first-child{
+  :first-child {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
   }
-  :last-child{
+  :last-child {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }

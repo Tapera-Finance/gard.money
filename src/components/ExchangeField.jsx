@@ -72,14 +72,12 @@ export default function ExchangeField({
                 />
               </SelectContainer>
               <Text>
-                {
-                  `You have
+                {`You have
               ${
                 balances[
                   ["assetB"].type === assets[1] ? ["assetA"] : ["assetB"]
                 ].amount
-              } already`
-                }
+              } already`}
               </Text>
               <InputContainer>
                 <ExchangeInput

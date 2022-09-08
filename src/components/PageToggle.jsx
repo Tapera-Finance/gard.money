@@ -88,7 +88,6 @@ const Box = styled.div`
     css`
       border: 1px solid #ffffff;
       background: #172756;
-      padding: 8px 2px 2px 8px;
       &:hover {
         border: unset;
       }

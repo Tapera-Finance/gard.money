@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PageToggle from "../components/PageToggle";
 import LoadingOverlay from "../components/LoadingOverlay";
 import SwapDetails from "../components/swap/SwapDetails";
-import PoolDetails from "../components/pool/PoolDetails"
+import PoolDetails from "../components/pool/PoolDetails";
 /**
  * Components
  * @component SwapContainer
@@ -19,7 +19,6 @@ export default function ActionsContainer() {
     two: <PoolDetails />,
   };
 
-
   const sessionStorageSetHandler = (e) => {
     setLoadingText(JSON.parse(e.value));
   };
@@ -35,4 +34,3 @@ export default function ActionsContainer() {
     </div>
   );
 }
-

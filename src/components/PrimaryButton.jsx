@@ -42,8 +42,8 @@ const Button = styled.button`
   ${(props) =>
     props.purple &&
     css`
-    background-color: #7c52ff;
-  `}
+      background-color: #7c52ff;
+    `}
   ${(props) =>
     props.positioned &&
     css`
@@ -63,9 +63,9 @@ const Button = styled.button`
   ${(props) =>
     props.purple &&
     css`
-    background-color: #172756;
-    border: 1px solid white;
-  `}
+      background-color: #172756;
+      border: 1px solid white;
+    `}
   ${(props) =>
     props.disabled &&
     css`

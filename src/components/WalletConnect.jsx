@@ -153,9 +153,9 @@ export default function WalletConnect() {
               if (walletAddress) {
                 navigate("/account");
               } else {
-              reduceModalContent("terms");
-              setModalCanAnimate(true);
-              setModalVisible(true);
+                reduceModalContent("terms");
+                setModalCanAnimate(true);
+                setModalVisible(true);
               }
             }}
           />

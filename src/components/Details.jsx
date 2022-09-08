@@ -14,12 +14,15 @@ export default function Details({ className, details, governPage }) {
         details.map((d) => {
             return (
                 <Item key={d.title}>
-                    <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip} rewards={d.rewards}
+                  ></Effect>
                 </Item>
-            )
-        })
-        : null
-    }
+              );
+            })
+          : null}
       </Items>
     </Container>
   );
@@ -33,20 +36,20 @@ const Container = styled.div`
 `;
 
 const Items = styled.div`
-    display: grid;
-    grid-template-columns: repeat(4, 22%);
-    row-gap: 30px;
-    justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(4, 22%);
+  row-gap: 30px;
+  justify-content: center;
     ${(props) =>
     props.governPage === true && css`
     column-gap: 2%;
     `}
-`
+`;
 
 const Item = styled.div`
-    display: flex;
-    flex-direction: column;
-`
+  display: flex;
+  flex-direction: column;
+`;
 const Text = styled.text`
-    //
-`
+  //
+`;

@@ -16,19 +16,19 @@ export const convertToDollars = (amt, idx) =>
   formatToDollars(amt * prices[idx]);
 
 export const formatPrice = (num) => {
-  let cut = 3
+  let cut = 3;
   let p = num.toString();
   let ar = p.split("");
-  let newStr = ""
+  let newStr = "";
   for (let i = 0; i < ar.length; i++) {
     let cur = ar[i];
     if (i !== 0 && i % cut === 0) {
-      newStr += ","
+      newStr += ",";
     }
-    newStr += cur
+    newStr += cur;
   }
-  return newStr
-}
+  return newStr;
+};
 
 export const mAlgosToAlgos = (num) => {
   return num / 1000000;
@@ -38,7 +38,8 @@ export const algosTomAlgos = (num) => {
   return num * 1000000;
 };
 
-export const empty = (value) => value === 0 || value === "" || value === undefined;
+export const empty = (value) =>
+  value === 0 || value === "" || value === undefined;
 
 export const formatAmt = (amt) =>
   typeof amt === "string"
@@ -64,7 +65,6 @@ export const algoGardRatio = async () =>
     mAlgosToAlgos(gardpool.calculator.secondaryAssetPrice),
   );
 
-
 /**
  * Component Helpers
  */
@@ -84,7 +84,7 @@ export function calcTransResult(amount, totalX, totalY) {
   }
 }
 
- export function estimateReturn(input, totalX, totalY) {
+export function estimateReturn(input, totalX, totalY) {
   let receivedAmount =
     (((1e6 * (input * totalY)) / Math.floor(input * 1e6 + totalX)) * 9900) /
     10000;
