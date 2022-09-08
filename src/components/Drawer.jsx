@@ -43,6 +43,7 @@ export default function Drawer({
   toggleOpenStatus,
   allowAnimate,
 }) {
+  const [dev, setDev] = useState(true)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
@@ -130,7 +131,7 @@ export default function Drawer({
                       if (
                         [
                           "Account",
-                          "Manage CDPs",
+                          // "Manage CDPs",
                           "Borrow",
                           "Actions",
                           "Govern",
@@ -145,7 +146,9 @@ export default function Drawer({
                         );
                       else if (["DAO"].includes(v.name)) {
                         dispatch(setAlert("This page is under construction!"));
-                      } else {
+                      } else if (["Actions"].includes(v.name) && !dev) {
+                        dispatch(setAlert("This page is under construction!"));
+                      }  else {
                         if (window.innerWidth < 900) toggleOpenStatus();
                         navigate(v.route);
                       }
@@ -474,12 +477,12 @@ const menuItems = [
     subOptions: [],
     route: "/govern",
   },
-  {
-    name: CONTENT_NAMES.REPAY,
-    icon: repayIcon,
-    subOptions: [],
-    route: "/manage",
-  },
+  // {
+  //   name: CONTENT_NAMES.REPAY,
+  //   icon: repayIcon,
+  //   subOptions: [],
+  //   route: "/manage",
+  // },
   {
     name: CONTENT_NAMES.AUCTIONS,
     icon: auctionsIcon,
