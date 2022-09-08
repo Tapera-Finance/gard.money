@@ -16,7 +16,7 @@ export default function ActionsContainer() {
 
   const Tabs = {
     one: <SwapDetails />,
-    two: <PoolDetails />,
+    // two: <PoolDetails />,
   };
 
   const sessionStorageSetHandler = (e) => {
@@ -27,8 +27,12 @@ export default function ActionsContainer() {
   return (
     <div>
       {loading ? <LoadingOverlay text={loadingText} /> : <></>}
-      <PageToggle selectedTab={setSelectedTab}
-      tabs={{one: "Swap", two: "Pool"}}
+      <PageToggle
+        selectedTab={setSelectedTab}
+        tabs={{
+          one: "Swap",
+          // two: "Pool"
+        }}
       ></PageToggle>
       {Tabs[selectedTab]}
     </div>
