@@ -68,6 +68,8 @@ export function calcRatio(collateral, minted, string = false) {
 
 const EncodedDebt = "R0FSRF9ERUJU";
 
+console.log(ids.app.validator)
+
 async function checkChainForCDP(address, id) {
   // This function checks for the existence of a CDP
   // This is done by getting the info, then
@@ -307,7 +309,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: cdp.address,
-    amount: collateral,
+    amount: openingMicroALGOs,
     suggestedParams: params,
   });
   txns.push(txn4)
@@ -331,10 +333,11 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   });
   txns.push(txn6)
   // Governance
+  let txn8
   if (commit) {
     const stringVal = toWallet
-      ? `af/gov1:j{"com":${collateral + 300000},"bnf":"${info.address}"}`
-      : "af/gov1:j{\"com\":" + (collateral + 300000).toString() + "}";
+      ? `af/gov1:j{"com":${openingMicroALGOs},"bnf":"${info.address}"}`
+      : "af/gov1:j{\"com\":" + (openingMicroALGOs).toString() + "}";
     const note = enc.encode(stringVal);
     // txn 7: owner check
     params.fee = 2000;
@@ -351,7 +354,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     txns.push(txn7)
     // txn 8: Commit
     params.fee = 0;
-    let txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: cdp.address,
       to: "UAME4M7T2NWECVNCUDGQX6LJ7OVDLZP234GFQL3TH6YZUPRV3VF5NGRSRI",
       amount: 0,
@@ -399,7 +402,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, 0);
   
   if (commit) {
-    updateCommitmentFirestore(info.address, accountID, collateral);
+    updateCommitmentFirestore(info.address, accountID, openingMicroALGOs);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #4!";
   }
@@ -427,7 +430,7 @@ export async function mint(accountID, newGARD) {
     onComplete: 0,
     appArgs: [enc.encode("MoreGARD")],
     accounts: [cdp.address],
-    foreignApps: [oracleID, openFeeID],
+    foreignApps: [ids.app.oracle],
     foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
@@ -441,7 +444,7 @@ export async function mint(accountID, newGARD) {
     assetIndex: ids.asa.gard,
   });
 
-  let txns = [txn1, txn2, txn3];
+  let txns = [txn1, txn3];
   algosdk.assignGroupID(txns);
   const signedGroupPromise = signGroup(info, txns);
 
@@ -466,7 +469,7 @@ export async function mint(accountID, newGARD) {
     "Successfully minted " + newGARD + " GARD.",
   );
   setLoadingStage(null);
-  updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, devFees);
+  updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
   checkChainForCDP(info.address, accountID);
 
   return response;
@@ -519,7 +522,7 @@ export async function addCollateral(accountID, newAlgos) {
   });
   let txn2 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
-    appIndex: checkerID, // needs to be added
+    appIndex: ids.app.auction_checker, // needs to be added
     onComplete: 0,
     appArgs: [enc.encode("CDP_Check")],
     accounts: [cdp.address],
@@ -555,14 +558,13 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
 
   const accountInfoPromise = accountInfo();
   let paramsPromise = getParams(0);
-  const feePromise = calcDevFeesCurrent(microRepayGARD, true);
 
   // Core info
   let validatorArgs = [enc.encode("CloseNoFee")];
-  let foreignApps = [oracleID];
+  let foreignApps = [ids.app.oracle];
   if (payFee) {
     validatorArgs = [enc.encode("CloseFee")];
-    foreignApps = [oracleID, closeFeeID];
+    foreignApps = [ids.app.oracle];
   }
   let info = await accountInfoPromise;
   let cdp = cdpGen(info.address, accountID);
@@ -609,9 +611,6 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   });
   params.fee = 0;
   let fee = 0;
-  if (payFee) {
-    fee = await feePromise;
-  }
   let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
     to: treasury.address,

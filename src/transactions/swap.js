@@ -1,6 +1,6 @@
 import algosdk from "algosdk";
 import {
-  gardID,
+  ids,
   gainID,
   gardianID,
   pactALGOGARDID,
@@ -93,8 +93,8 @@ export async function swap(
   const enc = new TextEncoder();
   let poolToUse;
   if (
-    (assetA.id === 0 && assetB.id === gardID) ||
-    (assetA.id === gardID && assetB.id === 0)
+    (assetA.id === 0 && assetB.id === ids.asa.gard) ||
+    (assetA.id === ids.asa.gard && assetB.id === 0)
   ) {
     poolToUse = gardpool;
   }
