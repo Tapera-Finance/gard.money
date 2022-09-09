@@ -16,11 +16,13 @@ import {
 import { verifyOptIn } from "./cdp";
 import { updateDBWebActions } from "../components/Firebase";
 import { VERSION } from "../globals";
+import { psToken } from "../wallets/keys";
 
 import pactsdk from "@pactfi/pactsdk";
 import { formatAmt } from "../components/swap/swapHelpers";
 
-export const pactClient = new pactsdk.PactClient(algodClient);
+// TODO: ONLY USING MAINNET, FIX THIS
+export const pactClient = new pactsdk.PactClient(new algosdk.Algodv2(psToken, "https://mainnet-algorand.api.purestake.io/ps2", ""));
 export const gardpool = await pactClient.fetchPoolById(pactALGOGARDID);
 
 export async function previewPoolSwap(
