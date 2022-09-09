@@ -21,6 +21,8 @@ let _treasuryID;
 let _oracleID;
 let _checkerID;
 
+let _ids
+
 // swap recipients
 let _pactAlgoGardPoolAddress =
   "F4HXMBXLFLT7IQAKXUVTVEU4HIW5WGULA5RFYN6QE5AALUB54JQCAY2NBI";
@@ -62,7 +64,31 @@ if (VERSION == "MAINNET") {
   _treasuryID = 73680850;
   _oracleID = 53083112;
   _checkerID = 96679309;
+} else if (VERSION == "TESTNET2" {
+  _ids = {
+     asa : {
+         gain : 108765013,
+         gard : 108765058,
+         sgard : 108765059,
+     },
+     app : {
+         dao : {
+             staking : 108765035,
+             manager : 108765057,
+             interest : 108765060,
+             updates : 108765085,
+         },
+         sgard_gard : 108765105,
+         validator : 108765126,
+         revenue : 108765127,
+         funder : 108765128,
+         auction_checker : 96679309,
+     }
+  }
 }
+
+// IDs object
+export const ids = _ids
 
 // ASAs
 export const gainID = _gainID;

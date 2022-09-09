@@ -1,5 +1,14 @@
 import algosdk from "algosdk";
-import { ids } from "./ids";
+import {
+  validatorID,
+  gardID,
+  gainID,
+  gardianID,
+  oracleID,
+  openFeeID,
+  closeFeeID,
+  checkerID,
+} from "./ids";
 import { reserve, treasury, cdpGen } from "./contracts";
 import {
   accountInfo,
@@ -24,7 +33,11 @@ const MINRATIO = 140;
 const fundingAmount = 300000;
 let currentBigPrice = 816;
 let currentDecimals = 3;
-export let currentPrice = 0.30; // XXX: This should be kept close to the actual price - it is updated on initialization though
+export let currentPrice = 0.816; // XXX: This should be kept close to the actual price - it is updated on initialization though
+let currentFee = {
+  open: 20, // XXX: This should be kepy close to the actual fee - it is updated on initialization though
+  close: 20,
+};
 
 // XXX: All of these assume accountInfo has already been set! We should improve the UX of this after getting core functionality done
 // XXX: All of these assume the user signs all transactions, we don't currently catch when a user doesn't do so!
@@ -36,7 +49,7 @@ function microGARD(GARD) {
 
 function getGardBalance(info) {
   for (var i = 0; i < info["assets"].length; i++) {
-    if (info["assets"][i]["asset-id"] == ids.asa.gard) {
+    if (info["assets"][i]["asset-id"] == gardID) {
       return info["assets"][i]["amount"];
     }
   }
@@ -56,6 +69,36 @@ export async function getPrice() {
 // We immeadiately update the price in a background thread
 getPrice();
 
+const encodedFee = "V2lubmVy";
+async function getFee(close = false) {
+  let id = openFeeID;
+  if (close) {
+    id = closeFeeID;
+  }
+  const app = await getAppByID(id);
+  const state = app["params"]["global-state"];
+
+  let feeRate;
+
+  for (let n = 0; n < state.length; n++) {
+    if (state[n]["key"] == encodedFee) {
+      feeRate = state[n]["value"]["uint"];
+      break;
+    }
+  }
+
+  if (close) {
+    currentFee.close = feeRate;
+  } else {
+    currentFee.open = feeRate;
+  }
+  return currentFee;
+}
+// We immeadiately update the fee in a background thread
+// getFee(true)
+// getFee(false)
+// This was causing a circular dependency
+
 export function calcRatio(collateral, minted, string = false) {
   // collateral: Microalgos
   // minted: GARD
@@ -64,6 +107,23 @@ export function calcRatio(collateral, minted, string = false) {
     return ratio.toFixed(0) + "%";
   }
   return ratio;
+}
+
+export function calcDevFees(amount, close = false) {
+  let fee = currentFee.open;
+  if (close) {
+    fee = currentFee.close;
+  }
+  return (
+    Math.floor(
+      (amount * fee * 10 ** currentDecimals) / (1000 * currentBigPrice),
+    ) + 10000
+  );
+}
+
+async function calcDevFeesCurrent(amount, close = false) {
+  await Promise.all([getPrice(), getFee(close)]);
+  return calcDevFees(amount, close);
 }
 
 const EncodedDebt = "R0FSRF9ERUJU";
@@ -82,11 +142,11 @@ async function checkChainForCDP(address, id) {
     let debt;
     // Done by checking the validator local state via the cdp address
     for (let i = 0; i < info["apps-local-state"].length; i++) {
-      if (info["apps-local-state"][i].id == ids.app.validator) {
+      if (info["apps-local-state"][i].id == validatorID) {
         const validatorInfo = info["apps-local-state"][i];
         if (validatorInfo.hasOwnProperty("key-value")) {
           // This if statement checks for borked CDPs (first tx = good, second = bad)
-          // Improvement: Do something with borked CDPs
+          // TODO: Do something with borked CDPs
 
           for (let n = 0; n < validatorInfo["key-value"].length; n++) {
             if (validatorInfo["key-value"][n]["key"] == EncodedDebt) {
@@ -210,8 +270,9 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
 
   // Setting up promises
   const infoPromise = accountInfo();
-  const paramsPromise = getParams(2000);
   const microOpeningGard = microGARD(openingGARD);
+  const devFeesPromise = calcDevFeesCurrent(microOpeningGard, false);
+  const paramsPromise = getParams(2000);
 
   // XXX: Could add a nice check here to make sure the ratio is acceptable
 
@@ -233,12 +294,15 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   setLoadingStage("Loading...");
 
   const info = await infoPromise;
+  const devFees = await devFeesPromise;
   const accountIDPromise = findOpenID(info.address);
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
   if (
     307000 +
       openingMicroALGOs +
-      100000 * (info["assets"].length + 4) >
+      100000 * (info["assets"].length + 4) +
+      devFees >
     info["amount"]
   ) {
     return {
@@ -247,6 +311,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
         "Depositing this much collateral will put you below your minimum balance.\n" +
         "Your Maximum deposit is: " +
         (info["amount"] -
+          devFees -
           307000 -
           100000 * (info["assets"].length + 4)) /
           1000000 +
@@ -254,125 +319,124 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     };
   }
 
-  let optedInGard = verifyOptIn(info, ids.asa.gard);
-  let optedInGain = verifyOptIn(info, ids.asa.gain);
+  let optedInGard = verifyOptIn(info, gardID);
+  let optedInGain = verifyOptIn(info, gainID);
   let optedInGardian =
-    VERSION.slice(0,7) != "TESTNET" ? verifyOptIn(info, ids.asa.gardian) : true; //no testnet id for Gardian so this should only verify opt in if hit on mainnet
+    VERSION != "TESTNET1" ? verifyOptIn(info, gardianID) : true; //no testnet id for Gardian so this should only verify opt in if hit on mainnet
   const accountID = await accountIDPromise;
   const cdp = cdpGen(info.address, accountID);
 
   let params = await paramsPromise;
-  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(4)]);
-  // TODO: Fees
-  // txn 0 = update interest rate
-  // TODO
-  let txns = [txn0];
-  // Sets fee to 1000 for potential opt ins
+  let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    suggestedParams: params,
+    to: cdp.address,
+    amount: fundingAmount, // XXX: We should code this as a const somplace / double check this
+  });
+
+  params.fee = 0;
+  let txn2 = algosdk.makeApplicationOptInTxnFromObject({
+    from: cdp.address,
+    suggestedParams: params,
+    appIndex: validatorID,
+  });
+  let r1_txns = [txn1, txn2];
   params.fee = 1000;
-  // txn 1 = opt in to gard
-  let txn1;
-  if (!optedInGard) {
-    txn1 = createOptInTxn(params, info, ids.asa.gard);
-    txns.push(txn1);
-  }
-  // txn 2 = opt in to gain
-  let txn2;
-  if (!optedInGain) {
-    txn2 = createOptInTxn(params, info, ids.asa.gain);
-    txns.push(txn2);
-  }
-  // txn 3 = opt in to gardian
   let txn3;
-  if (!optedInGardian) {
-    txn3 = createOptInTxn(params, info, ids.asa.gardian);
-    txns.push(txn3);
+  if (!optedInGard) {
+    txn3 = createOptInTxn(params, info, gardID);
+    r1_txns.push(txn3);
   }
-  // txn 4 = transfer algos
-  let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+  let txn5;
+  if (!optedInGain) {
+    txn5 = createOptInTxn(params, info, gainID);
+    r1_txns.push(txn5);
+  }
+  let txn6;
+  if (!optedInGardian) {
+    txn6 = createOptInTxn(params, info, gardianID);
+    r1_txns.push(txn6);
+  }
+  algosdk.assignGroupID(r1_txns);
+
+  // txn 2
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(4)]);
+  let stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
+
+  // Part 2: Actually issuing the $
+
+  let collateral = openingMicroALGOs;
+  if (VERSION != "TESTNET1") {
+    collateral -= fundingAmount;
+  }
+
+  params = await getParams(0);
+  let start_time = Math.floor(Date.now() / 1000) + 10;
+  txn1 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: validatorID,
+    onComplete: 0,
+    appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(start_time)],
+    accounts: [cdp.address],
+    foreignApps: [oracleID, openFeeID],
+    foreignAssets: [gardID, accountID],
+    suggestedParams: params,
+  });
+  params.fee = 4000;
+
+  txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: cdp.address,
     amount: collateral,
     suggestedParams: params,
   });
-  txns.push(txn4)
-  // txn 5 = opt in cdp txn
-  let txn5 = algosdk.makeApplicationOptInTxnFromObject({
-    from: cdp.address,
-    suggestedParams: params,
-    appIndex: ids.app.validator,
-  });
-  txns.push(txn5)
-  // txn 6 = new position
-  let start_time = Math.floor(Date.now() / 1000) + 10;
-  let txn6 = algosdk.makeApplicationCallTxnFromObject({ // TODO: Update things in here
+  params.fee = 0;
+  txn3 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
-    appIndex: ids.app.validator,
-    onComplete: 0,
-    appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(start_time)],
-    accounts: [cdp.address],
-    foreignApps: [oracleID, openFeeID],
-    foreignAssets: [ids.asa.gard, accountID],
+    to: treasury.address,
+    amount: devFees,
     suggestedParams: params,
   });
-  txns.push(txn6)
-  // Governance
-  if (commit) {
-    const stringVal = toWallet
-      ? `af/gov1:j{"com":${collateral + 300000},"bnf":"${info.address}"}`
-      : "af/gov1:j{\"com\":" + (collateral + 300000).toString() + "}";
-    const note = enc.encode(stringVal);
-    // txn 7: TODO - owner check
-    txns.push(txn7)
-    // txn 8: Commit
-    let txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-      from: cdp.address,
-      to: "UAME4M7T2NWECVNCUDGQX6LJ7OVDLZP234GFQL3TH6YZUPRV3VF5NGRSRI",
-      amount: 0,
-      note: note,
-      suggestedParams: params,
-    });
-    txns.push(txn8)
-  }
-  
-  // Signing transactions
-  algosdk.assignGroupID(txns);
-  setLoadingStage("Awaiting Signature from Algorand Wallet...");
-  let _stxns = await signGroup(info, txns);
-  
-  if (Math.floor(Date.now() / 1000) - start_time > 30) { // TODO: Double check this length of time
-    return {
-      alert: true,
-      text: "Aborted: Transaction review and signing took too long. Please try again.",
-    };
-  }
-  
-  setLoadingStage("Finalizing Transactions...");
-  
-  let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
-  if (commit) {
-    let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
-  }
-  
-  setLoadingStage("Confirming Transactions...");
-  
-  let response = await sendTxn(
-    stxns,
-    "Successfully opened a new CDP.",
-  );
-  
-  addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, 0);
-  
-  if (commit) {
-    updateCommitmentFirestore(info.address, accountID, collateral);
-    response.text =
-      response.text + "\nFull Balance committed to Governance Period #4!";
-  }
-  
-  // THROUGH HERE
+  let txn4 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+    from: reserve.address,
+    to: info.address,
+    amount: microOpeningGard,
+    suggestedParams: params,
+    assetIndex: gardID,
+  });
+
+  const stringVal = toWallet
+    ? `af/gov1:j{"com":${collateral + 300000},"bnf":"${info.address}"}`
+    : "af/gov1:j{\"com\":" + (collateral + 300000).toString() + "}";
+
+  const note = enc.encode(stringVal);
+
+  params.fee = 2000;
+  let txn7 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: info.address,
+    amount: parseInt(accountID),
+    suggestedParams: params,
+  });
+  params.fee = 0;
+  let txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: cdp.address,
+    to: "UAME4M7T2NWECVNCUDGQX6LJ7OVDLZP234GFQL3TH6YZUPRV3VF5NGRSRI",
+    amount: 0,
+    note: note,
+    suggestedParams: params,
+  });
+  let r2_txns = [txn1, txn2, txn3, txn4];
+  let r3_txns = [txn7, txn8];
+
+  algosdk.assignGroupID(r2_txns);
+  algosdk.assignGroupID(r3_txns);
 
   // r2_txns.splice(3, 1)
   let txns = r1_txns.concat(commit ? r2_txns.concat(r3_txns) : r2_txns);
   let stxns = await signGroup(info, txns);
+
+  setLoadingStage("Confirming Transaction...");
 
   let r1_stxns = [stxns[0].blob, stxn2.blob];
   // txn3
@@ -388,6 +452,12 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   if (!optedInGardian) {
     r1_stxns.push(stxns[2 + start].blob);
     start += 1;
+  }
+  if (Math.floor(Date.now() / 1000) - start_time > 30) {
+    return {
+      alert: true,
+      text: "Aborted: Transaction review and signing took too long. Please try again.",
+    };
   }
 
   const sendTxn1Promise = sendTxn(r1_stxns);
@@ -408,6 +478,8 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     "Successfully opened a new CDP.",
   );
 
+  addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, devFees);
+
   if (commit) {
     setLoadingStage("Committing to Governance...");
     lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
@@ -426,7 +498,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
 }
 
 export async function mint(accountID, newGARD) {
-  // Improvenment: Add catches
+  // TODO: Add catches
   //		Ratio is good
 
   // Core info
@@ -439,22 +511,29 @@ export async function mint(accountID, newGARD) {
   let params = await getParams(0);
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.address,
-    appIndex: ids.app.validator,
+    appIndex: validatorID,
     onComplete: 0,
     appArgs: [enc.encode("MoreGARD")],
     accounts: [cdp.address],
     foreignApps: [oracleID, openFeeID],
-    foreignAssets: [ids.asa.gard],
+    foreignAssets: [gardID],
     suggestedParams: params,
   });
   params.fee = 3000;
+  const devFees = await calcDevFeesCurrent(microNewGARD, false);
+  let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: treasury.address,
+    amount: devFees,
+    suggestedParams: params,
+  });
   params.fee = 0;
   let txn3 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: reserve.address,
     to: info.address,
     amount: microNewGARD,
     suggestedParams: params,
-    assetIndex: ids.asa.gard,
+    assetIndex: gardID,
   });
 
   let txns = [txn1, txn2, txn3];
@@ -490,6 +569,8 @@ export async function mint(accountID, newGARD) {
 }
 
 export async function addCollateral(accountID, newAlgos) {
+  // TODO: Add catches
+  //		Min amount
   if (accountID == "N/A") {
     return {
       alert: true,
@@ -539,7 +620,7 @@ export async function addCollateral(accountID, newAlgos) {
     onComplete: 0,
     appArgs: [enc.encode("CDP_Check")],
     accounts: [cdp.address],
-    foreignApps: [ids.app.validator],
+    foreignApps: [validatorID],
     suggestedParams: params,
   });
   let txns = [txn1, txn2];
@@ -565,6 +646,7 @@ export async function addCollateral(accountID, newAlgos) {
 }
 
 export async function closeCDP(accountID, microRepayGARD, payFee = true) {
+  // TODO: Actually double check the state before issueing
 
   // Promise setup
   setLoadingStage("Loading...");
@@ -601,12 +683,12 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   let params = await paramsPromise;
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.address,
-    appIndex: ids.app.validator,
+    appIndex: validatorID,
     onComplete: 0,
     appArgs: validatorArgs,
     accounts: [cdp.address],
     foreignApps: foreignApps,
-    foreignAssets: [ids.asa.gard],
+    foreignAssets: [gardID],
     suggestedParams: params,
   });
   params.fee = 4000;
@@ -615,12 +697,12 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
     to: reserve.address,
     amount: microRepayGARD,
     suggestedParams: params,
-    assetIndex: ids.asa.gard,
+    assetIndex: gardID,
   });
   params.fee = 0;
   let txn3 = algosdk.makeApplicationClearStateTxnFromObject({
     from: cdp.address,
-    appIndex: ids.app.validator,
+    appIndex: validatorID,
     suggestedParams: params,
   });
   params.fee = 0;
@@ -877,9 +959,9 @@ export async function liquidate(
 
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.address,
-    appIndex: ids.app.validator,
+    appIndex: validatorID,
     onComplete: 2,
-    foreignAssets: [ids.asa.gard],
+    foreignAssets: [gardID],
     suggestedParams: params,
   });
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
@@ -895,7 +977,7 @@ export async function liquidate(
     to: reserve.address,
     amount: microDebt,
     suggestedParams: params,
-    assetIndex: ids.asa.gard,
+    assetIndex: gardID,
   });
   params.fee = 0;
   let txn4 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
@@ -903,14 +985,14 @@ export async function liquidate(
     to: treasury.address,
     amount: liquid_fee,
     suggestedParams: params,
-    assetIndex: ids.asa.gard,
+    assetIndex: gardID,
   });
   let txn5 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: owner_address,
     amount: to_user,
     suggestedParams: params,
-    assetIndex: ids.asa.gard,
+    assetIndex: gardID,
   });
   let txns = [txn1, txn2, txn3, txn4, txn5];
   algosdk.assignGroupID(txns);
