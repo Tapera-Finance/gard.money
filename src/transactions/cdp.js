@@ -264,7 +264,6 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   const cdp = cdpGen(info.address, accountID);
 
   let params = await paramsPromise;
-  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(4)]);
   let txns = [];
   let optins = 0;
   params.fee = 5000;
@@ -325,7 +324,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     from: info.address,
     appIndex: ids.app.validator,
     onComplete: 0,
-    appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(openingMicroALGOs), algosdk.encodeUint64(accountID)],
+    appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(microOpeningGard), algosdk.encodeUint64(accountID)],
     accounts: [cdp.address],
     foreignApps: [ids.app.oracle, ids.app.sgard_gard, ids.app.dao.interest],
     foreignAssets: [ids.asa.gard],
