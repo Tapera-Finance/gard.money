@@ -83,6 +83,7 @@ if (VERSION == "MAINNET") {
          revenue : 108765127,
          funder : 108765128,
          auction_checker : 96679309,
+         oracle : 53083112,
      }
   }
 }

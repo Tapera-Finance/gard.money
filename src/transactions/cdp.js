@@ -263,10 +263,21 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
 
   let params = await paramsPromise;
   let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(4)]);
+  let txns = [];
+  let optins = 0;
   // TODO: Fees
   // txn 0 = update interest rate
-  // TODO
-  let txns = [txn0];
+  let txn0 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: ids.app.sgard_gard,
+    onComplete: 0,
+    appArgs: [enc.encode("update")],
+    accounts: [],
+    foreignApps: [ids.app.sgard_gard, ids.app.dao.interest],
+    foreignAssets: [],
+    suggestedParams: params,
+  });
+  txns.push(txn0)
   // Sets fee to 1000 for potential opt ins
   params.fee = 1000;
   // txn 1 = opt in to gard
@@ -274,18 +285,21 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   if (!optedInGard) {
     txn1 = createOptInTxn(params, info, ids.asa.gard);
     txns.push(txn1);
+    optins++;
   }
   // txn 2 = opt in to gain
   let txn2;
   if (!optedInGain) {
     txn2 = createOptInTxn(params, info, ids.asa.gain);
     txns.push(txn2);
+    optins++;
   }
   // txn 3 = opt in to gardian
   let txn3;
   if (!optedInGardian) {
     txn3 = createOptInTxn(params, info, ids.asa.gardian);
     txns.push(txn3);
+    optins++;
   }
   // txn 4 = transfer algos
   let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
@@ -303,15 +317,14 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   });
   txns.push(txn5)
   // txn 6 = new position
-  let start_time = Math.floor(Date.now() / 1000) + 10;
-  let txn6 = algosdk.makeApplicationCallTxnFromObject({ // TODO: Update things in here
+  let txn6 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: ids.app.validator,
     onComplete: 0,
-    appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(start_time)],
+    appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(openingMicroALGOs), algosdk.encodeUint64(accountID)],
     accounts: [cdp.address],
-    foreignApps: [oracleID, openFeeID],
-    foreignAssets: [ids.asa.gard, accountID],
+    foreignApps: [ids.app.oracle, ids.app.sgard_gard, ids.app.dao.interest],
+    foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
   txns.push(txn6)
@@ -339,18 +352,23 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   let _stxns = await signGroup(info, txns);
   
-  if (Math.floor(Date.now() / 1000) - start_time > 30) { // TODO: Double check this length of time
-    return {
-      alert: true,
-      text: "Aborted: Transaction review and signing took too long. Please try again.",
-    };
-  }
-  
   setLoadingStage("Finalizing Transactions...");
   
   let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
+  
+  let stxns = [
+    _stxns[0].blob, // stxn 0
+  ]
+  for (let i = 0; i < optins; i++) {
+    stxns.push(_stxns[1 + i].blob) // stxn 1-3
+  }
+  stxns.push(_stxns[1 + optins].blob) // stxn 4
+  // TODO: stxn5 (lsig)
+  stxns.push(_stxns[3 + optins].blob) // stxn 6
   if (commit) {
+    // TODO: stxn 7
     let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
+    stxns.push(stxn8.blob)
   }
   
   setLoadingStage("Confirming Transactions...");
@@ -368,61 +386,9 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
       response.text + "\nFull Balance committed to Governance Period #4!";
   }
   
-  // THROUGH HERE
-
-  // r2_txns.splice(3, 1)
-  let txns = r1_txns.concat(commit ? r2_txns.concat(r3_txns) : r2_txns);
-  let stxns = await signGroup(info, txns);
-
-  let r1_stxns = [stxns[0].blob, stxn2.blob];
-  // txn3
-  let start = 0;
-  if (!optedInGard) {
-    r1_stxns.push(stxns[2 + start].blob);
-    start += 1;
-  }
-  if (!optedInGain) {
-    r1_stxns.push(stxns[2 + start].blob);
-    start += 1;
-  }
-  if (!optedInGardian) {
-    r1_stxns.push(stxns[2 + start].blob);
-    start += 1;
-  }
-
-  const sendTxn1Promise = sendTxn(r1_stxns);
-
-  lsig = algosdk.makeLogicSig(reserve.logic, [algosdk.encodeUint64(1)]);
-  let stxn4 = algosdk.signLogicSigTransactionObject(txn4, lsig);
-
-  let stxns2 = [
-    stxns[start + 2].blob,
-    stxns[start + 3].blob,
-    stxns[start + 4].blob,
-    stxn4.blob,
-  ];
-  let response = await sendTxn1Promise;
-
-  response = await sendTxn(
-    stxns2,
-    "Successfully opened a new CDP.",
-  );
-
-  if (commit) {
-    setLoadingStage("Committing to Governance...");
-    lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
-    let stxn6 = algosdk.signLogicSigTransactionObject(txn8, lsig);
-    let stxns3 = [stxns[start + 6].blob, stxn6.blob];
-    console.log(stxns3, accountID, typeof accountID);
-    await sendTxn(stxns3, "dooby dooby doo bah");
-    updateCommitmentFirestore(info.address, accountID, collateral + 300000);
-    response.text =
-      response.text + "\nFull Balance committed to Governance Period #4!";
-  }
   setLoadingStage(null);
   updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
   return response;
-  // XXX: May want to do something else besides this, a promise? loading screen?
 }
 
 export async function mint(accountID, newGARD) {
