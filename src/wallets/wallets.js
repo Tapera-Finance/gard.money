@@ -230,12 +230,10 @@ export async function connectWallet(type, address) {
           // TODO: Graceful error handling
         }
       } else {
-        //alert('AlgoSigner is not installed!')
         return {
           alert: true,
           text: "AlgoSigner is not installed!",
         };
-        // XXX: Improve UX
       }
       break;
     }
@@ -478,7 +476,7 @@ export function handleTxError(e, text) {
   if (e.toString() == "Error: Operation cancelled") {
     return;
   }
-
+  console.error(e)
   alert(text + ": \n" + e);
 }
 

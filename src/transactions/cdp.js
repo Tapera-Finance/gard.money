@@ -380,6 +380,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   // stxn 4
   stxns.push(_stxns[1 + optins].blob)
   // stxn 5
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(3)]);
   let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
   stxns.push(stxn5.blob)
   // stxn 6
@@ -388,6 +389,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     // stxn 7
     stxns.push(_stxns[4 + optins].blob)
     // stxn 8
+    lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
     let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
     stxns.push(stxn8.blob)
   }
