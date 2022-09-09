@@ -3,6 +3,7 @@ import styled, { css, keyframes } from "styled-components";
 import analyticsIcon from "../assets/icons/dashboard_icon.png";
 import borrowIcon from "../assets/icons/algo_governance_icon.png";
 import auctionsIcon from "../assets/icons/auctions_icon.png";
+import governIcon from "../assets/icons/auctions_icon.png";
 import daoIcon from "../assets/icons/dao_icon.png";
 import mintIcon from "../assets/icons/mint_icon.png";
 import repayIcon from "../assets/icons/repay_icon.png";
@@ -16,6 +17,7 @@ import hamburguerPurpleIcon from "../assets/icons/hamburger-purple_icon.png";
 import { CONTENT_NAMES } from "../globals";
 import TwitterIcon from "../assets/icons/twitter_icon.png";
 import RedditIcon from "../assets/icons/reddit_icon.png";
+import ALGOPrice from "./ALGOPrice";
 import TelegramIcon from "../assets/icons/telegram_icon.png";
 import DiscordIcon from "../assets/icons/discord_icon.png";
 import DocumentIcon from "../assets/icons/document_icon.png";
@@ -64,7 +66,7 @@ export default function Drawer({
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: "column",
             justifyContent: "space-between",
           }}
         >
@@ -82,6 +84,16 @@ export default function Drawer({
           >
             <NavLogo src={logo} alt="logo" />
           </LogoButton>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "8px",
+              marginBottom: "8px",
+            }}
+          >
+            <ALGOPrice style={{ alignSelf: "center" }} />
+          </div>
           {window.innerWidth < 900 ? (
             <HamburgerButton
               style={{ position: "relative" }}
@@ -111,17 +123,17 @@ export default function Drawer({
                       display: "flex",
                       alignItems: "center",
                       ...(selected === v.name
-                        ? { backgroundColor: '#172756' }
+                        ? { backgroundColor: "#172756" }
                         : {}),
                     }}
                     onClick={() => {
                       if (
                         [
-                          "Wallet",
+                          "Account",
                           "Manage CDPs",
                           "Borrow",
                           "Actions",
-                          "Algo Governance",
+                          "Govern",
                           "Auctions",
                         ].includes(v.name) &&
                         !walletAddress
@@ -176,7 +188,7 @@ export default function Drawer({
             />
           </HideNavButton>
         </div>
-        <div style={{position:"absolute", top: 650, left: 0, right: 0}}>
+        <div style={{ position: "absolute", top: 650, left: 0, right: 0 }}>
           <div
             style={{
               display: "flex",
@@ -222,18 +234,20 @@ export default function Drawer({
               }}
             >
               <ToS
-              onClick={() =>
-              window.open("https://www.algogard.com/app-terms-of-use.html")
-            }
-            >
-              Terms & Conditions</ToS>
-            <div style={{color: "white", fontSize: 12}}>|</div>
-            <ToS
-            onClick={() =>
-              window.open("https://algogard.com/app-privacy-policy.html")
-            }
-            >
-              Privacy Policy</ToS>
+                onClick={() =>
+                  window.open("https://www.algogard.com/app-terms-of-use.html")
+                }
+              >
+                Terms & Conditions
+              </ToS>
+              <div style={{ color: "white", fontSize: 12 }}>|</div>
+              <ToS
+                onClick={() =>
+                  window.open("https://algogard.com/app-privacy-policy.html")
+                }
+              >
+                Privacy Policy
+              </ToS>
             </SocialMediaContainer>
             <SocialMediaContainer
               style={{
@@ -449,16 +463,16 @@ const menuItems = [
     route: "/actions",
   },
   {
-    name: CONTENT_NAMES.WALLET,
-    icon: walletIcon,
-    subOptions: [],
-    route: "/wallet",
-  },
-  {
     name: CONTENT_NAMES.MINT,
     icon: borrowIcon,
     subOptions: [],
     route: "/borrow",
+  },
+  {
+    name: CONTENT_NAMES.GOVERN,
+    icon: governIcon,
+    subOptions: [],
+    route: "/govern",
   },
   {
     name: CONTENT_NAMES.REPAY,
@@ -472,22 +486,22 @@ const menuItems = [
     subOptions: [],
     route: "/auctions",
   },
-  {
-    name: CONTENT_NAMES.DAO,
-    icon: daoIcon,
-    subOptions: [],
-    route: "/dao",
-  },
-  {
-    name: CONTENT_NAMES.ALGO_GOVERNANCE,
-    icon: borrowIcon,
-    subOptions: [],
-    route: "/algo-governance",
-  },
+  // {
+  //   name: CONTENT_NAMES.DAO,
+  //   icon: daoIcon,
+  //   subOptions: [],
+  //   route: "/dao",
+  // },
   {
     name: CONTENT_NAMES.ANALYTICS,
     icon: analyticsIcon,
     subOptions: [],
     route: "/analytics",
+  },
+  {
+    name: CONTENT_NAMES.ACCOUNT,
+    icon: walletIcon,
+    subOptions: [],
+    route: "/account",
   },
 ];

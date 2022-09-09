@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import { getPrice } from "../transactions/cdp";
 
 export default function ALGOPrice(props) {
@@ -19,7 +20,14 @@ export default function ALGOPrice(props) {
   return (
     <div style={{ paddingTop: 8 }}>
       {" "}
+      <PriceText>
       ALGO PRICE: <b>${currentPrice}</b>{" "}
+      </PriceText>
     </div>
   );
 }
+
+const PriceText = styled.div`
+  color: #8f9093;
+  font-size: 10pt;
+`

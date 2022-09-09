@@ -15,7 +15,7 @@ import RepayPosition from "./RepayPosition";
 
 const axios = require("axios");
 
-async function getAlgoGovAPR() {
+export async function getAlgoGovAPR() {
     let response;
     try {
         response = await axios.get(
@@ -69,7 +69,7 @@ const dummyCDPs = [
       debt: 0,
     },
   ];
-  
+
 
 export default function Positions() {
     var details = [
@@ -128,12 +128,12 @@ export default function Positions() {
             <Position key={cdp.id}>
                 <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div>
                 <PositionInfo>
-                    <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>    
+                    <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
                         <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
                         <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
                     </div>
                     <div style={{alignSelf:"center", textAlign:"center"}}>APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
-                    <div style={{display: "flex", flexDirection: "column"}}>    
+                    <div style={{display: "flex", flexDirection: "column"}}>
                         <div>
                             Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,true,)})`}
                         </div>
@@ -149,7 +149,7 @@ export default function Positions() {
                             <div>minimum: 115%</div>
                             <div>max: 600+%</div>
                         </SliderRange>
-                        
+
                     </div>
                 </PositionInfo>
                 <TextButton
@@ -215,7 +215,7 @@ export default function Positions() {
 
 const Header = styled.div`
     display: grid;
-    grid-template-columns:repeat(3, 30%); 
+    grid-template-columns:repeat(3, 30%);
     justify-content:center;
     align-content: center;
     font-size: 20px;
@@ -252,11 +252,11 @@ const Position = styled.div`
     position: relative;
 `
 const PositionInfo = styled.div`
-    display: grid; 
-    grid-template-columns:repeat(3, 30%); 
+    display: grid;
+    grid-template-columns:repeat(3, 30%);
     justify-content:center;
     align-content: center;
-    background: rgba(13, 18, 39, .75); 
+    background: rgba(13, 18, 39, .75);
     border-radius: 10px;
     font-size: 18px;
     padding: 40px 0px 40px;

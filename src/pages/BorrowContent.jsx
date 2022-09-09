@@ -69,9 +69,9 @@ export default function BorrowContent(){
   const [balance, setBalance] = useState("...");
   const [price, setPrice] = useState(0);
   const [supplyPrice, setSupplyPrice] = useState(0);
-  const [borrowPrice, setBorrowPrice] = useState(0); 
+  const [borrowPrice, setBorrowPrice] = useState(0);
   const cdps = CDPsToList();
-  
+
     //initial code snippets
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
@@ -91,7 +91,7 @@ export default function BorrowContent(){
   const handleCheckboxChange1 = () => {
     setToWallet(!toWallet);
   };
-  
+
   useEffect(() => {
     if (cdps == dummyCDPs){
       setCreatePositionShown(true)
@@ -117,7 +117,7 @@ export default function BorrowContent(){
     setSupplyPrice(price)
   }, [price])
 
-  
+
   const handleSupplyChange = (event) => {
     setCollateral(event.target.value === "" ? "" : Number(event.target.value));
     let max =
@@ -150,7 +150,7 @@ export default function BorrowContent(){
       }
       console.log("collateral" ,cAlgos)
     }
-  
+
 
 
   const handleBorrowChange = (event) => {
@@ -265,8 +265,8 @@ var borrowDetails = [
   },];
     return <div>
         {loading ? <LoadingOverlay text={loadingText} /> : <></>}
-        <RewardNotice 
-        program={"Governance Rewards"} 
+        <RewardNotice
+        program={"Governance Rewards"}
         timespan={"Now - October 22, 2022"}
         estimatedRewards={"12% - 33% APR Rewards"}
         action={"Borrow ALGO to Claim Rewards"}
@@ -289,8 +289,8 @@ var borrowDetails = [
                           />
                           <MaxButton
                           onClick={handleMaxCollateral}>
-                              <ToolTip 
-                              toolTip={"+MAX"} 
+                              <ToolTip
+                              toolTip={"+MAX"}
                               toolTipText={"Click to lend maximum amount"}
                               />
                           </MaxButton>
@@ -318,7 +318,7 @@ var borrowDetails = [
                   <InputContainer>
                       <div style={{display: "flex"}}>
                           <Input
-                          autoComplete="off" 
+                          autoComplete="off"
                           placeholder={"enter amount"}
                           type='number'
                           min="1.00"
@@ -328,10 +328,10 @@ var borrowDetails = [
                           size="small"
                           onChange={handleBorrowChange}
                           />
-                          <MaxButton 
+                          <MaxButton
                           onClick={handleMaxBorrow}>
                               <ToolTip
-                              toolTip={"+MAX"} 
+                              toolTip={"+MAX"}
                               toolTipText={"Click to borrow maximum amount"}
                               />
                           </MaxButton>
@@ -351,10 +351,10 @@ var borrowDetails = [
                       </InputDetails>
                   </InputContainer>
               </Background>
-              <PrimaryButton 
+              <PrimaryButton
               purple={true}
-              positioned={true} 
-              text="Borrow" 
+              positioned={true}
+              text="Borrow"
               disabled={cAlgos == "" || mGARD == ""}
               onClick={async () => {
                 setLoading(true)
@@ -376,8 +376,8 @@ var borrowDetails = [
               }}
               />
           </SubContainer>
-      </Container> 
-      <Details className={"borrow"} details={details}/> 
+      </Container>
+      <Details className={"borrow"} details={details}/>
       </div> :
       <></> }
       {cdps == dummyCDPs ? <></> :
@@ -411,20 +411,20 @@ const Background = styled.div`
 `
 const Title = styled.div`
     display: flex;
-    justify-content: center; 
-    text-align: center; 
+    justify-content: center;
+    text-align: center;
     padding: 20px 0px 20px;
 `
 
 const InputContainer = styled.div`
-    background: rgba(13, 18, 39, .75); 
+    background: rgba(13, 18, 39, .75);
     border-radius: 10px;
 `
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(3, 32%); 
-row-gap: 30px; 
+grid-template-columns:repeat(3, 32%);
+row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
 border-radius: 10px;
@@ -453,11 +453,11 @@ const Input = styled.input`
   padding-top: 35px;
   border-radius: 0;
   height: 30px;
-  width 80%;
+  width: 80%;
   color: white;
   text-decoration: none;
   border: none;
-  border-bottom 2px solid #01d1ff;
+  border-bottom: 2px solid #01d1ff;
   opacity: 100%;
   font-size: 20px;
   background: none;

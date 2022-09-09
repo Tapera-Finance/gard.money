@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PageToggle from "../components/PageToggle";
 import LoadingOverlay from "../components/LoadingOverlay";
 import SwapDetails from "../components/swap/SwapDetails";
-import PoolDetails from "../components/pool/PoolDetails"
+import PoolDetails from "../components/pool/PoolDetails";
 /**
  * Components
  * @component SwapContainer
@@ -12,13 +12,12 @@ import PoolDetails from "../components/pool/PoolDetails"
 export default function ActionsContainer() {
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("swap");
+  const [selectedTab, setSelectedTab] = useState("one");
 
   const Tabs = {
-    swap: <SwapDetails />,
-    pool: <PoolDetails />,
+    one: <SwapDetails />,
+    two: <PoolDetails />,
   };
-
 
   const sessionStorageSetHandler = (e) => {
     setLoadingText(JSON.parse(e.value));
@@ -28,9 +27,10 @@ export default function ActionsContainer() {
   return (
     <div>
       {loading ? <LoadingOverlay text={loadingText} /> : <></>}
-      <PageToggle selectedTab={setSelectedTab}></PageToggle>
+      <PageToggle selectedTab={setSelectedTab}
+      tabs={{one: "Swap", two: "Pool"}}
+      ></PageToggle>
       {Tabs[selectedTab]}
     </div>
   );
 }
-

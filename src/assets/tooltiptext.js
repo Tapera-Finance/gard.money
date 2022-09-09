@@ -2,6 +2,7 @@ module.exports = {
     "Price Impact": "Percentage asset price will change as a result of this swap",
     "Slippage Tolerance": "Amount to adjust for price change between user input and transaction submission. Set at 0.05%",
     "Liquidity Fee": "Fee from change to pool liquidity",
+    "Account Info": "Account Info",
     //borrow page tooltips
     "Collateral": "The amount of Algos you lend",
     "Liquidation Price" : "Price point at which you loan will be liquidated",
@@ -16,4 +17,7 @@ module.exports = {
     "Total Value Locked (TVL)" : "Overall value of crypto assets deposited into the GARD Protocol system",
     "Volume" : "Number of GARD exchanged in the pas week",
     "Fees Received" : "Culmulative GARD Protocol Fees",
-}
+    "Total Vaulted" : "Amount of ALGOs from CDPs that are currently commited to governance",
+    "Governance APY" : "Annual percentage yield recieved from participating in governance",
+    "GARD Governors" : "Total number of governors participating in governance through gard",
+};

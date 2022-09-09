@@ -5,13 +5,13 @@ import Drawer from "./Drawer";
 import Topbar from "./Topbar";
 import { CONTENT_NAMES } from "../globals";
 import AnalyticsContent from "../pages/AnalyticsContent";
-import WalletContent from "../pages/WalletContent";
+import AccountContent from "../pages/AccountContent";
 import BorrowContent from "../pages/BorrowContent";
 import RepayContent from "../pages/RepayContent";
 import AuctionsContent from "../pages/AuctionsContent";
 import ActionsContent from "../pages/ActionsContent";
 import DaoContent from "../pages/DaoContent";
-import AlgoGovernanceContent from "../pages/AlgoGovernanceContent";
+import GovernContent from "../pages/GovernContent";
 import PrimaryButton from "./PrimaryButton";
 import helpIcon from "../assets/icons/help_icon.png";
 import { useForceUpdate, useWindowSize } from "../hooks";
@@ -200,8 +200,8 @@ function MainContentHandler({ content, walletAddress }) {
   switch (content) {
     case CONTENT_NAMES.HOME:
       return <HomeContent />;
-    case CONTENT_NAMES.WALLET:
-      return <WalletContent walletAddress={walletAddress} />;
+    case CONTENT_NAMES.ACCOUNT:
+      return <AccountContent walletAddress={walletAddress} />;
     case CONTENT_NAMES.MINT:
       return <BorrowContent />;
     case CONTENT_NAMES.REPAY:
@@ -212,8 +212,8 @@ function MainContentHandler({ content, walletAddress }) {
       return <ActionsContent />;
     case CONTENT_NAMES.DAO:
       return <DaoContent />;
-    case CONTENT_NAMES.ALGO_GOVERNANCE:
-      return <AlgoGovernanceContent />;
+    case CONTENT_NAMES.GOVERN:
+      return <GovernContent />;
     case CONTENT_NAMES.ANALYTICS:
       return <AnalyticsContent />;
 

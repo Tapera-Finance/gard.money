@@ -18,8 +18,8 @@ export default function InputField({
       onChange={callback}
       onKeyPress={(event) => {
         if (!/[0-9]/.test(event.key)) {
-          if(event.key === '.'){
-            return
+          if (event.key === ".") {
+            return;
           }
           event.preventDefault();
         }

@@ -52,5 +52,8 @@ export function removeCookie(name) {
 }
 
 export function titleToToolTip(str) {
-  return str.split(" ").map((term) => term.slice(0, 1).toLowerCase() + term.slice(1, term.length)).join("_");
+  return str
+    .split(" ")
+    .map((term) => term.slice(0, 1).toLowerCase() + term.slice(1, term.length))
+    .join("_");
 }
