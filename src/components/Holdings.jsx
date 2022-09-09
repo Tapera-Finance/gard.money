@@ -61,14 +61,24 @@ export default function Holdings() {
 
   const assets = getAssets();
   const cdps = CDPsToList();
+  const cdpData = cdps.map((cdp) => {
+    console.log(cdp)
+    return {
+      id: cdp.id,
+      liquidationPrice: cdp.liquidationPrice,
+      collateral: formatToDollars(cdp.collateral.toString(), true),
+      debt: formatToDollars(cdp.debt.toString(), true),
+      committed: cdp.committed
+    }
+  })
 
   const holdColumns = ["Asset", "Token Amount", "Token Value"];
   const borrowColumns = [
     "Borrow Positions",
-    "Collateral Amount",
+    "Liquidation Price",
     "Collateral Value",
     "Debt Amount",
-    "Net Value",
+    "Committed",
   ];
 
   useEffect(() => {
@@ -90,7 +100,7 @@ export default function Holdings() {
     ),
     two: (
       <BorrowTable
-        data={cdps}
+        data={cdpData}
         title="Borrow Positions"
         subtitle={`(${formatToDollars(borrowTotal.toString())}) Total Value`}
         columns={borrowColumns}
