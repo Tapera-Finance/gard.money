@@ -265,7 +265,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(4)]);
   let txns = [];
   let optins = 0;
-  // TODO: Fees
+  params.fee = 5000;
   // txn 0 = update interest rate
   let txn0 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
@@ -301,6 +301,8 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     txns.push(txn3);
     optins++;
   }
+  // resetting fee to 0
+  params.fee = 0;
   // txn 4 = transfer algos
   let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -334,9 +336,21 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
       ? `af/gov1:j{"com":${collateral + 300000},"bnf":"${info.address}"}`
       : "af/gov1:j{\"com\":" + (collateral + 300000).toString() + "}";
     const note = enc.encode(stringVal);
-    // txn 7: TODO - owner check
+    // txn 7: owner check
+    params.fee = 2000;
+    let txn7 = algosdk.makeApplicationCallTxnFromObject({
+      from: info.address,
+      appIndex: ids.app.validator,
+      onComplete: 0,
+      appArgs: [enc.encode("OwnerCheck")],
+      accounts: [cdp.address],
+      foreignApps: [],
+      foreignAssets: [],
+      suggestedParams: params,
+    });
     txns.push(txn7)
     // txn 8: Commit
+    params.fee = 0;
     let txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: cdp.address,
       to: "UAME4M7T2NWECVNCUDGQX6LJ7OVDLZP234GFQL3TH6YZUPRV3VF5NGRSRI",
@@ -353,20 +367,24 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   let _stxns = await signGroup(info, txns);
   
   setLoadingStage("Finalizing Transactions...");
-  
-  let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
-  
-  let stxns = [
-    _stxns[0].blob, // stxn 0
-  ]
+  let stxns = []
+  // stxn 0
+  stxns.push(_stxns[0].blob)
+  // stxn 1-3
   for (let i = 0; i < optins; i++) {
-    stxns.push(_stxns[1 + i].blob) // stxn 1-3
+    stxns.push(_stxns[1 + i].blob)
   }
-  stxns.push(_stxns[1 + optins].blob) // stxn 4
-  // TODO: stxn5 (lsig)
-  stxns.push(_stxns[3 + optins].blob) // stxn 6
+  // stxn 4
+  stxns.push(_stxns[1 + optins].blob)
+  // stxn 5
+  let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
+  stxns.push(stxn5.blob)
+  // stxn 6
+  stxns.push(_stxns[3 + optins].blob)
   if (commit) {
-    // TODO: stxn 7
+    // stxn 7
+    stxns.push(_stxns[4 + optins].blob)
+    // stxn 8
     let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
     stxns.push(stxn8.blob)
   }
