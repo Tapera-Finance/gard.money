@@ -61,10 +61,10 @@ export default function Holdings() {
 
   const assets = getAssets();
   const cdps = CDPsToList();
-  const cdpData = cdps.map((cdp) => {
+  const cdpData = cdps.map((cdp, i) => {
     console.log(cdp)
     return {
-      id: cdp.id,
+      id: i + 1,
       liquidationPrice: cdp.liquidationPrice,
       collateral: formatToDollars(cdp.collateral.toString(), true),
       debt: formatToDollars(cdp.debt.toString(), true),
