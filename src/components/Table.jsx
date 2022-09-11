@@ -260,7 +260,6 @@ const Cell = styled.td`
   padding-left: 16px;
   text-align: left;
   :last-child{
-    float: right;
     margin-top: 10px;
     margin-right: 20px;
   }
