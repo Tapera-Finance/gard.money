@@ -12,7 +12,11 @@ import WalletConnect from "./WalletConnect";
 
 export default function Topbar({ contentName, setMainContent }) {
   return (
-    <div>
+    <div style={{
+      position: "sticky",
+      top: 0,
+      zIndex: 5
+    }}>
       <TopBar
         style={{
           backgroundColor: "#172756",
@@ -56,6 +60,8 @@ export default function Topbar({ contentName, setMainContent }) {
 const TopBar = styled.div`
   height: 96px;
   background: #f9fafb;
+  position: sticky;
+  top: 0;
 `;
 const TopBarText = styled.text`
   font-weight: 500;
