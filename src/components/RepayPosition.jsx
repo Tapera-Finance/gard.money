@@ -41,37 +41,6 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
             <Container>
             <SubContainer>
                 <Background>
-                    <Title>Withdraw ALGO</Title>
-                    <InputContainer>
-                        <div style={{display: "flex"}}>
-                            <Input 
-                            autoComplete="off"
-                            display="none"
-                            placeholder={"enter amount"}
-                            type='number'
-                            min="0.00"
-                            id="withdrawl"
-                            value={withdrawl}
-                            onChange={handleWithdrawl}
-                            />
-                            <MaxButton>
-                                <ToolTip toolTip={"+MAX"} toolTipText={"Click to lend maximum amount"}/>
-                            </MaxButton>
-                        </div>
-                        <Valuation>$Value: ${(withdrawl * price).toFixed(2)}</Valuation>
-                    </InputContainer>
-                </Background>
-                <PrimaryButton
-                purple={true}
-                positioned={true}
-                text="Withdraw"
-                onClick={ async () => {
-                    setRepayment(cdp.debt/1000000)
-                }}
-                />
-            </SubContainer>
-            <SubContainer>
-                <Background>
                     <Title>Repay GARD</Title>
                     <InputContainer>
                         <div style={{display: "flex"}}>
@@ -123,15 +92,15 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
     
 }
 const Container = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 49%);
-    column-gap: 2%;
+    display: flex;
     position: relative;
     top: -40px;
+    justify-content: center;
 `
 
 const SubContainer = styled.div`
     position: relative;
+    width: 50%;
 `
 const Background = styled.div`
     margin-top: 30px;

@@ -178,7 +178,7 @@ export default function Positions() {
                                 <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
                                 <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
                             </div>
-                            <PrimaryButton text="GARD"/>
+                            <PrimaryButton text="ALGO"/>
                             <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>    
                                 <Input 
                                 autoComplete="off"
