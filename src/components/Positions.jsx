@@ -9,6 +9,9 @@ import Details from "./Details";
 import ManageCDP from "./ManageCDP";
 import PrimaryButton from "./PrimaryButton";
 import TextButton from "./TextButton";
+import PageToggle from "./PageToggle"
+import BorrowMore from "./BorrowMore";
+import RepayPosition from "./RepayPosition";
 
 const axios = require("axios");
 
@@ -96,6 +99,18 @@ export default function Positions() {
     const [apr, setAPR] = useState(0)
     const loadedCDPs = CDPsToList();
     const [currentCDP, setCurrentCDP] = useState(null)
+    const [selectedTab, setSelectedTab] = useState("one");
+
+    // const Tabs = {
+    //     one: <SystemMetrics />,
+    //     two: <YourMetrics />,
+    // };
+    const tabs = {
+        one: "Borrow More",
+        two: "Repay Postion",
+        three: "Sell Position",
+        four: "Close Position",
+    };
     useEffect(async () => {
         setAPR(await getAlgoGovAPR())
         setPrice(await getPrice());
@@ -111,7 +126,7 @@ export default function Positions() {
                 loadedCDPs.map((cdp) => {
                     return (
             <Position key={cdp.id}>
-                <div style={{position: "relative", left: "93%", bottom: -25, fontSize:14, color:"#FF00FF"}}>v1 CDP</div>
+                <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div>
                 <PositionInfo>
                     <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
                         <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
@@ -137,27 +152,58 @@ export default function Positions() {
 
                     </div>
                 </PositionInfo>
-                {cdp.id === currentCDP ? <div>
-                    <ManageCDP cdp={cdp} price={price} setCurrentCDP={setCurrentCDP}/>
-                    <div style={{position:"relative", top:-65}}>
-                        <Details details={details}/>
-                        <PrimaryButton
-                        positioned={true}
-                        exit={true}
-                        text="Exit"
-                        onClick={() => {
-                            setCurrentCDP(null)
-                        }}
-                        />
-                    </div>
-
-                </div> :<TextButton
-                 positioned={true}
-                 text="Click to Expand"
-                 onClick={() => {
+                <TextButton
+                 positioned={true} 
+                 text={cdp.id === currentCDP ? "Collapse" : "Manage Position"}
+                 onClick={cdp.id === currentCDP ? () => {
+                    setCurrentCDP(null)
+                 } : () => {
                     setCurrentCDP(cdp.id)
-                 }}
-                 />}
+                 }
+                }
+                 />
+                {cdp.id === currentCDP ? <div>
+                    <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
+                    {selectedTab === "one" ? <BorrowMore cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} /> 
+                    : selectedTab === "two" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} /> 
+                    : selectedTab === "three" ? <div>
+                        <SalesHeader>
+                            <b style={{textAlign:"left"}}>Position</b>
+                            <b>Sell for</b>
+                            <b style={{textAlign: "center"}}>Amount</b>
+                            <b style={{textAlign: "center"}}>Sale Discount</b>
+                        </SalesHeader>
+                        <SalesInfo>
+                            <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>    
+                                <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
+                                <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
+                            </div>
+                            <PrimaryButton text="ALGO"/>
+                            <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>    
+                                <Input 
+                                autoComplete="off"
+                                display="none"
+                                placeholder={"enter amount"}
+                                type='number'
+                                min="0.00"
+                                id="salesPrice"
+                                // value={salesPrice}
+                                // onChange={handleSalesPrice}
+                                />
+                                <Valuation>Value: ${12.3}</Valuation>
+                            </div>
+                            <div style={{color: "grey", textAlign: "center"}}> 4.33%</div>
+                        </SalesInfo>
+                        <PrimaryButton text="List for Sale" purple={true} disabled={true} />
+                </div> 
+                    : <div style={{marginTop: 40}}>
+                        <PrimaryButton 
+                        text="Close Position" 
+                        positioned={true} 
+                        purple={true}
+                        />
+                    </div>}
+                </div> : <></>}
             </Position>
              )
             })
@@ -174,6 +220,28 @@ const Header = styled.div`
     align-content: center;
     font-size: 20px;
     margin-top: 50px;
+`
+const SalesHeader = styled.div`
+    display: grid;
+    grid-template-columns: 30% 20% 20% 20%; 
+    justify-content:center;
+    align-content: center;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+`
+const SalesInfo = styled.div`
+    display: grid; 
+    grid-template-columns: 30% 20% 20% 20%; 
+    justify-content:center;
+    align-content: center;
+    align-items: center;
+    background: rgba(13, 18, 39, .75); 
+    border-radius: 10px;
+    font-size: 18px;
+    padding: 40px 0px 40px;
+    margin-bottom: 20px;
 `
 
 const Container = styled.div`
@@ -197,4 +265,28 @@ const SliderRange = styled.div`
     display: flex;
     justify-content: space-between;
     font-size: 11px;
+`
+const Input = styled.input`
+    border-radius: 0;
+    height: 30px;
+    width 80%;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-bottom 2px solid #7c52ff;
+    text-align: center;
+    opacity: 100%;
+    font-size: 20px;
+    background: none;
+    margin-left: 25px;
+    &:focus {
+        outline-width: 0;
+    }
+`
+const Valuation = styled.div`
+    margin-left: 25px;
+    margin-top: 3px;
+    font-size: 12px;
+    color: #999696;
+    text-align: center;
 `

@@ -51,7 +51,8 @@ export default function PageToggle({ selectedTab, tabs, className }) {
         >
           <Btn selected={three}>{tabs.three}</Btn>
         </Box>
-      ) : tabs.four ? (
+      ) : null}
+      {tabs.four ? (
         <Box
           selected={four}
           onClick={() => {
