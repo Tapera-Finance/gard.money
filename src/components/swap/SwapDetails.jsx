@@ -556,7 +556,6 @@ const BtnBox = styled.div`
 
 const ExchangeButton = styled(PrimaryButton)`
   margin-top: 25px;
-  border: 1px transparent;
 `;
 
 const DetailsContainer = styled.div`
