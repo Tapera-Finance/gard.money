@@ -107,7 +107,7 @@ export async function swap(
 
   const formattedAmount = formatAmt(fromAmt);
   const formattedMin = formatAmt(toAmt);
-  const minimum = Math.trunc((formattedMin * (1 - slippagePct)) / 1e6);
+  const minimum = formatAmt(Math.trunc((formattedMin * (1 - slippagePct)) / 1e6));
   const opted = verifyOptIn(info, toAsset.index);
 
   let txn1 =
@@ -163,6 +163,7 @@ export async function swap(
   );
 
   setLoadingStage(null);
-  updateDBWebActions(8, null, minimum, -fromAmt, 0, 1, 3000);
+
+  updateDBWebActions(8, null, minimum, -formattedAmount, 0, 1, 3000);
   return response;
 }

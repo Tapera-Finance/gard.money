@@ -100,7 +100,7 @@ const Container = styled.div`
   display: flex;
   background: #0f1733;
   justify-content: space-between;
-  height: 12vh;
+  height: 16vh;
   width: 30vw;
   border-radius: 8px;
 `;
@@ -108,6 +108,9 @@ const Container = styled.div`
 const Text = styled.text`
   font-size: 10pt;
   align-self: flex-end;
+  padding-left: 10px;
+  padding-bottom: 10px;
+  text-align: center;
 `;
 
 const DollarEffect = styled(Effect)`

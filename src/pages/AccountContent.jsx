@@ -121,12 +121,6 @@ export default function AccountContent() {
               marginBottom: window.innerWidth < 900 ? 5 : 15,
             }}
           >
-            {/* <div style={{ alignSelf: "center", textAlign: "center" }}>
-              APR: <span style={{ color: "#01d1ff" }}>{APR}%</span>
-            </div>
-            <div style={{ alignSelf: "center", textAlign: "center" }}>
-              Pending: <span style={{ color: "#01d1ff" }}>{rewards}</span>
-            </div> */}
           </div>
           <div
             style={{

@@ -58,7 +58,6 @@ export default function AccountCard() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-evenly",
-            alignItems: "flex-start",
           }}
         >
           {walletAddress ? (

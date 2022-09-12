@@ -7,7 +7,7 @@ export default function PageToggle({ selectedTab, tabs, className }) {
   const [three, setThree] = useState(false);
   const [four, setFour] = useState(false);
   return (
-    <Bar className={className} >
+    <Bar className={className}>
       <Box
         selected={one}
         onClick={() => {
@@ -22,20 +22,24 @@ export default function PageToggle({ selectedTab, tabs, className }) {
       >
         <Btn selected={one}>{tabs.one}</Btn>
       </Box>
-      <Box
-        selected={two}
-        onClick={() => {
-          selectedTab("two");
-          if (two !== true) {
-            setOne(false);
-            setTwo(true);
-            setThree(false);
-            setFour(false);
-          }
-        }}
-      >
-        <Btn selected={two}>{tabs.two}</Btn>
-      </Box>
+      {tabs.two ? (
+        <Box
+          selected={two}
+          onClick={() => {
+            selectedTab("two");
+            if (two !== true) {
+              setOne(false);
+              setTwo(true);
+              setThree(false);
+              setFour(false);
+            }
+          }}
+        >
+          <Btn selected={two}>{tabs.two}</Btn>
+        </Box>
+      ) : (
+        <></>
+      )}
       {tabs.three ? (
         <Box
           selected={three}
@@ -67,8 +71,7 @@ export default function PageToggle({ selectedTab, tabs, className }) {
         >
           <Btn selected={four}>{tabs.four}</Btn>
         </Box>
-      ) :
-      null}
+      ) : null}
     </Bar>
   );
 }

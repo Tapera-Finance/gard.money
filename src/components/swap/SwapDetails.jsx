@@ -438,6 +438,7 @@ export default function SwapDetails() {
           disabled={disabled ? true : false}
         ></ExchangeButton>
       </BtnBox>
+      <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
       <DetailsContainer>
         <Details>
           {effects.length > 0
@@ -487,6 +488,7 @@ export default function SwapDetails() {
             : null}
         </Details>
       </DetailsContainer>
+      </div>
     </div>
   );
 }
@@ -554,7 +556,6 @@ const BtnBox = styled.div`
 
 const ExchangeButton = styled(PrimaryButton)`
   margin-top: 25px;
-  border: 1px transparent;
 `;
 
 const DetailsContainer = styled.div`
@@ -563,11 +564,11 @@ const DetailsContainer = styled.div`
   flex: 2;
   justify-content: center;
   width: 80%;
-  height: 30vh;
+  padding: 15px 0px 0px 5px;
   background: #0f1733;
   border-radius: 10px;
-  margin: auto;
   margin-top: 30px;
+  margin-bottom: 20vh;
 `;
 
 const Details = styled.div`
