@@ -193,11 +193,8 @@ export default function Table({
 }
 
 const TableGrid = styled.table`
-  border: 1px transparent;
   width: 100%;
-  margin: 10px;
-  border-collapse: separate;
-  border-spacing: 0px;
+  border-collapse: collapse;
 `
 
 // styled components
@@ -226,7 +223,7 @@ const CountText = styled.text`
 const HeaderRow = styled.tr`
   background: #0f1733;
   height: 44px;
-  border-radius: 8px;
+  border-radius: 10px;
 `
 const HeaderElement = styled.th`
   font-weight: 500;
@@ -234,8 +231,6 @@ const HeaderElement = styled.th`
   color: white;
   height: 44px;
   padding-left: 16px;
-  border-left: none;
-  border-top: 1px solid #172756;
   text-align: left;
   :first-child {
     border-top-left-radius: 10px;
@@ -248,20 +243,24 @@ const HeaderElement = styled.th`
 `;
 const TableRow = styled.tr`
   height: 60px;
-  border-radius: 8px;
   background: #0f1733;
-  border-bottom: 4px transparent #172756;
+  border: 2px solid #172756;
 `;
 const Cell = styled.td`
-  border-bottom: 4px solid #172756;
   font-weight: 500;
   font-size: 14px;
   height: 44px;
   padding-left: 16px;
   text-align: left;
-  :last-child{
+  :first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+  :last-child {
     margin-top: 10px;
     margin-right: 20px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
   }
 `;
 const PaginationBar = styled.div`
