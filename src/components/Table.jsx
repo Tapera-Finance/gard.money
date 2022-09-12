@@ -194,7 +194,6 @@ export default function Table({
 
 const TableGrid = styled.table`
   width: 100%;
-  margin: 10px;
   border-collapse: collapse;
 `
 
@@ -224,7 +223,7 @@ const CountText = styled.text`
 const HeaderRow = styled.tr`
   background: #0f1733;
   height: 44px;
-  border-radius: 8px;
+  border-radius: 10px;
 `
 const HeaderElement = styled.th`
   font-weight: 500;
@@ -232,8 +231,6 @@ const HeaderElement = styled.th`
   color: white;
   height: 44px;
   padding-left: 16px;
-  border-left: none;
-  border-top: 1px solid #172756;
   text-align: left;
   :first-child {
     border-top-left-radius: 10px;
