@@ -45,7 +45,7 @@ export default function Govern() {
   const [shownAll, setAllVotes] = useState(true);
   const [governors, setGovernors] = useState("...");
   const [enrollmentEnd, setEnrollmentEnd] = useState("");
-
+  const [voteTableDisabled, setVoteTable] = useState(false);
   var details = [
     {
       title: "Total Vaulted",
@@ -198,43 +198,45 @@ export default function Govern() {
       </div>
       <Table data={cdps} />
       <PrimaryButton text="Deposit ALGOs" positioned={true} />
-
-      <div
-        style={{
-          height: 70,
-          borderRadius: 10,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <div style={{ marginLeft: 25, marginRight: 8 }}>
-            <Title>Algorand Votes</Title>
+      {voteTableDisabled ? <></>:
+      <div>
+        <div
+          style={{
+            height: 70,
+            borderRadius: 10,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <div style={{ marginLeft: 25, marginRight: 8 }}>
+              <Title>Algorand Votes</Title>
+            </div>
+            <CountContainer>
+              <CountText>2 Votes Open, 1 Closed Vote</CountText>
+            </CountContainer>
           </div>
-          <CountContainer>
-            <CountText>2 Votes Open, 1 Closed Vote</CountText>
-          </CountContainer>
+          <div style={{ display: "flex", marginRight: 20 }}>
+            <PrimaryButton
+              text="All"
+              toggle={!shownAll}
+              onClick={() => {
+                setAllVotes(true);
+              }}
+            />
+            <PrimaryButton
+              text="Open"
+              toggle={shownAll}
+              onClick={() => {
+                setAllVotes(false);
+              }}
+            />
+          </div>
         </div>
-        <div style={{ display: "flex", marginRight: 20 }}>
-          <PrimaryButton
-            text="All"
-            toggle={!shownAll}
-            onClick={() => {
-              setAllVotes(true);
-            }}
-          />
-          <PrimaryButton
-            text="Open"
-            toggle={shownAll}
-            onClick={() => {
-              setAllVotes(false);
-            }}
-          />
-        </div>
-      </div>
-      <Table data={dummyVotes} />
-      <PrimaryButton text="Submit All Votes" positioned={true} />
+        <Table data={dummyVotes} />
+        <PrimaryButton text="Submit All Votes" positioned={true} />
+      </div>}
     </div>
   );
 }
