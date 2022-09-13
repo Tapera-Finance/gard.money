@@ -13,7 +13,7 @@ import {
   handleTxError,
   updateWalletInfo,
 } from "../wallets/wallets";
-import { calcDevFees, calcRatio, getCDPs, getPrice, openCDP } from "../transactions/cdp.js";
+import { calcRatio, getCDPs, getPrice, openCDP } from "../transactions/cdp.js";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
@@ -29,11 +29,6 @@ function mAlgosToAlgos(num) {
 }
 function algosToMAlgos(num) {
   return num * 1000000;
-}
-
-function displayFees() {
-  const fees = mAlgosToAlgos(calcDevFees(algosToMAlgos(getMinted())));
-  return fees + " Algos";
 }
 
 function displayLiquidationPrice() {
@@ -106,7 +101,6 @@ export default function BorrowContent(){
     setMaxCollateral(
       mAlgosToAlgos(
         getWalletInfo()["amount"] -
-          calcDevFees(algosToMAlgos(mGARD || 1)) -
           307000 -
           100000 * (getWalletInfo()["assets"].length + 4),
       ).toFixed(3),
@@ -163,7 +157,6 @@ export default function BorrowContent(){
     );
     let max = mAlgosToAlgos(
       getWalletInfo()["amount"] -
-        calcDevFees(algosToMAlgos(mGARD)) -
         307000 -
         100000 * (getWalletInfo()["assets"].length + 4),
     ).toFixed(3);
@@ -181,7 +174,6 @@ export default function BorrowContent(){
     setGARD(maxGARD)
     let max = mAlgosToAlgos(
       getWalletInfo()["amount"] -
-        calcDevFees(algosToMAlgos(maxGARD)) -
         307000 -
         100000 * (getWalletInfo()["assets"].length + 4),
     ).toFixed(3);
@@ -217,7 +209,7 @@ export default function BorrowContent(){
         title: "Stability Fee",
         val: `${getMinted() == null || getCollateral() == null
           ? "..."
-          : displayFees()}`,
+          : "TODO: FIXME"}`,
         hasToolTip: true,
     },
     {
@@ -522,7 +514,7 @@ function dummyTrans() {
       },
       {
         title: "Transaction Fee",
-        value: displayFees(),
+        value: "TODO: FIXME",
       },
     ];
   }

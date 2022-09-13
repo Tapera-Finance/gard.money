@@ -4,7 +4,7 @@ import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import { psToken } from "./keys";
 import { updateCDPs } from "../transactions/cdp";
-import { gardID } from "../transactions/ids";
+import { ids } from "../transactions/ids";
 import { VERSION } from "../globals";
 import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 // Partial fix from https://github.com/randlabs/myalgo-connect/issues/27
@@ -171,7 +171,7 @@ export function getWalletInfo() {
 export function getGARDInWallet() {
   let asset_array = activeWalletInfo.assets;
   for (var i = 0; i < asset_array.length; i++) {
-    if (asset_array[i]["asset-id"] == gardID) {
+    if (asset_array[i]["asset-id"] == ids.asa.gard) {
       return asset_array[i]["amount"];
     }
   }
@@ -230,12 +230,10 @@ export async function connectWallet(type, address) {
           // TODO: Graceful error handling
         }
       } else {
-        //alert('AlgoSigner is not installed!')
         return {
           alert: true,
           text: "AlgoSigner is not installed!",
         };
-        // XXX: Improve UX
       }
       break;
     }
@@ -478,7 +476,7 @@ export function handleTxError(e, text) {
   if (e.toString() == "Error: Operation cancelled") {
     return;
   }
-
+  console.error(e)
   alert(text + ": \n" + e);
 }
 

@@ -10,7 +10,7 @@ import PrimaryButton from "../PrimaryButton";
 import LoadingOverlay from "../LoadingOverlay";
 import swapIcon from "../../assets/icons/swap_icon_v2.png";
 import { getWalletInfo, handleTxError } from "../../wallets/wallets";
-import { gardID, usdcID } from "../../transactions/ids";
+import { ids, usdcID } from "../../transactions/ids";
 import {
   mAlgosToAlgos,
   previewSwap,
@@ -51,7 +51,7 @@ export default function SwapDetails() {
   const [assetAtotal, setAssetAtotal] = useState(0);
   const [assetBtotal, setAssetBtotal] = useState(0);
   const [assetAid, setAssetAid] = useState(0);
-  const [assetBid, setAssetBid] = useState(gardID);
+  const [assetBid, setAssetBid] = useState(ids.asa.gard);
   const [pool, setPool] = useState(gardpool);
   const [swapEffect, setSwapEffect] = useState(initEffectState);
 
