@@ -23,6 +23,7 @@ import {
 } from "./swapHelpers";
 import { gardpool, swap } from "../../transactions/swap";
 import { titleToToolTip } from "../../utils";
+import { VERSION } from "../../globals";
 
 const initEffectState = {
   primaryAssetPriceAfterSwap: 0.0,
@@ -31,6 +32,10 @@ const initEffectState = {
   liquidityFee: 0.0,
   exchangeRate: 0.0,
 };
+
+const swapEnabled = VERSION === "MAINNET" ? true : false;
+console.log("enabled?", swapEnabled)
+
 
 export default function SwapDetails() {
   const [loading, setLoading] = useState(false);
@@ -84,7 +89,7 @@ export default function SwapDetails() {
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
-  console.log("format check", formatPrice(514873518546));
+  // console.log("format check", formatPrice(514873518546));
 
   const assetA = {
     type: assetAtype,
@@ -371,138 +376,168 @@ export default function SwapDetails() {
     let defaultSlip = document.querySelector("#default-slippage");
     if (!empty(defaultSlip)) {
       if (slippageTolerance !== 0.01 && slippageTolerance !== 0.1) {
-        defaultSlip.focus();
+        defaultSlip ? defaultSlip.focus() : null;
       }
     }
   }, [slippageTolerance]);
 
   return (
     <div>
-      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
-      <ExchangeBar>
-        <ExchangeFields
-          ids={["left-select", "left-input"]}
-          type={left}
-          assets={assets}
-          selectVal={leftSelectVal}
-          inputVal={leftInputAmt}
-          effect={leftDollars}
-          onOptionSelect={handleLeftSelect}
-          onInputChange={handleLeftInput}
-          balances={{
-            assetA: {
-              type: assetAtype,
-              amount: balanceX,
-            },
-            assetB: {
-              type: assetBtype,
-              amount: balanceY,
-            },
-          }}
-        ></ExchangeFields>
+      {swapEnabled ? (
+        <div>
+          {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+          <ExchangeBar>
+            <ExchangeFields
+              ids={["left-select", "left-input"]}
+              type={left}
+              assets={assets}
+              selectVal={leftSelectVal}
+              inputVal={leftInputAmt}
+              effect={leftDollars}
+              onOptionSelect={handleLeftSelect}
+              onInputChange={handleLeftInput}
+              balances={{
+                assetA: {
+                  type: assetAtype,
+                  amount: balanceX,
+                },
+                assetB: {
+                  type: assetBtype,
+                  amount: balanceY,
+                },
+              }}
+            ></ExchangeFields>
+            <div
+              style={{
+                display: "flex",
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <SwapButton onClick={handleSwapButton} src={swapIcon} />
+            </div>
+            <ExchangeFields
+              ids={["right-select", "right-input"]}
+              type={right}
+              assets={assets}
+              selectVal={rightSelectVal}
+              inputVal={rightInputAmt}
+              effect={rightDollars}
+              onOptionSelect={handleRightSelect}
+              onInputChange={handleRightInput}
+              balances={{
+                assetA: {
+                  type: assetAtype,
+                  amount: balanceX,
+                },
+                assetB: {
+                  type: assetBtype,
+                  amount: balanceY,
+                },
+              }}
+            ></ExchangeFields>
+          </ExchangeBar>
+          <BtnBox>
+            <ExchangeButton
+              text="Execute Swap"
+              onClick={handleSwap}
+              disabled={disabled ? true : false}
+            ></ExchangeButton>
+          </BtnBox>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <DetailsContainer>
+              <Details>
+                {effects.length > 0
+                  ? effects.map((item) => {
+                      if (item.title === "Slippage Tolerance") {
+                        return (
+                          <SlippageEffect key={Math.random()}>
+                            <NewToolTip
+                              toolTip={item.title}
+                              toolTipText={tips[titleToToolTip(item.title)]}
+                            ></NewToolTip>
+                            <hr style={{ border: "dashed 1px" }} />
+                            <EffectContainer>
+                              <EffText></EffText>
+                              <SlippageBtn
+                                id="slippage-001"
+                                onClick={() => setSlippageTolerance(0.01)}
+                              >
+                                0.01
+                              </SlippageBtn>
+                              <SlippageBtn
+                                id="default-slippage"
+                                onClick={() => setSlippageTolerance(0.05)}
+                              >
+                                0.05
+                              </SlippageBtn>
+                              <SlippageBtn
+                                id="slippage-010"
+                                onClick={() => setSlippageTolerance(0.1)}
+                              >
+                                0.1
+                              </SlippageBtn>
+                              <Text>{slippageTolerance}</Text>
+                            </EffectContainer>
+                          </SlippageEffect>
+                        );
+                      }
+                      return (
+                        <Effect
+                          title={item.title}
+                          key={Math.random()}
+                          val={item.val}
+                          hasToolTip={item.hasToolTip}
+                        />
+                      );
+                    })
+                  : null}
+              </Details>
+            </DetailsContainer>
+          </div>
+        </div>
+      ) : (
         <div
           style={{
             display: "flex",
-            flex: 1,
-            alignItems: "center",
             justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <SwapButton onClick={handleSwapButton} src={swapIcon} />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              textAlign: "center",
+              background: "#101836",
+              height: 100,
+              width: 200,
+              marginTop: 50,
+              borderRadius: 10,
+            }}
+          >
+            <Text>Swapping not currently available on TestNet</Text>
+          </div>
         </div>
-        <ExchangeFields
-          ids={["right-select", "right-input"]}
-          type={right}
-          assets={assets}
-          selectVal={rightSelectVal}
-          inputVal={rightInputAmt}
-          effect={rightDollars}
-          onOptionSelect={handleRightSelect}
-          onInputChange={handleRightInput}
-          balances={{
-            assetA: {
-              type: assetAtype,
-              amount: balanceX,
-            },
-            assetB: {
-              type: assetBtype,
-              amount: balanceY,
-            },
-          }}
-        ></ExchangeFields>
-      </ExchangeBar>
-      <BtnBox>
-        <ExchangeButton
-          text="Execute Swap"
-          onClick={handleSwap}
-          disabled={disabled ? true : false}
-        ></ExchangeButton>
-      </BtnBox>
-      <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-      <DetailsContainer>
-        <Details>
-          {effects.length > 0
-            ? effects.map((item) => {
-                if (item.title === "Slippage Tolerance") {
-                  return (
-                    <SlippageEffect key={Math.random()}>
-                      <NewToolTip
-                        toolTip={item.title}
-                        toolTipText={tips[titleToToolTip(item.title)]}
-                      ></NewToolTip>
-                      <hr style={{ border: "dashed 1px" }} />
-                      <EffectContainer>
-                        <EffText></EffText>
-                        <SlippageBtn
-                          id="slippage-001"
-                          onClick={() => setSlippageTolerance(0.01)}
-                        >
-                          0.01
-                        </SlippageBtn>
-                        <SlippageBtn
-                          id="default-slippage"
-                          onClick={() => setSlippageTolerance(0.05)}
-                        >
-                          0.05
-                        </SlippageBtn>
-                        <SlippageBtn
-                          id="slippage-010"
-                          onClick={() => setSlippageTolerance(0.1)}
-                        >
-                          0.1
-                        </SlippageBtn>
-                        <Text>{slippageTolerance}</Text>
-                      </EffectContainer>
-                    </SlippageEffect>
-                  );
-                }
-                return (
-                  <Effect
-                    title={item.title}
-                    key={Math.random()}
-                    val={item.val}
-                    hasToolTip={item.hasToolTip}
-                  />
-                );
-              })
-            : null}
-        </Details>
-      </DetailsContainer>
-      </div>
+      )}
     </div>
   );
 }
 
 const SlippageEffect = styled.div`
-  /* display: flex; */
-  /* justify-content: space-around; */
-  /* flex-direction: column; */
-  /* align-items: center; */
-  /* flex-basis: 3; */
 `;
 
 const Text = styled.text`
   margin: 4px;
+  font-weight: bolder;
 `;
 
 const EffectContainer = styled.div`
