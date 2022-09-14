@@ -13,6 +13,7 @@ module.exports = {
     "Liquidation Price" : "Price point at which you loan will be liquidated",
     "Liquidation ratio" : "Ratio must be above 140%",
     "Liquidity Fee": "Fee from change to pool liquidity",
+    "No-Lock GARD APR" : "Annual interest rate (in GARD) paid to users staked in native no-lock pool.",
     "Price Impact": "Percentage asset price will change as a result of this swap",
     "Slippage Tolerance": "Amount to adjust for price change between user input and transaction submission. Set at 0.05%",
     "Stability Fee" : "A v1 protocol fee",

@@ -63,6 +63,11 @@ export default function HomeContent() {
       val: `${apr}%`,
       hasToolTip: true,
     },
+    {
+      title: "No-Lock GARD APR",
+      val: `${2}%`,
+      hasToolTip: true,
+    },
   ];
 
   useEffect(async () => {
