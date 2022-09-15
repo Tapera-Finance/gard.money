@@ -18,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
+import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
+import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 
 
 function displayRatio() {
@@ -266,7 +268,9 @@ var borrowDetails = [
         {createPositionShown ? <div><Container>
           <SubContainer>
               <Background>
-                  <Title>Supply ALGO</Title>
+                  <Title>Supply
+                    <AlgoImg src={algoLogo} />
+                    ALGO</Title>
                   <InputContainer>
                       <div style={{display: "flex"}}>
                           <Input
@@ -306,7 +310,9 @@ var borrowDetails = [
           </SubContainer>
           <SubContainer>
               <Background>
-                  <Title>Borrow GARD</Title>
+                  <Title>Borrow
+                    <GardImg src={gardLogo} />
+                    GARD</Title>
                   <InputContainer>
                       <div style={{display: "flex"}}>
                           <Input
@@ -387,6 +393,20 @@ var borrowDetails = [
     </div>
 }
 
+const AlgoImg = styled.img`
+  filter: invert();
+  height: 45px;
+  position: relative;
+  top: -11px;
+`
+
+const GardImg = styled.img`
+  height: 40px;
+  margin: 2px 14px 2px 14px;
+  position: relative;
+  top: -8px;
+`
+
 const Container = styled.div`
     display: grid;
     grid-template-columns: repeat(2, 49%);
@@ -395,11 +415,13 @@ const Container = styled.div`
 
 const SubContainer = styled.div`
     position: relative;
+
 `
 const Background = styled.div`
-    margin-top: 30px;
+    /* margin-top: 0px; */
     background: #1b2d65;
     border-radius: 10px;
+
 `
 const Title = styled.div`
     display: flex;
@@ -411,6 +433,7 @@ const Title = styled.div`
 const InputContainer = styled.div`
     background: rgba(13, 18, 39, .75);
     border-radius: 10px;
+    border: 1px solid #80edff;
 `
 
 const InputDetails = styled.div`

@@ -195,6 +195,7 @@ export default function Table({
 const TableGrid = styled.table`
   width: 100%;
   border-collapse: collapse;
+  border: 1px solid #80edff;
 `
 
 // styled components
@@ -244,7 +245,7 @@ const HeaderElement = styled.th`
 const TableRow = styled.tr`
   height: 60px;
   background: #0f1733;
-  border: 2px solid #172756;
+  /* border: 2px solid #172756; */
 `;
 const Cell = styled.td`
   font-weight: 500;

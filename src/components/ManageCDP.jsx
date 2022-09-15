@@ -76,10 +76,10 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
     var sessionStorageSetHandler = function (e) {
         setLoadingText(JSON.parse(e.value));
         };
-    
+
         document.addEventListener("itemInserted", sessionStorageSetHandler, false);
-    
-    
+
+
     return <div>
             {loading ? <LoadingOverlay text={loadingText} /> : <></>}
             <Container>
@@ -88,7 +88,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                     <Title>Supply More ALGO</Title>
                     <InputContainer>
                         <div style={{display: "flex"}}>
-                            <Input 
+                            <Input
                             autoComplete="off"
                             display="none"
                             placeholder={"enter amount"}
@@ -197,7 +197,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
             </SubContainer>
         </Container>
 </div>
-    
+
 }
 const Container = styled.div`
     display: grid;
@@ -217,20 +217,22 @@ const Background = styled.div`
 `
 const Title = styled.div`
     display: flex;
-    justify-content: center; 
-    text-align: center; 
+    justify-content: center;
+    text-align: center;
     padding: 20px 0px 20px;
 `
 
 const InputContainer = styled.div`
-    background: rgba(13, 18, 39, .75); 
+    background: rgba(13, 18, 39, .75);
     border-radius: 10px;
+    border: 1px solid #80edff;
+
 `
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(3, 30%); 
-row-gap: 30px; 
+grid-template-columns:repeat(3, 30%);
+row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
 border-radius: 10px;

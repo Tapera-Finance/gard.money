@@ -29,7 +29,7 @@ const ButtonText = styled.text`
     props.positioned &&
     css`
       position: relative;
-      bottom: 20px;
+      bottom: 40px;
       margin: auto;
     `}
 `;
