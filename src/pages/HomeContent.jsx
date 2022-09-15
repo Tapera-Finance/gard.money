@@ -52,34 +52,33 @@ export default function HomeContent() {
   const homeDetails = [
     {
       title: "Total Value Locked",
-      val: `${tvl.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
-      hasToolTip: false,
-    },
-    {
-      title: "APY",
-      val: `${apy}.00%`,
-      hasToolTip: false,
+      val: `$${tvl.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+      hasToolTip: true,
     },
     {
       title: "Gard Backed %",
       val: `${backed}%`,
-      hasToolTip: false,
+      hasToolTip: true,
     },
     {
       title: "ALGO APR",
       val: `${apr}%`,
-      hasToolTip: false,
+      hasToolTip: true,
+    },
+    {
+      title: "No-Lock GARD APR",
+      val: `${2}%`,
+      hasToolTip: true,
     },
   ];
 
   useEffect(async () => {
     let res = await fetchTvl();
-    console.log("res res ress", res);
     if (res) {
       console.log("respose from tvl call", res);
       setTvl(res.currentChainTvls.Algorand.toFixed(2));
       setBacked(
-        (res.currentChainTvls.Algorand / res.currentChainTvls.borrowed).toFixed(
+        (100 * res.currentChainTvls.Algorand / res.currentChainTvls.borrowed).toFixed(
           2,
         ),
       );
