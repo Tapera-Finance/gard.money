@@ -174,7 +174,7 @@ export default function WalletConnect() {
           <></>
         )}
       </WalletConnectDiv>
-      <Modal
+      <StyledModal
         visible={modalVisible}
         animate={modalCanAnimate}
         title={modalContent.title}
@@ -185,7 +185,7 @@ export default function WalletConnect() {
         }}
       >
         {modalContent.body}
-      </Modal>
+      </StyledModal>
     </div>
   );
 }
@@ -196,6 +196,10 @@ const WalletConnectDiv = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
+`
+
+const StyledModal = styled(Modal)`
+  background: #172756
 `
 
 /**

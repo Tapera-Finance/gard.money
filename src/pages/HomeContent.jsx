@@ -226,7 +226,7 @@ export default function HomeContent() {
 
             <Step
               header="Step 1: Get Gard"
-              badges={["Aeneas"]}
+              badges={[]}
               subtitle="Exchange ALGO to borrow GARD"
               text="Click the button below to be taken to the Borrow Page; Here you can open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin"
               goTo="Borrow"
@@ -240,14 +240,14 @@ export default function HomeContent() {
               goTo="Swap"
               allOpen={allOpen}
             />
-            <Step
+            {/* <Step
               header="Step 3: Gain More"
               badges={["LP"]}
               subtitle="Sell LP tokens"
               text="Click the button below to be taken to the Sell LP Tokens Page; Here you can sell LP tokens accumulated through interfacing with our liquidity pools, as well as auction and sell CPDs/positions created on our Borrow Page"
               goTo="Govern"
               allOpen={allOpen}
-            />
+            /> */}
           </StepContainer>
         </div>
       ) : (
@@ -308,7 +308,7 @@ const ConnectStep = styled.div`
 
 const Text = styled.text`
   font-weight: 500px;
-  margin: 0px 4px 0px 0px
+  margin: 0px 4px 0px 0px;
 `;
 
 const EnrollButton = styled(PrimaryButton)`

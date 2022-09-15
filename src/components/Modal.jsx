@@ -20,11 +20,13 @@ export default function Modal({
   children,
   animate,
   mint,
+  className
 }) {
   return (
-    <div>
+    <div className={className}>
       <Backdrop animate={animate} visible={visible} onClick={() => close()}>
         <MainContent
+          className={className}
           animate={animate}
           visible={visible}
           onClick={(e) => e.stopPropagation()}
