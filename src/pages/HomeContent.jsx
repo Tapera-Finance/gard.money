@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import Details from "../components/Details";
 import CountdownTimer from "../components/CountdownTimer";
 import PrimaryButton from "../components/PrimaryButton";
@@ -209,10 +209,17 @@ export default function HomeContent() {
               {allOpen ? `Collapse` : `Expand`} All
             </Text>
             {!walletAddress ? (
-              <Step>
-                Step 0: Connect Wallet:{" "}
-                {<WalletConnect style={{ alignSelf: "flex-start" }} />}
-              </Step>
+              <ConnectStep
+
+              >
+                <Text>
+                Step 0:
+
+                </Text>
+                <div>
+                  <WalletConnect style={{ alignSelf: "flex-start" }} />
+                  </div>
+              </ConnectStep>
             ) : (
               <></>
             )}
@@ -270,8 +277,38 @@ const StepContainer = styled.div`
   margin-bottom: 50px;
 `;
 
+const ConnectStep = styled.div`
+  display: flex;
+  /* flex-direction: column; */
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  background: #0f1733;
+  color: #019fff;
+  height: 80px;
+  width: 30vw;
+  border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  ${(props) =>
+    props.open &&
+    css`
+      background: #019fff;
+      color: #0f1733;
+      width: 60vw;
+    `}
+  ${(props) =>
+    props.allOpen &&
+    css`
+      background: #019fff;
+      color: #0f1733;
+      width: 60vw;
+    `}
+`;
+
 const Text = styled.text`
   font-weight: 500px;
+  margin: 0px 4px 0px 0px
 `;
 
 const EnrollButton = styled(PrimaryButton)`
