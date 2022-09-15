@@ -390,7 +390,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   // stxn 4
   stxns.push(_stxns[1 + optins].blob)
   // stxn 5
-  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(3)]);
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(2)]);
   let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
   stxns.push(stxn5.blob)
   // stxn 6
@@ -581,7 +581,7 @@ export async function closeCDP(accountID) {
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
   
-  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * .02)/365/24/60))
+  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * .02)/365/24/60)) + 3000
   console.log(microRepayGARD)
   
   let gard_bal = getGardBalance(info);
@@ -633,6 +633,9 @@ export async function closeCDP(accountID) {
     amount: 0,
     suggestedParams: params,
   });
+  
+  console.log(txn1)
+  console.log(txn3)
 
 
   let txns = [txn0, txn1, txn2, txn3];
@@ -642,7 +645,7 @@ export async function closeCDP(accountID) {
 
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
-  const lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
   const stxn3 = algosdk.signLogicSigTransactionObject(txn3, lsig);
   const signedGroup = await signedGroupPromise;
