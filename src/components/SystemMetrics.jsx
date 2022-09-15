@@ -7,10 +7,23 @@ import PrimaryButton from "./PrimaryButton";
 import { getCurrentAlgoUsd, getChainData } from "../prices/prices";
 import RadioButtonSet from "./RadioButtonSet";
 import moment from "moment";
+import axios from "axios";
 import { loadDbActionAndMetrics } from "./Firebase";
 import { getWalletInfo } from "../wallets/wallets";
 import Effect from "../components/Effect";
 import PageToggle from "./PageToggle";
+
+const fetchTvl = async () => {
+  try {
+    let res = await axios.get("https://api.llama.fi/protocol/gard");
+    if (res) {
+      const { data } = res;
+      return data;
+    }
+  } catch (e) {
+    throw new Error(e, "Unable to fetch gard llama.fi tvl data");
+  }
+};
 
 // get webactions and metrics data
 const dbData =
@@ -20,24 +33,33 @@ const dbData =
 const transHistory = dbData ? dbData.webappActions : [];
 
 export default function SystemMetrics() {
+  const [tvl, setTvl] = useState(0);
   var volume = 200000
   var details = [
     {
         title: "Total Value Locked (TVL)",
-        val: `${88.3}M ALGO`,
+        val: `$${tvl.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
         hasToolTip: true,
     },
     {
-      title: "Volume",
-      val: `$${volume.toLocaleString("en-US")}`,
+      title: "Staked GARD",
+      val: `${0}`,
       hasToolTip: true,
     },
     {
-      title: "Fees Received",
-      val: `${0.03}% per transaction`,
+      title: "Circulating GARD",
+      val: `${0}`,
       hasToolTip: true,
     },
   ]
+
+  useEffect(async () => {
+    let res = await fetchTvl();
+    if (res) {
+      setTvl(res.currentChainTvls.Algorand.toFixed(2));
+    }
+  }, []);
+
   return (
     <div>
       <div>
