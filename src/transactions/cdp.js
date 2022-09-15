@@ -1,6 +1,6 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { reserve, treasury, cdpGen } from "./contracts";
+import { validatorAddress, cdpGen } from "./contracts";
 import {
   accountInfo,
   getParams,
@@ -67,42 +67,53 @@ export function calcRatio(collateral, minted, string = false) {
 }
 
 const EncodedPrincipal = "UHJpbmNpcGFs";
+const EncodedDebt = "U0dBUkRfREVCVA==";
+
+function getCDPState(cdpInfo) {
+  let res = {
+    state: 'closed',
+  }
+  if (cdpInfo.amount > 0) {
+    res.state = 'opened';
+    res.collateral = cdpInfo.amount;
+    for (let i = 0; i < cdpInfo["apps-local-state"].length; i++) {
+      if (cdpInfo["apps-local-state"][i].id == ids.app.validator) {
+        const validatorInfo = cdpInfo["apps-local-state"][i];
+        if (validatorInfo.hasOwnProperty("key-value")) {
+          // This if statement checks for borked CDPs (first tx = good, second = bad)
+          // Improvement: Do something with borked CDP
+          for (let n = 0; n < validatorInfo["key-value"].length; n++) {
+            if (validatorInfo["key-value"][n]["key"] == EncodedPrincipal) {
+              res.principal = validatorInfo["key-value"][n]["value"]["uint"];
+            } else if (validatorInfo["key-value"][n]["key"] == EncodedDebt) {
+              res.debt = validatorInfo["key-value"][n]["value"]["uint"];
+            }
+          }
+        } else {
+          res.state = 'borked';
+        }
+        break;
+      }
+    }
+  }
+  
+  return res
+}
 
 async function checkChainForCDP(address, id) {
   // This function checks for the existence of a CDP
   // This is done by getting the info, then
   const cdp = cdpGen(address, id);
   const info = await accountInfo(cdp.address);
-
-  if (info.amount > 0) {
-    let collateral = info.amount;
-    if (VERSION == "TESTNET1") {
-      collateral = collateral - fundingAmount;
-    }
-    let debt;
-    // Done by checking the validator local state via the cdp address
-    for (let i = 0; i < info["apps-local-state"].length; i++) {
-      if (info["apps-local-state"][i].id == ids.app.validator) {
-        const validatorInfo = info["apps-local-state"][i];
-        if (validatorInfo.hasOwnProperty("key-value")) {
-          // This if statement checks for borked CDPs (first tx = good, second = bad)
-          // Improvement: Do something with borked CDPs
-
-          for (let n = 0; n < validatorInfo["key-value"].length; n++) {
-            if (validatorInfo["key-value"][n]["key"] == EncodedPrincipal) {
-              debt = validatorInfo["key-value"][n]["value"]["uint"];
-              break;
-            }
-          }
-        } else {
-          updateCDP(address, id, collateral, 0, "borked");
-        }
-        break;
-      }
-    }
-    if (debt) {
-      updateCDP(address, id, collateral, debt);
-    }
+  
+  const state = getCDPState(info)
+  
+  if (state.state == 'borked') {
+    updateCDP(address, id, state.collateral, 0, "borked");
+    return true;
+  }
+  if (state.state == 'opened') {
+    updateCDP(address, id, state.collateral, state.principal);
     return true;
   }
   removeCDP(address, id);
@@ -536,28 +547,49 @@ export async function addCollateral(accountID, newAlgos) {
   return response;
 }
 
-export async function closeCDP(accountID, microRepayGARD, payFee = true) {
+
+const encodedConversionRate = 'Y29udmVyc2lvbl9yYXRl'
+
+
+async function sgardToGard(amt) {
+  const sgardGardInfo = (await getAppByID(ids.app.sgard_gard)).params
+  console.log(sgardGardInfo)
+  for (let i = 0; i < sgardGardInfo["global-state"].length; i++) {
+    if (sgardGardInfo["global-state"][i]["key"] == encodedConversionRate) {
+      let rate = sgardGardInfo["global-state"][i]["value"]["uint"];
+      return amt * rate / (10 ** 9)
+    }
+  }
+}
+
+
+async function totalDebt(cdpInfo) {
+  console.log(cdpInfo)
+  return await sgardToGard(getCDPState(cdpInfo).debt)
+}
+
+
+export async function closeCDP(accountID) {
 
   // Promise setup
   setLoadingStage("Loading...");
 
   const accountInfoPromise = accountInfo();
-  let paramsPromise = getParams(0);
-
-  // Core info
-  let validatorArgs = [enc.encode("CloseNoFee")];
-  let foreignApps = [ids.app.oracle];
-  if (payFee) {
-    validatorArgs = [enc.encode("CloseFee")];
-    foreignApps = [ids.app.oracle];
-  }
-  let info = await accountInfoPromise;
+  const paramsPromise = getParams(5000);
+  const info = await accountInfoPromise;
   let cdp = cdpGen(info.address, accountID);
   let cdpInfo = await accountInfo(cdp.address);
-  const cdpBal = cdpInfo.amount;
+  let params = await paramsPromise;
+  
+  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * .02)/365/24/60))
+  console.log(microRepayGARD)
+  
   let gard_bal = getGardBalance(info);
-
   if (gard_bal == null || gard_bal < microRepayGARD) {
+    let mod = 0;
+    if ((gard_bal / 1000000).toFixed(2) == (microRepayGARD / 1000000).toFixed(2)) {
+      mod = .01;
+    }
     return {
       alert: true,
       text:
@@ -565,68 +597,59 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
         (gard_bal / 1000000).toFixed(2).toString() +
         "\n" +
         "Required: " +
-        (microRepayGARD / 1000000).toFixed(2).toString(),
+        (microRepayGARD / 1000000 + mod).toFixed(2).toString(),
     };
   }
-
-  let params = await paramsPromise;
+  
+  console.log(microRepayGARD)
+  
+  // txn 0 - updated interest
+  let txn0 = makeUpdateInterestTxn(info, params)
+  // txn 1 - closing check
+  params.fee = 0
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.address,
     appIndex: ids.app.validator,
-    onComplete: 0,
-    appArgs: validatorArgs,
-    accounts: [cdp.address],
-    foreignApps: foreignApps,
+    onComplete: 2,
+    appArgs: [enc.encode("Close")],
+    accounts: [cdp.address, info.address],
+    foreignApps: [ids.app.sgard_gard],
     foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
-  params.fee = 4000;
+  // txn 2 - send the closing gard
   let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
-    to: reserve.address,
+    to: validatorAddress,
     amount: microRepayGARD,
     suggestedParams: params,
     assetIndex: ids.asa.gard,
   });
-  params.fee = 0;
-  let txn3 = algosdk.makeApplicationClearStateTxnFromObject({
+  // txn 3 - send the collateral
+  let txn3 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    appIndex: ids.app.validator,
-    suggestedParams: params,
-  });
-  params.fee = 0;
-  let fee = 0;
-  let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    from: cdp.address,
-    to: treasury.address,
+    to: info.address,
     closeRemainderTo: info.address,
-    amount: fee,
+    amount: 0,
     suggestedParams: params,
   });
 
-  let txns = [txn1, txn2, txn3, txn4];
+
+  let txns = [txn0, txn1, txn2, txn3];
   algosdk.assignGroupID(txns);
 
-  // lsig construction
-  let lsigArg = 3;
-  if (payFee) {
-    lsigArg = 2;
-  }
-
-  const signedGroupPromise = signGroup(info, [txn1, txn2, txn3, txn4]);
+  const signedGroupPromise = signGroup(info, [txn0, txn1, txn2, txn3]);
 
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
-  const lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(lsigArg)]);
+  const lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
   const stxn3 = algosdk.signLogicSigTransactionObject(txn3, lsig);
-  const stxn4 = algosdk.signLogicSigTransactionObject(txn4, lsig);
   const signedGroup = await signedGroupPromise;
-  const stxn2 = signedGroup[1];
 
   setLoadingStage("Confirming Transaction...");
 
-  let stxns = [stxn1.blob, stxn2.blob, stxn3.blob, stxn4.blob];
+  let stxns = [signedGroup[0].blob, stxn1.blob, signedGroup[2].blob, stxn3.blob];
 
   let response = await sendTxn(
     stxns,
@@ -634,7 +657,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   );
   setLoadingStage(null);
   removeCDP(info.address, accountID);
-  updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee);
+  // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
 }
@@ -815,6 +838,10 @@ export async function liquidate(
   microDebt,
   microPremium,
 ) {
+
+  let reserve;
+  let treasury;
+
   // Setting up promises
   setLoadingStage("Loading...");
 
