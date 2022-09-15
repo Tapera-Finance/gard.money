@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
@@ -6,15 +6,12 @@ import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 
-
 // asset types: 0 === GARD, 1 === ALGO
 
 export default function StakeDetails() {
   const [optionsOpen, setOptionsOpen] = useState(false);
-  const [assetBType, setAssetBType] = useState(0);
-  const [assetAtype, setAssetAType] = useState(0);
-
-
+  const [assetType, setAssetType] = useState(0);
+  const el = document.querySelector("#overlay");
 
   return (
     <div
@@ -42,7 +39,6 @@ export default function StakeDetails() {
             textAlign: "left",
             fontWeight: "bolder",
             fontSize: 18,
-            // background: "#0e1834",
             marginLeft: 12,
             marginBottom: 10,
             height: "22%",
@@ -71,15 +67,29 @@ export default function StakeDetails() {
             display: "grid",
             gridTemplateColumns: "1fr 1fr 1fr 1fr 2fr 2fr",
             justifyContent: "center",
-            // background: "#0e1834"
           }}
         >
           <Heading>109,900 ALGO</Heading>
           <div>
-            <GardImg src={gardLogo}></GardImg>
+            <Img src={gardLogo}></Img>
             <Arrow src={arrowIcon}></Arrow>
-            <GardImg src={gardLogo} onClick={() => console.log("click option gard")}></GardImg>
-            {/* <AlgoImg src={algoLogo} /> */}
+            {assetType === 0 ? (
+              <GardImg
+                src={gardLogo}
+                onClick={() => setOptionsOpen(!optionsOpen)}
+              ></GardImg>
+            ) : (
+              <AlgoImg
+                src={algoLogo}
+                onClick={() => setOptionsOpen(!optionsOpen)}
+              ></AlgoImg>
+            )}
+
+            <AssetOptions
+              open={optionsOpen}
+              setAsset={setAssetType}
+              setOpen={setOptionsOpen}
+            />
           </div>
           <Heading>No-Lock</Heading>
           <Heading>.1%</Heading>
@@ -94,7 +104,6 @@ export default function StakeDetails() {
               <Text onClick={() => console.log("Max Stake Amt Triggered")}>
                 +MAX
               </Text>
-              {/* <hr style={{ border: "dashed 1px" }} /> */}
               <Result>$110.35</Result>
             </EffectContainer>
           </div>
@@ -105,7 +114,6 @@ export default function StakeDetails() {
             display: "grid",
             gridTemplateColumns: "auto auto auto auto",
             justifyContent: "center",
-            // background: "#0e1834"
           }}
         >
           <Effect title="Your Stake" val="12 ALGO" hasToolTip={false} />
@@ -125,20 +133,54 @@ export default function StakeDetails() {
     </div>
   );
 }
+
+const AssetOptions = ({ open, setAsset, setOpen }) => {
+  return (
+    <div>
+      {open ? (
+        <Options>
+          <Option
+            onClick={() => {
+              setAsset(0);
+              setOpen(!open);
+            }}
+          >
+            <GardImg src={gardLogo} />
+          </Option>
+          <Option
+            onClick={() => {
+              setAsset(1);
+              setOpen(!open);
+            }}
+          >
+            <AlgoImg src={algoLogo} />
+          </Option>
+        </Options>
+      ) : (
+        <></>
+      )}
+    </div>
+  );
+};
+
+const Img = styled.img`
+  height: 25px;
+`;
 const GardImg = styled.img`
-  /* max-width: 100%; */
   height: 25px;
   &:hover {
-    /* border: 1px #ffffff; */
     transform: scale(1.2);
-    /* border-radius: 10px; */
   }
 `;
 
 const AlgoImg = styled.img`
-  height: 25px;
+  height: 35px;
+  width: 25px;
   filter: invert();
-`
+  &:hover {
+    transform: scale(1.2);
+  }
+`;
 
 const Arrow = styled.img`
   width: 35px;
@@ -147,8 +189,6 @@ const Heading = styled.text`
   font-weight: 500;
   margin: 4px;
 `;
-// #80deff
-// #ff00ff
 
 const ExchangeInput = styled(InputField)`
   width: 4vw;
@@ -191,14 +231,20 @@ const Result = styled.text`
   color: #999696;
 `;
 
-const AssetOptions = () => {
-  return (
-    <div>
-      <ul>
-      <li></li>
-      <GardImg src={gardLogo} />
-      <AlgoImg src={algoLogo} />
-      </ul>
-    </div>
-  )
-}
+
+const Options = styled.ul`
+  background: #172756;
+  border-radius: 10px;
+  border: 1px solid #ff00ff;
+  border-top: none;
+  margin: 0 0 0 0;
+  padding: 2px 0 2px 8px;
+  list-style: none;
+  width: 35px;
+`;
+const Option = styled.li`
+  appearance: none;
+`;
+
+// #80deff
+// #ff00ff
