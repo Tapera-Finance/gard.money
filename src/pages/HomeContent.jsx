@@ -4,12 +4,13 @@ import Details from "../components/Details";
 import CountdownTimer from "../components/CountdownTimer";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getAlgoGovAPR } from "../components/Positions";
 import WalletConnect from "../components/WalletConnect";
 import Step from "../components/Step";
 import BinaryToggle from "../components/BinaryToggle";
+import { setAlert } from "../redux/slices/alertSlice";
 
 const fetchTvl = async () => {
   try {
@@ -45,6 +46,7 @@ export default function HomeContent() {
   const [allOpen, setAllOpen] = useState(false);
   const [difficulty, setDifficulty] = useState("Help Me Out");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
 
   const homeDetails = [
@@ -117,7 +119,7 @@ export default function HomeContent() {
             color: "#172756",
           }}
         >
-          <div>Governance Period #4</div>
+          <div>Governance Period #5</div>
           <div style={{ fontSize: "10pt" }}>Now - October 22, 2022</div>
           <div>12% - 33% APR Rewards</div>
         </div>
@@ -130,12 +132,19 @@ export default function HomeContent() {
             marginLeft: "25px",
           }}
         >
-          <span style={{ color: "#172756" }}>Enrollment Countdown</span>
-          <CountdownTimer targetDate={1761180257000} />
+          <span style={{ color: "#172756" }}>Enrollment is now live!</span>
+          {/* <CountdownTimer targetDate={1761180257000} /> */}
         </div>
         <EnrollButton
           text="Enroll"
-          onClick={() => navigate("/borrow")}
+          onClick={() => {
+            walletAddress ?
+            navigate("/borrow") : dispatch(
+              setAlert(
+                "You cannot enter without first connecting a Wallet",
+              ),
+            );
+          }}
         ></EnrollButton>
       </div>
       <div
@@ -158,7 +167,7 @@ export default function HomeContent() {
 
         <Details details={homeDetails} />
         <div>
-          <Text
+          {/* <Text
             style={{
               color: "#7c52ff",
               textAlign: "center",
@@ -167,7 +176,7 @@ export default function HomeContent() {
             // onClick={() => navigate("/analytics")}
           >
             {`See More Metrics ${">"}`}
-          </Text>
+          </Text> */}
         </div>
       </div>
       {difficulty === "Help Me Out" ? (
