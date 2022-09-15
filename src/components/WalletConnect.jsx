@@ -55,7 +55,7 @@ export default function WalletConnect() {
       if (action === "options")
         return {
           title: "Connect your wallet account",
-          subtitle: "Use the buttons to the right to connect your wallet.",
+          subtitle: "Use the buttons below to connect your wallet.",
           body: (
             <WalletOptions
               onClick={async (type) => {
@@ -126,7 +126,7 @@ export default function WalletConnect() {
     },
     {
       title: "Connect your wallet account",
-      subtitle: "Use the buttons to the right to connect your wallet.",
+      subtitle: "Use the buttons below to connect your wallet.",
       body: (
         <WalletOptions
           onClick={() => {
