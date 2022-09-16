@@ -210,28 +210,28 @@ export default function HomeContent() {
 
             <Step
               header="Step 1: Get Gard"
-              badges={["Aeneas"]}
+              badges={[]}
               subtitle="Exchange ALGO to borrow GARD"
-              text="Click the button below to be taken to the Borrow Page; Here you can open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin"
-              goTo="Borrow"
+              text="The easiest way to get GARD is to simply swap ALGOs for GARD on the GARD WebApp to enter the GARD ecosystem which enables users to earn staking rewards, GARDian rewards, and much more."
+              goTo="Swap"
               allOpen={allOpen}
             />
             <Step
               header="Step 2: Gain Rewards"
               badges={["Aeneas", "LP"]}
               subtitle="Add Liquidity to Pool"
-              text="Click the button below to be taken to the Swap Page; Here you can swap and pool with ASAs"
-              goTo="Swap"
+              text="Open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin."
+              goTo="Borrow"
               allOpen={allOpen}
             />
-            <Step
+            {/* <Step
               header="Step 3: Gain More"
               badges={["LP"]}
               subtitle="Sell LP tokens"
               text="Click the button below to be taken to the Sell LP Tokens Page; Here you can sell LP tokens accumulated through interfacing with our liquidity pools, as well as auction and sell CPDs/positions created on our Borrow Page"
               goTo="Govern"
               allOpen={allOpen}
-            />
+            /> */}
           </StepContainer>
         </div>
       ) : (

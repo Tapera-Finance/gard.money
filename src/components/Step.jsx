@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PrimaryButton from "./PrimaryButton";
+import Help from "./Help";
 
 export default function Step({
   header,
@@ -9,6 +10,7 @@ export default function Step({
   subtitle,
   text,
   goTo,
+  clickableHelp,
   allOpen,
 }) {
   const [open, setOpen] = useState(false);
@@ -74,6 +76,7 @@ export default function Step({
           <text style={{ width: "60vw", marginBottom: 6, marginTop: 6 }}>
             {text}
           </text>
+          {clickableHelp ? (<div>Click <text onClick={() => <Help heading="test"/>}>here</text> for more info</div>) : <></>}
           <div style={{ display: "flex", justifyContent: "left" }}>
             <StepButton
               text={`Go to ${goTo}`}
