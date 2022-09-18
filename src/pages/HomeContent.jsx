@@ -213,6 +213,8 @@ export default function HomeContent() {
               badges={[]}
               subtitle="Exchange ALGO to borrow GARD"
               text="The easiest way to get GARD is to simply swap ALGOs for GARD on the GARD WebApp to enter the GARD ecosystem which enables users to earn staking rewards, GARDian rewards, and much more."
+              link="https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/gard"
+              linkText="GARD"
               goTo="Swap"
               allOpen={allOpen}
             />
@@ -221,6 +223,8 @@ export default function HomeContent() {
               badges={["Aeneas", "LP"]}
               subtitle="Add Liquidity to Pool"
               text="Open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin."
+              link="https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/tutorial/supplying-assets"
+              linkText="needed to participate"
               goTo="Borrow"
               allOpen={allOpen}
             />
