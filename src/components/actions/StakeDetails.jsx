@@ -5,6 +5,7 @@ import InputField from "../InputField";
 import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
+import PrimaryButton from "../PrimaryButton";
 
 // asset types: 0 === GARD, 1 === ALGO
 
@@ -106,6 +107,9 @@ export default function StakeDetails() {
               </Text>
               <Result>$110.35</Result>
             </EffectContainer>
+          </div>
+          <div>
+            <PrimaryButton text="Stake" />
           </div>
           <Heading>Stake Btn, Unstake Btn</Heading>
         </div>
