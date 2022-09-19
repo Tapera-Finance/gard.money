@@ -42,8 +42,8 @@ export default function Step({
               }}
             >
               {" "}
-              {console.log("badges?", badges)}
-              {badges.length > 0 ? (
+              {badges? console.log("badges?", badges) : null}
+              {badges && badges.length > 0 ? (
                 badges.map((badge) => {
                   return <Badge type={badge} key={Math.random()} />;
                 })
@@ -119,9 +119,15 @@ const StepItem = styled.div`
 
 const StepButton = styled(PrimaryButton)`
   appearance: none;
-  border: none;
+  border: 1px solid #6941c6;
   margin-top: 8px;
   margin: unset;
+  &:hover {
+    border: 1px transparent;
+  }
+  &:active {
+    border: 1px transparent;
+  }
 `;
 
 const ExpandedStep = styled.div`
