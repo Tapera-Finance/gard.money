@@ -5,7 +5,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import { getBalances } from "./swap/swapHelpers";
+import { getBalances } from "./actions/swapHelpers";
 import * as tips from "../assets/tooltiptext";
 import { ids } from "../transactions/ids";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
