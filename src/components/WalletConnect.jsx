@@ -253,6 +253,22 @@ function WalletOptions({ onClick }) {
           <img src={arrow} />
         </div>
       </WalletOption>
+      <WalletOption
+        style={{ marginBottom: 17 }}
+        onClick={() => {
+          onClick("Exodus");
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img src={PeraLogo} style={{ width: 40 }} />
+        </div>
+        <div>
+          <WalletOptionText>Exodus Wallet</WalletOptionText>
+        </div>
+        <div>
+          <img src={arrow} />
+        </div>
+      </WalletOption>
     </div>
   );
 }
