@@ -107,9 +107,9 @@ export default function Positions() {
     // };
     const tabs = {
         one: "Borrow More",
+        // two: "Supply More",
         two: "Repay Postion",
-        three: "Sell Position",
-        four: "Close Position",
+        three: "Close Position",
     };
     useEffect(async () => {
         setAPR(await getAlgoGovAPR())
@@ -166,37 +166,40 @@ export default function Positions() {
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
                     {selectedTab === "one" ? <BorrowMore cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     : selectedTab === "two" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
-                    : selectedTab === "three" ? <div>
-                        <SalesHeader>
-                            <b style={{textAlign:"left"}}>Position</b>
-                            <b>Sell for</b>
-                            <b style={{textAlign: "center"}}>Amount</b>
-                            <b style={{textAlign: "center"}}>Sale Discount</b>
-                        </SalesHeader>
-                        <SalesInfo>
-                            <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
-                                <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
-                                <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
-                            </div>
-                            <PrimaryButton text="ALGO"/>
-                            <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>
-                                <Input
-                                autoComplete="off"
-                                display="none"
-                                placeholder={"enter amount"}
-                                type='number'
-                                min="0.00"
-                                id="salesPrice"
-                                // value={salesPrice}
-                                // onChange={handleSalesPrice}
-                                />
-                                <Valuation>Value: ${12.3}</Valuation>
-                            </div>
-                            <div style={{color: "grey", textAlign: "center"}}> 4.33%</div>
-                        </SalesInfo>
-                        <PrimaryButton text="List for Sale" purple={true} disabled={true} />
-                </div>
-                    : <div style={{marginTop: 40}}>
+                    //
+                    :
+                    // : selectedTab === "three" ?
+                //     <div>
+                //         <SalesHeader>
+                //             <b style={{textAlign:"left"}}>Position</b>
+                //             <b>Sell for</b>
+                //             <b style={{textAlign: "center"}}>Amount</b>
+                //             <b style={{textAlign: "center"}}>Sale Discount</b>
+                //         </SalesHeader>
+                //         <SalesInfo>
+                //             <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
+                //                 <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
+                //                 <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
+                //             </div>
+                //             <PrimaryButton text="ALGO"/>
+                //             <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>
+                //                 <Input
+                //                 autoComplete="off"
+                //                 display="none"
+                //                 placeholder={"enter amount"}
+                //                 type='number'
+                //                 min="0.00"
+                //                 id="salesPrice"
+                //                 // value={salesPrice}
+                //                 // onChange={handleSalesPrice}
+                //                 />
+                //                 <Valuation>Value: ${12.3}</Valuation>
+                //             </div>
+                //             <div style={{color: "grey", textAlign: "center"}}> 4.33%</div>
+                //         </SalesInfo>
+                //         <PrimaryButton text="List for Sale" purple={true} disabled={true} />
+                // </div>
+                     <div style={{marginTop: 40}}>
                         <PrimaryButton
                         text="Close Position"
                         positioned={true}
