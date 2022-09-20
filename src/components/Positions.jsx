@@ -153,7 +153,7 @@ export default function Positions() {
                     </div>
                 </PositionInfo>
                 <TextButton
-                 positioned={true} 
+                 positioned={true}
                  text={cdp.id === currentCDP ? "Collapse" : "Manage Position"}
                  onClick={cdp.id === currentCDP ? () => {
                     setCurrentCDP(null)
@@ -164,8 +164,8 @@ export default function Positions() {
                  />
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
-                    {selectedTab === "one" ? <BorrowMore cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} /> 
-                    : selectedTab === "two" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} /> 
+                    {selectedTab === "one" ? <BorrowMore cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
+                    : selectedTab === "two" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     : selectedTab === "three" ? <div>
                         <SalesHeader>
                             <b style={{textAlign:"left"}}>Position</b>
@@ -174,13 +174,13 @@ export default function Positions() {
                             <b style={{textAlign: "center"}}>Sale Discount</b>
                         </SalesHeader>
                         <SalesInfo>
-                            <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>    
+                            <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
                                 <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
                                 <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
                             </div>
                             <PrimaryButton text="ALGO"/>
-                            <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>    
-                                <Input 
+                            <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>
+                                <Input
                                 autoComplete="off"
                                 display="none"
                                 placeholder={"enter amount"}
@@ -195,11 +195,11 @@ export default function Positions() {
                             <div style={{color: "grey", textAlign: "center"}}> 4.33%</div>
                         </SalesInfo>
                         <PrimaryButton text="List for Sale" purple={true} disabled={true} />
-                </div> 
+                </div>
                     : <div style={{marginTop: 40}}>
-                        <PrimaryButton 
-                        text="Close Position" 
-                        positioned={true} 
+                        <PrimaryButton
+                        text="Close Position"
+                        positioned={true}
                         purple={true}
                         />
                     </div>}
@@ -223,7 +223,7 @@ const Header = styled.div`
 `
 const SalesHeader = styled.div`
     display: grid;
-    grid-template-columns: 30% 20% 20% 20%; 
+    grid-template-columns: 30% 20% 20% 20%;
     justify-content:center;
     align-content: center;
     text-align: center;
@@ -232,12 +232,12 @@ const SalesHeader = styled.div`
     margin-bottom: 20px;
 `
 const SalesInfo = styled.div`
-    display: grid; 
-    grid-template-columns: 30% 20% 20% 20%; 
+    display: grid;
+    grid-template-columns: 30% 20% 20% 20%;
     justify-content:center;
     align-content: center;
     align-items: center;
-    background: rgba(13, 18, 39, .75); 
+    background: rgba(13, 18, 39, .75);
     border-radius: 10px;
     font-size: 18px;
     padding: 40px 0px 40px;
@@ -253,6 +253,7 @@ const Position = styled.div`
 `
 const PositionInfo = styled.div`
     display: grid;
+    border: 1px solid #80edff;
     grid-template-columns:repeat(3, 30%);
     justify-content:center;
     align-content: center;
@@ -269,11 +270,11 @@ const SliderRange = styled.div`
 const Input = styled.input`
     border-radius: 0;
     height: 30px;
-    width 80%;
+    width: 80%;
     color: white;
     text-decoration: none;
     border: none;
-    border-bottom 2px solid #7c52ff;
+    border-bottom: 2px solid #7c52ff;
     text-align: center;
     opacity: 100%;
     font-size: 20px;

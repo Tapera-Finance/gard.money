@@ -131,8 +131,8 @@ export default function Govern() {
   console.log("cdps", cdps);
   return (
     <div>
-      {/* <RewardNotice 
-          program={"Governance Rewards"} 
+      {/* <RewardNotice
+          program={"Governance Rewards"}
           timespan={"Now - October 22, 2022"}
           estimatedRewards={"12% - 33% APR Rewards"}
           action={"Borrow ALGO to Claim Rewards"}
@@ -146,12 +146,15 @@ export default function Govern() {
           textAlign: "center",
           background: "#0E1834",
           padding: "20px 20px 0px",
+          border: "1px solid #80edff",
+          borderBottom: "none"
         }}
       >
-        <h3>Governance Period #4</h3>
+        <h3>Governance Period #5</h3>
         <div style={{ fontSize: 11 }}>Registration Ends</div>
         <CountDownContainer>
-          <CountdownTimer targetDate={1761180257000} />
+          <CountdownTimer targetDate={1666439999000} showZero={false} />
+          {/* 1761180257000 */}
         </CountDownContainer>
       </div>
 
@@ -249,6 +252,8 @@ const GovernDetails = styled.div`
   padding: 30px 0px 30px;
   border-radius: 10px;
   background: #0e1834;
+  border: 1px solid #80edff;
+  border-top: none;
 `;
 const Item = styled.div`
   display: flex;
