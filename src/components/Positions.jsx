@@ -73,16 +73,64 @@ const dummyCDPs = [
   ];
 
 
+function displayRatio() {
+return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
+}
+
+function mAlgosToAlgos(num) {
+return num / 1000000;
+}
+function algosToMAlgos(num) {
+return num * 1000000;
+}
+
+function displayLiquidationPrice() {
+    return "$" + ((1.15 * getMinted()) / getCollateral()).toFixed(4);
+  }
+
+function getMinted() {
+    if (
+      document.getElementById("borrowMore") == null ||
+      isNaN(parseFloat(document.getElementById("borrowMore").value))
+    ) {
+      return null;
+    }
+    return parseFloat(document.getElementById("borrowMore").value);
+  }
+
+function getCollateral() {
+    if (
+      document.getElementById("addCollateral") == null ||
+      isNaN(parseFloat(document.getElementById("addCollateral").value))
+    ) {
+      return null;
+    }
+    return parseFloat(document.getElementById("addCollateral").value);
+  }
+
 export default function Positions() {
+    const dispatch = useDispatch();
+    const {theme} = useContext(ThemeContext);
+    const [price, setPrice] = useState(0)
+    const [supplyPrice, setSupplyPrice] = useState(0)
+    const [apr, setAPR] = useState(0)
+    const [cAlgos, setCollateral] = useState("");
+    const [minted, setMinted] = useState("")
+    const loadedCDPs = CDPsToList();
+    const [currentCDP, setCurrentCDP] = useState(null)
+    const [selectedTab, setSelectedTab] = useState("one");
+    const [loading, setLoading] = useState(false);
     var details = [
         {
             title: "Collateral",
-            val: `${0.00}%`,
+            val: `${cAlgos === "" ? "...": `$${(cAlgos * supplyPrice).toFixed(2)}`}`,
             hasToolTip: true,
         },
         {
             title: "Liquidation Price",
-            val: `${0.00}%`,
+            val: `${getMinted() == null || getCollateral() == null
+                ? "..."
+                : displayLiquidationPrice()}`,
             hasToolTip: true,
         },
         {
@@ -92,19 +140,12 @@ export default function Positions() {
         },
         {
             title: "Liquidation ratio",
-            val: `${0.00}%`,
+            val: `${getMinted() == null || getCollateral() == null
+                ? "..."
+                : displayRatio()}`,
             hasToolTip: true,
         },
     ]
-    const dispatch = useDispatch();
-    const {theme} = useContext(ThemeContext);
-    const [price, setPrice] = useState(0)
-    const [apr, setAPR] = useState(0)
-    const loadedCDPs = CDPsToList();
-    const [currentCDP, setCurrentCDP] = useState(null)
-    const [selectedTab, setSelectedTab] = useState("one");
-    const [loading, setLoading] = useState(false);
-
     // const Tabs = {
     //     one: <SystemMetrics />,
     //     two: <YourMetrics />,
@@ -119,6 +160,12 @@ export default function Positions() {
         setAPR(await getAlgoGovAPR())
         setPrice(await getPrice());
     }, []);
+
+    useEffect(() => {
+        setSupplyPrice(price)
+      }, [price])
+
+
     return <div>
         <Header>
             <b>Your Positions</b>
@@ -168,7 +215,7 @@ export default function Positions() {
                  />
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
-                    {selectedTab === "one" ? <BorrowMore cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
+                    {selectedTab === "one" ? <BorrowMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} apr={apr} details={details} />
                     : selectedTab === "two" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     //
                     :

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled, {css} from "styled-components";
 import Effect from "./Effect";
@@ -8,47 +8,67 @@ import PrimaryButton from "./PrimaryButton";
 import { addCollateral, mint } from "../transactions/cdp";
 import { handleTxError } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
+import { getWalletInfo, updateWalletInfo,  } from "../wallets/wallets";
 import LoadingOverlay from "./LoadingOverlay";
 
-export default function ManageCDP({cdp, price, setCurrentCDP}){
-    const [supplyInput, setSupplyInput] = useState(0);
-    const [supplyPrice, setSupplyPrice] = useState(0);
-    const [borrowInput, setBorrowInput] = useState(0);
-    const [borrowPrice, setBorrowPrice] = useState(0);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [modalCanAnimate, setModalCanAnimate] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [loadingText, setLoadingText] = useState(null);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP, apr}){
+  const walletAddress = useSelector((state) => state.wallet.address);
+  const [balance, setBalance] = useState(0)
+  const [supplyLimit, setSupplyLimit] = useState(0)
+  const [supplyInput, setSupplyInput] = useState(0);
+  const [supplyPrice, setSupplyPrice] = useState(0);
+  const [borrowInput, setBorrowInput] = useState(0);
+  const [borrowPrice, setBorrowPrice] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalCanAnimate, setModalCanAnimate] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const [additionalSupply, setAdditionalSupply] = useState("")
-    const [additionalBorrow, setAdditionalBorrow] = useState("")
+  const [additionalSupply, setAdditionalSupply] = useState("")
+  const [additionalBorrow, setAdditionalBorrow] = useState("")
 
-    const handleAddSupply = (event) => {
-        setAdditionalSupply(event.target.value === "" ? "" : Number(event.target.value));
-      };
-
-    const handleAddBorrow = (event) => {
-    setAdditionalBorrow(event.target.value === "" ? "" : Number(event.target.value));
+  const handleAddSupply = (event) => {
+    setAdditionalSupply(event.target.value === "" ? "" : Number(event.target.value));
+    collateral(event.target.value === "" ? "" : Number(event.target.value))
     };
+
+  const handleAddBorrow = (event) => {
+    setAdditionalBorrow(event.target.value === "" ? "" : Number(event.target.value));
+    minted(event.target.value === "" ? "" : Number(event.target.value))
+
+  };
+
+    useEffect(async() => {
+      await updateWalletInfo();
+      let wallet = await getWalletInfo()
+      if (wallet !== null) {
+      setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+      console.log("AAAAA",getWalletInfo())
+      }
+    }, [])
+
+    useEffect(() => {
+      setSupplyLimit(balance)
+    }, [balance])
+
+    useEffect(() => {
+      if (!walletAddress) navigate("/");
+    }, [walletAddress]);
 
     var supplyDetails = [
         {
             title: "Supply Limit",
-            val: `${0.00} ALGOs`,
+            val: `${supplyLimit} ALGOs`,
             hasToolTip: true,
         },
         {
             title: "Supply APR",
-            val: `${0.00}%`,
-            hasToolTip: true,
+            val: `${apr}%`,
+            hasToolTip: false,
         },
-        {
-            title: "Supply Rewards",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },];
+        ];
     var borrowDetails = [
         {
             title: "Borrow Limit",
@@ -103,7 +123,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                             </MaxButton>
                         </div>
                         <Valuation>$Value: ${(additionalSupply * price).toFixed(2)}</Valuation>
-                        <InputDetails>
+                        <SupplyInputDetails>
                             {supplyDetails.length && supplyDetails.length > 0 ?
                             supplyDetails.map((d) => {
                                 return (
@@ -114,7 +134,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                             })
                             : null
             }
-                        </InputDetails>
+                        </SupplyInputDetails>
                     </InputContainer>
                 </Background>
                 <PrimaryButton
@@ -159,7 +179,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                             </MaxButton>
                         </div>
                         <Valuation>$Value: ${(additionalBorrow * 1).toFixed(2)}</Valuation>
-                        <InputDetails>
+                        <BorrowInputDetails>
                             {borrowDetails.length && borrowDetails.length > 0 ?
                             borrowDetails.map((d) => {
                                 return (
@@ -170,7 +190,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                             })
                             : null
             }
-                        </InputDetails>
+                        </BorrowInputDetails>
                     </InputContainer>
                 </Background>
                 <PrimaryButton
@@ -229,13 +249,22 @@ const InputContainer = styled.div`
 
 `
 
-const InputDetails = styled.div`
-display: grid;
-grid-template-columns:repeat(3, 30%);
-row-gap: 30px;
-justify-content: center;
-padding: 30px 0px 30px;
-border-radius: 10px;
+const SupplyInputDetails = styled.div`
+  display: grid;
+  grid-template-columns:repeat(2, 30%);
+  row-gap: 30px;
+  justify-content: center;
+  padding: 30px 0px 30px;
+  border-radius: 10px;
+`
+
+const BorrowInputDetails = styled.div`
+  display: grid;
+  grid-template-columns:repeat(3, 30%);
+  row-gap: 30px;
+  justify-content: center;
+  padding: 30px 0px 30px;
+  border-radius: 10px;
 `
 
 const Item = styled.div`
