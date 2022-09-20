@@ -7,6 +7,8 @@ import RadioButtonSet from "../components/RadioButtonSet";
 import Table from "../components/Table";
 import LoadingOverlay from "../components/LoadingOverlay";
 import TransactionSummary from "../components/TransactionSummary";
+import LiveAuctions from "../components/LiveAuctions";
+import PageToggle from "../components/PageToggle";
 import {
   getChainData,
   getCurrentAlgoUsd,
@@ -97,6 +99,7 @@ async function loadDefaulted() {
  */
 export default function AuctionsContent() {
   const [selected, setSelected] = useState(OPTIONS.LIVE_AUCTIONS);
+  const [selectedTab, setSelectedTab] = useState("one")
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -107,6 +110,7 @@ export default function AuctionsContent() {
   const [transDebt, setTransDebt] = useState([]);
   const [canAnimate, setCanAnimate] = useState(false);
   const dispatch = useDispatch();
+
 
   useEffect(async () => {
     curr_price = await getCurrentAlgoUsd();
@@ -192,77 +196,17 @@ export default function AuctionsContent() {
       ),
     };
   });
-
+  const tabs = {
+    one: <LiveAuctions OPTIONS={OPTIONS} open_defaulted={open_defaulted} selected={selected} liveAuctions={liveAuctions} dummyBids={dummyBids} dummyMarketHistory={dummyMarketHistory} dummyLiveAuctions={dummyLiveAuctions} />
+  }
   return (
     <div>
       {loading ? <LoadingOverlay text={"Liquidating a CDP..."} /> : <></>}
-      <div
-        style={{
-          maxWidth: window.innerWidth - 0.14 * window.innerWidth,
-          overflow: "auto",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            paddingLeft: 24,
-            marginBottom: 19,
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <div style={{ marginRight: 8 }}>
-              <Title>
-                {selected === OPTIONS.LIVE_AUCTIONS
-                  ? "Live Auctions"
-                  : selected === OPTIONS.BIDS
-                  ? "Bids"
-                  : "Auction Marketplace Transaction History"}
-              </Title>
-            </div>
-            <CountContainer>
-              <CountText>
-                {selected === OPTIONS.LIVE_AUCTIONS
-                  ? `${
-                      open_defaulted == dummyLiveAuctions
-                        ? 0
-                        : open_defaulted.length
-                    } ${"Live Auctions"}`
-                  : selected === OPTIONS.BIDS
-                  ? `${dummyBids.length} ${"Bids"}`
-                  : `${dummyMarketHistory.length} ${"Auctions"}`}
-              </CountText>
-            </CountContainer>
-          </div>
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <RadioButtonSet
-              titles={[
-                OPTIONS.LIVE_AUCTIONS,
-                OPTIONS.BIDS,
-                OPTIONS.MARKET_HISTORY,
-              ]}
-              selected={selected}
-              callback={(selected) => {
-                setSelected(selected);
-                setCanAnimate(false);
-              }}
-            />
-          </div>
-        </div>
-        <Table
-          data={
-            selected === OPTIONS.LIVE_AUCTIONS
-              ? liveAuctions
-              : selected === OPTIONS.BIDS
-              ? dummyBids
-              : dummyMarketHistory
-          }
-        />
+      <div style={{marginBottom: 20}}>
+
+      <PageToggle selectedTab={setSelectedTab} tabs={{one: "Live Auctions"}} />
       </div>
+      {tabs[selectedTab]}
       {selected === OPTIONS.BIDS ? (
         <PrimaryButton
           text="Create a Bid"
@@ -378,7 +322,22 @@ export default function AuctionsContent() {
   );
 }
 
+
 // styled components
+const AuctionsDiv = styled.div`
+  background-color:#0f1733;
+  border-radius: 10px;
+`
+
+const AuctionsTable = styled(Table)`
+  tr {
+    background-color: #172756;
+    border-top: 3px solid #0f1733;
+    border-bottom: 3px solid #0f1733;
+    border-radius: 10px;
+  }
+`
+
 const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
