@@ -137,54 +137,68 @@ export default function Govern() {
           estimatedRewards={"12% - 33% APR Rewards"}
           action={"Borrow ALGO to Claim Rewards"}
           /> */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          borderRadius: 10,
-          justifyContent: "space-between",
-          textAlign: "center",
-          background: "#0E1834",
-          padding: "20px 20px 0px",
-          border: "1px solid #80edff",
-          borderBottom: "none"
-        }}
-      >
-        <h3>Governance Period #5</h3>
-        <div style={{ fontSize: 11 }}>Registration Ends</div>
-        <CountDownContainer>
-          <CountdownTimer targetDate={1666439999000} showZero={false} />
-          {/* 1761180257000 */}
-        </CountDownContainer>
-      </div>
+      <div style={{marginBottom: 30}}>
+        <fieldset
+          style={{
+            borderRadius: 10,
+            border: "1px solid white",
+            width:"70%",
+            transform: "rotate(180deg)",
+            background: "#0E1834",
+            margin: "auto",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            textAlign: "center",
+            background: "#0E1834",
+            padding: "20px 20px 0px",
+            margin: "auto",
+            transform: "rotate(180deg)",
 
-      <div>
-        <GovernDetails>
-          {details.length && details.length > 0
-            ? details.map((d) => {
-                return (
-                  <Item key={d.title}>
-                    <Effect
-                      title={d.title}
-                      val={d.val}
-                      hasToolTip={d.hasToolTip}
-                      rewards={d.rewards}
-                    ></Effect>
-                  </Item>
-                );
-              })
-            : null}
-        </GovernDetails>
-        <TextButton text="Learn More on ALGO Site" positioned={true} onClick={() => window.open("https://governance.algorand.foundation/governance-period-4/period-4-voting-session-1")}/>
+          }}>
+            <h3>Governance Period #5</h3>
+            <div style={{ fontSize: 11 }}>Registration Ends</div>
+            <CountDownContainer>
+              <CountdownTimer targetDate={1666439999000} showZero={false} />
+              {/* 1761180257000 */}
+            </CountDownContainer>
+            <div>
+              <GovernDetails>
+                {details.length && details.length > 0
+                  ? details.map((d) => {
+                      return (
+                        <Item key={d.title}>
+                          <Effect
+                            title={d.title}
+                            val={d.val}
+                            hasToolTip={d.hasToolTip}
+                            rewards={d.rewards}
+                          ></Effect>
+                        </Item>
+                      );
+                    })
+                  : null}
+              </GovernDetails>
+            </div>
+          </div>
+          
+          <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on ALGO Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-4/period-4-voting-session-1")}/></legend>
+        </fieldset>
       </div>
-
       <div
         style={{
           height: 70,
-          borderRadius: 10,
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          background: "#0E1834",
+          border: "1px solid white",
+          borderBottom: "none"
         }}
       >
         <div style={{ display: "flex", justifyContent: "center" }}>
@@ -192,7 +206,7 @@ export default function Govern() {
             <Title>Algorand Positions</Title>
           </div>
           <CountContainer>
-            <CountText>2 Positions</CountText>
+            <CountText>{cdps.length}{cdps.length == 1 ? " Position": " Positions" }</CountText>
           </CountContainer>
         </div>
         <div style={{ marginRight: 20 }}>
@@ -206,10 +220,14 @@ export default function Govern() {
         <div
           style={{
             height: 70,
-            borderRadius: 10,
+            borderTopRightRadius: 10,
+            borderTopLeftRadius: 10,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            background: "#0E1834",
+            border: "1px solid white",
+            borderBottom: "none"
           }}
         >
           <div style={{ display: "flex", justifyContent: "center" }}>
@@ -221,20 +239,7 @@ export default function Govern() {
             </CountContainer>
           </div>
           <div style={{ display: "flex", marginRight: 20 }}>
-            <PrimaryButton
-              text="All"
-              toggle={!shownAll}
-              onClick={() => {
-                setAllVotes(true);
-              }}
-            />
-            <PrimaryButton
-              text="Open"
-              toggle={shownAll}
-              onClick={() => {
-                setAllVotes(false);
-              }}
-            />
+            <PrimaryButton text="Submit All Votes" />
           </div>
         </div>
         <Table data={dummyVotes} />
@@ -245,15 +250,13 @@ export default function Govern() {
 }
 const GovernDetails = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 20%);
+  grid-template-columns: repeat(3, 30%);
   text-align: center;
   row-gap: 30px;
   justify-content: center;
-  padding: 30px 0px 30px;
+  padding: 0px 0px 10px;
   border-radius: 10px;
   background: #0e1834;
-  border: 1px solid #80edff;
-  border-top: none;
 `;
 const Item = styled.div`
   display: flex;
