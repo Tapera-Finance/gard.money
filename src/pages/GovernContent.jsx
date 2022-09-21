@@ -45,7 +45,7 @@ export default function Govern() {
   const [shownAll, setAllVotes] = useState(true);
   const [governors, setGovernors] = useState("...");
   const [enrollmentEnd, setEnrollmentEnd] = useState("");
-  const [voteTableDisabled, setVoteTable] = useState(false);
+  const [voteTableDisabled, setVoteTable] = useState(true);
   var details = [
     {
       title: "Total Vaulted",
@@ -114,7 +114,7 @@ export default function Govern() {
         ) : (
           <PrimaryButton
             text={"Commit"}
-            govern={true}
+            blue={true}
             onClick={() => {
               if (value.id == "N/A") {
                 return;
@@ -210,11 +210,11 @@ export default function Govern() {
           </CountContainer>
         </div>
         <div style={{ marginRight: 20 }}>
-          <PrimaryButton text="Commit All" />
+          <PrimaryButton text="Commit All" blue={true} />
         </div>
       </div>
       <Table data={cdps} />
-      <PrimaryButton text="Deposit ALGOs" positioned={true} />
+      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} />
       {voteTableDisabled ? <></>:
       <div>
         <div
@@ -239,11 +239,10 @@ export default function Govern() {
             </CountContainer>
           </div>
           <div style={{ display: "flex", marginRight: 20 }}>
-            <PrimaryButton text="Submit All Votes" />
+            <PrimaryButton text="Submit All Votes" blue={true}/>
           </div>
         </div>
         <Table data={dummyVotes} />
-        <PrimaryButton text="Submit All Votes" positioned={true} />
       </div>}
     </div>
   );
@@ -293,13 +292,13 @@ const dummyCommits = [
     Account: "123456",
     Balance: "Dec 29, 2021",
     APY: "4.5%",
-    "": <PrimaryButton govern={true} text="Commit" />,
+    "": <PrimaryButton blue={true} text="Commit" />,
   },
   {
     Account: "123456",
     Balance: "Closed",
     APY: "4.5%",
-    "": <PrimaryButton govern={true} text="Commit" />,
+    "": <PrimaryButton blue={true} text="Commit" />,
   },
 ];
 
@@ -311,7 +310,7 @@ const dummyVotes = [
     votesOutstanding: "37%",
     "": (
       // <PrimaryButton
-      //   govern={true}
+      //   blue={true}
       //   text="Vote"
       // />
       <div style={{ display: "flex" }}>
@@ -328,7 +327,7 @@ const dummyVotes = [
     votesOutstanding: "37%",
     "": (
       // <PrimaryButton
-      //   govern={true}
+      //   blue={true}
       //   text="Vote"
       // />
       <div style={{ display: "flex" }}>
@@ -345,7 +344,7 @@ const dummyVotes = [
     votesOutstanding: "36%",
     "": (
       // <PrimaryButton
-      //   govern={true}
+      //   blue={true}
       //   text="Vote"
       // />
       <div style={{ display: "flex" }}>

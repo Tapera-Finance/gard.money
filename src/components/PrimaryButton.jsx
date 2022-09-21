@@ -6,10 +6,10 @@ import styled, { css } from "styled-components";
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, purple, toggle, govern, className }) {
+export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, underTable, toggle, blue, className }) {
 
   return (
-    <Button className={className} variant={variant} disabled={disabled} positioned={positioned} exit={exit} purple={purple} toggle={toggle} govern={govern} onClick={() => onClick()}>
+    <Button className={className} variant={variant} disabled={disabled} positioned={positioned} exit={exit} underTable={underTable} toggle={toggle} blue={blue} onClick={() => onClick()}>
       <ButtonText variant={variant} disabled={disabled}>
         {text}
       </ButtonText>
@@ -40,31 +40,31 @@ const Button = styled.button`
       }
     `}
   ${(props) =>
-    props.purple &&
-    css`
-      background-color: #7c52ff;
-    `}
-  ${(props) =>
     props.positioned &&
     css`
       position: relative;
       bottom: 20px;
       margin: auto;
-      background-color: #7c52ff;
       border: none;
       z-index: 1;
     `}
   ${(props) =>
-    props.govern &&
+    props.blue &&
     css`
       border: none;
       background-color: #019fff;
+      &:hover {
+        background-color: #0167a6;
+      }
     `}
   ${(props) =>
-    props.purple &&
+    props.underTable &&
     css`
-      background-color: #172756;
-      border: 1px solid white;
+      position: relative;
+      bottom: 50px;
+      margin: auto;
+      border: none;
+      z-index: 1;
     `}
   ${(props) =>
     props.disabled &&

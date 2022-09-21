@@ -62,7 +62,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
                     </InputContainer>
                 </Background>
                 <PrimaryButton
-                purple={true}
+                blue={true}
                 positioned={true}
                 text="Repay"
                 disabled={withdrawl === ""}
