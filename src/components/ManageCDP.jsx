@@ -138,7 +138,7 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
                     </InputContainer>
                 </Background>
                 <PrimaryButton
-                purple={true}
+                blue={true}
                 positioned={true}
                 text="Supply More"
                 onClick={ async () => {
@@ -194,7 +194,7 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
                     </InputContainer>
                 </Background>
                 <PrimaryButton
-                purple={true}
+                blue={true}
                 positioned={true}
                 text="Borrow More"
                 onClick={ async () => {
@@ -290,11 +290,11 @@ const Input = styled.input`
   padding-top: 35px;
   border-radius: 0;
   height: 30px;
-  width 80%;
+  width: 80%;
   color: white;
   text-decoration: none;
   border: none;
-  border-bottom 2px solid #01d1ff;
+  border-bottom: 2px solid #01d1ff;
   opacity: 100%;
   font-size: 20px;
   background: none;

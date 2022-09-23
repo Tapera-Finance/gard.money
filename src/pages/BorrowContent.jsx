@@ -230,11 +230,6 @@ var supplyDetails = [
     hasToolTip: true,
   },
   {
-      title: "Supply APY",
-      val: `${0.00}%`,
-      hasToolTip: true,
-  },
-  {
       title: "Supply Rewards",
       val: `+${0.00}% Algo Rewards`,
       hasToolTip: true,
@@ -245,11 +240,6 @@ var borrowDetails = [
     title: "Borrow Limit",
     val: `${maxGARD} GARD`,
     hasToolTip: true,
-  },
-  {
-      title: "Borrow APR",
-      val: `${0.00}%`,
-      hasToolTip: true,
   },
   {
       title: "Borrow Rewards",
@@ -306,7 +296,7 @@ var borrowDetails = [
                       </InputDetails>
                   </InputContainer>
               </Background>
-              <PrimaryButton positioned={true} purple={true} text="Supply" onClick={()=>{cAlgos !== "" ? setGARD(1): null}}/>
+              <PrimaryButton positioned={true} blue={true} text="Supply" onClick={()=>{cAlgos !== "" ? setGARD(1): null}}/>
           </SubContainer>
           <SubContainer>
               <Background>
@@ -350,7 +340,7 @@ var borrowDetails = [
                   </InputContainer>
               </Background>
               <PrimaryButton
-              purple={true}
+              blue={true}
               positioned={true}
               text="Borrow"
               disabled={cAlgos == "" || mGARD == ""}
@@ -382,7 +372,7 @@ var borrowDetails = [
       <div>
         <PrimaryButton
         text={createPositionShown ? "Exit" : "Create New Position"}
-        purple={!createPositionShown}
+        blue={!createPositionShown}
         positioned={createPositionShown}
         onClick={() => {
           setCreatePositionShown(!createPositionShown)
@@ -437,12 +427,12 @@ const InputContainer = styled.div`
 `
 
 const InputDetails = styled.div`
-display: grid;
-grid-template-columns:repeat(3, 32%);
-row-gap: 30px;
-justify-content: center;
-padding: 30px 0px 30px;
-border-radius: 10px;
+  display: grid;
+  grid-template-columns:repeat(2, 30%);
+  row-gap: 30px;
+  justify-content: center;
+  padding: 30px 0px 30px;
+  border-radius: 10px;
 `
 
 const Item = styled.div`
