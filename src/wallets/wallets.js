@@ -345,7 +345,7 @@ function sameSender(sender1, sender2) {
 }
 
 async function signSet(signer, senderAddressObj, txnarray) {
-  const senderAddressObj = algosdk.decodeAddress(info.address);
+  // const senderAddressObj = algosdk.decodeAddress(info.address);
   const toSign = txnarray.filter((txn) =>
       sameSender(txn["from"], senderAddressObj),
     );
@@ -368,6 +368,7 @@ async function signSet(signer, senderAddressObj, txnarray) {
 export async function signGroup(info, txnarray) {
   const senderAddressObj = algosdk.decodeAddress(info.address);
   switch (activeWallet.type) {
+    case "Exodus": {
       const signedTxns = await signSet(window.exodus.algorand, senderAddressObj, txnarray)
       console.log(signedTxns)
       const parsedResults = signedTxns.map((element) => {
