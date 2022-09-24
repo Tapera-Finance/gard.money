@@ -6,15 +6,14 @@ import styled, { css } from "styled-components";
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function TextButton({ text, onClick, positioned }) {
+export default function TextButton({ text, onClick, positioned, governPage }) {
   return (
-    <ButtonText positioned={positioned} onClick={() => onClick()}>
+    <ButtonText positioned={positioned} governPage={governPage} onClick={() => onClick()}>
       {text}
     </ButtonText>
   );
 }
 const ButtonText = styled.text`
-  padding: 8px 18px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,6 +29,13 @@ const ButtonText = styled.text`
     css`
       position: relative;
       bottom: 40px;
+      margin: auto;
+    `}
+  ${(props) =>
+    props.governPage &&
+    css`
+      position: relative;
+      bottom: 20px;
       margin: auto;
     `}
 `;
