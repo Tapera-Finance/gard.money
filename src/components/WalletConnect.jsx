@@ -7,6 +7,7 @@ import { connectWallet } from "../wallets/wallets";
 import AlgoSignerLogo from "../wallets/logos/algosigner.svg";
 import MyAlgoLogo from "../wallets/logos/myalgowallet.png";
 import PeraLogo from "../wallets/logos/pera.png";
+import ExodusLogo from "../wallets/logos/exodus.png"
 import arrow from "../assets/arrow.png";
 import LoadingOverlay from "./LoadingOverlay";
 import { useDispatch, useSelector } from "react-redux";
@@ -260,7 +261,7 @@ function WalletOptions({ onClick }) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
-          <img src={PeraLogo} style={{ width: 40 }} />
+          <img src={ExodusLogo} style={{ width: 40 }} />
         </div>
         <div>
           <WalletOptionText>Exodus Wallet</WalletOptionText>
