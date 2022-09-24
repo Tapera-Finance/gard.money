@@ -97,13 +97,6 @@ export async function updateWalletInfo() {
   return activeWalletInfo;
 }
 
-// Loading in the stored wallet
-const storedWallet = localStorage.getItem("wallet");
-if (!(storedWallet === null) && !(storedWallet === "undefined")) {
-  activeWallet = JSON.parse(storedWallet);
-  await updateWalletInfo(); // Could optimize by setting a promise and doing promise.all at the end of the page
-}
-
 // Sets up MyAlgoWallet
 if (!window.Buffer) window.Buffer = Buffer; // Partial fix from https://github.com/randlabs/myalgo-connect/issues/27 XXX: THIS IS ALSO NEEDED FOR PERA TOO!!!
 const myAlgoConnect = new MyAlgoConnect({ disableLedgerNano: false });
@@ -117,9 +110,6 @@ if (localStorage.walletconnect) {
   });
 }
 
-// Sets up AlgoSigner
-/*global AlgoSigner*/
-
 export function disconnectWallet() {
   if (connector && connector.connected) {
     connector.killSession();
@@ -128,6 +118,20 @@ export function disconnectWallet() {
   activeWalletInfo = undefined;
   localStorage.removeItem("wallet");
 }
+
+// Loading in the stored wallet
+const storedWallet = localStorage.getItem("wallet");
+if (!(storedWallet === null) && !(storedWallet === "undefined")) {
+  activeWallet = JSON.parse(storedWallet);
+  if (activeWallet.type != "Exodus" || window.exodus.algorand.isConnected) {
+    await updateWalletInfo(); // Could optimize by setting a promise and doing promise.all at the end of the page
+  } else {
+    disconnectWallet()
+  }
+}
+
+// Sets up AlgoSigner
+/*global AlgoSigner*/
 
 export function getWallet() {
   // XXX: Returns even if active_address is not set
@@ -197,6 +201,31 @@ export async function connectWallet(type, address) {
   // XXX: A future improvement would allow users to select a specific wallet based upon some displayed info, rather than limiting them to one
   let interval;
   switch (type) {
+    case "Exodus": {
+      if (window.hasOwnProperty("exodus") && window.exodus.hasOwnProperty("algorand")) {
+        let exodus = window.exodus.algorand;
+        try {
+          let instance = await exodus.connect();
+          exodus.on("disconnect", () => {
+            // TODO: Need to refresh page
+            console.log("DISCONNECT");
+            disconnectWallet();
+          });
+          activeWallet = instance; // XXX: We need to add a way to select a specific account later
+          activeWallet.type = "Exodus";
+          // XXX: Does not set name
+        } catch (e) {
+          console.error(e)
+          // TODO: Graceful error handling
+        }
+      } else {
+        return {
+          alert: true,
+          text: "Exodus is not installed!",
+        };
+      }
+      break;
+    }
     case "MyAlgoConnect": {
       const settings = {
         shouldSelectOneAccount: true,
@@ -316,27 +345,42 @@ function sameSender(sender1, sender2) {
   return JSON.stringify(sender1.publicKey) == JSON.stringify(sender2.publicKey);
 }
 
+async function signSet(signer, senderAddressObj, txnarray) {
+  // const senderAddressObj = algosdk.decodeAddress(info.address);
+  const toSign = txnarray.filter((txn) =>
+      sameSender(txn["from"], senderAddressObj),
+    );
+    const signed = await signer.signTransaction(
+      toSign.map((txn) => txn.toByte()),
+    );
+    let res = [];
+    let sIndex = 0;
+    for (const [index, txn] of txnarray.entries()) {
+      if (sameSender(txn["from"], senderAddressObj)) {
+        res.push(signed[sIndex]);
+        sIndex++;
+      } else {
+        res.push(null);
+      }
+    }
+    return res;
+}
+
 export async function signGroup(info, txnarray) {
   const senderAddressObj = algosdk.decodeAddress(info.address);
   switch (activeWallet.type) {
+    case "Exodus": {
+      const signedTxns = await signSet(window.exodus.algorand, senderAddressObj, txnarray)
+      console.log(signedTxns)
+      const parsedResults = signedTxns.map((element) => {
+        return element
+          ? { blob: new Uint8Array(Buffer.from(element, "base64")) }
+          : null;
+      });
+      return parsedResults
+    }
     case "MyAlgoConnect": {
-      const toSign = txnarray.filter((txn) =>
-        sameSender(txn["from"], senderAddressObj),
-      );
-      const signed = await myAlgoConnect.signTransaction(
-        toSign.map((txn) => txn.toByte()),
-      );
-      let res = [];
-      let sIndex = 0;
-      for (const [index, txn] of txnarray.entries()) {
-        if (sameSender(txn["from"], senderAddressObj)) {
-          res.push(signed[sIndex]);
-          sIndex++;
-        } else {
-          res.push(null);
-        }
-      }
-      return res;
+      return await signSet(myAlgoConnect, senderAddressObj, txnarray);
     }
     case "AlgorandWallet": {
       const txnsToSign = txnarray.map((txn) => {

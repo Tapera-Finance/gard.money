@@ -19,6 +19,7 @@ import { connectWallet } from "../wallets/wallets";
 import AlgoSignerLogo from "../wallets/logos/algosigner.svg";
 import MyAlgoLogo from "../wallets/logos/myalgowallet.png";
 import PeraLogo from "../wallets/logos/pera.png";
+import ExodusLogo from "../wallets/logos/exodus.png"
 import { CONTENT_NAMES } from "../globals";
 import LoadingOverlay from "./LoadingOverlay";
 import { useAlert } from "../hooks";
@@ -352,6 +353,22 @@ function WalletOptions({ onClick }) {
         </div>
         <div>
           <WalletOptionText>Pera Wallet</WalletOptionText>
+        </div>
+        <div>
+          <img src={arrow} />
+        </div>
+      </WalletOption>
+      <WalletOption
+        style={{ marginBottom: 17 }}
+        onClick={() => {
+          onClick("Exodus");
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img src={ExodusLogo} style={{ width: 40 }} />
+        </div>
+        <div>
+          <WalletOptionText>Exodus Wallet</WalletOptionText>
         </div>
         <div>
           <img src={arrow} />
