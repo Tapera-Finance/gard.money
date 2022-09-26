@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useDispatch } from "react-redux";
 import { microalgosToAlgos } from "algosdk";
 import styled from "styled-components";
 import { getCDPs, getPrice, calcRatio, closeCDP } from "../transactions/cdp";
@@ -73,29 +74,109 @@ const dummyCDPs = [
     },
   ];
 
+  function displayRatio() {
+    return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
+    }
 
-export default function Positions() {
+    function mAlgosToAlgos(num) {
+    return num / 1000000;
+    }
+    function algosToMAlgos(num) {
+    return num * 1000000;
+    }
+
+    function displayLiquidationPrice() {
+        return "$" + ((1.15 * getMinted()) / getCollateral()).toFixed(4);
+      }
+
+    function getMinted() {
+        if (
+          document.getElementById("borrowMore") == null ||
+          isNaN(parseFloat(document.getElementById("borrowMore").value))
+        ) {
+          return null;
+        }
+        return parseFloat(document.getElementById("borrowMore").value);
+      }
+
+    function getCollateral() {
+        if (
+          document.getElementById("addCollateral") == null ||
+          isNaN(parseFloat(document.getElementById("addCollateral").value))
+        ) {
+          return null;
+        }
+        return parseFloat(document.getElementById("addCollateral").value);
+      }
+
+
+
+export default function Positions({maxGARD}) {
+    const dispatch = useDispatch();
+    const {theme} = useContext(ThemeContext);
+    const [price, setPrice] = useState(0)
+    const [supplyPrice, setSupplyPrice] = useState(0)
+    const [apr, setAPR] = useState(0)
+    const [cAlgos, setCollateral] = useState("");
+    const [minted, setMinted] = useState("")
+    const loadedCDPs = CDPsToList();
+    const [currentCDP, setCurrentCDP] = useState(null)
+    const [selectedTab, setSelectedTab] = useState("one");
+    const [loading, setLoading] = useState(false);
     var details = [
         {
-            title: "Collateral",
-            val: `${0.00}%`,
+            title: "Total Supplied (Asset)",
+            val: `${cAlgos === "" ? "..." : cAlgos}`,
             hasToolTip: true,
-        },
-        {
+          },
+          {
+            title: "Total Supplied ($)",
+            val: `${cAlgos === "" ? "..." : `$${(cAlgos * supplyPrice).toFixed(2)}`}`,
+            hasToolTip: true,
+          },
+          {
+            title: "Collateral Factor",
+            val: `${(100 / 140).toFixed(2)}`,
+            hasToolTip: true,
+          },
+          {
+            title: "Borrow Utilization",
+            val: `${
+              cAlgos === "" || maxGARD === "" ? "..." : (cAlgos / maxGARD).toFixed(2)
+            }%`,
+            hasToolTip: true,
+          },
+          {
             title: "Liquidation Price",
-            val: `${0.00}%`,
+            val: `${
+              getMinted() == null || getCollateral() == null
+                ? "..."
+                : displayLiquidationPrice()
+            }`,
             hasToolTip: true,
-        },
-        {
-            title: "Stability Fee",
-            val: `${0.00}%`,
+          },
+          // {
+          //   title: "GARD Borrow APR",
+          //   val: 0,
+          //   hasToolTip: true,
+          // },
+          {
+            title: "Bonus Supply Rewards",
+            val: 0,
             hasToolTip: true,
-        },
-        {
-            title: "Liquidation ratio",
-            val: `${0.00}%`,
+          },
+          {
+            title: "ALGO Governance APR",
+            val: `${34.3}%`,
             hasToolTip: true,
-        },
+          },
+          {
+            title: "Liquidation Ratio",
+            val: `${
+              getMinted() == null || getCollateral() == null ? "..." : displayRatio()
+            }`,
+            hasToolTip: true,
+          },
     ]
     const dispatch = useDispatch();
     const {theme} = useContext(ThemeContext);
@@ -113,21 +194,25 @@ export default function Positions() {
 
     document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
-
     // const Tabs = {
     //     one: <SystemMetrics />,
     //     two: <YourMetrics />,
     // };
     const tabs = {
         one: "Borrow More",
+        // two: "Supply More",
         two: "Repay Postion",
-        three: "Sell Position",
-        four: "Close Position",
+        three: "Close Position",
     };
     useEffect(async () => {
         setAPR(await getAlgoGovAPR())
         setPrice(await getPrice());
     }, []);
+
+    useEffect(() => {
+        setSupplyPrice(price)
+      }, [price])
+
     return <div>
       {loading ? <LoadingOverlay text={loadingText} /> : <></>}
         <Header>
@@ -178,39 +263,42 @@ export default function Positions() {
                  />
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
-                    {selectedTab === "one" ? <BorrowMore cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
+                    {selectedTab === "one" ? <BorrowMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} apr={apr} />
                     : selectedTab === "two" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
-                    : selectedTab === "three" ? <div>
-                        <SalesHeader>
-                            <b style={{textAlign:"left"}}>Position</b>
-                            <b>Sell for</b>
-                            <b style={{textAlign: "center"}}>Amount</b>
-                            <b style={{textAlign: "center"}}>Sale Discount</b>
-                        </SalesHeader>
-                        <SalesInfo>
-                            <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
-                                <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
-                                <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
-                            </div>
-                            <PrimaryButton text="ALGO"/>
-                            <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>
-                                <Input
-                                autoComplete="off"
-                                display="none"
-                                placeholder={"enter amount"}
-                                type='number'
-                                min="0.00"
-                                id="salesPrice"
-                                // value={salesPrice}
-                                // onChange={handleSalesPrice}
-                                />
-                                <Valuation>Value: ${12.3}</Valuation>
-                            </div>
-                            <div style={{color: "grey", textAlign: "center"}}> 4.33%</div>
-                        </SalesInfo>
-                        <PrimaryButton text="List for Sale" purple={true} disabled={true} />
-                </div>
-                    : <div style={{marginTop: 40}}>
+                    //
+                    :
+                    // : selectedTab === "three" ?
+                //     <div>
+                //         <SalesHeader>
+                //             <b style={{textAlign:"left"}}>Position</b>
+                //             <b>Sell for</b>
+                //             <b style={{textAlign: "center"}}>Amount</b>
+                //             <b style={{textAlign: "center"}}>Sale Discount</b>
+                //         </SalesHeader>
+                //         <SalesInfo>
+                //             <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
+                //                 <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
+                //                 <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
+                //             </div>
+                //             <PrimaryButton text="ALGO"/>
+                //             <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>
+                //                 <Input
+                //                 autoComplete="off"
+                //                 display="none"
+                //                 placeholder={"enter amount"}
+                //                 type='number'
+                //                 min="0.00"
+                //                 id="salesPrice"
+                //                 // value={salesPrice}
+                //                 // onChange={handleSalesPrice}
+                //                 />
+                //                 <Valuation>Value: ${12.3}</Valuation>
+                //             </div>
+                //             <div style={{color: "grey", textAlign: "center"}}> 4.33%</div>
+                //         </SalesInfo>
+                //         <PrimaryButton text="List for Sale" purple={true} disabled={true} />
+                // </div>
+                     <div style={{marginTop: 40}}>
                         <PrimaryButton
                         text="Close Position"
                         positioned={true}
