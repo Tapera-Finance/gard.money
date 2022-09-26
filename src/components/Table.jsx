@@ -194,8 +194,13 @@ export default function Table({
 
 const TableGrid = styled.table`
   width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #80edff;
+  border-collapse: separate;
+  border: 1px solid white;
+  border-spacing: 0px 3px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-top: none;
+  background: #0f1733;
 `
 
 // styled components
@@ -222,7 +227,7 @@ const CountText = styled.text`
 `;
 
 const HeaderRow = styled.tr`
-  background: #0f1733;
+  background: #172756;
   height: 44px;
   border-radius: 10px;
 `
@@ -233,19 +238,15 @@ const HeaderElement = styled.th`
   height: 44px;
   padding-left: 16px;
   text-align: left;
-  :first-child {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-  }
-  :last-child {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
 `;
 const TableRow = styled.tr`
   height: 60px;
-  background: #0f1733;
-  /* border: 2px solid #172756; */
+  background: #172756;
+  border-top: 3px solid #0f1733;
+  :last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
 `;
 const Cell = styled.td`
   font-weight: 500;
@@ -254,13 +255,11 @@ const Cell = styled.td`
   padding-left: 16px;
   text-align: left;
   :first-child {
-    border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
   }
   :last-child {
     margin-top: 10px;
     margin-right: 20px;
-    border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }
 `;

@@ -306,7 +306,7 @@ var borrowDetails = [
                       </InputDetails>
                   </InputContainer>
               </Background>
-              <PrimaryButton positioned={true} purple={true} text="Supply" onClick={()=>{cAlgos !== "" ? setGARD(1): null}}/>
+              <PrimaryButton positioned={true} blue={true} text="Supply" onClick={()=>{cAlgos !== "" ? setGARD(1): null}}/>
           </SubContainer>
           <SubContainer>
               <Background>
@@ -350,7 +350,7 @@ var borrowDetails = [
                   </InputContainer>
               </Background>
               <PrimaryButton
-              purple={true}
+              blue={true}
               positioned={true}
               text="Borrow"
               disabled={cAlgos == "" || mGARD == ""}
@@ -382,7 +382,7 @@ var borrowDetails = [
       <div>
         <PrimaryButton
         text={createPositionShown ? "Exit" : "Create New Position"}
-        purple={!createPositionShown}
+        blue={!createPositionShown}
         positioned={createPositionShown}
         onClick={() => {
           setCreatePositionShown(!createPositionShown)

@@ -204,7 +204,7 @@ export default function Positions() {
                         <PrimaryButton
                         text="Close Position"
                         positioned={true}
-                        purple={true}
+                        blue={true}
                         onClick={ async () => {
                           setLoading(true);
                           try {

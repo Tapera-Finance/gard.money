@@ -118,7 +118,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                     </InputContainer>
                 </Background>
                 <PrimaryButton
-                purple={true}
+                blue={true}
                 positioned={true}
                 text="Supply More"
                 onClick={ async () => {
@@ -174,7 +174,7 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                     </InputContainer>
                 </Background>
                 <PrimaryButton
-                purple={true}
+                blue={true}
                 positioned={true}
                 text="Borrow More"
                 onClick={ async () => {
