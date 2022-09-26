@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import Details from "../components/Details";
 import CountdownTimer from "../components/CountdownTimer";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getAlgoGovAPR } from "../components/Positions";
 import WalletConnect from "../components/WalletConnect";
 import Step from "../components/Step";
 import BinaryToggle from "../components/BinaryToggle";
+import { setAlert } from "../redux/slices/alertSlice";
 
 const fetchTvl = async () => {
   try {
@@ -45,39 +46,39 @@ export default function HomeContent() {
   const [allOpen, setAllOpen] = useState(false);
   const [difficulty, setDifficulty] = useState("Help Me Out");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
 
   const homeDetails = [
     {
       title: "Total Value Locked",
-      val: `${tvl.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
-      hasToolTip: false,
-    },
-    {
-      title: "APY",
-      val: `${apy}.00%`,
-      hasToolTip: false,
+      val: `$${tvl.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+      hasToolTip: true,
     },
     {
       title: "Gard Backed %",
       val: `${backed}%`,
-      hasToolTip: false,
+      hasToolTip: true,
     },
     {
       title: "ALGO APR",
       val: `${apr}%`,
-      hasToolTip: false,
+      hasToolTip: true,
+    },
+    {
+      title: "No-Lock GARD APR",
+      val: `${2}%`,
+      hasToolTip: true,
     },
   ];
 
   useEffect(async () => {
     let res = await fetchTvl();
-    console.log("res res ress", res);
     if (res) {
       console.log("respose from tvl call", res);
       setTvl(res.currentChainTvls.Algorand.toFixed(2));
       setBacked(
-        (res.currentChainTvls.Algorand / res.currentChainTvls.borrowed).toFixed(
+        (100 * res.currentChainTvls.Algorand / res.currentChainTvls.borrowed).toFixed(
           2,
         ),
       );
@@ -117,7 +118,7 @@ export default function HomeContent() {
             color: "#172756",
           }}
         >
-          <div>Governance Period #4</div>
+          <div>Governance Period #5</div>
           <div style={{ fontSize: "10pt" }}>Now - October 22, 2022</div>
           <div>12% - 33% APR Rewards</div>
         </div>
@@ -130,12 +131,19 @@ export default function HomeContent() {
             marginLeft: "25px",
           }}
         >
-          <span style={{ color: "#172756" }}>Enrollment Countdown</span>
-          <CountdownTimer targetDate={1761180257000} />
+          <span style={{ color: "#172756" }}>Enrollment is now live!</span>
+          {/* <CountdownTimer targetDate={1761180257000} /> */}
         </div>
         <EnrollButton
           text="Enroll"
-          onClick={() => navigate("/borrow")}
+          onClick={() => {
+            walletAddress ?
+            navigate("/borrow") : dispatch(
+              setAlert(
+                "You cannot enter without first connecting a Wallet",
+              ),
+            );
+          }}
         ></EnrollButton>
       </div>
       <div
@@ -158,7 +166,7 @@ export default function HomeContent() {
 
         <Details details={homeDetails} />
         <div>
-          <Text
+          {/* <Text
             style={{
               color: "#7c52ff",
               textAlign: "center",
@@ -167,7 +175,7 @@ export default function HomeContent() {
             // onClick={() => navigate("/analytics")}
           >
             {`See More Metrics ${">"}`}
-          </Text>
+          </Text> */}
         </div>
       </div>
       {difficulty === "Help Me Out" ? (
@@ -201,38 +209,49 @@ export default function HomeContent() {
               {allOpen ? `Collapse` : `Expand`} All
             </Text>
             {!walletAddress ? (
-              <Step>
-                Step 0: Connect Wallet:{" "}
-                {<WalletConnect style={{ alignSelf: "flex-start" }} />}
-              </Step>
+              <ConnectStep
+
+              >
+                <Text>
+                Step 0:
+
+                </Text>
+                <div>
+                  <WalletConnect style={{ alignSelf: "flex-start" }} />
+                  </div>
+              </ConnectStep>
             ) : (
               <></>
             )}
 
             <Step
               header="Step 1: Get Gard"
-              badges={["Aeneas"]}
+              badges={[]}
               subtitle="Exchange ALGO to borrow GARD"
-              text="Click the button below to be taken to the Borrow Page; Here you can open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin"
-              goTo="Borrow"
+              text="The easiest way to get GARD is to simply swap ALGOs for GARD on the GARD WebApp to enter the GARD ecosystem which enables users to earn staking rewards, GARDian rewards, and much more."
+              link="https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/gard"
+              linkText="GARD"
+              goTo="Swap"
               allOpen={allOpen}
             />
             <Step
               header="Step 2: Gain Rewards"
               badges={["Aeneas", "LP"]}
               subtitle="Add Liquidity to Pool"
-              text="Click the button below to be taken to the Swap Page; Here you can swap and pool with ASAs"
-              goTo="Swap"
+              text="Open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin."
+              link="https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/tutorial/supplying-assets"
+              linkText="needed to participate"
+              goTo="Borrow"
               allOpen={allOpen}
             />
-            <Step
+            {/* <Step
               header="Step 3: Gain More"
               badges={["LP"]}
               subtitle="Sell LP tokens"
               text="Click the button below to be taken to the Sell LP Tokens Page; Here you can sell LP tokens accumulated through interfacing with our liquidity pools, as well as auction and sell CPDs/positions created on our Borrow Page"
               goTo="Govern"
               allOpen={allOpen}
-            />
+            /> */}
           </StepContainer>
         </div>
       ) : (
@@ -262,8 +281,38 @@ const StepContainer = styled.div`
   margin-bottom: 50px;
 `;
 
+const ConnectStep = styled.div`
+  display: flex;
+  /* flex-direction: column; */
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  background: #0f1733;
+  color: #019fff;
+  height: 80px;
+  width: 30vw;
+  border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  ${(props) =>
+    props.open &&
+    css`
+      background: #019fff;
+      color: #0f1733;
+      width: 60vw;
+    `}
+  ${(props) =>
+    props.allOpen &&
+    css`
+      background: #019fff;
+      color: #0f1733;
+      width: 60vw;
+    `}
+`;
+
 const Text = styled.text`
   font-weight: 500px;
+  margin: 0px 4px 0px 0px;
 `;
 
 const EnrollButton = styled(PrimaryButton)`

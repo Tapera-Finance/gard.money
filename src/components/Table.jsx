@@ -193,11 +193,14 @@ export default function Table({
 }
 
 const TableGrid = styled.table`
-  border: 1px transparent;
   width: 100%;
-  margin: 10px;
   border-collapse: separate;
-  border-spacing: 0px;
+  border: 1px solid white;
+  border-spacing: 0px 3px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-top: none;
+  background: #0f1733;
 `
 
 // styled components
@@ -224,9 +227,9 @@ const CountText = styled.text`
 `;
 
 const HeaderRow = styled.tr`
-  background: #0f1733;
+  background: #172756;
   height: 44px;
-  border-radius: 8px;
+  border-radius: 10px;
 `
 const HeaderElement = styled.th`
   font-weight: 500;
@@ -234,35 +237,30 @@ const HeaderElement = styled.th`
   color: white;
   height: 44px;
   padding-left: 16px;
-  border-left: none;
-  border-top: 1px solid #172756;
   text-align: left;
-  :first-child {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-  }
-  :last-child {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
 `;
 const TableRow = styled.tr`
   height: 60px;
-  border-radius: 8px;
-  background: #0f1733;
-  border-bottom: 4px transparent #172756;
+  background: #172756;
+  border-top: 3px solid #0f1733;
+  :last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
 `;
 const Cell = styled.td`
-  border-bottom: 4px solid #172756;
   font-weight: 500;
   font-size: 14px;
   height: 44px;
   padding-left: 16px;
   text-align: left;
-  :last-child{
-    float: right;
+  :first-child {
+    border-bottom-left-radius: 10px;
+  }
+  :last-child {
     margin-top: 10px;
     margin-right: 20px;
+    border-bottom-right-radius: 10px;
   }
 `;
 const PaginationBar = styled.div`

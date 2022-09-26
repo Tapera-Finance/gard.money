@@ -12,7 +12,7 @@ import {
   getCurrentAlgoUsd,
 } from "../prices/prices";
 import { accountInfo } from "../wallets/wallets";
-import { validatorID } from "../transactions/ids";
+import { ids } from "../transactions/ids";
 import { liquidate } from "../transactions/cdp";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
@@ -53,7 +53,7 @@ async function loadDefaulted() {
       continue;
     }
     for (let k = 0; k < cdpinfo["apps-local-state"].length; k++) {
-      if (cdpinfo["apps-local-state"][k].id == validatorID) {
+      if (cdpinfo["apps-local-state"][k].id == ids.app.validator) {
         const validatorInfo = cdpinfo["apps-local-state"][k];
         if (validatorInfo.hasOwnProperty("key-value")) {
           // This if statement checks for borked CDPs (first tx = good, second = bad)

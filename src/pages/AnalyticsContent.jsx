@@ -9,17 +9,17 @@ export default function AnalyticsContent() {
 
   const Tabs = {
     one: <SystemMetrics />,
-    two: <YourMetrics />,
+    // two: <YourMetrics />,
   };
   const tabs = {
     one: "System Metrics",
-    two: "Your Metrics",
+    // two: "Your Metrics",
   };
   return (
     <div>
       <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
       {Tabs[selectedTab]}
     </div>
-    
+
   );
 }

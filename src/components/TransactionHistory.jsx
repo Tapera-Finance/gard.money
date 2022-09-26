@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import styled, { css } from "styled-components";
-import { camelToWords } from "../utils";
+import { camelToWords, formatToDollars } from "../utils";
 import { getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "../pages/RepayContent";
 import chevron from "../assets/icons/tablePag_icon.png";
@@ -17,8 +17,8 @@ function mAlgosToAlgosFixed(num) {
   return mAlgosToAlgos(num).toFixed(1);
 }
 
-function totalVal(n) {
-  //
+function totalVal(n1, n2) {
+  return formatToDollars(((n1 - n2) / 1e6).toString())
 }
 
 // only call db if wallet present
@@ -96,7 +96,7 @@ function formatHistory(documents) {
 
     const newTableEntry = {
       transactionType: actionToLabel(entry.actionType),
-      totalValue: 0,
+      totalValue: totalVal(entry.microAlgos, entry.microGARD),
       tokenAmountA: formattedAlgo
         ? formattedAlgo
         : mAlgosToAlgos(entry.microAlgos).toFixed(3),
@@ -206,20 +206,29 @@ export default function TransactionHistory() {
                   {keys.map((keyVal, keyIndex) => {
                     return typeof value[keyVal] === "object" ? (
                       <Cell className={value[keyVal].className} key={keyIndex}>
-                        {value[keyVal].value}
                         {value[keyVal].assetType === "Algo" ? (
                           <div style={{display: "flex", flexDirection: "row"}} >
                           <div style={{height: "40px"}}>
                             <AlgoImg src={algoLogo}></AlgoImg>
                             </div>
-                            Algo
+                        <div style={{display: "flex", flexDirection: "row", alignItems: "center"}} >
+                        {value[keyVal].value}
+                        </div>
+                            <div style={{padding: 2, alignSelf: "center" }}>
+                              Algo
+                              </div>
                           </div>
                         ) : (
                           <div style={{display: "flex", flexDirection: "row"}} >
-                          <div style={{height: "40px"}}>
+                          <div style={{height: "30px", padding: 4}}>
                             <GardImg src={gardLogo}></GardImg>
                           </div>
-                          Gard
+                            <div style={{display: "flex", flexDirection: "row", alignItems: "center"}} >
+                        {value[keyVal].value}
+                        </div>
+                          <div style={{padding: 2, alignSelf: "center"}} >
+                            Gard
+                            </div>
                           </div>
                         )}
                       </Cell>

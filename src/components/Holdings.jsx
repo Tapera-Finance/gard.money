@@ -1,27 +1,26 @@
-import React, {useState, useEffect} from "react"
-import styled from "styled-components"
-import PageToggle from "./PageToggle"
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import PageToggle from "./PageToggle";
 import Table from "./Table";
 import { formatToDollars } from "../utils";
 import { getCDPs, getPrice } from "../transactions/cdp";
-import { getWallet, getWalletInfo} from "../wallets/wallets";
+import { getWallet, getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "../pages/BorrowContent";
 
 const WalletTable = styled(Table)`
   margin-top: 12px;
-`
+`;
 const BorrowTable = styled(Table)`
   margin-top: 12px;
-`
+`;
 const SubToggle = styled(PageToggle)`
   float: right;
   background: transparent;
   margin-bottom: 6px;
   text {
     text-decoration: unset;
-
   }
-`
+`;
 
 const price = await getPrice();
 
@@ -50,13 +49,11 @@ function getAssets() {
   return assets;
 }
 
-
 const accumulateTotal = (arr, prop) => {
   return arr.reduce((acc, curr) => {
-    return acc + parseFloat(curr[prop])
-  }, 0)
-}
-
+    return acc + parseFloat(curr[prop]);
+  }, 0);
+};
 
 export default function Holdings() {
   const [walletTotal, setWalletTotal] = useState(0);
@@ -64,21 +61,36 @@ export default function Holdings() {
 
   const assets = getAssets();
   const cdps = CDPsToList();
+  const cdpData = cdps.map((cdp, i) => {
+    console.log(cdp)
+    return {
+      id: i + 1,
+      liquidationPrice: cdp.liquidationPrice,
+      collateral: formatToDollars(cdp.collateral.toString(), true),
+      debt: formatToDollars(cdp.debt.toString(), true),
+      committed: cdp.committed
+    }
+  })
 
   const holdColumns = ["Asset", "Token Amount", "Token Value"];
-  const borrowColumns = ["Borrow Positions", "Collateral Amount", "Collateral Value", "Debt Amount", "Net Value"];
+  const borrowColumns = [
+    "Borrow Positions",
+    "Liquidation Price",
+    "Collateral Value",
+    "Debt Amount",
+    "Committed",
+  ];
 
   useEffect(() => {
     let walletSum = accumulateTotal(assets, "amount");
     let netBorrowSum = accumulateTotal(cdps, "collateral");
     setWalletTotal(walletSum);
     setBorrowTotal(netBorrowSum / 1e6);
-  }, [])
-
+  }, []);
 
   const tabs = {
-    one: <div>stake</div>,
-    two: (
+    // one: <div>stake</div>,
+    one: (
       <WalletTable
         data={assets}
         title="Wallet"
@@ -86,28 +98,36 @@ export default function Holdings() {
         columns={holdColumns}
       />
     ),
-    three: (
-      <BorrowTable data={cdps} title="Borrow Positions" subtitle={`(${formatToDollars(borrowTotal.toString())}) Total Value`} columns={borrowColumns} />
+    two: (
+      <BorrowTable
+        data={cdpData}
+        title="Borrow Positions"
+        subtitle={`(${formatToDollars(borrowTotal.toString())}) Total Value`}
+        columns={borrowColumns}
+      />
     ),
   };
 
-    const [currentPrice, setPrice] = useState("Loading...");
-    const [selectedTab, setSelectedTab] = useState("one")
-    useEffect(async () => {
-        let price = await getPrice();
-        setPrice(price);
-      }, []);
-    return (
-        <div>
-            <SubToggle selectedTab={setSelectedTab} tabs={{one: "Stake", two: "Wallet", three: "Borrow"}} />
-            {tabs[selectedTab]}
-        </div>
-    )
+  const [currentPrice, setPrice] = useState("Loading...");
+  const [selectedTab, setSelectedTab] = useState("one");
+  useEffect(async () => {
+    let price = await getPrice();
+    setPrice(price);
+  }, []);
+  return (
+    <div>
+      <SubToggle
+        selectedTab={setSelectedTab}
+        tabs={{
+          // one: "Stake",
+          one: "Wallet",
+          two: "Borrows",
+        }}
+      />
+      {tabs[selectedTab]}
+    </div>
+  );
 }
-
-
-
-
 
 // dummy data for the assets table
 var dummyAssets =

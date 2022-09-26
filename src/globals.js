@@ -18,7 +18,7 @@ export const AUCTIONS_CONTENT_NAMES = {
 
 export const commitmentPeriodEnd = 1657814399000;
 
-export const VERSION = "MAINNET";
+export const VERSION = "TESTNET2";
 // TESTNET1 = initial testnet release
 // TESTNET2 = testnet w/ updated backend code
 // MAINNET = mainnet

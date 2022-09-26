@@ -1,17 +1,12 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { calcRatio, calcDevFees } from "../transactions/cdp.js";
+import { calcRatio } from "../transactions/cdp.js";
 
 function mAlgosToAlgos(num) {
   return num / 1000000;
 }
 function algosToMAlgos(num) {
   return num * 1000000;
-}
-
-function displayFees(minted) {
-  const fees = mAlgosToAlgos(calcDevFees(algosToMAlgos(minted)));
-  return fees + " Algos";
 }
 
 function getNew(id) {
@@ -271,7 +266,7 @@ export function Child(props) {
               <SpecificsValue>
                 {!isValidInput(props.someVar)
                   ? "..."
-                  : displayFees(props.someVar)}
+                  : "TODO: FIXME"}
               </SpecificsValue>
             </div>
           </div>

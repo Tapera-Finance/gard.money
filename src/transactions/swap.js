@@ -1,6 +1,6 @@
 import algosdk from "algosdk";
 import {
-  gardID,
+  ids,
   gainID,
   gardianID,
   pactALGOGARDID,
@@ -16,11 +16,13 @@ import {
 import { verifyOptIn } from "./cdp";
 import { updateDBWebActions } from "../components/Firebase";
 import { VERSION } from "../globals";
+import { psToken } from "../wallets/keys";
 
 import pactsdk from "@pactfi/pactsdk";
 import { formatAmt } from "../components/swap/swapHelpers";
 
-export const pactClient = new pactsdk.PactClient(algodClient);
+// TODO: ONLY USING MAINNET, FIX THIS
+export const pactClient = new pactsdk.PactClient(new algosdk.Algodv2(psToken, "https://mainnet-algorand.api.purestake.io/ps2", ""));
 export const gardpool = await pactClient.fetchPoolById(pactALGOGARDID);
 
 export async function previewPoolSwap(
@@ -93,8 +95,8 @@ export async function swap(
   const enc = new TextEncoder();
   let poolToUse;
   if (
-    (assetA.id === 0 && assetB.id === gardID) ||
-    (assetA.id === gardID && assetB.id === 0)
+    (assetA.id === 0 && assetB.id === ids.asa.gard) ||
+    (assetA.id === ids.asa.gard && assetB.id === 0)
   ) {
     poolToUse = gardpool;
   }
@@ -107,7 +109,7 @@ export async function swap(
 
   const formattedAmount = formatAmt(fromAmt);
   const formattedMin = formatAmt(toAmt);
-  const minimum = Math.trunc((formattedMin * (1 - slippagePct)) / 1e6);
+  const minimum = formatAmt(Math.trunc((formattedMin * (1 - slippagePct)) / 1e6));
   const opted = verifyOptIn(info, toAsset.index);
 
   let txn1 =
@@ -163,6 +165,7 @@ export async function swap(
   );
 
   setLoadingStage(null);
-  updateDBWebActions(8, null, minimum, -fromAmt, 0, 1, 3000);
+
+  updateDBWebActions(8, null, minimum, -formattedAmount, 0, 1, 3000);
   return response;
 }

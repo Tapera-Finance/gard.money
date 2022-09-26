@@ -7,7 +7,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import { getBalances } from "./swap/swapHelpers";
 import * as tips from "../assets/tooltiptext";
-import { gardID } from "../transactions/ids";
+import { ids } from "../transactions/ids";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import gardIcon from "../assets/icons/gardlogo_icon_small.png";
 import PrimaryButton from "./PrimaryButton";
@@ -58,7 +58,6 @@ export default function AccountCard() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-evenly",
-            alignItems: "flex-start",
           }}
         >
           {walletAddress ? (
@@ -161,7 +160,7 @@ export default function AccountCard() {
               <IconButton
                 style={menuStyle}
                 onClick={() =>
-                  window.open("https://algoexplorer.io/asset/" + gardID)
+                  window.open("https://algoexplorer.io/asset/" + ids.asa.gard)
                 }
               >
                 GARD: {balances["gard"]}

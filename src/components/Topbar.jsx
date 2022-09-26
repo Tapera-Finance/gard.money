@@ -12,7 +12,7 @@ import WalletConnect from "./WalletConnect";
 
 export default function Topbar({ contentName, setMainContent }) {
   return (
-    <div>
+    <div >
       <TopBar
         style={{
           backgroundColor: "#172756",
@@ -45,7 +45,6 @@ export default function Topbar({ contentName, setMainContent }) {
         <div style={{ display: "flex", flexDirection: "row" }}>
           <div style={{ paddingRight: 20 }}></div>
           <AccountCard />
-          {/* <WalletConnect /> */}
         </div>
       </TopBar>
     </div>

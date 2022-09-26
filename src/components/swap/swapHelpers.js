@@ -1,6 +1,6 @@
 import { gardpool } from "../../transactions/swap";
 import { getWalletInfo, getGARDInWallet } from "../../wallets/wallets";
-import { gardID } from "../../transactions/ids";
+import { ids } from "../../transactions/ids";
 import { formatToDollars } from "../../utils";
 
 const prices = {
@@ -107,8 +107,8 @@ export function previewSwap(assetA, assetB, params) {
   let poolToUse;
 
   if (
-    (assetA.id === 0 && assetB.id === gardID) ||
-    (assetA.id === gardID && assetB.id === 0)
+    (assetA.id === 0 && assetB.id === ids.asa.gard) ||
+    (assetA.id === ids.asa.gard && assetB.id === 0)
   ) {
     poolToUse = gardpool;
   }

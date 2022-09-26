@@ -10,7 +10,7 @@ import PrimaryButton from "../PrimaryButton";
 import LoadingOverlay from "../LoadingOverlay";
 import swapIcon from "../../assets/icons/swap_icon_v2.png";
 import { getWalletInfo, handleTxError } from "../../wallets/wallets";
-import { gardID, usdcID } from "../../transactions/ids";
+import { ids, usdcID } from "../../transactions/ids";
 import {
   mAlgosToAlgos,
   previewSwap,
@@ -51,7 +51,7 @@ export default function SwapDetails() {
   const [assetAtotal, setAssetAtotal] = useState(0);
   const [assetBtotal, setAssetBtotal] = useState(0);
   const [assetAid, setAssetAid] = useState(0);
-  const [assetBid, setAssetBid] = useState(gardID);
+  const [assetBid, setAssetBid] = useState(ids.asa.gard);
   const [pool, setPool] = useState(gardpool);
   const [swapEffect, setSwapEffect] = useState(initEffectState);
 
@@ -438,6 +438,7 @@ export default function SwapDetails() {
           disabled={disabled ? true : false}
         ></ExchangeButton>
       </BtnBox>
+      <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
       <DetailsContainer>
         <Details>
           {effects.length > 0
@@ -487,6 +488,7 @@ export default function SwapDetails() {
             : null}
         </Details>
       </DetailsContainer>
+      </div>
     </div>
   );
 }
@@ -554,7 +556,6 @@ const BtnBox = styled.div`
 
 const ExchangeButton = styled(PrimaryButton)`
   margin-top: 25px;
-  border: 1px transparent;
 `;
 
 const DetailsContainer = styled.div`
@@ -563,11 +564,12 @@ const DetailsContainer = styled.div`
   flex: 2;
   justify-content: center;
   width: 80%;
-  height: 30vh;
+  padding: 15px 0px 0px 5px;
   background: #0f1733;
   border-radius: 10px;
-  margin: auto;
+  border: 1px solid #80edff;
   margin-top: 30px;
+  margin-bottom: 20vh;
 `;
 
 const Details = styled.div`
