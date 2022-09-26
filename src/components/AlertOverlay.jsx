@@ -2,27 +2,24 @@ import React, { useEffect, useReducer, useState, useContext } from "react";
 import styled, { keyframes, css } from "styled-components";
 import closeIcon from "../assets/icons/close_icon.png";
 import PrimaryButton from "./PrimaryButton";
+import celebration from "../assets/icons/celebration.png"
 
 const Backdrop = styled.div`
   position: fixed;
-  height: 100vh;
-  width: 100vw;
-  left: 0;
-  top: 0;
+  right: 30px;
+  bottom: 30px;
   z-index: ${21};
-  background: ${"#b0b0b080"};
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 const Container = styled.div`
-  background: rgba(13, 18, 39);
+  height: 270px;
+  width: 400px;
+  background: #0E1834;
   color: white;
   display: flex;
-  width: 400px;
   flex-direction: column;
-  border-radius: 25px;
+  border-radius: 10px;
   padding: 10px 20px;
+  border: 1px solid white;
 `;
 
 export default function AlertOverlay({ text, requestClose }) {
@@ -31,9 +28,11 @@ export default function AlertOverlay({ text, requestClose }) {
     if (!text) return;
     setContent(textWithLink(text));
   }, []);
+  var textParse = text.match( /[^.!?]+[.!?]+/g );
+  var celebrate = textParse.includes("Successfully opened a new CDP.")
   return (
     <div>
-      <Backdrop onClick={() => requestClose()}>
+      <Backdrop>
         <Container>
           <div
             style={{
@@ -45,10 +44,9 @@ export default function AlertOverlay({ text, requestClose }) {
               <img src={closeIcon} />
             </CloseButton>
           </div>
-          <div style={{ margin: 20 }}>{content}</div>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <PrimaryButton text={"OK"} onClick={() => requestClose()} />
-          </div>
+          {celebrate ? <img style={{borderRadius: 10, objectFit:"cover",}} src={celebration} />: <></>}
+          <div style={{marginTop: 10}}>{content}</div>
+          
         </Container>
       </Backdrop>
     </div>
@@ -77,6 +75,7 @@ const CloseButton = styled.button`
   border: 0px;
   background: transparent;
   cursor: pointer;
+  margin-bottom: 10px;
 `;
 
 function textWithLink(text) {

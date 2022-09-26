@@ -1,6 +1,5 @@
 import React, { useReducer, useState, useContext } from "react";
 import styled, { keyframes, css } from "styled-components";
-import puppy from "../assets/puppy-min.png"
 import closeIcon from "../assets/icons/close_icon.png";
 
 
@@ -10,16 +9,8 @@ export default function LoadingOverlay({ text, close }) {
       <Backdrop>
         <TextContainer>
           <CloseButton onClick={() => close()}>
-              <img style={{height: 20}} src={closeIcon} />
+              <img src={closeIcon} />
           </CloseButton>
-          {/* <img 
-          style={{
-            height: "40%",
-            objectFit: "cover",
-            borderRadius: 10,
-          }} 
-          src={puppy} 
-          alt="puppy"/> */}
           <div>
             <LoadingText>{text || "Loading..."}</LoadingText>
           </div>
@@ -37,7 +28,7 @@ const TextAnimation = keyframes`
 
 const LoadingText = styled.text`
   font-weight: 500;
-  font-size: 14px;
+  font-size: 16px;
   animation-name: ${TextAnimation};
   animation-duration: 1s;
   animation-iteration-count: infinite;
@@ -52,23 +43,21 @@ const Backdrop = styled.div`
   z-index: ${21};
 `;
 const TextContainer = styled.div`
-  height: 130px;
+  height: 270px;
   width: 400px;
   border: 1px solid white;
   background: #0E1834;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   border-radius: 10px;
-  padding: 0px 20px 40px 20px;
+  padding: 10px 20px;
 `;
 const CloseButton = styled.button`
   position: relative;
-  bottom: 30px;
-  left: 15px;
   border: 0px;
   background: transparent;
   cursor: pointer;
   align-self: end;
+  margin-bottom: 10px;
 `;
