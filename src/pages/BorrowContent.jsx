@@ -196,43 +196,65 @@ export default function BorrowContent(){
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
   var details = [
     {
-        title: "Collateral",
-        val: `${cAlgos === "" ? "...": `$${(cAlgos * supplyPrice).toFixed(2)}`}`,
-        hasToolTip: true,
+      title: "Total Supplied (Asset)",
+      val: `${cAlgos === "" ? "..." : cAlgos}`,
+      hasToolTip: true,
     },
     {
-        title: "Liquidation Price",
-        val: `${getMinted() == null || getCollateral() == null
-          ? "..."
-          : displayLiquidationPrice()}`,
-        hasToolTip: true,
+      title: "Total Supplied ($)",
+      val: `${cAlgos === "" ? "..." : `$${(cAlgos * supplyPrice).toFixed(2)}`}`,
+      hasToolTip: true,
     },
     {
-        title: "Stability Fee",
-        val: `${getMinted() == null || getCollateral() == null
-          ? "..."
-          : "TODO: FIXME"}`,
-        hasToolTip: true,
+      title: "Collateral Factor",
+      val: `${(100 / 140).toFixed(2)}`,
+      hasToolTip: true,
     },
     {
-        title: "Liquidation ratio",
-        val: `${getMinted() == null || getCollateral() == null
-          ? "..."
-          : displayRatio()}`,
-        hasToolTip: true,
+      title: "Borrow Utilization",
+      val: `${
+        cAlgos === "" || maxGARD === "" ? "..." : (cAlgos / maxGARD).toFixed(2)
+      }%`,
+      hasToolTip: true,
     },
-]
+    {
+      title: "Liquidation Price",
+      val: `${
+        getMinted() == null || getCollateral() == null
+          ? "..."
+          : displayLiquidationPrice()
+      }`,
+      hasToolTip: true,
+    },
+    // {
+    //   title: "GARD Borrow APR",
+    //   val: 0,
+    //   hasToolTip: true,
+    // },
+    {
+      title: "Bonus Supply Rewards",
+      val: 0,
+      hasToolTip: true,
+    },
+    {
+      title: "ALGO Governance APR",
+      val: `${34.3}%`,
+      hasToolTip: true,
+    },
+    {
+      title: "Liquidation Ratio",
+      val: `${
+        getMinted() == null || getCollateral() == null ? "..." : displayRatio()
+      }`,
+      hasToolTip: true,
+    },
+  ];
 
 var supplyDetails = [
   {
     title: "Supply Limit",
     val: `${maxCollateral} ALGOs`,
     hasToolTip: true,
-  },
-  {
-      title: "Supply APY",
-      val: `${0.00}%`,
-      hasToolTip: true,
   },
   {
       title: "Supply Rewards",
@@ -245,11 +267,6 @@ var borrowDetails = [
     title: "Borrow Limit",
     val: `${maxGARD} GARD`,
     hasToolTip: true,
-  },
-  {
-      title: "Borrow APR",
-      val: `${0.00}%`,
-      hasToolTip: true,
   },
   {
       title: "Borrow Rewards",
@@ -306,8 +323,9 @@ var borrowDetails = [
                       </InputDetails>
                   </InputContainer>
               </Background>
-              <PrimaryButton positioned={true} blue={true} text="Supply" onClick={()=>{cAlgos !== "" ? setGARD(1): null}}/>
+              {/* <PrimaryButton positioned={true} blue={true} text="Supply" onClick={()=>{cAlgos !== "" ? setGARD(1): null}}/> */}
           </SubContainer>
+
           <SubContainer>
               <Background>
                   <Title>Borrow
@@ -349,10 +367,13 @@ var borrowDetails = [
                       </InputDetails>
                   </InputContainer>
               </Background>
-              <PrimaryButton
+
+          </SubContainer>
+      </Container>
+      <PrimaryButton
               blue={true}
               positioned={true}
-              text="Borrow"
+              text="Create CDP"
               disabled={cAlgos == "" || mGARD == ""}
               onClick={async () => {
                 setLoading(true)
@@ -373,8 +394,6 @@ var borrowDetails = [
                 setLoading(false)
               }}
               />
-          </SubContainer>
-      </Container>
       <Details className={"borrow"} details={details}/>
       </div> :
       <></> }
@@ -388,7 +407,7 @@ var borrowDetails = [
           setCreatePositionShown(!createPositionShown)
         }}
         />
-        <Positions/>
+        <Positions maxGARD={maxGARD}/>
       </div>}
     </div>
 }
@@ -438,7 +457,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(3, 32%);
+grid-template-columns:repeat(2, 40%);
 row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
