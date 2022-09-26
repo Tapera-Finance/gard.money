@@ -169,6 +169,7 @@ export default function AccountContent() {
 
 const AccountContainer = styled.div`
   background: rgba(13, 18, 39, 0.75);
+  border: 1px solid #80edff;
   padding: 5vw 4vw;
   margin-top: 36px;
   margin-bottom: 56px;

@@ -24,19 +24,31 @@ const ShowCounter = ({ days, hours, minutes, seconds }) => {
   );
 };
 
-const CountdownTimer = ({ targetDate }) => {
+const CountdownTimer = ({ targetDate, showZero }) => {
   const [days, hours, minutes, seconds] = useCountdown(targetDate);
 
   if (days + hours + minutes + seconds <= 0) {
     return <ExpiredNotice />;
   } else {
     return (
-      <ShowCounter
-        days={days}
-        hours={hours}
-        minutes={minutes}
-        seconds={seconds}
-      />
+      <div>
+
+        {showZero ? (
+          <ShowCounter
+          days={0}
+          hours={0}
+          minutes={0}
+          seconds={0}
+          />
+        ) :
+        <ShowCounter
+          days={days}
+          hours={hours}
+          minutes={minutes}
+          seconds={seconds}
+        />
+      }
+      </div>
     );
   }
 };

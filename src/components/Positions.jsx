@@ -214,7 +214,7 @@ export default function Positions() {
                         <PrimaryButton
                         text="Close Position"
                         positioned={true}
-                        purple={true}
+                        blue={true}
                         onClick={ async () => {
                           setLoading(true);
                           try {
@@ -280,6 +280,7 @@ const Position = styled.div`
 `
 const PositionInfo = styled.div`
     display: grid;
+    border: 1px solid #80edff;
     grid-template-columns:repeat(3, 30%);
     justify-content:center;
     align-content: center;
@@ -296,11 +297,11 @@ const SliderRange = styled.div`
 const Input = styled.input`
     border-radius: 0;
     height: 30px;
-    width 80%;
+    width: 80%;
     color: white;
     text-decoration: none;
     border: none;
-    border-bottom 2px solid #7c52ff;
+    border-bottom: 2px solid #7c52ff;
     text-align: center;
     opacity: 100%;
     font-size: 20px;

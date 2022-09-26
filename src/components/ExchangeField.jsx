@@ -103,6 +103,7 @@ const Container = styled.div`
   height: 16vh;
   width: 30vw;
   border-radius: 8px;
+  border: 1px solid #80edff;
 `;
 
 const Text = styled.text`
