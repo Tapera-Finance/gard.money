@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { microalgosToAlgos } from "algosdk";
 import styled from "styled-components";
 import { getCDPs, getPrice, calcRatio, closeCDP } from "../transactions/cdp";
-import { useDispatch } from "react-redux";
 import { getWalletInfo, handleTxError } from "../wallets/wallets";
 import { Slider, ThemeProvider } from "@mui/material";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -123,6 +122,7 @@ export default function Positions({maxGARD}) {
     const [currentCDP, setCurrentCDP] = useState(null)
     const [selectedTab, setSelectedTab] = useState("one");
     const [loading, setLoading] = useState(false);
+    const [loadingText, setLoadingText] = useState(null);
     var details = [
         {
             title: "Total Supplied (Asset)",
@@ -178,15 +178,6 @@ export default function Positions({maxGARD}) {
             hasToolTip: true,
           },
     ]
-    const dispatch = useDispatch();
-    const {theme} = useContext(ThemeContext);
-    const [price, setPrice] = useState(0)
-    const [apr, setAPR] = useState(0)
-    const loadedCDPs = CDPsToList();
-    const [currentCDP, setCurrentCDP] = useState(null)
-    const [selectedTab, setSelectedTab] = useState("one");
-    const [loading, setLoading] = useState(false);
-    const [loadingText, setLoadingText] = useState(null);
 
     var sessionStorageSetHandler = function (e) {
       setLoadingText(JSON.parse(e.value));
