@@ -2,8 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { microalgosToAlgos } from "algosdk";
 import styled from "styled-components";
-import { getCDPs, getPrice, calcRatio } from "../transactions/cdp";
-import { getWalletInfo } from "../wallets/wallets";
+import { getCDPs, getPrice, calcRatio, closeCDP } from "../transactions/cdp";
+import { useDispatch } from "react-redux";
+import { getWalletInfo, handleTxError } from "../wallets/wallets";
 import { Slider, ThemeProvider } from "@mui/material";
 import { ThemeContext } from "../contexts/ThemeContext";
 import Details from "./Details";
@@ -13,6 +14,8 @@ import TextButton from "./TextButton";
 import PageToggle from "./PageToggle"
 import BorrowMore from "./BorrowMore";
 import RepayPosition from "./RepayPosition";
+import { setAlert } from "../redux/slices/alertSlice";
+import LoadingOverlay from "./LoadingOverlay";
 
 const axios = require("axios");
 
@@ -175,6 +178,21 @@ export default function Positions({maxGARD}) {
             hasToolTip: true,
           },
     ]
+    const dispatch = useDispatch();
+    const {theme} = useContext(ThemeContext);
+    const [price, setPrice] = useState(0)
+    const [apr, setAPR] = useState(0)
+    const loadedCDPs = CDPsToList();
+    const [currentCDP, setCurrentCDP] = useState(null)
+    const [selectedTab, setSelectedTab] = useState("one");
+    const [loading, setLoading] = useState(false);
+    const [loadingText, setLoadingText] = useState(null);
+
+    var sessionStorageSetHandler = function (e) {
+      setLoadingText(JSON.parse(e.value));
+    };
+
+    document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
     // const Tabs = {
     //     one: <SystemMetrics />,
@@ -196,6 +214,7 @@ export default function Positions({maxGARD}) {
       }, [price])
 
     return <div>
+      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
         <Header>
             <b>Your Positions</b>
             <b style={{textAlign: "center"}}>Rewards</b>
@@ -284,6 +303,19 @@ export default function Positions({maxGARD}) {
                         text="Close Position"
                         positioned={true}
                         blue={true}
+                        onClick={ async () => {
+                          setLoading(true);
+                          try {
+                              let res = await closeCDP(cdp.id);
+                              if (res.alert) {
+                                dispatch(setAlert(res.text));
+                              }
+                            } catch (e) {
+                              handleTxError(e, "Error minting from CDP");
+                            }
+                          setLoading(false);
+                          setCurrentCDP(null);
+                        }}
                         />
                     </div>}
                 </div> : <></>}

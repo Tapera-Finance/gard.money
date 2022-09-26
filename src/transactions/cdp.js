@@ -1,6 +1,6 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { reserve, treasury, cdpGen } from "./contracts";
+import { validatorAddress, cdpGen } from "./contracts";
 import {
   accountInfo,
   getParams,
@@ -14,6 +14,7 @@ import {
   addCDPToFireStore,
   updateDBWebActions,
   updateLiquidationFirestore,
+  addUserToGleam
 } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
 
@@ -66,45 +67,54 @@ export function calcRatio(collateral, minted, string = false) {
   return ratio;
 }
 
-const EncodedDebt = "R0FSRF9ERUJU";
+const EncodedPrincipal = "UHJpbmNpcGFs";
+const EncodedDebt = "U0dBUkRfREVCVA==";
 
-console.log(ids.app.validator)
+function getCDPState(cdpInfo) {
+  let res = {
+    state: 'closed',
+  }
+  if (cdpInfo.amount > 0) {
+    res.state = 'opened';
+    res.collateral = cdpInfo.amount;
+    for (let i = 0; i < cdpInfo["apps-local-state"].length; i++) {
+      if (cdpInfo["apps-local-state"][i].id == ids.app.validator) {
+        const validatorInfo = cdpInfo["apps-local-state"][i];
+        if (validatorInfo.hasOwnProperty("key-value")) {
+          // This if statement checks for borked CDPs (first tx = good, second = bad)
+          // Improvement: Do something with borked CDP
+          for (let n = 0; n < validatorInfo["key-value"].length; n++) {
+            if (validatorInfo["key-value"][n]["key"] == EncodedPrincipal) {
+              res.principal = validatorInfo["key-value"][n]["value"]["uint"];
+            } else if (validatorInfo["key-value"][n]["key"] == EncodedDebt) {
+              res.debt = validatorInfo["key-value"][n]["value"]["uint"];
+            }
+          }
+        } else {
+          res.state = 'borked';
+        }
+        break;
+      }
+    }
+  }
+  
+  return res
+}
 
 async function checkChainForCDP(address, id) {
   // This function checks for the existence of a CDP
   // This is done by getting the info, then
   const cdp = cdpGen(address, id);
   const info = await accountInfo(cdp.address);
-
-  if (info.amount > 0) {
-    let collateral = info.amount;
-    if (VERSION == "TESTNET1") {
-      collateral = collateral - fundingAmount;
-    }
-    let debt;
-    // Done by checking the validator local state via the cdp address
-    for (let i = 0; i < info["apps-local-state"].length; i++) {
-      if (info["apps-local-state"][i].id == ids.app.validator) {
-        const validatorInfo = info["apps-local-state"][i];
-        if (validatorInfo.hasOwnProperty("key-value")) {
-          // This if statement checks for borked CDPs (first tx = good, second = bad)
-          // Improvement: Do something with borked CDPs
-
-          for (let n = 0; n < validatorInfo["key-value"].length; n++) {
-            if (validatorInfo["key-value"][n]["key"] == EncodedDebt) {
-              debt = validatorInfo["key-value"][n]["value"]["uint"];
-              break;
-            }
-          }
-        } else {
-          updateCDP(address, id, collateral, 0, "borked");
-        }
-        break;
-      }
-    }
-    if (debt) {
-      updateCDP(address, id, collateral, debt);
-    }
+  
+  const state = getCDPState(info)
+  
+  if (state.state == 'borked') {
+    updateCDP(address, id, state.collateral, 0, "borked");
+    return true;
+  }
+  if (state.state == 'opened') {
+    updateCDP(address, id, state.collateral, state.principal);
     return true;
   }
   removeCDP(address, id);
@@ -151,7 +161,6 @@ async function findOpenID(address) {
     ) {
       const used = await checkChainForCDP(address, x);
       if (!used) {
-        console.log("Found open cdp: " + x);
         return x;
       }
     }
@@ -172,7 +181,6 @@ export function verifyOptIn(info, assetID) {
 
 export function createOptInTxn(params, info, assetID) {
   params.fee = 1000;
-  console.log("creating opt in for ", assetID);
   let txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: info.address,
@@ -197,6 +205,19 @@ sessionStorage.setItem = function (key, value) {
 
 function setLoadingStage(stage) {
   sessionStorage.setItem("loadingStage", JSON.stringify(stage));
+}
+
+function makeUpdateInterestTxn(userInfo, params) {
+  return algosdk.makeApplicationCallTxnFromObject({
+    from: userInfo.address,
+    appIndex: ids.app.sgard_gard,
+    onComplete: 0,
+    appArgs: [enc.encode("update")],
+    accounts: [],
+    foreignApps: [ids.app.sgard_gard, ids.app.dao.interest],
+    foreignAssets: [],
+    suggestedParams: params,
+  });
 }
 
 export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
@@ -268,16 +289,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   let optins = 0;
   params.fee = 5000;
   // txn 0 = update interest rate
-  let txn0 = algosdk.makeApplicationCallTxnFromObject({
-    from: info.address,
-    appIndex: ids.app.sgard_gard,
-    onComplete: 0,
-    appArgs: [enc.encode("update")],
-    accounts: [],
-    foreignApps: [ids.app.sgard_gard, ids.app.dao.interest],
-    foreignAssets: [],
-    suggestedParams: params,
-  });
+  let txn0 = makeUpdateInterestTxn(info, params)
   txns.push(txn0)
   // Sets fee to 1000 for potential opt ins
   params.fee = 1000;
@@ -379,7 +391,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   // stxn 4
   stxns.push(_stxns[1 + optins].blob)
   // stxn 5
-  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(3)]);
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(2)]);
   let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
   stxns.push(stxn5.blob)
   // stxn 6
@@ -401,6 +413,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   );
   
   addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, 0);
+  addUserToGleam("openCDP", info.address)
   
   if (commit) {
     updateCommitmentFirestore(info.address, accountID, openingMicroALGOs);
@@ -424,46 +437,31 @@ export async function mint(accountID, newGARD) {
   let cdp = cdpGen(info.address, accountID);
   let microNewGARD = microGARD(newGARD);
 
-  let params = await getParams(0);
+  let params = await getParams(3000);
+  // txn 0 - update the interest rate
+  let txn0 = makeUpdateInterestTxn(info, params)
+  // txn1 - more gard!
+  params.fee = 0
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
-    from: cdp.address,
+    from: info.address,
     appIndex: ids.app.validator,
     onComplete: 0,
-    appArgs: [enc.encode("MoreGARD")],
+    appArgs: [enc.encode("MoreGARD"), algosdk.encodeUint64(microNewGARD)],
     accounts: [cdp.address],
-    foreignApps: [ids.app.oracle],
+    foreignApps: [ids.app.oracle, ids.app.sgard_gard, ids.app.dao.interest],
     foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
-  params.fee = 3000;
-  params.fee = 0;
-  let txn3 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: reserve.address,
-    to: info.address,
-    amount: microNewGARD,
-    suggestedParams: params,
-    assetIndex: ids.asa.gard,
-  });
 
-  let txns = [txn1, txn3];
+  let txns = [txn0, txn1];
   algosdk.assignGroupID(txns);
-  const signedGroupPromise = signGroup(info, txns);
-
+  
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
-
-  let lsigCDP = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(5)]);
-  let lsigReserve = algosdk.makeLogicSig(reserve.logic, [
-    algosdk.encodeUint64(2),
-  ]);
-
-  let stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsigCDP);
-  let stxn3 = algosdk.signLogicSigTransactionObject(txn3, lsigReserve);
-  let signedGroup = await signedGroupPromise;
-  let stxn2 = signedGroup[1];
+  const signedGroup = await signGroup(info, txns);
 
   setLoadingStage("Confirming Transaction...");
 
-  let stxns = [stxn1.blob, stxn2.blob, stxn3.blob];
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob];
 
   let response = await sendTxn(
     stxns,
@@ -523,7 +521,7 @@ export async function addCollateral(accountID, newAlgos) {
   });
   let txn2 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
-    appIndex: ids.app.auction_checker, // needs to be added
+    appIndex: ids.app.auction_checker,
     onComplete: 0,
     appArgs: [enc.encode("CDP_Check")],
     accounts: [cdp.address],
@@ -545,35 +543,55 @@ export async function addCollateral(accountID, newAlgos) {
   );
   setLoadingStage(null);
 
-  updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
   checkChainForCDP(info.address, accountID);
+  updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
 
   return response;
-  // XXX: May want to do something else besides this, a promise? loading screen?
 }
 
-export async function closeCDP(accountID, microRepayGARD, payFee = true) {
+
+const encodedConversionRate = 'Y29udmVyc2lvbl9yYXRl'
+
+
+async function sgardToGard(amt) {
+  const sgardGardInfo = (await getAppByID(ids.app.sgard_gard)).params
+  console.log(sgardGardInfo)
+  for (let i = 0; i < sgardGardInfo["global-state"].length; i++) {
+    if (sgardGardInfo["global-state"][i]["key"] == encodedConversionRate) {
+      let rate = sgardGardInfo["global-state"][i]["value"]["uint"];
+      return amt * rate / (10 ** 9)
+    }
+  }
+}
+
+
+async function totalDebt(cdpInfo) {
+  console.log(cdpInfo)
+  return await sgardToGard(getCDPState(cdpInfo).debt)
+}
+
+
+export async function closeCDP(accountID) {
 
   // Promise setup
   setLoadingStage("Loading...");
 
   const accountInfoPromise = accountInfo();
-  let paramsPromise = getParams(0);
-
-  // Core info
-  let validatorArgs = [enc.encode("CloseNoFee")];
-  let foreignApps = [ids.app.oracle];
-  if (payFee) {
-    validatorArgs = [enc.encode("CloseFee")];
-    foreignApps = [ids.app.oracle];
-  }
-  let info = await accountInfoPromise;
+  const paramsPromise = getParams(5000);
+  const info = await accountInfoPromise;
   let cdp = cdpGen(info.address, accountID);
   let cdpInfo = await accountInfo(cdp.address);
-  const cdpBal = cdpInfo.amount;
+  let params = await paramsPromise;
+  
+  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * .02)/365/24/60)) + 3000
+  console.log(microRepayGARD)
+  
   let gard_bal = getGardBalance(info);
-
   if (gard_bal == null || gard_bal < microRepayGARD) {
+    let mod = 0;
+    if ((gard_bal / 1000000).toFixed(2) == (microRepayGARD / 1000000).toFixed(2)) {
+      mod = .01;
+    }
     return {
       alert: true,
       text:
@@ -581,69 +599,62 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
         (gard_bal / 1000000).toFixed(2).toString() +
         "\n" +
         "Required: " +
-        (microRepayGARD / 1000000).toFixed(2).toString(),
+        (microRepayGARD / 1000000 + mod).toFixed(2).toString(),
     };
   }
-
-  let params = await paramsPromise;
+  
+  console.log(microRepayGARD)
+  
+  // txn 0 - updated interest
+  let txn0 = makeUpdateInterestTxn(info, params)
+  // txn 1 - closing check
+  params.fee = 0
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.address,
     appIndex: ids.app.validator,
-    onComplete: 0,
-    appArgs: validatorArgs,
-    accounts: [cdp.address],
-    foreignApps: foreignApps,
+    onComplete: 2,
+    appArgs: [enc.encode("Close")],
+    accounts: [cdp.address, info.address],
+    foreignApps: [ids.app.sgard_gard],
     foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
-  params.fee = 4000;
+  // txn 2 - send the closing gard
   let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
-    to: reserve.address,
+    to: validatorAddress,
     amount: microRepayGARD,
     suggestedParams: params,
     assetIndex: ids.asa.gard,
   });
-  params.fee = 0;
-  let txn3 = algosdk.makeApplicationClearStateTxnFromObject({
+  // txn 3 - send the collateral
+  let txn3 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    appIndex: ids.app.validator,
-    suggestedParams: params,
-  });
-  params.fee = 0;
-  let fee = 0;
-  let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    from: cdp.address,
-    to: treasury.address,
+    to: info.address,
     closeRemainderTo: info.address,
-    amount: fee,
+    amount: 0,
     suggestedParams: params,
   });
+  
+  console.log(txn1)
+  console.log(txn3)
 
-  let txns = [txn1, txn2, txn3, txn4];
+
+  let txns = [txn0, txn1, txn2, txn3];
   algosdk.assignGroupID(txns);
 
-  // lsig construction
-  let lsigArg = 3;
-  if (payFee) {
-    lsigArg = 2;
-  }
-
-  const signedGroupPromise = signGroup(info, [txn1, txn2, txn3, txn4]);
+  const signedGroupPromise = signGroup(info, [txn0, txn1, txn2, txn3]);
 
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
-  const lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(lsigArg)]);
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
   const stxn3 = algosdk.signLogicSigTransactionObject(txn3, lsig);
-  const stxn4 = algosdk.signLogicSigTransactionObject(txn4, lsig);
   const signedGroup = await signedGroupPromise;
-  console.log(signedGroup);
-  const stxn2 = signedGroup[1];
 
   setLoadingStage("Confirming Transaction...");
 
-  let stxns = [stxn1.blob, stxn2.blob, stxn3.blob, stxn4.blob];
+  let stxns = [signedGroup[0].blob, stxn1.blob, signedGroup[2].blob, stxn3.blob];
 
   let response = await sendTxn(
     stxns,
@@ -651,7 +662,7 @@ export async function closeCDP(accountID, microRepayGARD, payFee = true) {
   );
   setLoadingStage(null);
   removeCDP(info.address, accountID);
-  updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee);
+  // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
   // XXX: May want to do something else besides this, a promise? loading screen?
 }
@@ -677,7 +688,7 @@ function updateCDP(
   }
   accountCDPs[id] = {
     collateral: newCollateral,
-    debt: newDebt,
+    debt: newDebt, // This is not total debt, this is principal
     checked: Date.now(),
     state: state,
     committed: commitment,
@@ -832,6 +843,10 @@ export async function liquidate(
   microDebt,
   microPremium,
 ) {
+
+  let reserve;
+  let treasury;
+
   // Setting up promises
   setLoadingStage("Loading...");
 
