@@ -16,6 +16,7 @@ export default function ActionsContainer() {
 
   const Tabs = {
     one: <SwapDetails />,
+    two: <StakeDetails />
     // two: <PoolDetails />,
   };
 
@@ -31,7 +32,8 @@ export default function ActionsContainer() {
         selectedTab={setSelectedTab}
         tabs={{
           one: "Swap",
-          // two: "Pool"
+          two: "Stake"
+          // three: "Pool"
         }}
       ></PageToggle>
       {Tabs[selectedTab]}
