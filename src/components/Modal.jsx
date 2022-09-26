@@ -20,11 +20,13 @@ export default function Modal({
   children,
   animate,
   mint,
+  className
 }) {
   return (
-    <div>
+    <div className={className}>
       <Backdrop animate={animate} visible={visible} onClick={() => close()}>
         <MainContent
+          className={className}
           animate={animate}
           visible={visible}
           onClick={(e) => e.stopPropagation()}
@@ -45,13 +47,18 @@ export default function Modal({
           <div
             style={{
               display: "flex",
-              flexDirection: window.innerWidth < 900 ? "column" : "row",
-              marginTop: window.innerWidth < 900 ? 10 : mint ? 25 : 104,
+              // flexDirection: window.innerWidth < 900 ? "column" : "row",
+              flexDirection: "column",
+              marginTop: window.innerWidth < 900 ? 10 : mint ? 25 : 54,
               alignItems: "center",
               justifyContent: "center",
+              textAlign: "center"
             }}
           >
-            <div style={{ width: 252.55, marginRight: 62.5 }}>
+            <div style={{
+              // width: 252.55,
+              // marginRight: 62.5
+              }}>
               <div style={{ marginBottom: 8 }}>
                 <Title>{title}</Title>
               </div>

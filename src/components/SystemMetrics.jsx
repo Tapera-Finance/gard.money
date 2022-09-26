@@ -92,12 +92,13 @@ export default function SystemMetrics() {
 
 const AnalyticsDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(3, 33%); 
+grid-template-columns:repeat(3, 33%);
 text-align: center;
-row-gap: 30px; 
+row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
 border-radius: 10px;
+border: 1px solid #80edff;
 background: #0E1834;
 margin-top: 50px;
 margin-bottom: 50px;

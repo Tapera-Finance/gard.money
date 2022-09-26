@@ -602,6 +602,7 @@ const DetailsContainer = styled.div`
   padding: 15px 0px 0px 5px;
   background: #0f1733;
   border-radius: 10px;
+  border: 1px solid #80edff;
   margin-top: 30px;
   margin-bottom: 20vh;
 `;
