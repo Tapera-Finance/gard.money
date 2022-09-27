@@ -60,6 +60,8 @@ export default function AccountCard() {
             justifyContent: "space-evenly",
           }}
         >
+          <WalletConnect />
+
           {walletAddress ? (
             <IconButton
               onClick={handleClick}
@@ -93,7 +95,6 @@ export default function AccountCard() {
           ) : (
             <></>
           )}
-          <WalletConnect />
         </div>
         <Menu
           anchorEl={anchorEl}

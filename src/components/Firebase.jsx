@@ -222,3 +222,10 @@ export function queryUser() {
   const q = query(usersRef, where("id", "==", owner_address));
   return q;
 }
+
+export async function addUserToGleam(gleamAction, walletID) {
+  const gleamRef = doc(db, "gleamActions", gleamAction);
+  await updateDoc(gleamRef, {
+    [gleamAction]: arrayUnion(walletID),
+  });
+}

@@ -17,7 +17,7 @@ import { Switch } from "@mui/material";
 
 const axios = require("axios");
 
-async function getGovernanceInfo() {
+export async function getGovernanceInfo() {
   let response;
   try {
     response = await axios.get(
@@ -53,7 +53,7 @@ export default function Govern() {
       hasToolTip: true,
     },
     {
-      title: "Governance APY",
+      title: "GARD Governance APY",
       val: `${34.3}%`,
       hasToolTip: true,
     },
@@ -184,7 +184,7 @@ export default function Govern() {
               </GovernDetails>
             </div>
           </div>
-          
+
           <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on ALGO Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-4/period-4-voting-session-1")}/></legend>
         </fieldset>
       </div>

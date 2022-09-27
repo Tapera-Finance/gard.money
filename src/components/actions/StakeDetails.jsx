@@ -1,18 +1,42 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
+import { getWallet, getWalletInfo, updateWalletInfo } from "../../wallets/wallets";
+import { getPrice } from "../../transactions/cdp.js";
 import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
+import { formatToDollars } from "../../utils";
 
 // asset types: 0 === GARD, 1 === ALGO
 
 export default function StakeDetails() {
+  const walletAddress = useSelector((state) => state.wallet.address);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
+  const [acctInfo, setAcctInfo] = useState(null);
+  const [price, setPrice] = useState(0)
   const el = document.querySelector("#overlay");
+  const [balance, setBalance] = useState("...");
+  const navigate = useNavigate();
+
+  useEffect(async () => {
+    setPrice(await getPrice());
+    await updateWalletInfo();
+    getWallet();
+    setAcctInfo(getWalletInfo());
+    setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+    // setPendingRewards(
+    //   (getWalletInfo()["pending-rewards"] / 1000000).toFixed(3),
+    // );
+  }, []);
+  useEffect(() => {
+    if (!walletAddress) navigate("/");
+  }, [walletAddress]);
 
   return (
     <div
@@ -74,7 +98,10 @@ export default function StakeDetails() {
           <div>
             <Img src={gardLogo}></Img>
             <Arrow src={arrowIcon}></Arrow>
-            {assetType === 0 ? (
+            <GardImg
+                src={gardLogo}
+              ></GardImg>
+            {/* {assetType === 0 ? (
               <GardImg
                 src={gardLogo}
                 onClick={() => setOptionsOpen(!optionsOpen)}
@@ -84,7 +111,7 @@ export default function StakeDetails() {
                 src={algoLogo}
                 onClick={() => setOptionsOpen(!optionsOpen)}
               ></AlgoImg>
-            )}
+            )} */}
 
             <AssetOptions
               open={optionsOpen}
@@ -105,13 +132,13 @@ export default function StakeDetails() {
               <Text onClick={() => console.log("Max Stake Amt Triggered")}>
                 +MAX
               </Text>
-              <Result>$110.35</Result>
+              <Result>{formatToDollars(balance * price)}</Result>
             </EffectContainer>
           </div>
           <div>
             <PrimaryButton text="Stake" />
           </div>
-          <Heading>Stake Btn, Unstake Btn</Heading>
+          {/* <Heading>Stake Btn, Unstake Btn</Heading> */}
         </div>
         <div
           style={{
@@ -127,7 +154,7 @@ export default function StakeDetails() {
             hasToolTip={false}
           />
           <Effect
-            title="Unclaimed"
+            title="Rewards Accrued"
             val="33.5 ALGO; 110.35 ALGO"
             hasToolTip={false}
           />
@@ -172,9 +199,9 @@ const Img = styled.img`
 `;
 const GardImg = styled.img`
   height: 25px;
-  &:hover {
+  /* &:hover {
     transform: scale(1.2);
-  }
+  } */
 `;
 
 const AlgoImg = styled.img`
