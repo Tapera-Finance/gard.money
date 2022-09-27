@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import PageToggle from "../components/PageToggle";
 import LoadingOverlay from "../components/LoadingOverlay";
 import SwapDetails from "../components/actions/SwapDetails";
+import StakeDetails from "../components/actions/StakeDetails";
 import PoolDetails from "../components/actions/PoolDetails";
-import StakeDetails from "../components/actions/StakeDetails"
 /**
  * Components
  * @component SwapContainer

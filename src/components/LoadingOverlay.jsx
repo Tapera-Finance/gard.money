@@ -1,11 +1,16 @@
 import React, { useReducer, useState, useContext } from "react";
 import styled, { keyframes, css } from "styled-components";
+import closeIcon from "../assets/icons/close_icon.png";
 
-export default function LoadingOverlay({ text }) {
+
+export default function LoadingOverlay({ text, close }) {
   return (
     <div>
       <Backdrop>
         <TextContainer>
+          <CloseButton onClick={() => close()}>
+              <img src={closeIcon} />
+          </CloseButton>
           <div>
             <LoadingText>{text || "Loading..."}</LoadingText>
           </div>
@@ -22,8 +27,8 @@ const TextAnimation = keyframes`
 `;
 
 const LoadingText = styled.text`
-  font-weight: 900;
-  font-size: 24px;
+  font-weight: 500;
+  font-size: 16px;
   animation-name: ${TextAnimation};
   animation-duration: 1s;
   animation-iteration-count: infinite;
@@ -33,22 +38,26 @@ const LoadingText = styled.text`
 
 const Backdrop = styled.div`
   position: fixed;
-  height: 100vh;
-  width: 100vw;
-  left: 0;
-  top: 0;
+  right: 30px;
+  bottom: 30px;
   z-index: ${21};
-  background: ${"#b0b0b080"};
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 const TextContainer = styled.div`
-  height: 100px;
-  background: rgba(13, 18, 39);
+  height: 270px;
+  width: 400px;
+  border: 1px solid white;
+  background: #0E1834;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  border-radius: 25px;
-  padding: 0px 40px;
+  border-radius: 10px;
+  padding: 10px 20px;
+`;
+const CloseButton = styled.button`
+  position: relative;
+  border: 0px;
+  background: transparent;
+  cursor: pointer;
+  align-self: end;
+  margin-bottom: 10px;
 `;

@@ -7,10 +7,13 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getAlgoGovAPR } from "../components/Positions";
+import { getCurrentAlgoUsd, getChainData } from "../prices/prices";
 import WalletConnect from "../components/WalletConnect";
 import Step from "../components/Step";
 import BinaryToggle from "../components/BinaryToggle";
 import { setAlert } from "../redux/slices/alertSlice";
+import { getGovernanceInfo } from "./GovernContent";
+import Effect from "../components/Effect";
 
 const fetchTvl = async () => {
   try {
@@ -43,11 +46,33 @@ export default function HomeContent() {
   const [apy, setApy] = useState(8);
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
+  const [chainData, setChainData] = useState("");
+  const [governors, setGovernors] = useState("...");
   const [allOpen, setAllOpen] = useState(false);
   const [difficulty, setDifficulty] = useState("Help Me Out");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
+
+  useEffect(async () => {
+    const chainDataResponse = await getChainData();
+    setChainData(chainDataResponse);
+  }, []);
+
+  // const circulating = 0
+  const circulating = JSON.parse(
+    chainData ? chainData["circulating-gard"][8064 - 1] : 0,
+  )
+
+  const check = () => {
+     return chainData ? console.log("chain data", chainData) : 0
+  }
+  check()
+  useEffect(async () => {
+    const govInfo = await getGovernanceInfo();
+    setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
+    console.log("2", govInfo[1]);
+  }, []);
 
   const homeDetails = [
     {
@@ -56,18 +81,43 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "Gard Backed %",
+      title: "Total GARD Borrowed",
+      val: `$${circulating.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+      hasToolTip: true,
+    },
+    // {
+    //   title: "ALGO APR",
+    //   val: `${apr}%`,
+    //   hasToolTip: true,
+    // },
+    {
+      title: "Staking APY",
+      val: `${2}%`,
+      hasToolTip: true,
+    },
+    {
+      title: "Number of Users",
+      val: 500,
+      hasToolTip: true,
+    },
+    {
+      title: "GARD Overcollateralization %",
       val: `${backed}%`,
       hasToolTip: true,
     },
     {
-      title: "ALGO APR",
-      val: `${apr}%`,
+      title: "GARD Borrow APY",
+      val: 0,
       hasToolTip: true,
     },
     {
-      title: "No-Lock GARD APR",
-      val: `${2}%`,
+      title: "GARD Governors",
+      val: `${governors} Governors`,
+      hasToolTip: true,
+    },
+    {
+      title: "GARD Governance APY",
+      val: `${34.3}%`,
       hasToolTip: true,
     },
   ];
@@ -163,8 +213,23 @@ export default function HomeContent() {
             selectedOption={setDifficulty}
           />
         </div>
-
-        <Details details={homeDetails} />
+         <Container>
+            <Items>
+              {homeDetails.length && homeDetails.length > 0 ?
+              homeDetails.map((d) => {
+                  return (
+                      <Item key={d.title}>
+                        <Effect
+                          title={d.title}
+                          val={d.val}
+                          hasToolTip={d.hasToolTip} rewards={d.rewards}
+                        ></Effect>
+                      </Item>
+                    );
+                  })
+                : null}
+            </Items>
+          </Container>
         <div>
           {/* <Text
             style={{
@@ -272,6 +337,35 @@ export default function HomeContent() {
   );
 }
 
+
+
+const Container = styled.div`
+  background: #0E1834;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  border: 1px solid #80edff;
+  border-radius: 10px;
+`;
+
+const Items = styled.div`
+  display: grid;
+  align-items: flex-end;
+  grid-template-columns: repeat(4, 22%);
+  row-gap: 30px;
+  justify-content: center;
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 40%);
+  }
+  @media (max-width: 422px) {
+    grid-template-columns: repeat(1, 40%)
+  }
+`;
+
+const Item = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 // styled components
 const StepContainer = styled.div`
   display: flex;
@@ -283,7 +377,6 @@ const StepContainer = styled.div`
 
 const ConnectStep = styled.div`
   display: flex;
-  /* flex-direction: column; */
   text-align: center;
   align-items: center;
   justify-content: center;

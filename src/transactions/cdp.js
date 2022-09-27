@@ -14,6 +14,7 @@ import {
   addCDPToFireStore,
   updateDBWebActions,
   updateLiquidationFirestore,
+  addUserToGleam
 } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
 
@@ -412,6 +413,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   );
   
   addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, 0);
+  addUserToGleam("openCDP", info.address)
   
   if (commit) {
     updateCommitmentFirestore(info.address, accountID, openingMicroALGOs);

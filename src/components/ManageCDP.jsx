@@ -1,16 +1,19 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled, {css} from "styled-components";
 import Effect from "./Effect";
 import ToolTip from "./ToolTip";
 import PrimaryButton from "./PrimaryButton";
 import { addCollateral, mint } from "../transactions/cdp";
-import { handleTxError } from "../wallets/wallets";
+import { handleTxError, getWalletInfo, updateWalletInfo } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 
-export default function ManageCDP({cdp, price, setCurrentCDP}){
+export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP, apr}){
+    const walletAddress = useSelector((state) => state.wallet.address);
+    const [balance, setBalance] = useState(0)
+    const [supplyLimit, setSupplyLimit] = useState(0)
     const [supplyInput, setSupplyInput] = useState(0);
     const [supplyPrice, setSupplyPrice] = useState(0);
     const [borrowInput, setBorrowInput] = useState(0);
@@ -27,26 +30,39 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
 
     const handleAddSupply = (event) => {
         setAdditionalSupply(event.target.value === "" ? "" : Number(event.target.value));
+        collateral(event.target.value === "" ? "" : Number(event.target.value))
       };
 
     const handleAddBorrow = (event) => {
     setAdditionalBorrow(event.target.value === "" ? "" : Number(event.target.value));
+    minted(event.target.value === "" ? "" : Number(event.target.value))
     };
+    useEffect(async() => {
+        await updateWalletInfo();
+        let wallet = await getWalletInfo()
+        if (wallet !== null) {
+        setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+        console.log("AAAAA",getWalletInfo())
+        }
+      }, [])
+
+      useEffect(() => {
+        setSupplyLimit(balance)
+      }, [balance])
+
+      useEffect(() => {
+        if (!walletAddress) navigate("/");
+      }, [walletAddress]);
 
     var supplyDetails = [
         {
             title: "Supply Limit",
-            val: `${0.00} ALGOs`,
-            hasToolTip: true,
-        },
-        {
-            title: "Supply APR",
-            val: `${0.00}%`,
+            val: `${supplyLimit} ALGOs`,
             hasToolTip: true,
         },
         {
             title: "Supply Rewards",
-            val: `${0.00}%`,
+            val: `${apr}%`,
             hasToolTip: true,
         },];
     var borrowDetails = [
@@ -60,11 +76,6 @@ export default function ManageCDP({cdp, price, setCurrentCDP}){
                     (100 * cdp.debt) / 1000000,
                 ) / 100,
               )} GARD`,
-            hasToolTip: true,
-        },
-        {
-            title: "Borrow APR",
-            val: `${0.00}%`,
             hasToolTip: true,
         },
         {
@@ -231,7 +242,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(3, 30%);
+grid-template-columns:repeat(2, 40%);
 row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
@@ -261,11 +272,11 @@ const Input = styled.input`
   padding-top: 35px;
   border-radius: 0;
   height: 30px;
-  width 80%;
+  width: 80%;
   color: white;
   text-decoration: none;
   border: none;
-  border-bottom 2px solid #01d1ff;
+  border-bottom: 2px solid #01d1ff;
   opacity: 100%;
   font-size: 20px;
   background: none;
