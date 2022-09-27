@@ -4,7 +4,11 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
-import { getWallet, getWalletInfo, updateWalletInfo } from "../../wallets/wallets";
+import {
+  getWallet,
+  getWalletInfo,
+  updateWalletInfo,
+} from "../../wallets/wallets";
 import { getPrice } from "../../transactions/cdp.js";
 import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
@@ -14,26 +18,62 @@ import { formatToDollars } from "../../utils";
 
 // asset types: 0 === GARD, 1 === ALGO
 
+function mAlgosToAlgos(num) {
+  return num / 1000000;
+}
+function algosToMAlgos(num) {
+  return num * 1000000;
+}
+
 export default function StakeDetails() {
   const walletAddress = useSelector((state) => state.wallet.address);
+  const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
-  const [acctInfo, setAcctInfo] = useState(null);
-  const [price, setPrice] = useState(0)
-  const el = document.querySelector("#overlay");
+  const [stakeAmount, setStakeAmount] = useState("");
+  const [maxStake, setMaxStake] = useState(0);
+  const [price, setPrice] = useState(0);
+
   const [balance, setBalance] = useState("...");
   const navigate = useNavigate();
+
+  const handleInput = (e) => {
+    setStakeAmount(e.target.value === "" ? "" : Number(e.target.value));
+  }
+
+  const handleMaxStake = () => {
+    setMaxStake(maxStake);
+    let max = balance
+    setStakeAmount(max)
+    console.log("stake", stakeAmount);
+  };
+
+  const handleStake = () => {
+    console.log(`action to stake ${stakeAmount}`)
+    // setLoading(true)
+    try {
+      // await stake(params)
+      // setLoading(false)
+    } catch (e) {
+      console.log("Error attempting to stake", e)
+    }
+  }
 
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
     getWallet();
-    setAcctInfo(getWalletInfo());
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
-    // setPendingRewards(
-    //   (getWalletInfo()["pending-rewards"] / 1000000).toFixed(3),
-    // );
+    setMaxStake(
+      mAlgosToAlgos(
+        getWalletInfo()["amount"] -
+          307000 -
+          100000 * (getWalletInfo()["assets"].length + 4),
+      ).toFixed(3),
+    );
   }, []);
+
   useEffect(() => {
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
@@ -45,77 +85,21 @@ export default function StakeDetails() {
         justifyContent: "center",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          height: "20%",
-          width: "100%",
-          border: "1px solid #80deff",
-          background: "#0e1834",
-          borderRadius: 10,
-          justifySelf: "center",
-          marginTop: 25,
-        }}
-      >
-        <div
-          style={{
-            textAlign: "left",
-            fontWeight: "bolder",
-            fontSize: 22,
-            marginLeft: 12,
-            marginBottom: 10,
-            height: "22%",
-            paddingTop: 25,
-          }}
-        >
-          Staking Pool
-        </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
-            justifyContent: "center",
-            background: "#172756",
-            height: "18%",
-            // margin: 22
-            padding: 22
-          }}
-        >
+      <Container>
+        <FirstRow>Staking Pool</FirstRow>
+        <SecondRow>
           <Heading>TVL</Heading>
           <Heading>Type</Heading>
           <Heading>Duration</Heading>
           <Heading>APY</Heading>
           <Heading>Stake Amount</Heading>
-        </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
-            justifyContent: "center",
-            margin: 22
-          }}
-        >
+        </SecondRow>
+        <ThirdRow>
           <Heading>109,900 ALGO</Heading>
           <div>
             <Img src={gardLogo}></Img>
             <Arrow src={arrowIcon}></Arrow>
-            <GardImg
-                src={gardLogo}
-              ></GardImg>
-            {/* {assetType === 0 ? (
-              <GardImg
-                src={gardLogo}
-                onClick={() => setOptionsOpen(!optionsOpen)}
-              ></GardImg>
-            ) : (
-              <AlgoImg
-                src={algoLogo}
-                onClick={() => setOptionsOpen(!optionsOpen)}
-              ></AlgoImg>
-            )} */}
-
+            <GardImg src={gardLogo}></GardImg>
             <AssetOptions
               open={optionsOpen}
               setAsset={setAssetType}
@@ -124,48 +108,37 @@ export default function StakeDetails() {
           </div>
           <Heading>No-Lock</Heading>
           <Heading>.1%</Heading>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-              alignItems: "center"
-            }}
-          >
-            <ExchangeInput id="stake-amt" placeholder="0.00" />
+          <StakeBox>
+            <StakeInput
+              id="stake-amt"
+              placeholder="0.00"
+              type="number"
+              value={stakeAmount}
+              callback={handleInput}
+            />
             <EffectContainer>
-              <Text onClick={() => console.log("Max Stake Amt Triggered")}>
+              <MaxBtn onClick={handleMaxStake}>
                 +MAX
-              </Text>
+              </MaxBtn>
               <Result>{formatToDollars(balance * price)}</Result>
             </EffectContainer>
-          </div>
-
-          {/* <Heading>Stake Btn, Unstake Btn</Heading> */}
-        </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr",
-            justifyContent: "center",
-            margin: 10
-          }}
-        >
-          <Effect title="Your Stake" val="12 ALGO" hasToolTip={false} />
+          </StakeBox>
+        </ThirdRow>
+        <FourthRow>
+          <Effect title="Your Stake" val={`${stakeAmount} ALGO`} hasToolTip={false} />
           <Effect
             title="Rewards / Day"
-            val="0.3% GARD; 0.2% ALGO"
+            val="..."
             hasToolTip={false}
           />
           <Effect
             title="Rewards Accrued"
-            val="33.5 ALGO; 110.35 ALGO"
+            val="..."
             hasToolTip={false}
           />
-            <PrimaryButton text="Stake" />
-
-        </div>
-      </div>
+          <PrimaryButton text="Stake" onClick={handleStake} />
+        </FourthRow>
+      </Container>
     </div>
   );
 }
@@ -199,6 +172,56 @@ const AssetOptions = ({ open, setAsset, setOpen }) => {
   );
 };
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 20%;
+  width: 100%;
+  border: 1px solid #80deff;
+  background: #0e1834;
+  border-radius: 10px;
+  justify-self: center;
+  margin-top: 25px;
+`;
+
+const FirstRow = styled.div`
+  text-align: left;
+  font-weight: bolder;
+  font-size: 22;
+  margin-left: 12px;
+  margin-bottom: 10px;
+  height: 22%;
+  padding-top: 25px;
+`;
+const SecondRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  justify-content: center;
+  background: #172756;
+  height: 18%;
+  // margin: 22
+  padding: 22px;
+`;
+const ThirdRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  justify-content: center;
+  margin: 22px;
+`;
+const StakeBox = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+`;
+const FourthRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  justify-content: center;
+  margin: 10px;
+`
+
 const Img = styled.img`
   height: 25px;
 `;
@@ -226,7 +249,7 @@ const Heading = styled.text`
   margin: 4px;
 `;
 
-const ExchangeInput = styled(InputField)`
+const StakeInput = styled(InputField)`
   width: 4vw;
   height: 4vh;
   border: 1px transparent;
@@ -263,10 +286,23 @@ const Text = styled.text`
   text-decoration: dotted underline;
   text-decoration-color: #999696;
 `;
+
+const MaxBtn = styled.text`
+  font-weight: bold;
+  font-size: 12;
+  color: #80deff;
+  margin: auto;
+  color: #80edff;
+  text-decoration: dotted underline;
+  text-decoration-color: #999696;
+  &:hover {
+    transform: scale(1.1)
+  }
+`
+
 const Result = styled.text`
   color: #999696;
 `;
-
 
 const Options = styled.ul`
   background: #172756;
