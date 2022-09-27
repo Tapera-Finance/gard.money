@@ -85,6 +85,8 @@ const AuctionsTable = styled(Table)`
     border-top: 3px solid #0f1733;
     border-bottom: 3px solid #0f1733;
     border-radius: 10px;
+    border-top: initial;
+    padding: 14px;
   }
 `;
 
