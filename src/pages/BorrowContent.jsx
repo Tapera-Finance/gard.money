@@ -275,7 +275,10 @@ var borrowDetails = [
       rewards: true,
   },];
     return <div>
-        {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+        {loading ? <LoadingOverlay text={loadingText} 
+        close={()=>{
+          setLoading(false);
+        }} /> : <></>}
         <RewardNotice
         program={"Governance Rewards"}
         timespan={"Now - October 22, 2022"}
