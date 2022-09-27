@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import styled, { css, keyframes } from "styled-components";
 import analyticsIcon from "../assets/icons/dashboard_icon.png";
 import borrowIcon from "../assets/icons/algo_governance_icon.png";
-import auctionsIcon from "../assets/icons/auctions_icon.png";
+import auctionsIcon from "../assets/icons/document_icon.png";
 import governIcon from "../assets/icons/auctions_icon.png";
 import daoIcon from "../assets/icons/dao_icon.png";
 import mintIcon from "../assets/icons/mint_icon.png";

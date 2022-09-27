@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled, {css} from "styled-components";
 
 
-export default function RewardNotice({program, timespan, estimatedRewards, action}){
+export default function RewardNotice({program, timespan, estimatedRewards, action, link, linkText}){
     const [showNotice, setShowNotice]= useState(true)
     return <div>
         {showNotice ? <div>
@@ -29,18 +29,19 @@ export default function RewardNotice({program, timespan, estimatedRewards, actio
             </b>
             <div>
                 {action}
+                {link ? <Link href={link}>{linkText}</Link> : <></>}
             </div>
         </div>
-        <button 
+        <button
         onClick={() => {
             setShowNotice(false)
         }}
          style={{
-            background: "transparent", 
-            border: "none", 
-            position:"relative", 
-            left:"98%", 
-            bottom: 80, 
+            background: "transparent",
+            border: "none",
+            position:"relative",
+            left:"98%",
+            bottom: 80,
             cursor: "pointer",
         }}>
             x
@@ -53,3 +54,12 @@ export default function RewardNotice({program, timespan, estimatedRewards, actio
 const TimeSpan = styled.text`
     font-size: 12px;
 `
+
+const Link = styled.a`
+  text-decoration: none;
+  font-weight: 500;
+  color: #172756;
+  &:hover {
+    color: #03a0ff;
+  }
+`;
