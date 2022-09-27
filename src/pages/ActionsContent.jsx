@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import PageToggle from "../components/PageToggle";
 import LoadingOverlay from "../components/LoadingOverlay";
-import SwapDetails from "../components/swap/SwapDetails";
-import PoolDetails from "../components/pool/PoolDetails";
+import SwapDetails from "../components/actions/SwapDetails";
+import StakeDetails from "../components/actions/StakeDetails";
+import PoolDetails from "../components/actions/PoolDetails";
 /**
  * Components
  * @component SwapContainer
@@ -16,6 +17,7 @@ export default function ActionsContainer() {
 
   const Tabs = {
     one: <SwapDetails />,
+    two: <StakeDetails />
     // two: <PoolDetails />,
   };
 
@@ -31,7 +33,8 @@ export default function ActionsContainer() {
         selectedTab={setSelectedTab}
         tabs={{
           one: "Swap",
-          // two: "Pool"
+          two: "Stake"
+          // three: "Pool"
         }}
       ></PageToggle>
       {Tabs[selectedTab]}
