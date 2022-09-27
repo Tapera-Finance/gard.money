@@ -13,7 +13,7 @@ import PoolDetails from "../components/actions/PoolDetails";
 export default function ActionsContainer() {
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("one");
+  const [selectedTab, setSelectedTab] = useState("two");
 
   const Tabs = {
     one: <SwapDetails />,
