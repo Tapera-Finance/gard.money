@@ -51,7 +51,7 @@ export default function StakeDetails() {
           flexDirection: "column",
           justifyContent: "center",
           height: "20%",
-          width: "80%",
+          width: "100%",
           border: "1px solid #80deff",
           background: "#0e1834",
           borderRadius: 10,
@@ -63,7 +63,7 @@ export default function StakeDetails() {
           style={{
             textAlign: "left",
             fontWeight: "bolder",
-            fontSize: 18,
+            fontSize: 22,
             marginLeft: 12,
             marginBottom: 10,
             height: "22%",
@@ -75,10 +75,12 @@ export default function StakeDetails() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr 2fr 2fr",
+            gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
             justifyContent: "center",
             background: "#172756",
             height: "18%",
+            // margin: 22
+            padding: 22
           }}
         >
           <Heading>TVL</Heading>
@@ -90,8 +92,9 @@ export default function StakeDetails() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr 2fr 2fr",
+            gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
             justifyContent: "center",
+            margin: 22
           }}
         >
           <Heading>109,900 ALGO</Heading>
@@ -125,6 +128,8 @@ export default function StakeDetails() {
             style={{
               display: "flex",
               justifyContent: "center",
+              flexDirection: "column",
+              alignItems: "center"
             }}
           >
             <ExchangeInput id="stake-amt" placeholder="0.00" />
@@ -135,16 +140,15 @@ export default function StakeDetails() {
               <Result>{formatToDollars(balance * price)}</Result>
             </EffectContainer>
           </div>
-          <div>
-            <PrimaryButton text="Stake" />
-          </div>
+
           {/* <Heading>Stake Btn, Unstake Btn</Heading> */}
         </div>
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "auto auto auto auto",
+            gridTemplateColumns: "1fr 1fr 1fr 1fr",
             justifyContent: "center",
+            margin: 10
           }}
         >
           <Effect title="Your Stake" val="12 ALGO" hasToolTip={false} />
@@ -158,7 +162,8 @@ export default function StakeDetails() {
             val="33.5 ALGO; 110.35 ALGO"
             hasToolTip={false}
           />
-          <text style={{ color: "#80edff" }}>Claim Rewards</text>
+            <PrimaryButton text="Stake" />
+
         </div>
       </div>
     </div>
