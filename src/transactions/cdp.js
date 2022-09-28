@@ -571,6 +571,81 @@ async function totalDebt(cdpInfo) {
 }
 
 
+export async function repayCDP(accountID, repayGard) {
+
+  // Promise setup
+  setLoadingStage("Loading...");
+
+  const accountInfoPromise = accountInfo();
+  const paramsPromise = getParams(3000);
+  const info = await accountInfoPromise;
+  let cdp = cdpGen(info.address, accountID);
+  let cdpInfo = await accountInfo(cdp.address);
+  let params = await paramsPromise;
+  
+  let microRepayGARD = microGARD(repayGARD)
+  console.log(microRepayGARD)
+  
+  /*
+  let gard_bal = getGardBalance(info);
+  if (gard_bal - microRepayGARD < 1) {
+    return {
+      alert: true,
+      text: "You must maintain a balance of 1 GARD to keep a CDP open!",
+    };
+  } // TODO: Fix this
+  */ 
+  
+  // txn 0 - updated interest
+  let txn0 = makeUpdateInterestTxn(info, params)
+  // THROUGH HERE
+  // txn 1 - closing check
+  params.fee = 0
+  let txn1 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: ids.app.validator,
+    onComplete: 0,
+    appArgs: [enc.encode("Repay")],
+    accounts: [cdp.address, info.address],
+    foreignApps: [ids.app.sgard_gard],
+    foreignAssets: [ids.asa.gard],
+    suggestedParams: params,
+  });
+  // txn 2 - send the closing gard
+  let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: validatorAddress,
+    amount: microRepayGARD,
+    suggestedParams: params,
+    assetIndex: ids.asa.gard,
+  });
+
+
+  let txns = [txn0, txn1, txn2];
+  algosdk.assignGroupID(txns);
+
+  const signedGroupPromise = signGroup(info, [txn0, txn1, txn2]);
+
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+
+  const signedGroup = await signedGroupPromise;
+
+  setLoadingStage("Confirming Transaction...");
+
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
+
+  let response = await sendTxn(
+    stxns,
+    "Successfully repayed your cdp.",
+  );
+  setLoadingStage(null);
+  removeCDP(info.address, accountID);
+  checkChainForCDP(info.address, accountID);
+  // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
+  return response;
+}
+
+
 export async function closeCDP(accountID) {
 
   // Promise setup
@@ -664,7 +739,6 @@ export async function closeCDP(accountID) {
   removeCDP(info.address, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
-  // XXX: May want to do something else besides this, a promise? loading screen?
 }
 
 function updateCDP(
@@ -673,7 +747,7 @@ function updateCDP(
   newCollateral,
   newDebt,
   state = "open",
-  commitment = 0,
+  commitment = 0, // TODO: Go through and fix commitment
 ) {
   // Could eventually add some metadata for better caching
   let CDPs = getCDPs();
