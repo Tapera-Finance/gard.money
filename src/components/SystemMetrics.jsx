@@ -98,7 +98,7 @@ row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
 border-radius: 10px;
-border: 1px solid #80edff;
+border: 1px solid white;
 background: #0E1834;
 margin-top: 50px;
 margin-bottom: 50px;
