@@ -268,7 +268,7 @@ const Container = styled.div`
 const FirstRow = styled.div`
   text-align: left;
   font-weight: bolder;
-  font-size: 22;
+  font-size: 18pt;
   margin-left: 12px;
   margin-bottom: 10px;
   height: 22%;
