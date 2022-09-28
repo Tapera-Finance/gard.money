@@ -129,12 +129,15 @@ export default function Drawer({
                         : {}),
                     }}
                     onClick={() => {
+                      console.log("checking for page name",v.name)
                       if (
                         [
                           "Account",
                           // "Manage CDPs",
                           "Borrow",
-                          "Actions",
+                          // "Actions",
+                          "Swap",
+                          "Stake",
                           "Govern",
                           "Auctions",
                         ].includes(v.name) &&
@@ -461,7 +464,7 @@ const NavLogo = styled.img`
 // items for our drawer method
 const menuItems = [
   {
-    name: CONTENT_NAMES.MINT,
+    name: CONTENT_NAMES.BORROW,
     icon: borrowIcon,
     subOptions: [],
     route: "/borrow",

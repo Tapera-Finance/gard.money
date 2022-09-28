@@ -1,4 +1,5 @@
 import React, { useEffect, useReducer, useState, useContext } from "react";
+import { useSelector } from "react-redux";
 import styled, { keyframes, css } from "styled-components";
 import closeIcon from "../assets/icons/close_icon.png";
 import PrimaryButton from "./PrimaryButton";
@@ -22,16 +23,42 @@ const Container = styled.div`
   border: 1px solid white;
 `;
 
+const OldBackdrop = styled.div`
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  left: 0;
+  top: 0;
+  z-index: ${21};
+  background: ${"#b0b0b080"};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const OldContainer = styled.div`
+  background: rgba(13, 18, 39);
+  color: white;
+  display: flex;
+  width: 400px;
+  flex-direction: column;
+  border-radius: 25px;
+  padding: 20px 20px;
+  text-align: center;
+`;
+
 export default function AlertOverlay({ text, requestClose }) {
   const [content, setContent] = useState(<></>);
+  const walletAddress = useSelector(state => state.wallet.address);
   useEffect(() => {
     if (!text) return;
     setContent(textWithLink(text));
   }, []);
   var textParse = text.match( /[^.!?]+[.!?]+/g );
-  var celebrate = textParse.includes("Successfully opened a new CDP.")
+  var celebrate = textParse ? textParse.includes("Successfully opened a new CDP.") : false;
   return (
     <div>
+      {walletAddress ? (
       <Backdrop>
         <Container>
           <div
@@ -46,9 +73,31 @@ export default function AlertOverlay({ text, requestClose }) {
           </div>
           {celebrate ? <img style={{borderRadius: 10, objectFit:"cover",}} src={celebration} />: <></>}
           <div style={{marginTop: 10}}>{content}</div>
-          
+
         </Container>
       </Backdrop>
+
+      ) : (
+        <OldBackdrop onClick={() => requestClose()}>
+        <OldContainer>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <CloseButton onClick={() => requestClose()}>
+              <img src={closeIcon} />
+            </CloseButton>
+          </div>
+          <div style={{ margin: 2, marginBottom: 16 }}>{content}</div>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <PrimaryButton text={"OK"} blue={true} onClick={() => requestClose()} />
+          </div>
+        </OldContainer>
+      </OldBackdrop>
+      )
+    }
     </div>
   );
 }
