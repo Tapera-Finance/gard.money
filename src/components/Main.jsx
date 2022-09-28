@@ -100,10 +100,7 @@ export default function Main(WrappedComponent, title) {
               flex: 1,
             }}
           >
-            {/* <MainContentHandler
-              content={mainContent}
-              walletAddress={walletAddress}
-            /> */}
+
             <WrappedComponent />
           </div>
           <div
@@ -117,15 +114,6 @@ export default function Main(WrappedComponent, title) {
               justifyContent: "center",
             }}
           >
-            <HelpButton
-              style={{ marginBottom: 42 }}
-              onClick={() => {
-                setModalVisible(true);
-                setModalCanAnimate(true);
-              }}
-            >
-              <img src={helpIcon} />
-            </HelpButton>
           </div>
         </div>
       </MainContentDiv>
