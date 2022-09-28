@@ -206,7 +206,7 @@ export default function BorrowContent(){
       hasToolTip: true,
     },
     {
-      title: "Collateral Factor",
+      title: "GARD Borrow APR",
       val: `${(100 / 140).toFixed(2)}`,
       hasToolTip: true,
     },
@@ -242,7 +242,7 @@ export default function BorrowContent(){
       hasToolTip: true,
     },
     {
-      title: "Liquidation Ratio",
+      title: "Collateralization Ratio",
       val: `${
         getMinted() == null || getCollateral() == null ? "..." : displayRatio()
       }`,
@@ -275,7 +275,7 @@ var borrowDetails = [
       rewards: true,
   },];
     return <div>
-        {loading ? <LoadingOverlay text={loadingText} 
+        {loading ? <LoadingOverlay text={loadingText}
         close={()=>{
           setLoading(false);
         }} /> : <></>}

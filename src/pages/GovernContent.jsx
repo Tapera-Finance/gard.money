@@ -81,7 +81,6 @@ export default function Govern() {
   let adjusted = loadedCDPs.map((value) => {
     const cdp_address = cdpGen(owner_address, value.id).address;
     return {
-      account: value.id,
       balance: value.collateral == "N/A" ? "N/A" : value.collateral / 1000000,
       committed:
         commitment == undefined || commitment[cdp_address] == undefined
@@ -131,12 +130,14 @@ export default function Govern() {
   console.log("cdps", cdps);
   return (
     <div>
-      {/* <RewardNotice
-          program={"Governance Rewards"}
-          timespan={"Now - October 22, 2022"}
-          estimatedRewards={"12% - 33% APR Rewards"}
-          action={"Borrow ALGO to Claim Rewards"}
-          /> */}
+      <RewardNotice
+          program={"ALGO Governance Rewards"}
+          timespan={""}
+          estimatedRewards={"7M Algo Bonus"}
+          action={""}
+          linkText={"Learn More"}
+          link="https://governance.algorand.foundation/governance-period-4/period-4-voting-session-1"
+          />
       <div style={{marginBottom: 30}}>
         <fieldset
           style={{
@@ -256,6 +257,7 @@ const GovernDetails = styled.div`
   padding: 0px 0px 10px;
   border-radius: 10px;
   background: #0e1834;
+  align-items: flex-end;
 `;
 const Item = styled.div`
   display: flex;

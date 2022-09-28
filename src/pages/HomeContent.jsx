@@ -48,7 +48,7 @@ export default function HomeContent() {
   const [apr, setApr] = useState(0);
   const [chainData, setChainData] = useState("");
   const [governors, setGovernors] = useState("...");
-  const [allOpen, setAllOpen] = useState(false);
+  const [allOpen, setAllOpen] = useState(true);
   const [difficulty, setDifficulty] = useState("Help Me Out");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -91,7 +91,7 @@ export default function HomeContent() {
     //   hasToolTip: true,
     // },
     {
-      title: "Staking APY",
+      title: "GARD Staking APY",
       val: `${2}%`,
       hasToolTip: true,
     },
@@ -158,7 +158,7 @@ export default function HomeContent() {
           justifyContent: "space-between",
           textAlign: "center",
           background: "linear-gradient(to right, #80deff 65%, #ffffff)",
-          padding: "20px 20px 0px",
+          padding: "8px 20px 10px 8px",
         }}
       >
         <div
@@ -170,7 +170,7 @@ export default function HomeContent() {
         >
           <div>Governance Period #5</div>
           <div style={{ fontSize: "10pt" }}>Now - October 22, 2022</div>
-          <div>12% - 33% APR Rewards</div>
+          <div >12% - 33% APR Rewards</div>
         </div>
         <div
           style={{
@@ -186,6 +186,7 @@ export default function HomeContent() {
         </div>
         <EnrollButton
           text="Enroll"
+          blue={true}
           onClick={() => {
             walletAddress ?
             navigate("/borrow") : dispatch(
@@ -273,24 +274,21 @@ export default function HomeContent() {
             >
               {allOpen ? `Collapse` : `Expand`} All
             </Text>
-            {!walletAddress ? (
+
               <ConnectStep
 
               >
                 <Text>
-                Step 0:
-
+                {walletAddress ? "√" : ""} Step 1: Connect Your Wallet
                 </Text>
                 <div>
                   <WalletConnect style={{ alignSelf: "flex-start" }} />
                   </div>
               </ConnectStep>
-            ) : (
-              <></>
-            )}
+
 
             <Step
-              header="Step 1: Get Gard"
+              header="Step 2: Get Gard"
               badges={[]}
               subtitle="Exchange ALGO to borrow GARD"
               text="The easiest way to get GARD is to simply swap ALGOs for GARD on the GARD WebApp to enter the GARD ecosystem which enables users to earn staking rewards, GARDian rewards, and much more."
@@ -300,8 +298,8 @@ export default function HomeContent() {
               allOpen={allOpen}
             />
             <Step
-              header="Step 2: Gain Rewards"
-              badges={["Aeneas", "LP"]}
+              header="Step 3: Gain Rewards"
+              badges={["Staking Rate", "Governance Rate"]}
               subtitle="Add Liquidity to Pool"
               text="Open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin."
               link="https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/tutorial/supplying-assets"
@@ -328,7 +326,7 @@ export default function HomeContent() {
         }}>
           {buttons.map((action) => {
             return (
-              <PrimaryButton text={action} purple onClick={() => navigate(`/${action.toLowerCase()}`)} key={Math.random()} />
+              <PrimaryButton text={action} blue={true} onClick={() => navigate(`/${action.toLowerCase()}`)} key={Math.random()} />
             )
           })}
           </div>
@@ -382,11 +380,15 @@ const ConnectStep = styled.div`
   justify-content: center;
   background: #0f1733;
   color: #019fff;
-  height: 80px;
-  width: 30vw;
+  font-weight: 500;
+  font-size: large;
+  /* height: 80px; */
+  /* width: 30vw; */
   border-radius: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
   ${(props) =>
     props.open &&
     css`
@@ -401,14 +403,21 @@ const ConnectStep = styled.div`
       color: #0f1733;
       width: 60vw;
     `}
+
 `;
 
 const Text = styled.text`
   font-weight: 500px;
-  margin: 0px 4px 0px 0px;
+  margin: 0px 14px 0px 0px;
 `;
 
 const EnrollButton = styled(PrimaryButton)`
   appearance: none;
   border: none;
+  color: unset;
+  margin: 6px 0px 10px 80px;
+  padding: 0px 14px 0px 14px;
+  &:hover {
+    color: #019fff;
+  }
 `;

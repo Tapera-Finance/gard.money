@@ -32,10 +32,10 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
     var sessionStorageSetHandler = function (e) {
         setLoadingText(JSON.parse(e.value));
         };
-    
+
         document.addEventListener("itemInserted", sessionStorageSetHandler, false);
-    
-    
+
+
     return <div style={{marginTop: 30}}>
             {loading ? <LoadingOverlay text={loadingText} /> : <></>}
             <Container>
@@ -89,7 +89,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
             <Details details={details}/>
         </div>
 </div>
-    
+
 }
 const Container = styled.div`
     display: flex;
@@ -109,21 +109,22 @@ const Background = styled.div`
 `
 const Title = styled.div`
     display: flex;
-    justify-content: center; 
-    text-align: center; 
+    justify-content: center;
+    text-align: center;
     padding: 20px 0px 20px;
 `
 
 const InputContainer = styled.div`
-    background: rgba(13, 18, 39, .75); 
+    background: rgba(13, 18, 39, .75);
     border-radius: 10px;
+    border: 1px solid #80edff;
     padding-bottom: 35px;
 `
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(3, 30%); 
-row-gap: 30px; 
+grid-template-columns:repeat(3, 30%);
+row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
 border-radius: 10px;
@@ -152,11 +153,11 @@ const Input = styled.input`
   padding-top: 35px;
   border-radius: 0;
   height: 30px;
-  width 80%;
+  width: 80%;
   color: white;
   text-decoration: none;
   border: none;
-  border-bottom 2px solid #01d1ff;
+  border-bottom: 2px solid #01d1ff;
   opacity: 100%;
   font-size: 20px;
   background: none;
