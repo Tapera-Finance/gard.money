@@ -334,7 +334,7 @@ export default function HomeContent() {
 
               >
                 <Text>
-                {walletAddress ? "√" : ""} Step 1: Connect Your Wallet
+                {walletAddress ? " √" : ""} Step 1: Connect Your Wallet
                 </Text>
                 <div>
                   <WalletConnect style={{ alignSelf: "flex-start" }} />
@@ -347,7 +347,7 @@ export default function HomeContent() {
               badges={[]}
               subtitle="Exchange ALGO to borrow GARD"
               text="The easiest way to get GARD is to simply swap ALGOs for GARD on the GARD WebApp to enter the GARD ecosystem which enables users to earn staking rewards, GARDian rewards, and much more."
-              link="https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/gard"
+              link="https://gard.gitbook.io/gard-system-guide/"
               linkText="GARD"
               goTo="Swap"
               allOpen={allOpen}
@@ -357,7 +357,7 @@ export default function HomeContent() {
               badges={["Staking Rate", "Governance Rate"]}
               subtitle="Add Liquidity to Pool"
               text="Open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin."
-              link="https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/tutorial/supplying-assets"
+              link="https://gard.gitbook.io/gard-system-guide/how-to/participate-in-algorand-governance-via-gard-protocol"
               linkText="needed to participate"
               goTo="Borrow"
               allOpen={allOpen}
@@ -449,20 +449,17 @@ const StepContainer = styled.div`
 
 const ConnectStep = styled.div`
   display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  background: #0f1733;
-  color: #019fff;
   font-weight: 500;
   font-size: large;
-  /* height: 80px; */
-  /* width: 30vw; */
+  text-align: left;
+  align-items: center;
+  background: #0f1733;
+  color: #019fff;
+  height: 80px;
+  width: 60vw;
   border-radius: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
   ${(props) =>
     props.open &&
     css`
@@ -478,6 +475,23 @@ const ConnectStep = styled.div`
       width: 60vw;
     `}
 
+
+  /* display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  background: #0f1733;
+  color: #019fff;
+  font-weight: 500;
+  font-size: large;
+  /* height: 80px; */
+  /* width: 30vw; */
+  /* border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+*/
 `;
 
 const Text = styled.text`
