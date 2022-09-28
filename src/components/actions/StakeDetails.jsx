@@ -57,7 +57,8 @@ export default function StakeDetails() {
       await stake("NL", stakeAmount)
       setLoading(false)
     } catch (e) {
-      console.log("Error attempting to stake", e)
+      alert("Error attempting to stake: " + e)
+      console.log(e)
     }
   }
 

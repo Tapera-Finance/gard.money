@@ -15,7 +15,6 @@ export async function stake(pool, gardAmount) {
   let info = await infoPromise;
   
   // txn 0 - app call
-  params.fee = 0
   let txn0 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: ids.app.gard_staking,
