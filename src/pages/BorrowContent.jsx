@@ -501,7 +501,7 @@ const GardImg = styled.img`
 
 const Container = styled.div`
     display: grid;
-    grid-template-columns: repeat(1, 49%);
+    grid-template-columns: repeat(2, 49%);
     column-gap: 2%;
 `
 
@@ -518,7 +518,7 @@ const Background = styled.div`
 const Title = styled.div`
     display: flex;
     justify-content: center;
-    font-size: 18pt;
+    font-size: 14pt;
     align-items: center;
     text-align: center;
     padding: 20px 0px 20px;
@@ -527,7 +527,7 @@ const Title = styled.div`
 const BorrowTitle = styled.div`
   display: flex;
   justify-content: center;
-  font-size: 18pt;
+  font-size: 14pt;
   align-items: center;
   text-align: center;
   padding: 20px 0px 20px;
