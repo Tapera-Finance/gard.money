@@ -15,7 +15,7 @@ import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
 import { formatToDollars } from "../../utils";
-import {stake} from "../../transactions/stake"
+import { stake, unstake } from "../../transactions/stake"
 
 // asset types: 0 === GARD, 1 === ALGO
 
