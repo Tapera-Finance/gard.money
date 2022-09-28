@@ -28,9 +28,11 @@ const fetchTvl = async () => {
 };
 
 const buttons = [
-  "Actions",
+  "Swap",
+  "Stake",
   "Borrow",
-  "Govern",
+  "Algo Governance",
+  "Auctions",
   "Analytics",
   // "Auctions",
   // "Pool",
@@ -162,7 +164,7 @@ export default function HomeContent() {
             color: "#172756",
           }}
         >
-          <div style={{ fontSize: "10pt", }}>Algorand Governance Period #5</div>
+          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
           <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
         </div>
         <div
@@ -180,7 +182,7 @@ export default function HomeContent() {
             flexDirection: "column"
           }}>
 
-          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus through DeFi Protocols</div>
+          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
           <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
           </div>
         </div>
@@ -195,18 +197,6 @@ export default function HomeContent() {
             );
           }}>Enroll</Link>
         </div>
-        {/* <EnrollButton
-          text="Enroll"
-          blue={true}
-          onClick={() => {
-            walletAddress ?
-            navigate("/borrow") : dispatch(
-              setAlert(
-                "You cannot enter without first connecting a Wallet",
-              ),
-            );
-          }}
-        ></EnrollButton> */}
       </Banner>
       <Banner>
       <div
@@ -217,7 +207,7 @@ export default function HomeContent() {
             color: "#172756",
           }}
         >
-          <div style={{ fontSize: "10pt",  }}>Staking Rewards!</div>
+          <div style={{ fontSize: "10pt",  }}>GARD Staking Rewards!</div>
         </div>
         <div
           style={{
@@ -234,7 +224,7 @@ export default function HomeContent() {
             flexDirection: "column"
           }}>
 
-          <div style={{ color: "#172756", fontSize: "10pt" }}>Earn protocol rewards that are boosted by the Algorand Foundation via our Aeneas grant!</div>
+          <div style={{ color: "#172756", fontSize: "10pt" }}>Earn protocol rewards boosted by the Algorand Foundation via Aeneas grant!</div>
           </div>
         </div>
         <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
@@ -375,10 +365,12 @@ export default function HomeContent() {
       ) : (
         <div style={{
           display: "flex",
-          justifyContent: "space-evenly",
+          justifyContent: "space-between",
           alignItems: "center",
-          width: "80%"
+          marginBottom: 14
+          // width: "80%"
         }}>
+          <Text>Quick Access</Text>
           {buttons.map((action) => {
             return (
               <PrimaryButton text={action} blue={true} onClick={() => navigate(`/${action.toLowerCase()}`)} key={Math.random()} />

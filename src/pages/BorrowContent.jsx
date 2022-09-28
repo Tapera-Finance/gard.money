@@ -281,12 +281,50 @@ var borrowDetails = [
         close={()=>{
           setLoading(false);
         }} /> : <></>}
-        <BorrowRewardNotice
-        program={"Algorand Governance Rewards"}
+        {/* <BorrowRewardNotice
+        program={"Algorand Governance Enrollment"}
         timespan={"Now - October 15, 2022"}
-        estimatedRewards={"7M Algo bonus through DeFi protocols"}
-        action={"Borrow ALGO to Claim Rewards"}
-        />
+        estimatedRewards={"7M Algo bonus governance rewards when participating via DeFi protocols"}
+        action={"Open CDP to Participate"}
+
+        /> */}
+        <Banner
+      >
+        <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
+          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <Link>Open CDP to Participate</Link>
+        </div>
+      </Banner>
         {createPositionShown ? <div><Container>
           <SubContainer>
               <Background>
@@ -413,6 +451,31 @@ var borrowDetails = [
       </div>}
     </div>
 }
+
+const Link = styled.text`
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 10pt;
+  color: #172756;
+  text-align: left;
+  /* margin-right: 12px; */
+  /* &:hover {
+    color: #03a0ff;
+    cursor: pointer;
+  } */
+`;
+
+const Banner = styled.div`
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  justify-content: space-between;
+  text-align: center;
+  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  padding: 8px 6px 10px 8px;
+  margin: 8px;
+  margin-bottom: 20px;
+`
 
 const BorrowRewardNotice = styled(RewardNotice)`
   font-size: 10pt;
