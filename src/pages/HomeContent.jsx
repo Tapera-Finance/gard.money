@@ -150,16 +150,9 @@ export default function HomeContent() {
         flexDirection: "column",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          borderRadius: 10,
-          justifyContent: "space-between",
-          textAlign: "center",
-          background: "linear-gradient(to right, #80deff 65%, #ffffff)",
-          padding: "8px 6px 10px 8px",
-        }}
+      <div style={{display: "flex", flexDirection: "column"}}>
+
+      <Banner
       >
         <div
           style={{
@@ -214,6 +207,50 @@ export default function HomeContent() {
             );
           }}
         ></EnrollButton> */}
+      </Banner>
+      <Banner>
+      <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt", }}>Staking Rewards</div>
+          <div style={{ fontSize: "8pt" }}></div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>Earn protocol rewards</div>
+          <span style={{ color: "#172756", fontSize: "8pt" }}>Backed by Aeneas grant</span>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <Link onClick={() => {
+            walletAddress ?
+            navigate("/stake") : dispatch(
+              setAlert(
+                "You cannot enter without first connecting a Wallet",
+              ),
+            );
+          }}>Stake</Link>
+        </div>
+      </Banner>
       </div>
       <div
         style={{
@@ -361,6 +398,17 @@ const Link = styled.text`
     color: #03a0ff;
   }
 `;
+
+const Banner = styled.div`
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  justify-content: space-between;
+  text-align: center;
+  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  padding: 8px 6px 10px 8px;
+  margin: 8px;
+`
 
 
 const Container = styled.div`

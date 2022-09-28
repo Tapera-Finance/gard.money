@@ -279,10 +279,10 @@ var borrowDetails = [
         close={()=>{
           setLoading(false);
         }} /> : <></>}
-        <RewardNotice
-        program={"Governance Rewards"}
-        timespan={"Now - October 22, 2022"}
-        estimatedRewards={"12% - 33% APR Rewards"}
+        <BorrowRewardNotice
+        program={"Algorand Governance Rewards"}
+        timespan={"Now - October 15, 2022"}
+        estimatedRewards={"7M Algo bonus through DeFi protocols"}
         action={"Borrow ALGO to Claim Rewards"}
         />
         {createPositionShown ? <div><Container>
@@ -414,6 +414,13 @@ var borrowDetails = [
       </div>}
     </div>
 }
+
+const BorrowRewardNotice = styled(RewardNotice)`
+  font-size: 10pt;
+  text {
+    font-size: 8pt;
+  }
+`
 
 const AlgoImg = styled.img`
   filter: invert();
