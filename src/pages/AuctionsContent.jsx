@@ -15,7 +15,7 @@ import {
 } from "../prices/prices";
 import { accountInfo } from "../wallets/wallets";
 import { ids } from "../transactions/ids";
-import { liquidate } from "../transactions/cdp";
+import { liquidate } from "../transactions/liquidation";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 

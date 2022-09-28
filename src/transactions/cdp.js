@@ -1,6 +1,7 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
 import { validatorAddress, cdpGen } from "./contracts";
+import { setLoadingStage, getGardBalance } from "./lib";
 import {
   accountInfo,
   getParams,
@@ -33,15 +34,6 @@ export let currentPrice = 0.30; // XXX: This should be kept close to the actual 
 function microGARD(GARD) {
   // Helper function so we don't type the number of zeros anytime
   return parseInt(GARD * 1000000);
-}
-
-function getGardBalance(info) {
-  for (var i = 0; i < info["assets"].length; i++) {
-    if (info["assets"][i]["asset-id"] == ids.asa.gard) {
-      return info["assets"][i]["amount"];
-    }
-  }
-  return null;
 }
 
 export async function getPrice() {
@@ -202,10 +194,6 @@ sessionStorage.setItem = function (key, value) {
 
   originalSetItem.apply(this, arguments);
 };
-
-function setLoadingStage(stage) {
-  sessionStorage.setItem("loadingStage", JSON.stringify(stage));
-}
 
 function makeUpdateInterestTxn(userInfo, params) {
   return algosdk.makeApplicationCallTxnFromObject({
@@ -571,6 +559,81 @@ async function totalDebt(cdpInfo) {
 }
 
 
+export async function repayCDP(accountID, repayGARD) {
+
+  // Promise setup
+  setLoadingStage("Loading...");
+
+  const accountInfoPromise = accountInfo();
+  const paramsPromise = getParams(3000);
+  const info = await accountInfoPromise;
+  let cdp = cdpGen(info.address, accountID);
+  let cdpInfo = await accountInfo(cdp.address);
+  let params = await paramsPromise;
+  
+  let microRepayGARD = microGARD(repayGARD)
+  console.log(microRepayGARD)
+  
+  /*
+  let gard_bal = getGardBalance(info);
+  if (gard_bal - microRepayGARD < 1) {
+    return {
+      alert: true,
+      text: "You must maintain a balance of 1 GARD to keep a CDP open!",
+    };
+  } // TODO: Fix this
+  */ 
+  
+  // txn 0 - updated interest
+  let txn0 = makeUpdateInterestTxn(info, params)
+  // THROUGH HERE
+  // txn 1 - closing check
+  params.fee = 0
+  let txn1 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: ids.app.validator,
+    onComplete: 0,
+    appArgs: [enc.encode("Repay")],
+    accounts: [cdp.address, info.address],
+    foreignApps: [ids.app.sgard_gard],
+    foreignAssets: [ids.asa.gard],
+    suggestedParams: params,
+  });
+  // txn 2 - send the closing gard
+  let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: validatorAddress,
+    amount: microRepayGARD,
+    suggestedParams: params,
+    assetIndex: ids.asa.gard,
+  });
+
+
+  let txns = [txn0, txn1, txn2];
+  algosdk.assignGroupID(txns);
+
+  const signedGroupPromise = signGroup(info, [txn0, txn1, txn2]);
+
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+
+  const signedGroup = await signedGroupPromise;
+
+  setLoadingStage("Confirming Transaction...");
+
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
+
+  let response = await sendTxn(
+    stxns,
+    "Successfully repayed your cdp.",
+  );
+  setLoadingStage(null);
+  removeCDP(info.address, accountID);
+  checkChainForCDP(info.address, accountID);
+  // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
+  return response;
+}
+
+
 export async function closeCDP(accountID) {
 
   // Promise setup
@@ -664,7 +727,6 @@ export async function closeCDP(accountID) {
   removeCDP(info.address, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
-  // XXX: May want to do something else besides this, a promise? loading screen?
 }
 
 function updateCDP(
@@ -673,7 +735,7 @@ function updateCDP(
   newCollateral,
   newDebt,
   state = "open",
-  commitment = 0,
+  commitment = 0, // TODO: Go through and fix commitment
 ) {
   // Could eventually add some metadata for better caching
   let CDPs = getCDPs();
@@ -837,103 +899,3 @@ export async function voteCDP(account_id, option1, option2) {
   return response;
 }
 
-export async function liquidate(
-  account_id,
-  owner_address,
-  microDebt,
-  microPremium,
-) {
-
-  let reserve;
-  let treasury;
-
-  // Setting up promises
-  setLoadingStage("Loading...");
-
-  const infoPromise = accountInfo();
-  const paramsPromise = getParams(0);
-
-  let cdp = cdpGen(owner_address, account_id);
-
-  const info = await infoPromise;
-  let params = await paramsPromise;
-
-  const liquid_fee = Math.floor(microPremium / 5);
-  const to_user = liquid_fee * 4;
-  let gard_bal = getGardBalance(info);
-
-  if (gard_bal == null || gard_bal < microDebt + to_user + liquid_fee) {
-    return {
-      alert: true,
-      text:
-        "Insufficient GARD for transaction. Balance: " +
-        (gard_bal / 1000000).toFixed(2).toString() +
-        "\n" +
-        "Required: " +
-        ((microDebt + to_user + liquid_fee) / 1000000).toFixed(2).toString(),
-    };
-  }
-
-  let txn1 = algosdk.makeApplicationCallTxnFromObject({
-    from: cdp.address,
-    appIndex: ids.app.validator,
-    onComplete: 2,
-    foreignAssets: [ids.asa.gard],
-    suggestedParams: params,
-  });
-  let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    from: cdp.address,
-    to: info.address,
-    closeRemainderTo: info.address,
-    amount: 0,
-    suggestedParams: params,
-  });
-  params.fee = 5000;
-  let txn3 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: reserve.address,
-    amount: microDebt,
-    suggestedParams: params,
-    assetIndex: ids.asa.gard,
-  });
-  params.fee = 0;
-  let txn4 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: treasury.address,
-    amount: liquid_fee,
-    suggestedParams: params,
-    assetIndex: ids.asa.gard,
-  });
-  let txn5 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: owner_address,
-    amount: to_user,
-    suggestedParams: params,
-    assetIndex: ids.asa.gard,
-  });
-  let txns = [txn1, txn2, txn3, txn4, txn5];
-  algosdk.assignGroupID(txns);
-
-  const signTxnsPromise = signGroup(info, txns);
-  setLoadingStage("Awaiting Signature from Algorand Wallet...");
-  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
-  const stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
-  const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
-  const user_signed = await signTxnsPromise;
-  setLoadingStage("Liquidating CDP...");
-  let stxns = [
-    stxn1.blob,
-    stxn2.blob,
-    user_signed[2].blob,
-    user_signed[3].blob,
-    user_signed[4].blob,
-  ];
-  let response = await sendTxn(
-    stxns,
-    `Successfully liquidated ${owner_address}'s CDP.`,
-    true,
-  );
-  updateLiquidationFirestore(owner_address, account_id);
-  setLoadingStage(null);
-  return response;
-}
