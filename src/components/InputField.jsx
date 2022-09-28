@@ -4,7 +4,6 @@ import styled, { css } from "styled-components";
 export default function InputField({
   id,
   className,
-  type,
   placeholder,
   value,
   callback,
