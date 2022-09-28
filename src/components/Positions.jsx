@@ -172,7 +172,7 @@ export default function Positions({maxGARD}) {
             hasToolTip: true,
           },
           {
-            title: "Liquidation Ratio",
+            title: "Collateralization Ratio",
             val: `${
               getMinted() == null || getCollateral() == null ? "..." : displayRatio()
             }`,

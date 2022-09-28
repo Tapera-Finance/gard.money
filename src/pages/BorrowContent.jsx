@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
-import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
+import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 
 
@@ -256,24 +256,26 @@ var supplyDetails = [
     val: `${maxCollateral} ALGOs`,
     hasToolTip: true,
   },
-  {
-      title: "Supply Rewards",
-      val: `+${0.00}% Algo Rewards`,
-      hasToolTip: true,
-      rewards: true,
-  },];
+  // {
+  //     title: "Supply Rewards",
+  //     val: `+${0.00}% Algo Rewards`,
+  //     hasToolTip: true,
+  //     rewards: true,
+  // },
+];
 var borrowDetails = [
   {
     title: "Borrow Limit",
     val: `${maxGARD} GARD`,
     hasToolTip: true,
   },
-  {
-      title: "Borrow Rewards",
-      val: `+${0.02}% Algo Rewards`,
-      hasToolTip: true,
-      rewards: true,
-  },];
+  // {
+  //     title: "Borrow Rewards",
+  //     val: `+${0.02}% Algo Rewards`,
+  //     hasToolTip: true,
+  //     rewards: true,
+  // }
+  ];
     return <div>
         {loading ? <LoadingOverlay text={loadingText}
         close={()=>{
@@ -288,9 +290,7 @@ var borrowDetails = [
         {createPositionShown ? <div><Container>
           <SubContainer>
               <Background>
-                  <Title>Supply
-                    <AlgoImg src={algoLogo} />
-                    ALGO</Title>
+                  <Title>Supply ALGO <AlgoImg src={algoLogo} /></Title>
                   <InputContainer>
                       <div style={{display: "flex"}}>
                           <Input
@@ -331,9 +331,8 @@ var borrowDetails = [
 
           <SubContainer>
               <Background>
-                  <Title>Borrow
-                    <GardImg src={gardLogo} />
-                    GARD</Title>
+                  <BorrowTitle>Borrow GARD <GardImg src={gardLogo} /></BorrowTitle>
+
                   <InputContainer>
                       <div style={{display: "flex"}}>
                           <Input
@@ -423,17 +422,18 @@ const BorrowRewardNotice = styled(RewardNotice)`
 `
 
 const AlgoImg = styled.img`
-  filter: invert();
-  height: 45px;
+  /* filter: invert(); */
+  height: 75px;
+  width: 75px;
+  right: --4px;
   position: relative;
-  top: -11px;
 `
 
 const GardImg = styled.img`
-  height: 40px;
-  margin: 2px 14px 2px 14px;
+  height: 50px;
+  margin: 2px 18px 2px 14px;
   position: relative;
-  top: -8px;
+  top: -2px;
 `
 
 const Container = styled.div`
@@ -455,8 +455,21 @@ const Background = styled.div`
 const Title = styled.div`
     display: flex;
     justify-content: center;
+    font-size: 18pt;
+    align-items: center;
     text-align: center;
     padding: 20px 0px 20px;
+`
+
+const BorrowTitle = styled.div`
+  display: flex;
+  justify-content: center;
+  font-size: 18pt;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0px 20px;
+  margin-bottom: 9px;
+  padding-top: 31px;
 `
 
 const InputContainer = styled.div`
@@ -467,7 +480,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(2, 40%);
+grid-template-columns:repeat(1, 40%);
 row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
