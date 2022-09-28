@@ -403,7 +403,7 @@ var borrowDetails = [
       <div>
         <PrimaryButton
         text={createPositionShown ? "Exit" : "Create New Position"}
-        blue={!createPositionShown}
+        blue={true}
         positioned={createPositionShown}
         onClick={() => {
           setCreatePositionShown(!createPositionShown)
@@ -438,7 +438,7 @@ const GardImg = styled.img`
 
 const Container = styled.div`
     display: grid;
-    grid-template-columns: repeat(2, 49%);
+    grid-template-columns: repeat(1, 49%);
     column-gap: 2%;
 `
 

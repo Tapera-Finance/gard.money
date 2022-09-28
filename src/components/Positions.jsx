@@ -248,6 +248,7 @@ export default function Positions({maxGARD}) {
                  text={cdp.id === currentCDP ? "Collapse" : "Manage Position"}
                  onClick={cdp.id === currentCDP ? () => {
                     setCurrentCDP(null)
+                    setSelectedTab("one")
                  } : () => {
                     setCurrentCDP(cdp.id)
                  }

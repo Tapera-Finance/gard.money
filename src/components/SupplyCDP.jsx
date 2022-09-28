@@ -60,11 +60,12 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
             val: `${supplyLimit} ALGOs`,
             hasToolTip: true,
         },
-        {
-            title: "Supply Rewards",
-            val: `${apr}%`,
-            hasToolTip: true,
-        },];
+        // {
+        //     title: "Supply Rewards",
+        //     val: `${apr}%`,
+        //     hasToolTip: true,
+        // }
+    ];
     // var borrowDetails = [
     //     {
     //         title: "Borrow Limit",
@@ -245,7 +246,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(2, 40%);
+grid-template-columns:repeat(1, 40%);
 row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
