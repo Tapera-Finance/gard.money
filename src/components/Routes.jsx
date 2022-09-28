@@ -10,6 +10,8 @@ import BorrowContent from "../pages/BorrowContent";
 import RepayContent from "../pages/RepayContent";
 import ActionsContent from "../pages/ActionsContent";
 import AccountContent from "../pages/AccountContent";
+import SwapDetails from "./actions/SwapDetails";
+import StakeDetails from "./actions/StakeDetails";
 
 export default function AppRoutes() {
   return (
@@ -20,8 +22,10 @@ export default function AppRoutes() {
         <Route path="/borrow" element={Main(BorrowContent, "Borrow")} />
         <Route path="/manage" element={Main(RepayContent, "Manage CDPs")} />
         <Route path="/auctions" element={Main(AuctionsContent, "Auctions")} />
-        <Route path="/actions" element={Main(ActionsContent, "Actions")} />
-        <Route path="/dao" element={Main(DaoContent, "DAO")} />
+        {/* <Route path="/actions" element={Main(ActionsContent, "Actions")} /> */}
+        <Route path="/swap" element={Main(SwapDetails, "Swap")} />
+        <Route path="/stake" element={Main(StakeDetails, "Stake")} />
+        {/* <Route path="/dao" element={Main(DaoContent, "DAO")} /> */}
         <Route
           path="/govern"
           element={Main(GovernContent, "Govern")}
