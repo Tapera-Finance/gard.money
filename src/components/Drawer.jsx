@@ -487,12 +487,6 @@ const menuItems = [
     subOptions: [],
     route: "/govern",
   },
-  // {
-  //   name: CONTENT_NAMES.REPAY,
-  //   icon: repayIcon,
-  //   subOptions: [],
-  //   route: "/manage",
-  // },
   {
     name: CONTENT_NAMES.AUCTIONS,
     icon: auctionsIcon,

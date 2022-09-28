@@ -104,7 +104,7 @@ export default function Govern() {
               setSelectedAccount(value.id);
               setMaxBal(value.balance);
             }}
-            // variant ={true}
+
             disabled={
               value.balance === value.committed ||
               !(Date.now() < commitmentPeriodEnd)
@@ -121,7 +121,7 @@ export default function Govern() {
               setSelectedAccount(value.id);
               setMaxBal(value.balance);
             }}
-            // variant ={true}
+
             disabled={!(Date.now() < commitmentPeriodEnd)}
           />
         ),
@@ -130,14 +130,6 @@ export default function Govern() {
   console.log("cdps", cdps);
   return (
     <div>
-      {/* <RewardNotice
-          program={"ALGO Governance Rewards"}
-          timespan={""}
-          estimatedRewards={"7M Algo Bonus"}
-          action={""}
-          linkText={"Learn More"}
-          link="https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors"
-          /> */}
 <Banner
       >
         <div
@@ -167,14 +159,12 @@ export default function Govern() {
           }}>
 
           <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
-          {/* <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span> */}
           </div>
         </div>
         <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
 
         <Link onClick={() => {
             window.open("https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors")
-            // navigate("/borrow")
           }}>Learn More</Link>
         </div>
       </Banner>
