@@ -101,7 +101,7 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Overcollateralization %",
+      title: "GARD Overcollateralization",
       val: `${backed}%`,
       hasToolTip: true,
     },
