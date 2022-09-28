@@ -8,6 +8,7 @@ import daoIcon from "../assets/icons/dao_icon.png";
 import mintIcon from "../assets/icons/mint_icon.png";
 import repayIcon from "../assets/icons/repay_icon.png";
 import swapIcon from "../assets/icons/swap_icon.png";
+import stakeIcon from "../assets/icons/icons8-stake-block-64.png"
 import walletIcon from "../assets/icons/wallet_icon.png";
 import logo from "../assets/new_gard_logo.png";
 import chevronDown from "../assets/chevron_down.png";
@@ -460,16 +461,22 @@ const NavLogo = styled.img`
 // items for our drawer method
 const menuItems = [
   {
-    name: CONTENT_NAMES.ACTIONS,
-    icon: swapIcon,
-    subOptions: [],
-    route: "/actions",
-  },
-  {
     name: CONTENT_NAMES.MINT,
     icon: borrowIcon,
     subOptions: [],
     route: "/borrow",
+  },
+  {
+    name: CONTENT_NAMES.SWAP,
+    icon: swapIcon,
+    subOptions: [],
+    route: "/swap",
+  },
+  {
+    name: CONTENT_NAMES.STAKE,
+    icon: stakeIcon,
+    subOptions: [],
+    route: "/stake"
   },
   {
     name: CONTENT_NAMES.GOVERN,
