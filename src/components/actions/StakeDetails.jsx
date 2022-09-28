@@ -61,6 +61,17 @@ export default function StakeDetails() {
     }
   }
 
+  const handleUnstake = () => {
+    console.log(`action to unstake ${stakeAmount}`)
+    // setLoading(true)
+    try {
+      // await unstake(params)
+      // setLoading(false)
+    } catch (e) {
+      console.log("Error attempting to unstake", e)
+    }
+  }
+
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
@@ -164,7 +175,7 @@ export default function StakeDetails() {
           </StakeBox>
         </ThirdRow>
         <FourthRow>
-          <Effect title="Your Stake" val={`${stakeAmount} ALGO`} hasToolTip={false} />
+          <Effect title="Your Stake" val={`${0} ALGO`} hasToolTip={false} />
           <Effect
             title="Rewards / Day"
             val="..."
@@ -175,7 +186,11 @@ export default function StakeDetails() {
             val="..."
             hasToolTip={false}
           />
-          <PrimaryButton text="Stake" onClick={handleStake} />
+          <div style={{display: "flex", flexDirection: "row"}}>
+
+          <PrimaryButton text="Stake" blue={true} onClick={handleStake} />
+          <PrimaryButton text="Unstake" blue={true} onClick={handleUnstake} />
+          </div>
         </FourthRow>
       </Container>
     </div>
@@ -277,7 +292,7 @@ const ThirdRow = styled.div`
 const StakeBox = styled.div`
   display: flex;
   justify-content: center;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
 `;
 const FourthRow = styled.div`
