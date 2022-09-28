@@ -150,6 +150,7 @@ export default function WalletConnect() {
         <div>
           <PrimaryButton
             text={walletAddress || "Connect Wallet"}
+            blue={true}
             onClick={() => {
               if (walletAddress) {
                 navigate("/account");
@@ -165,6 +166,7 @@ export default function WalletConnect() {
           <div style={{ marginLeft: 12 }}>
             <PrimaryButton
               text="Disconnect Wallet"
+              blue={true}
               onClick={() => {
                 disconnectWallet();
                 dispatch(setWallet({ address: "" }));

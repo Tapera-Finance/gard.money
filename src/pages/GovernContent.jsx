@@ -81,7 +81,6 @@ export default function Govern() {
   let adjusted = loadedCDPs.map((value) => {
     const cdp_address = cdpGen(owner_address, value.id).address;
     return {
-      account: value.id,
       balance: value.collateral == "N/A" ? "N/A" : value.collateral / 1000000,
       committed:
         commitment == undefined || commitment[cdp_address] == undefined
