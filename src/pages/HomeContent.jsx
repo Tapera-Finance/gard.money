@@ -158,19 +158,19 @@ export default function HomeContent() {
           justifyContent: "space-between",
           textAlign: "center",
           background: "linear-gradient(to right, #80deff 65%, #ffffff)",
-          padding: "8px 20px 10px 8px",
+          padding: "8px 6px 10px 8px",
         }}
       >
         <div
           style={{
             justifyContent: "center",
             textAlign: "left",
+            alignItems: "center",
             color: "#172756",
           }}
         >
-          <div>Governance Period #5</div>
-          <div style={{ fontSize: "10pt" }}>Now - October 22, 2022</div>
-          <div >12% - 33% APR Rewards</div>
+          <div style={{ fontSize: "10pt", }}>Algorand Governance Period #5</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
         </div>
         <div
           style={{
@@ -178,13 +178,31 @@ export default function HomeContent() {
             flexDirection: "column",
             justifyContent: "center",
             textAlign: "center",
-            marginLeft: "25px",
+            marginLeft: "0px",
           }}
         >
-          <span style={{ color: "#172756" }}>Enrollment is now live!</span>
-          {/* <CountdownTimer targetDate={1761180257000} /> */}
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus through DeFi Protocols</div>
+          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
+          </div>
         </div>
-        <EnrollButton
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <Link onClick={() => {
+            walletAddress ?
+            navigate("/borrow") : dispatch(
+              setAlert(
+                "You cannot enter without first connecting a Wallet",
+              ),
+            );
+          }}>Enroll</Link>
+        </div>
+        {/* <EnrollButton
           text="Enroll"
           blue={true}
           onClick={() => {
@@ -195,7 +213,7 @@ export default function HomeContent() {
               ),
             );
           }}
-        ></EnrollButton>
+        ></EnrollButton> */}
       </div>
       <div
         style={{
@@ -335,6 +353,14 @@ export default function HomeContent() {
   );
 }
 
+const Link = styled.text`
+  text-decoration: none;
+  font-weight: 500;
+  color: #172756;
+  &:hover {
+    color: #03a0ff;
+  }
+`;
 
 
 const Container = styled.div`

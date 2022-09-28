@@ -598,3 +598,52 @@ const dummyCDPs = [
     debt: 0,
   },
 ];
+
+
+/**
+ * banner code
+ *
+<div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          borderRadius: 10,
+          justifyContent: "space-between",
+          textAlign: "center",
+          background: "linear-gradient(to right, #80deff 65%, #ffffff)",
+          padding: "8px 6px 10px 8px",
+        }}
+      >
+        <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt", }}>Algorand Governance Period #5</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus through DeFi Protocols</div>
+          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+ */
