@@ -183,7 +183,6 @@ export default function HomeContent() {
           }}>
 
           <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
-          {/* <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span> */}
           </div>
         </div>
         <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
