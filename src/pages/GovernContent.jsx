@@ -136,7 +136,7 @@ export default function Govern() {
           estimatedRewards={"7M Algo Bonus"}
           action={""}
           linkText={"Learn More"}
-          link="https://governance.algorand.foundation/governance-period-4/period-4-voting-session-1"
+          link="https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors"
           />
       <div style={{marginBottom: 30}}>
         <fieldset
