@@ -50,12 +50,12 @@ export default function StakeDetails() {
     console.log("stake", stakeAmount);
   };
 
-  const handleStake = () => {
+  const handleStake = async () => {
     console.log(`action to stake ${stakeAmount}`)
-    // setLoading(true)
+    setLoading(true)
     try {
-      // await stake(params)
-      // setLoading(false)
+      await stake("NL", stakeAmount)
+      setLoading(false)
     } catch (e) {
       console.log("Error attempting to stake", e)
     }

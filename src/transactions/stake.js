@@ -1,6 +1,9 @@
 import algosdk from "algosdk";
+import { ids } from "./ids";
 import { setLoadingStage, microGARD } from "./lib"
-import { accountInfo } from "../wallets/wallets";
+import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
+
+const enc = new TextEncoder();
 
 export async function stake(pool, gardAmount) {
   setLoadingStage("Loading...");
@@ -13,7 +16,7 @@ export async function stake(pool, gardAmount) {
   
   // txn 0 - app call
   params.fee = 0
-  let txn1 = algosdk.makeApplicationCallTxnFromObject({
+  let txn0 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: ids.app.gard_staking,
     onComplete: 0,
@@ -24,7 +27,7 @@ export async function stake(pool, gardAmount) {
     suggestedParams: params,
   });
   // txn 1 - entrance transfer
-  let txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+  let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: algosdk.getApplicationAddress(ids.app.gard_staking),
     amount: microGARDAmount,
@@ -66,7 +69,7 @@ export async function unstake(pool, gardAmount) {
   
   // txn 0 - app call
   params.fee = 0
-  let txn1 = algosdk.makeApplicationCallTxnFromObject({
+  let txn0 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: ids.app.gard_staking,
     onComplete: 0,
