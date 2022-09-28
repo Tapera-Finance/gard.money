@@ -54,28 +54,28 @@ if (VERSION == "MAINNET") {
 } else if (VERSION == "TESTNET2") {
   _ids = {
      asa : {
-         gain : 113495703,
-         gard : 113495756,
+         gain : 113499956,
+         gard : 113500000,
      },
      app : {
          dao : {
-             staking : 113495724,
-             manager : 113495755,
-             interest : 113495758,
+             staking : 113499983,
+             manager : 113499999,
+             interest : 113500001,
              updates : {
-                validator : 113495783,
-                claim : 113495801,
+                validator : 113500016,
+                claim : 113500040,
              },
          },
-         sgard_gard : 113495784,
-         validator : 113495798,
-         revenue : 113495785,
-         funder : 113495799,
+         sgard_gard : 113500017,
+         validator : 113500037,
+         revenue : 113500018,
+         funder : 113500038,
          auction_checker : 96679309,
          oracle : 53083112,
-         gard_staking : 113495822,
-         treasury : 113495800,
-         claimer : 113495821,
+         gard_staking : 113500066,
+         treasury : 113500039,
+         claimer : 113500065,
      }
   }
 }
