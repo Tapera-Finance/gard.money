@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import styled, { css } from "styled-components";
 
 export default function PageToggle({ selectedTab, tabs, className }) {
-  const [one, setOne] = useState(false);
-  const [two, setTwo] = useState(true);
+  const [one, setOne] = useState(true);
+  const [two, setTwo] = useState(false);
   const [three, setThree] = useState(false);
   const [four, setFour] = useState(false);
   return (

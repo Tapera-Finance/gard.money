@@ -60,11 +60,12 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
             val: `${supplyLimit} ALGOs`,
             hasToolTip: true,
         },
-        {
-            title: "Supply Rewards",
-            val: `${apr}%`,
-            hasToolTip: true,
-        },];
+        // {
+        //     title: "Supply Rewards",
+        //     val: `${apr}%`,
+        //     hasToolTip: true,
+        // }
+    ];
     var borrowDetails = [
         {
             title: "Borrow Limit",
@@ -78,11 +79,12 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
               )} GARD`,
             hasToolTip: true,
         },
-        {
-            title: "Borrow Rewards",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },];
+        // {
+        //     title: "Borrow Rewards",
+        //     val: `${0.00}%`,
+        //     hasToolTip: true,
+        // }
+    ];
 
     var sessionStorageSetHandler = function (e) {
         setLoadingText(JSON.parse(e.value));

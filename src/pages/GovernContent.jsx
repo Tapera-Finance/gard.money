@@ -130,14 +130,55 @@ export default function Govern() {
   console.log("cdps", cdps);
   return (
     <div>
-      <RewardNotice
+      {/* <RewardNotice
           program={"ALGO Governance Rewards"}
           timespan={""}
           estimatedRewards={"7M Algo Bonus"}
           action={""}
           linkText={"Learn More"}
           link="https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors"
-          />
+          /> */}
+<Banner
+      >
+        <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
+          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <Link onClick={() => {
+            window.open("https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors")
+            // navigate("/borrow")
+          }}>Learn More</Link>
+        </div>
+      </Banner>
+
       <div style={{marginBottom: 30}}>
         <fieldset
           style={{
@@ -160,7 +201,7 @@ export default function Govern() {
             transform: "rotate(180deg)",
 
           }}>
-            <h3>Governance Period #5</h3>
+            <h3>Algorand Governance Period #5</h3>
             <div style={{ fontSize: 11 }}>Registration Ends</div>
             <CountDownContainer>
               <CountdownTimer targetDate={1666439999000} showZero={false} />
@@ -248,6 +289,30 @@ export default function Govern() {
     </div>
   );
 }
+
+
+const Link = styled.text`
+  text-decoration: none;
+  font-weight: 500;
+  color: #172756;
+  margin-right: 12px;
+  &:hover {
+    color: #03a0ff;
+    cursor: pointer;
+  }
+`;
+
+const Banner = styled.div`
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  justify-content: space-between;
+  text-align: center;
+  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  padding: 8px 6px 10px 8px;
+  margin: 8px;
+  margin-bottom: 14px;
+`
 const GovernDetails = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 30%);

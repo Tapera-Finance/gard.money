@@ -172,7 +172,7 @@ export default function Positions({maxGARD}) {
             hasToolTip: true,
           },
           {
-            title: "Liquidation Ratio",
+            title: "Collateralization Ratio",
             val: `${
               getMinted() == null || getCollateral() == null ? "..." : displayRatio()
             }`,
@@ -248,6 +248,7 @@ export default function Positions({maxGARD}) {
                  text={cdp.id === currentCDP ? "Collapse" : "Manage Position"}
                  onClick={cdp.id === currentCDP ? () => {
                     setCurrentCDP(null)
+                    setSelectedTab("one")
                  } : () => {
                     setCurrentCDP(cdp.id)
                  }
