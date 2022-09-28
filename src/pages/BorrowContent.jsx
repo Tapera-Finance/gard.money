@@ -213,7 +213,7 @@ export default function BorrowContent(){
     {
       title: "Borrow Utilization",
       val: `${
-        cAlgos === "" || maxGARD === "" ? "..." : (cAlgos / maxGARD).toFixed(2)
+        cAlgos === "" || maxGARD === "" ? "..." : (100*mGARD / maxGARD).toFixed(2)
       }%`,
       hasToolTip: true,
     },
