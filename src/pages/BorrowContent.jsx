@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Details from "../components/Details";
 import Effect from "../components/Effect";
@@ -20,7 +20,6 @@ import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
 import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
-
 
 function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
@@ -57,7 +56,7 @@ function getCollateral() {
   return parseFloat(document.getElementById("collateral").value);
 }
 
-export default function BorrowContent(){
+export default function BorrowContent() {
   const [modalVisible, setModalVisible] = useState(false);
   const [canAnimate, setCanAnimate] = useState(false);
   const navigate = useNavigate();
@@ -69,7 +68,7 @@ export default function BorrowContent(){
   const [borrowPrice, setBorrowPrice] = useState(0);
   const cdps = CDPsToList();
 
-    //initial code snippets
+  //initial code snippets
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [cAlgos, setCollateral] = useState("");
@@ -79,7 +78,7 @@ export default function BorrowContent(){
   const [commitChecked, setCommitChecked] = useState(false);
   const [toWallet, setToWallet] = useState(false);
 
-  const [createPositionShown, setCreatePositionShown] = useState(false)
+  const [createPositionShown, setCreatePositionShown] = useState(false);
 
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
@@ -90,10 +89,10 @@ export default function BorrowContent(){
   };
 
   useEffect(() => {
-    if (cdps == dummyCDPs){
-      setCreatePositionShown(true)
+    if (cdps == dummyCDPs) {
+      setCreatePositionShown(true);
     }
-  }, [])
+  }, []);
 
   useEffect(async () => {
     setPrice(await getPrice());
@@ -110,9 +109,8 @@ export default function BorrowContent(){
   }, []);
 
   useEffect(() => {
-    setSupplyPrice(price)
-  }, [price])
-
+    setSupplyPrice(price);
+  }, [price]);
 
   const handleSupplyChange = (event) => {
     setCollateral(event.target.value === "" ? "" : Number(event.target.value));
@@ -131,23 +129,20 @@ export default function BorrowContent(){
   };
 
   const handleMaxCollateral = () => {
-      setCollateral(maxCollateral)
-      let max =
-        Math.trunc(
-          (100 *
-            ((algosToMAlgos(price) * algosToMAlgos(maxCollateral)) /
-              1000000)) /
-            1.4 /
-            1000000,
-        ) / 100;
-      setMaxGARD(max);
-      if (mGARD > max) {
-        setGARD(max < 1 ? 1 : max);
-      }
-      console.log("collateral" ,cAlgos)
+    setCollateral(maxCollateral);
+    let max =
+      Math.trunc(
+        (100 *
+          ((algosToMAlgos(price) * algosToMAlgos(maxCollateral)) / 1000000)) /
+          1.4 /
+          1000000,
+      ) / 100;
+    setMaxGARD(max);
+    if (mGARD > max) {
+      setGARD(max < 1 ? 1 : max);
     }
-
-
+    console.log("collateral", cAlgos);
+  };
 
   const handleBorrowChange = (event) => {
     setGARD(
@@ -173,7 +168,7 @@ export default function BorrowContent(){
   };
 
   const handleMaxBorrow = () => {
-    setGARD(maxGARD)
+    setGARD(maxGARD);
     let max = mAlgosToAlgos(
       getWalletInfo()["amount"] -
         307000 -
@@ -187,8 +182,8 @@ export default function BorrowContent(){
     if (cAlgos > max) {
       setCollateral(max);
     }
-    console.log("gard" ,mGARD)
-  }
+    console.log("gard", mGARD);
+  };
 
   var sessionStorageSetHandler = function (e) {
     setLoadingText(JSON.parse(e.value));
@@ -213,7 +208,9 @@ export default function BorrowContent(){
     {
       title: "Borrow Utilization",
       val: `${
-        cAlgos === "" || maxGARD === "" ? "..." : (100*mGARD / maxGARD).toFixed(2)
+        cAlgos === "" || maxGARD === ""
+          ? "..."
+          : ((100 * mGARD) / maxGARD).toFixed(2)
       }%`,
       hasToolTip: true,
     },
@@ -226,11 +223,6 @@ export default function BorrowContent(){
       }`,
       hasToolTip: true,
     },
-    // {
-    //   title: "GARD Borrow APR",
-    //   val: 0,
-    //   hasToolTip: true,
-    // },
     {
       title: "Bonus Supply Rewards",
       val: 0,
@@ -250,46 +242,33 @@ export default function BorrowContent(){
     },
   ];
 
-var supplyDetails = [
-  {
-    title: "Supply Limit",
-    val: `${maxCollateral} ALGOs`,
-    hasToolTip: true,
-  },
-  // {
-  //     title: "Supply Rewards",
-  //     val: `+${0.00}% Algo Rewards`,
-  //     hasToolTip: true,
-  //     rewards: true,
-  // },
-];
-var borrowDetails = [
-  {
-    title: "Borrow Limit",
-    val: `${maxGARD} GARD`,
-    hasToolTip: true,
-  },
-  // {
-  //     title: "Borrow Rewards",
-  //     val: `+${0.02}% Algo Rewards`,
-  //     hasToolTip: true,
-  //     rewards: true,
-  // }
+  var supplyDetails = [
+    {
+      title: "Supply Limit",
+      val: `${maxCollateral} ALGOs`,
+      hasToolTip: true,
+    },
   ];
-    return <div>
-        {loading ? <LoadingOverlay text={loadingText}
-        close={()=>{
-          setLoading(false);
-        }} /> : <></>}
-        {/* <BorrowRewardNotice
-        program={"Algorand Governance Enrollment"}
-        timespan={"Now - October 15, 2022"}
-        estimatedRewards={"7M Algo bonus governance rewards when participating via DeFi protocols"}
-        action={"Open CDP to Participate"}
-
-        /> */}
-        <Banner
-      >
+  var borrowDetails = [
+    {
+      title: "Borrow Limit",
+      val: `${maxGARD} GARD`,
+      hasToolTip: true,
+    },
+  ];
+  return (
+    <div>
+      {loading ? (
+        <LoadingOverlay
+          text={loadingText}
+          close={() => {
+            setLoading(false);
+          }}
+        />
+      ) : (
+        <></>
+      )}
+      <Banner>
         <div
           style={{
             justifyContent: "center",
@@ -298,7 +277,7 @@ var borrowDetails = [
             color: "#172756",
           }}
         >
-          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
+          <div style={{ fontSize: "10pt" }}>Algorand Governance Enrollment</div>
           <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
         </div>
         <div
@@ -310,146 +289,175 @@ var borrowDetails = [
             marginLeft: "0px",
           }}
         >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
-
-          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
-          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
+          <div
+            style={{
+              display: "flex",
+              textAlign: "left",
+              flexDirection: "column",
+            }}
+          >
+            <div style={{ color: "#172756", fontSize: "10pt" }}>
+              7M Algo bonus rewards when participating via DeFi protocols
+            </div>
+            <span style={{ color: "#172756", fontSize: "8pt" }}>
+              Enrollment is now live!
+            </span>
           </div>
         </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <Link>Open CDP to Participate</Link>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Link>Open CDP to Participate</Link>
         </div>
       </Banner>
-        {createPositionShown ? <div><Container>
-          <SubContainer>
+      {createPositionShown ? (
+        <div>
+          <Container>
+            <SubContainer>
               <Background>
-                  <Title>Supply ALGO <AlgoImg src={algoLogo} /></Title>
-                  <InputContainer>
-                      <div style={{display: "flex"}}>
-                          <Input
-                          autoComplete="off"
-                          display="none"
-                          placeholder={"enter amount"}
-                          type='number'
-                          min="0.00"
-                          id="collateral"
-                          value={cAlgos}
-                          onChange={handleSupplyChange}
-                          />
-                          <MaxButton
-                          onClick={handleMaxCollateral}>
-                              <ToolTip
-                              toolTip={"+MAX"}
-                              toolTipText={"Click to lend maximum amount"}
-                              />
-                          </MaxButton>
-                      </div>
-                      <Valuation>$Value: ${cAlgos === "..." ? 0.00 : (cAlgos * supplyPrice).toFixed(2)}</Valuation>
-                      <InputDetails>
-                          {supplyDetails.length && supplyDetails.length > 0 ?
-                          supplyDetails.map((d) => {
-                              return (
-                               <Item key={d.title}>
-                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
-                                  </Item>
-                              )
-                          })
-                          : null
-          }
-                      </InputDetails>
-                  </InputContainer>
+                <Title>
+                  Supply ALGO <AlgoImg src={algoLogo} />
+                </Title>
+                <InputContainer>
+                  <div style={{ display: "flex" }}>
+                    <Input
+                      autoComplete="off"
+                      display="none"
+                      placeholder={"enter amount"}
+                      type="number"
+                      min="0.00"
+                      id="collateral"
+                      value={cAlgos}
+                      onChange={handleSupplyChange}
+                    />
+                    <MaxButton onClick={handleMaxCollateral}>
+                      <ToolTip
+                        toolTip={"+MAX"}
+                        toolTipText={"Click to lend maximum amount"}
+                      />
+                    </MaxButton>
+                  </div>
+                  <Valuation>
+                    $Value: $
+                    {cAlgos === "..." ? 0.0 : (cAlgos * supplyPrice).toFixed(2)}
+                  </Valuation>
+                  <InputDetails>
+                    {supplyDetails.length && supplyDetails.length > 0
+                      ? supplyDetails.map((d) => {
+                          return (
+                            <Item key={d.title}>
+                              <Effect
+                                title={d.title}
+                                val={d.val}
+                                hasToolTip={d.hasToolTip}
+                                rewards={d.rewards}
+                              ></Effect>
+                            </Item>
+                          );
+                        })
+                      : null}
+                  </InputDetails>
+                </InputContainer>
               </Background>
-              {/* <PrimaryButton positioned={true} blue={true} text="Supply" onClick={()=>{cAlgos !== "" ? setGARD(1): null}}/> */}
-          </SubContainer>
+            </SubContainer>
 
-          <SubContainer>
+            <SubContainer>
               <Background>
-                  <BorrowTitle>Borrow GARD <GardImg src={gardLogo} /></BorrowTitle>
+                <BorrowTitle>
+                  Borrow GARD <GardImg src={gardLogo} />
+                </BorrowTitle>
 
-                  <InputContainer>
-                      <div style={{display: "flex"}}>
-                          <Input
-                          autoComplete="off"
-                          placeholder={"enter amount"}
-                          type='number'
-                          min="1.00"
-                          step="1"
-                          id="minted"
-                          value={mGARD}
-                          size="small"
-                          onChange={handleBorrowChange}
-                          />
-                          <MaxButton
-                          onClick={handleMaxBorrow}>
-                              <ToolTip
-                              toolTip={"+MAX"}
-                              toolTipText={"Click to borrow maximum amount"}
-                              />
-                          </MaxButton>
-                      </div>
-                      <Valuation>$Value: ${mGARD === "" ? 0 : mGARD}</Valuation>
-                      <InputDetails>
-                          {borrowDetails.length && borrowDetails.length > 0 ?
-                          borrowDetails.map((d) => {
-                              return (
-                                  <Item key={d.title}>
-                                      <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
-                                  </Item>
-                              )
-                          })
-                          : null
-          }
-                      </InputDetails>
-                  </InputContainer>
+                <InputContainer>
+                  <div style={{ display: "flex" }}>
+                    <Input
+                      autoComplete="off"
+                      placeholder={"enter amount"}
+                      type="number"
+                      min="1.00"
+                      step="1"
+                      id="minted"
+                      value={mGARD}
+                      size="small"
+                      onChange={handleBorrowChange}
+                    />
+                    <MaxButton onClick={handleMaxBorrow}>
+                      <ToolTip
+                        toolTip={"+MAX"}
+                        toolTipText={"Click to borrow maximum amount"}
+                      />
+                    </MaxButton>
+                  </div>
+                  <Valuation>$Value: ${mGARD === "" ? 0 : mGARD}</Valuation>
+                  <InputDetails>
+                    {borrowDetails.length && borrowDetails.length > 0
+                      ? borrowDetails.map((d) => {
+                          return (
+                            <Item key={d.title}>
+                              <Effect
+                                title={d.title}
+                                val={d.val}
+                                hasToolTip={d.hasToolTip}
+                                rewards={d.rewards}
+                              ></Effect>
+                            </Item>
+                          );
+                        })
+                      : null}
+                  </InputDetails>
+                </InputContainer>
               </Background>
-
-          </SubContainer>
-      </Container>
-      <PrimaryButton
-              blue={true}
-              positioned={true}
-              text="Create CDP"
-              disabled={cAlgos == "" || mGARD == ""}
-              onClick={async () => {
-                setLoading(true)
-                try {
-                  const res = await openCDP(
-                    getCollateral(),
-                    getMinted(),
-                    commitChecked,
-                    toWallet,
-                  );
-                  if (res.alert) {
-                    setCreatePositionShown(false)
-                    dispatch(setAlert(res.text));
-                  }
-                } catch (e) {
-                  handleTxError(e, "Error minting CDP");
+            </SubContainer>
+          </Container>
+          <PrimaryButton
+            blue={true}
+            positioned={true}
+            text="Create CDP"
+            disabled={cAlgos == "" || mGARD == ""}
+            onClick={async () => {
+              setLoading(true);
+              try {
+                const res = await openCDP(
+                  getCollateral(),
+                  getMinted(),
+                  commitChecked,
+                  toWallet,
+                );
+                if (res.alert) {
+                  setCreatePositionShown(false);
+                  dispatch(setAlert(res.text));
                 }
-                setLoading(false)
-              }}
-              />
-      <Details className={"borrow"} details={details}/>
-      </div> :
-      <></> }
-      {cdps == dummyCDPs ? <></> :
-      <div>
-        <PrimaryButton
-        text={createPositionShown ? "Exit" : "Create New Position"}
-        blue={true}
-        positioned={createPositionShown}
-        onClick={() => {
-          setCreatePositionShown(!createPositionShown)
-        }}
-        />
-        <Positions maxGARD={maxGARD}/>
-      </div>}
+              } catch (e) {
+                handleTxError(e, "Error minting CDP");
+              }
+              setLoading(false);
+            }}
+          />
+          <Details className={"borrow"} details={details} />
+        </div>
+      ) : (
+        <></>
+      )}
+      {cdps == dummyCDPs ? (
+        <></>
+      ) : (
+        <div>
+          <PrimaryButton
+            text={createPositionShown ? "Exit" : "Create New Position"}
+            blue={true}
+            positioned={createPositionShown}
+            onClick={() => {
+              setCreatePositionShown(!createPositionShown);
+            }}
+          />
+          <Positions maxGARD={maxGARD} />
+        </div>
+      )}
     </div>
+  );
 }
 
 const Link = styled.text`
@@ -475,14 +483,14 @@ const Banner = styled.div`
   padding: 8px 6px 10px 8px;
   margin: 8px;
   margin-bottom: 20px;
-`
+`;
 
 const BorrowRewardNotice = styled(RewardNotice)`
   font-size: 10pt;
   text {
     font-size: 8pt;
   }
-`
+`;
 
 const AlgoImg = styled.img`
   /* filter: invert(); */
@@ -490,39 +498,37 @@ const AlgoImg = styled.img`
   width: 75px;
   right: --4px;
   position: relative;
-`
+`;
 
 const GardImg = styled.img`
   height: 50px;
   margin: 2px 18px 2px 14px;
   position: relative;
   top: -2px;
-`
+`;
 
 const Container = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 49%);
-    column-gap: 2%;
-`
+  display: grid;
+  grid-template-columns: repeat(2, 49%);
+  column-gap: 2%;
+`;
 
 const SubContainer = styled.div`
-    position: relative;
-
-`
+  position: relative;
+`;
 const Background = styled.div`
-    /* margin-top: 0px; */
-    background: #1b2d65;
-    border-radius: 10px;
-
-`
+  /* margin-top: 0px; */
+  background: #1b2d65;
+  border-radius: 10px;
+`;
 const Title = styled.div`
-    display: flex;
-    justify-content: center;
-    font-size: 14pt;
-    align-items: center;
-    text-align: center;
-    padding: 20px 0px 20px;
-`
+  display: flex;
+  justify-content: center;
+  font-size: 14pt;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0px 20px;
+`;
 
 const BorrowTitle = styled.div`
   display: flex;
@@ -533,42 +539,42 @@ const BorrowTitle = styled.div`
   padding: 20px 0px 20px;
   margin-bottom: 9px;
   padding-top: 31px;
-`
+`;
 
 const InputContainer = styled.div`
-    background: rgba(13, 18, 39, .75);
-    border-radius: 10px;
-    border: 1px solid #80edff;
-`
+  background: rgba(13, 18, 39, 0.75);
+  border-radius: 10px;
+  border: 1px solid #80edff;
+`;
 
 const InputDetails = styled.div`
-display: grid;
-grid-template-columns:repeat(1, 40%);
-row-gap: 30px;
-justify-content: center;
-padding: 30px 0px 30px;
-border-radius: 10px;
-`
+  display: grid;
+  grid-template-columns: repeat(1, 40%);
+  row-gap: 30px;
+  justify-content: center;
+  padding: 30px 0px 30px;
+  border-radius: 10px;
+`;
 
 const Item = styled.div`
-    display: flex;
-    flex-direction: column;
-    font-size: 14px;
-`
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+`;
 const MaxButton = styled.button`
-    color: #01d1ff;
-    background: none;
-    border: none;
-    margin-top: 50px;
-    cursor: pointer;
-    font-size: 12px;
-`
+  color: #01d1ff;
+  background: none;
+  border: none;
+  margin-top: 50px;
+  cursor: pointer;
+  font-size: 12px;
+`;
 const Valuation = styled.div`
-    margin-left: 25px;
-    margin-top: 3px;
-    font-size: 12px;
-    color: #999696;
-`
+  margin-left: 25px;
+  margin-top: 3px;
+  font-size: 12px;
+  color: #999696;
+`;
 const Input = styled.input`
   padding-top: 35px;
   border-radius: 0;
@@ -583,9 +589,9 @@ const Input = styled.input`
   background: none;
   margin-left: 25px;
   &:focus {
-      outline-width: 0;
-    }
-`
+    outline-width: 0;
+  }
+`;
 
 //modal stuff
 const InputTitle = styled.text`
@@ -652,24 +658,24 @@ export function CDPsToList() {
   const CDPs = getCDPs();
   let res = [];
   if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
-      const accountCDPs = CDPs[getWalletInfo().address];
-      for (const [cdpID, value] of Object.entries(accountCDPs)) {
+    const accountCDPs = CDPs[getWalletInfo().address];
+    for (const [cdpID, value] of Object.entries(accountCDPs)) {
       if (value["state"] == "open") {
-          res.push({
+        res.push({
           id: cdpID,
           liquidationPrice: (
-              (1.15 * value["debt"]) /
-              value["collateral"]
+            (1.15 * value["debt"]) /
+            value["collateral"]
           ).toFixed(4),
           collateral: value["collateral"],
           debt: value["debt"],
           committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
-          });
+        });
       }
-      }
+    }
   }
   if (res.length == 0) {
-      res = dummyCDPs;
+    res = dummyCDPs;
   }
   return res;
 }
@@ -681,52 +687,3 @@ const dummyCDPs = [
     debt: 0,
   },
 ];
-
-
-/**
- * banner code
- *
-<div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          borderRadius: 10,
-          justifyContent: "space-between",
-          textAlign: "center",
-          background: "linear-gradient(to right, #80deff 65%, #ffffff)",
-          padding: "8px 6px 10px 8px",
-        }}
-      >
-        <div
-          style={{
-            justifyContent: "center",
-            textAlign: "left",
-            alignItems: "center",
-            color: "#172756",
-          }}
-        >
-          <div style={{ fontSize: "10pt", }}>Algorand Governance Period #5</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
-          }}
-        >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
-
-          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus through DeFi Protocols</div>
-          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
-          </div>
-        </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
- */
