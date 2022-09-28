@@ -1,5 +1,5 @@
 import algosdk from "algosdk";
-import { setLoadingStage, microGARD, idToAddress } from "./lib"
+import { setLoadingStage, microGARD } from "./lib"
 import { accountInfo } from "../wallets/wallets";
 
 export async function stake(pool, gardAmount) {
@@ -26,7 +26,7 @@ export async function stake(pool, gardAmount) {
   // txn 1 - entrance transfer
   let txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
-    to: idToAddress(ids.app.gard_staking),
+    to: algosdk.getApplicationAddress(ids.app.gard_staking),
     amount: microGARDAmount,
     suggestedParams: params,
     assetIndex: ids.asa.gard,
@@ -95,5 +95,4 @@ export async function unstake(pool, gardAmount) {
   setLoadingStage(null);
 
   return response;
-  // TODO
 }

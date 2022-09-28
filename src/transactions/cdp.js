@@ -1,7 +1,7 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
 import { cdpGen } from "./contracts";
-import { setLoadingStage, getGardBalance, microGARD, idToAddress } from "./lib";
+import { setLoadingStage, getGardBalance, microGARD } from "./lib";
 import {
   accountInfo,
   getParams,
@@ -596,7 +596,7 @@ export async function repayCDP(accountID, repayGARD) {
   // txn 2 - send the closing gard
   let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
-    to: idToAddress(ids.app.validator),
+    to: algosdk.getApplicationAddress(ids.app.validator),
     amount: microRepayGARD,
     suggestedParams: params,
     assetIndex: ids.asa.gard,
@@ -679,7 +679,7 @@ export async function closeCDP(accountID) {
   // txn 2 - send the closing gard
   let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
-    to: idToAddress(ids.app.validator),
+    to: algosdk.getApplicationAddress(ids.app.validator),
     amount: microRepayGARD,
     suggestedParams: params,
     assetIndex: ids.asa.gard,
