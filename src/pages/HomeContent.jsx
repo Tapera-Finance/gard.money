@@ -217,8 +217,7 @@ export default function HomeContent() {
             color: "#172756",
           }}
         >
-          <div style={{ fontSize: "10pt", }}>Staking Rewards</div>
-          <div style={{ fontSize: "8pt" }}></div>
+          <div style={{ fontSize: "10pt",  }}>Staking Rewards!</div>
         </div>
         <div
           style={{
@@ -235,8 +234,7 @@ export default function HomeContent() {
             flexDirection: "column"
           }}>
 
-          <div style={{ color: "#172756", fontSize: "10pt" }}>Earn protocol rewards</div>
-          <span style={{ color: "#172756", fontSize: "8pt" }}>Backed by Aeneas grant</span>
+          <div style={{ color: "#172756", fontSize: "10pt" }}>Earn protocol rewards that are boosted by the Algorand Foundation via our Aeneas grant!</div>
           </div>
         </div>
         <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
@@ -396,6 +394,7 @@ const Link = styled.text`
   text-decoration: none;
   font-weight: 500;
   color: #172756;
+  margin-right: 12px;
   &:hover {
     color: #03a0ff;
     cursor: pointer;
