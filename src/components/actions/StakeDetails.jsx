@@ -16,6 +16,7 @@ import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
 import { formatToDollars } from "../../utils";
 import { stake, unstake } from "../../transactions/stake"
+import LoadingOverlay from "../LoadingOverlay";
 
 // asset types: 0 === GARD, 1 === ALGO
 
@@ -42,6 +43,11 @@ export default function StakeDetails() {
   const handleInput = (e) => {
     setStakeAmount(e.target.value === "" ? "" : Number(e.target.value));
   }
+
+  var sessionStorageSetHandler = function (e) {
+    setLoadingText(JSON.parse(e.value));
+  };
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
   const handleMaxStake = () => {
     setMaxStake(maxStake);
@@ -80,7 +86,9 @@ export default function StakeDetails() {
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
 
-  return (
+
+  return (<div>
+    {loading ? (<LoadingOverlay text={loadingText} />) : <></>}
     <div
       style={{
         display: "flex",
@@ -141,6 +149,7 @@ export default function StakeDetails() {
           <PrimaryButton text="Stake" onClick={handleStake} />
         </FourthRow>
       </Container>
+    </div>
     </div>
   );
 }
