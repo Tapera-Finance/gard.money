@@ -157,13 +157,12 @@ async function findOpenID(address) {
 }
 
 export function verifyOptIn(info, assetID) {
-  let verified = false;
   for (var i = 0; i < info["assets"].length; i++) {
     if (info["assets"][i]["asset-id"] == assetID) {
-      verified = true;
+      return true;
     }
   }
-  return verified;
+  return false;
 }
 
 export function createOptInTxn(params, info, assetID) {

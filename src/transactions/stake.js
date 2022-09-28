@@ -5,6 +5,15 @@ import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
 
 const enc = new TextEncoder();
 
+function isOptedIn(appID, info) {
+  for (var i = 0; i < info["apps-local-state"].length; i++) {
+    if (info["apps-local-state"][i]["id"] == appID) {
+      return true;
+    }
+  }
+  return false
+}
+
 export async function stake(pool, gardAmount) {
   setLoadingStage("Loading...");
 
@@ -14,6 +23,18 @@ export async function stake(pool, gardAmount) {
   let params = await getParams(1000);
   let info = await infoPromise;
   
+  let txns = [];
+  
+  const optedIn = isOptedIn(ids.app.gard_staking, info);
+  if (!optedIn) {
+    // opt in txn
+    let txnOptIn = algosdk.makeApplicationOptInTxnFromObject({
+      from: info.address,
+      suggestedParams: params,
+      appIndex: ids.app.gard_staking,
+    });
+    txns.push(txnOptIn)
+  }
   // txn 0 - app call
   let txn0 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
@@ -25,6 +46,7 @@ export async function stake(pool, gardAmount) {
     foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
+  txns.push(txn0)
   // txn 1 - entrance transfer
   let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -33,9 +55,8 @@ export async function stake(pool, gardAmount) {
     suggestedParams: params,
     assetIndex: ids.asa.gard,
   });
+  txns.push(txn1)
   
-
-  let txns = [txn0, txn1];
   algosdk.assignGroupID(txns);
   
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
@@ -44,6 +65,9 @@ export async function stake(pool, gardAmount) {
   setLoadingStage("Confirming Transaction...");
 
   let stxns = [signedGroup[0].blob, signedGroup[1].blob];
+  if (signedGroup.length == 3) {
+    stxns.push(signedGroup[2].blob)
+  }
 
   let response = await sendTxn(
     stxns,
