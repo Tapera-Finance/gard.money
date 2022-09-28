@@ -345,21 +345,23 @@ export default function HomeContent() {
             <Step
               header="Step 2: Get Gard"
               badges={[]}
-              subtitle="Exchange ALGO to borrow GARD"
-              text="The easiest way to get GARD is to simply swap ALGOs for GARD on the GARD WebApp to enter the GARD ecosystem which enables users to earn staking rewards, GARDian rewards, and much more."
+              subtitle=""
+              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD go to the swap page. To borrow GARD go to the borrow page."
               link="https://gard.gitbook.io/gard-system-guide/"
-              linkText="GARD"
+              linkText="How to get GARD"
               goTo="Swap"
+              secondGoTo="Borrow"
               allOpen={allOpen}
             />
             <Step
               header="Step 3: Gain Rewards"
               badges={["Staking Rate", "Governance Rate"]}
-              subtitle="Add Liquidity to Pool"
-              text="Open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin."
+              subtitle=""
+              text="To gain additional rewards via the GARD Protocol a user may stake their GARD or participate in Algorand governance. Staking GARD entitles users to their share of revenues earned by the protocol in real time. Participating in Algorand Governace via the GARD Protocol entitles users to leverage their committed ALGOs to borrow GARD as well as their share of a 7M ALGO boost paid out quarterly by the Algorand Foundation."
               link="https://gard.gitbook.io/gard-system-guide/how-to/participate-in-algorand-governance-via-gard-protocol"
-              linkText="needed to participate"
-              goTo="Borrow"
+              linkText="What is needed to participate?"
+              goTo="Stake"
+              secondGoTo="Govern"
               allOpen={allOpen}
             />
             {/* <Step
@@ -396,6 +398,7 @@ const Link = styled.text`
   color: #172756;
   &:hover {
     color: #03a0ff;
+    cursor: pointer;
   }
 `;
 
@@ -474,7 +477,13 @@ const ConnectStep = styled.div`
       color: #0f1733;
       width: 60vw;
     `}
+    @media (max-width:663)
+    {
+      button {
+        font-size: smaller
+      }
 
+    }
 
   /* display: flex;
   text-align: center;

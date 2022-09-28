@@ -202,7 +202,7 @@ const WalletConnectDiv = styled.div`
 `
 
 const StyledModal = styled(Modal)`
-  background: #172756
+  background: #172756;
 `
 
 /**
