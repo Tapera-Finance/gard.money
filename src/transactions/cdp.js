@@ -571,7 +571,7 @@ async function totalDebt(cdpInfo) {
 }
 
 
-export async function repayCDP(accountID, repayGard) {
+export async function repayCDP(accountID, repayGARD) {
 
   // Promise setup
   setLoadingStage("Loading...");
