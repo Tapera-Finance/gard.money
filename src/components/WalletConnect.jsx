@@ -94,7 +94,7 @@ export default function WalletConnect() {
                         const user = instantiateUser(owner_address);
                         addUserToFireStore(user, owner_address);
                       }
-                      navigate(window.location.href) // refresh on connect so balances and renderings are updated
+                      navigate("/") // refresh on connect so balances and renderings are updated
                     } else {
                       dispatch(setAlert(wallet.text));
                     }
