@@ -55,6 +55,8 @@ const accumulateTotal = (arr, prop) => {
   }, 0);
 };
 
+let algo_price = await getPrice();
+
 export default function Holdings() {
   const [walletTotal, setWalletTotal] = useState(0);
   const [borrowTotal, setBorrowTotal] = useState(0);
@@ -66,7 +68,7 @@ export default function Holdings() {
     return {
       id: i + 1,
       liquidationPrice: cdp.liquidationPrice,
-      collateral: formatToDollars(cdp.collateral.toString(), true),
+      collateral: formatToDollars((algo_price*cdp.collateral).toString(), true),
       debt: formatToDollars(cdp.debt.toString(), true),
       committed: cdp.committed
     }
@@ -84,8 +86,9 @@ export default function Holdings() {
   useEffect(() => {
     let walletSum = accumulateTotal(assets, "amount");
     let netBorrowSum = accumulateTotal(cdps, "collateral");
+    let netBorrowDebt = accumulateTotal(cdps, "debt");
     setWalletTotal(walletSum);
-    setBorrowTotal(netBorrowSum / 1e6);
+    setBorrowTotal(((netBorrowSum*algo_price) - netBorrowDebt) / 1e6);
   }, []);
 
   const tabs = {
