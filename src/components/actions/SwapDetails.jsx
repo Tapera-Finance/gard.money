@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { setAlert } from "../../redux/slices/alertSlice";
 import * as tips from "../../assets/tooltiptext";
 import styled from "styled-components";
@@ -82,6 +83,7 @@ export default function SwapDetails() {
   const [disabled, setDisabled] = useState(true);
   const [getBal, setGetBal] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const assets = ["ALGO", "GARD"];
 

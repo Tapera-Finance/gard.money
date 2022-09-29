@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { formatToDollars } from "../utils";
 import Modal from "../components/Modal";
@@ -111,6 +112,7 @@ export default function AuctionsContent() {
   const [transDebt, setTransDebt] = useState([]);
   const [canAnimate, setCanAnimate] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!walletAddress) navigate("/");

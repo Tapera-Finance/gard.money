@@ -94,7 +94,6 @@ export default function WalletConnect() {
                         const user = instantiateUser(owner_address);
                         addUserToFireStore(user, owner_address);
                       }
-                      navigate("/") // refresh on connect so balances and renderings are updated
                     } else {
                       dispatch(setAlert(wallet.text));
                     }
@@ -345,6 +344,7 @@ function TermsOfService({ closeModal, accept }) {
       >
         <PrimaryButton
           text="I Accept"
+          blue={true}
           onClick={() => {
             accept();
           }}

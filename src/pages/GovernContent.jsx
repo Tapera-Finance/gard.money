@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {useSelector} from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Details from "../components/Details";
 import PrimaryButton from "../components/PrimaryButton";
@@ -15,6 +16,8 @@ import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
 import { textAlign } from "@mui/system";
 import { Switch } from "@mui/material";
+
+
 
 const axios = require("axios");
 
@@ -48,6 +51,13 @@ export default function Govern() {
   const [governors, setGovernors] = useState("...");
   const [enrollmentEnd, setEnrollmentEnd] = useState("");
   const [voteTableDisabled, setVoteTable] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!getWallet()) return navigate("/");
+  }, []);
+
+
   var details = [
     {
       title: "Total Vaulted",
@@ -75,15 +85,14 @@ export default function Govern() {
     setCommitment(await loadFireStoreCDPs());
   }, [refresh]);
 
-  useEffect(() => {
-    if (!walletAddress) navigate("/");
-  }, [walletAddress]);
 
   let loadedCDPs = CDPsToList();
   if (loadedCDPs[0].id == "N/A") {
     loadedCDPs = dummyCdps;
   }
+
   const owner_address = getWallet().address;
+
   let adjusted = loadedCDPs.map((value) => {
     const cdp_address = cdpGen(owner_address, value.id).address;
     return {
@@ -134,8 +143,9 @@ export default function Govern() {
     };
   });
   console.log("cdps", cdps);
-  return (
+  return ( !walletAddress ? navigate("/") :
     <div>
+      {/* {!walletAddress ? navigate("/") : <></>} */}
 <Banner
       >
         <div

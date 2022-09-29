@@ -117,6 +117,8 @@ export function disconnectWallet() {
   activeWallet = undefined;
   activeWalletInfo = undefined;
   localStorage.removeItem("wallet");
+  window.history.pushState({}, "", window.location.origin + "/")
+  window.location.reload()
 }
 
 
@@ -321,6 +323,7 @@ export async function connectWallet(type, address) {
   }
   console.log(activeWallet);
   localStorage.setItem("wallet", JSON.stringify(activeWallet));
+  window.location.reload();
   return await updateWalletInfo();
 }
 
