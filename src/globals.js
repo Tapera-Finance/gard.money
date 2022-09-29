@@ -2,7 +2,7 @@ export const CONTENT_NAMES = {
   HOME: "Home",
   ACCOUNT: "Account",
   ACTIONS: "Actions",
-  MINT: "Borrow",
+  BORROW: "Borrow",
   AUCTIONS: "Auctions",
   SWAP: "Swap",
   STAKE: "Stake",

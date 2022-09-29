@@ -78,11 +78,12 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
               )} GARD`,
             hasToolTip: true,
         },
-        {
-            title: "Borrow Rewards",
-            val: `${0.00}%`,
-            hasToolTip: true,
-        },];
+        // {
+        //     title: "Borrow Rewards",
+        //     val: `${0.00}%`,
+        //     hasToolTip: true,
+        // }
+    ];
 
     var sessionStorageSetHandler = function (e) {
         setLoadingText(JSON.parse(e.value));
@@ -245,7 +246,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(2, 40%);
+grid-template-columns:repeat(1, 49%);
 row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;

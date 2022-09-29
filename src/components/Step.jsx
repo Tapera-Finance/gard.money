@@ -10,6 +10,7 @@ export default function Step({
   subtitle,
   text,
   goTo,
+  secondGoTo,
   link,
   linkText,
   allOpen,
@@ -40,7 +41,7 @@ export default function Step({
             <div
               style={{
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 justifyContent: "center",
               }}
             >
@@ -64,28 +65,30 @@ export default function Step({
           style={{
             display: "flex",
             flexDirection: "column",
-            textAlign: "left",
+            textAlign: "center",
             alignItems: "left",
             justifyContent: "space-evenly",
+
           }}
         >
-          <div style={{ display: "flex", textAlign: "center", width: "60vw", marginBottom: 6, marginTop: 6 }}>
-            <Link href={link} target="_blank">What is {linkText}?</Link>
+          <div style={{ display: "flex", textAlign: "center", width: "60vw", marginBottom: 0, marginTop: 4 }}>
+            <Link href={link} target="_blank">{linkText}</Link>
           </div>
-          <text
+          {/* <text
             style={{ fontWeight: "bolder", width: "40%", marginBottom: 12 }}
             >
             {subtitle}
-          </text>
-            <text style={{width: "60vw", marginBottom: 6, marginTop: 6}}>{text}</text>
-          <div style={{ display: "flex", justifyContent: "left", margin: "2px 0px 12px 0px" }}>
+          </text> */}
+            <text style={{width: "60vw", marginBottom: 18, marginTop: 6}}>{text}</text>
+          <div style={{ display: "flex", justifyContent: "center", margin: "2px 0px 12px 0px" }}>
             <StepButton
               text={`Go to ${goTo}`}
               blue={true}
               onClick={() => navigate(`/${goTo.toLowerCase()}`)}
             />
+            {secondGoTo !== "" && secondGoTo !== null ? <StepButton text={`Go to ${secondGoTo}`} blue={true} onClick={() => navigate(`/${secondGoTo.toLowerCase()}`)} /> : <></>}
 
-            <div style={{ marginLeft: "75%" }}></div>
+            {/* <div style={{ marginLeft: "75%" }}></div> */}
           </div>
         </div>
       ) : (
@@ -143,6 +146,8 @@ const StepButton = styled(PrimaryButton)`
   appearance: none;
   margin-top: 20px;
   margin: unset;
+  margin-left: 8px;
+  margin-right: 8px;
   &:hover {
     border: 1px transparent;
   }
@@ -165,24 +170,25 @@ const Badge = ({ type }) => {
         border: "1px solid #80edff",
         borderRadius: 8,
         marginLeft: 12,
-        padding: 4,
+        padding: 2,
       }}
     >
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center"
         }}
       >
         <div>
-          <text style={{ color: "#ffffff", marginRight: 2 }}>
+          <text style={{ color: "#ffffff", marginRight: 2, fontSize: "8pt" }}>
             {type} Reward
           </text>
           <hr
             style={{ border: "dashed 1px #019fff", margin: "0px 0px 2px 0px" }}
           ></hr>
         </div>
-        <text style={{ color: "#80edff" }}>0.03%</text>
+        <text style={{ color: "#80edff", fontSize: "8pt", alignItems: "center" }}>0.03%</text>
       </div>
     </div>
   );

@@ -22,6 +22,8 @@ import AlertOverlay from "./AlertOverlay";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { hide } from "../redux/slices/alertSlice";
+import SwapDetails from "./actions/SwapDetails";
+import StakeDetails from "./actions/StakeDetails";
 
 async function googleStuff() {
   const script = document.createElement("script");
@@ -190,12 +192,16 @@ function MainContentHandler({ content, walletAddress }) {
       return <HomeContent />;
     case CONTENT_NAMES.ACCOUNT:
       return <AccountContent walletAddress={walletAddress} />;
-    case CONTENT_NAMES.MINT:
+    case CONTENT_NAMES.BORROW:
       return <BorrowContent />;
     case CONTENT_NAMES.REPAY:
       return <RepayContent />;
     case CONTENT_NAMES.AUCTIONS:
       return <AuctionsContent />;
+    case CONTENT_NAMES.SWAP:
+      return <SwapDetails />
+    case CONTENT_NAMES.STAKE:
+      return <StakeDetails />;
     case CONTENT_NAMES.ACTIONS:
       return <ActionsContent />;
     case CONTENT_NAMES.DAO:

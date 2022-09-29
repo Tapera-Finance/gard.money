@@ -68,6 +68,17 @@ export default function StakeDetails() {
     }
   }
 
+  const handleUnstake = () => {
+    console.log(`action to unstake ${stakeAmount}`)
+    // setLoading(true)
+    try {
+      // await unstake(params)
+      // setLoading(false)
+    } catch (e) {
+      console.log("Error attempting to unstake", e)
+    }
+  }
+
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
@@ -87,14 +98,52 @@ export default function StakeDetails() {
   }, [walletAddress]);
 
 
-  return (<div>
-    {loading ? (<LoadingOverlay text={loadingText} />) : <></>}
+  return (
+    <div>
+      {loading ? (<LoadingOverlay text={loadingText} />) : <></>}
+      <div style={{display: "flex", flexDirection: "column"}} >
+      <Banner>
+      <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt",  }}>GARD Staking Rewards!</div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>Earn protocol rewards boosted by the Algorand Foundation via Aeneas grant!</div>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <Link>Stake GARD to Earn Rewards</Link>
+        </div>
+      </Banner>
     <div
       style={{
         display: "flex",
         justifyContent: "center",
       }}
     >
+
+      </div>
       <Container>
         <FirstRow>Staking Pool</FirstRow>
         <SecondRow>
@@ -135,7 +184,7 @@ export default function StakeDetails() {
           </StakeBox>
         </ThirdRow>
         <FourthRow>
-          <Effect title="Your Stake" val={`${stakeAmount} ALGO`} hasToolTip={false} />
+          <Effect title="Your Stake" val={`${0} ALGO`} hasToolTip={false} />
           <Effect
             title="Rewards / Day"
             val="..."
@@ -146,7 +195,11 @@ export default function StakeDetails() {
             val="..."
             hasToolTip={false}
           />
-          <PrimaryButton text="Stake" onClick={handleStake} />
+          <div style={{display: "flex", flexDirection: "row"}}>
+
+          <PrimaryButton text="Stake" blue={true} onClick={handleStake} />
+          <PrimaryButton text="Unstake" blue={true} onClick={handleUnstake} />
+          </div>
         </FourthRow>
       </Container>
     </div>
@@ -183,6 +236,31 @@ const AssetOptions = ({ open, setAsset, setOpen }) => {
   );
 };
 
+const Link = styled.text`
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 8pt;
+  color: #172756;
+  margin-right: 6px;
+  /* &:hover {
+    color: #03a0ff;
+    cursor: pointer;
+  } */
+`;
+
+const Banner = styled.div`
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  justify-content: space-between;
+  text-align: center;
+  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  padding: 8px 6px 10px 8px;
+  margin: 8px;
+  margin-bottom: 12px;
+`
+
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -199,7 +277,7 @@ const Container = styled.div`
 const FirstRow = styled.div`
   text-align: left;
   font-weight: bolder;
-  font-size: 22;
+  font-size: 18pt;
   margin-left: 12px;
   margin-bottom: 10px;
   height: 22%;
@@ -223,7 +301,7 @@ const ThirdRow = styled.div`
 const StakeBox = styled.div`
   display: flex;
   justify-content: center;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
 `;
 const FourthRow = styled.div`
