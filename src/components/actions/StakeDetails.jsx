@@ -162,6 +162,8 @@ export default function StakeDetails() {
             <StakeInput
               id="stake-amt"
               placeholder="0.00"
+              min="0"
+              step=".01"
               type="number"
               value={stakeAmount}
               callback={handleInput}
