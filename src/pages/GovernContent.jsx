@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import {useSelector} from "react-redux";
 import styled from "styled-components";
 import Details from "../components/Details";
 import PrimaryButton from "../components/PrimaryButton";
@@ -38,6 +39,7 @@ export async function getGovernanceInfo() {
 }
 
 export default function Govern() {
+  const walletAddress = useSelector(state => state.wallet.address)
   const [commitment, setCommitment] = useState(undefined);
   const [maxBal, setMaxBal] = useState("");
   const [selectedAccount, setSelectedAccount] = useState("");
@@ -72,6 +74,10 @@ export default function Govern() {
   useEffect(async () => {
     setCommitment(await loadFireStoreCDPs());
   }, [refresh]);
+
+  useEffect(() => {
+    if (!walletAddress) navigate("/");
+  }, [walletAddress]);
 
   let loadedCDPs = CDPsToList();
   if (loadedCDPs[0].id == "N/A") {

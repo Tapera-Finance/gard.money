@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Details from "../components/Details";
 import Effect from "../components/Effect";
@@ -57,6 +58,7 @@ function getCollateral() {
 }
 
 export default function BorrowContent() {
+  const walletAddress = useSelector(state => state.wallet.address);
   const [modalVisible, setModalVisible] = useState(false);
   const [canAnimate, setCanAnimate] = useState(false);
   const navigate = useNavigate();
@@ -111,6 +113,10 @@ export default function BorrowContent() {
   useEffect(() => {
     setSupplyPrice(price);
   }, [price]);
+
+  useEffect(() => {
+    if (!walletAddress) navigate("/");
+  }, [walletAddress]);
 
   const handleSupplyChange = (event) => {
     setCollateral(event.target.value === "" ? "" : Number(event.target.value));
