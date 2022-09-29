@@ -1,5 +1,10 @@
 import { ids } from "./ids";
 
+export function microGARD(GARD) {
+  // Helper function so we don't type the number of zeros anytime
+  return parseInt(GARD * 1000000);
+}
+
 export function setLoadingStage(stage) {
   sessionStorage.setItem("loadingStage", JSON.stringify(stage));
 }

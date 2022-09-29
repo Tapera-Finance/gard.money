@@ -15,7 +15,8 @@ import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
 import { formatToDollars } from "../../utils";
-import {stake} from "../../transactions/stake"
+import { stake, unstake } from "../../transactions/stake"
+import LoadingOverlay from "../LoadingOverlay";
 
 // asset types: 0 === GARD, 1 === ALGO
 
@@ -43,6 +44,11 @@ export default function StakeDetails() {
     setStakeAmount(e.target.value === "" ? "" : Number(e.target.value));
   }
 
+  var sessionStorageSetHandler = function (e) {
+    setLoadingText(JSON.parse(e.value));
+  };
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+
   const handleMaxStake = () => {
     setMaxStake(maxStake);
     let max = balance
@@ -50,14 +56,15 @@ export default function StakeDetails() {
     console.log("stake", stakeAmount);
   };
 
-  const handleStake = () => {
+  const handleStake = async () => {
     console.log(`action to stake ${stakeAmount}`)
-    // setLoading(true)
+    setLoading(true)
     try {
-      // await stake(params)
-      // setLoading(false)
+      await stake("NL", stakeAmount)
+      setLoading(false)
     } catch (e) {
-      console.log("Error attempting to stake", e)
+      alert("Error attempting to stake: " + e)
+      console.log(e)
     }
   }
 
@@ -90,8 +97,10 @@ export default function StakeDetails() {
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
 
+
   return (
     <div>
+      {loading ? (<LoadingOverlay text={loadingText} />) : <></>}
       <div style={{display: "flex", flexDirection: "column"}} >
       <Banner>
       <div

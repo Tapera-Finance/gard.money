@@ -9,8 +9,8 @@ function contractStringToBytes(string) {
 const encoder = new TextEncoder();
 
 // Last updated: 22.02.2022
-let cdpTemplateString = "BiAEAQKB+4s2ADEgMgMSMQElEhAtFyUSQACrLRciEkAANi0XIxJAACMtF4EDEkAAAQAxGCQSMRklEhA2GgCAB0F1Y3Rpb24SEEIAuDEZIhIxGCQSEEIArDEQgQYSQAAlMRYjCTgAMQASMRYjCTgYJBIQMRYjCTgZIxIQMRAiEhAiEEIAfzYcAoAgidvdgUvaEmcgvQpmihRuPxTHx528uJZ7duefZhSx298SMRgkEhAxFiMIOAAxABIQMRYjCDgQIhIQQv+6MRYiCTkaAReBDxIxFiIJORoAgApPd25lckNoZWNrEhAxFiIJOBgkEhAxECISMQglEhAxCTIDEhAxECMSERAQQw==";
-let cdpTemplateString2 = "BiAEAQKB+4s2ADEgMgMSMQElEhAtFyUSQACrLRciEkAANi0XIxJAACMtF4EDEkAAAQAxGCQSMRklEhA2GgCAB0F1Y3Rpb24SEEIAuDEZIhIxGCQSEEIArDEQgQYSQAAlMRYjCTgAMQASMRYjCTgYJBIQMRYjCTgZIxIQMRAiEhAiEEIAfzYcAoAgvunrGbzJ+Z+dLIbzhDzEhJKtXhb0bw31HISV2mcN2mISMRgkEhAxFiMIOAAxABIQMRYjCDgQIhIQQv+6MRYiCTkaAReBDBIxFiIJORoAgApPd25lckNoZWNrEhAxFiIJOBgkEhAxECISMQglEhAxCTIDEhAxECMSERAQQw=="
+let cdpTemplateString = "BiAEAQKFv482ADEgMgMSMQElEhAtFyUSQACrLRciEkAANi0XIxJAACMtF4EDEkAAAQAxGCQSMRklEhA2GgCAB0F1Y3Rpb24SEEIAuDEZIhIxGCQSEEIArDEQgQYSQAAlMRYjCTgAMQASMRYjCTgYJBIQMRYjCTgZIxIQMRAiEhAiEEIAfzYcAoAgidvdgUvaEmcgvQpmihRuPxTHx528uJZ7duefZhSx298SMRgkEhAxFiMIOAAxABIQMRYjCDgQIhIQQv+6MRYiCTkaAReBDxIxFiIJORoAgApPd25lckNoZWNrEhAxFiIJOBgkEhAxECISMQglEhAxCTIDEhAxECMSERAQQw=="
+let cdpTemplateString2 = "BiAEAQKFv482ADEgMgMSMQElEhAtFyUSQACrLRciEkAANi0XIxJAACMtF4EDEkAAAQAxGCQSMRklEhA2GgCAB0F1Y3Rpb24SEEIAuDEZIhIxGCQSEEIArDEQgQYSQAAlMRYjCTgAMQASMRYjCTgYJBIQMRYjCTgZIxIQMRAiEhAiEEIAfzYcAoAgvunrGbzJ+Z+dLIbzhDzEhJKtXhb0bw31HISV2mcN2mISMRgkEhAxFiMIOAAxABIQMRYjCDgQIhIQQv+6MRYiCTkaAReBDBIxFiIJORoAgApPd25lckNoZWNrEhAxFiIJOBgkEhAxECISMQglEhAxCTIDEhAxECMSERAQQw=="
 if (VERSION == "MAINNET") {
   cdpTemplateString =
     "BiAJAKPdu8YCAwIBBITcu8YCBQYmAiCJ292BS9oSZyC9CmaKFG4/FMfHnby4lnt2559mFLHb3yBk2J6AcVbEU2zmoj5Zcx3tjCo7oo0ZVoc/LbqEG9PaKS0XIhJAAV0tFyEEEkABLS0XJRJAAOItFyQSQAChLRchBRJAAIEtFyEHEkAASi0XIQgSQAABADEYIxIxGSISEDYaAIAHQXVjdGlvbhIQMgQkEjMAGCMSEDMAGSISEDcAGgCACENsZWFyQXBwEhAzARkkEhARQgFaMgQkEjMAGSISEDMAGCMSEDcAGgCACE1vcmVHQVJEEhAzAQAoEhAzAQcpEhBCASsxGSEEEjEYIxIQMSAyAxIQMQEiEhBCARMyBCEFEjMAGSISEDMAGCMSEDcAGgCACkNsb3NlTm9GZWUSEDcAMAAhBhIQMwEAKBIQMwIZJBIQQgDZMgQhBRIzABkiEhAzABgjEhA3ABoAgAhDbG9zZUZlZRIQNwAwACEGEhAzAQAoEhAzAhkkEhAzAwcpEhAzAwkoEhBCAJUyBCEHEjMAGSUSEDMAGCMSEDcAMAAhBhIQMwMUKRIQMwQUKBIQQgBtMwAIgQwSMwAAKBIQMwEgMgMSEDMBASISEDIEJRJAADEyBCQSMwEQIQgSEDMBGCMTEDMCGCMSEDMCGSISEDcCGgCACEFwcENoZWNrEhAQQgAcMwEQIQQSMwEIIhIQMwEJMgMSEDMBECUSEUL/4EM=";
@@ -18,21 +18,25 @@ if (VERSION == "MAINNET") {
 const cdpTemplate = contractStringToBytes(cdpTemplateString);
 const cdpTemplate2 = contractStringToBytes(cdpTemplateString2);
 
-
+let _slices = [0]
+let different = false
 for (let i = 0; i < cdpTemplate.length; i++) {
   if (cdpTemplate[i] != cdpTemplate2[i]) {
-    console.log(i)
+    if (!different) {
+      _slices.push(i)
+    }
+    different = true
+  } else {
+    if (different) {
+      _slices.push(i)
+    }
+    different = false
   }
 }
+const slices = _slices;
 
 
 // Exports
-
-let _slices = [0, 138, 170, 207, 208];
-if (VERSION == "MAINNET") {
-  _slices = [0, 23, 55, 448, 449, 554];
-}
-const slices = _slices;
 
 export function cdpGen(userAddress, accountID) {
   // XXX: Could cache results once they are done the first time
@@ -60,5 +64,3 @@ export function cdpGen(userAddress, accountID) {
     logic: contract,
   };
 }
-
-export const validatorAddress = "M7IZT2POILDAUC324WXT2TEFH6GBUCR76LRHVKU6NPUIXASJHDOOUXE7RY"
