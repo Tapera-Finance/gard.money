@@ -145,7 +145,7 @@ export default function StakeDetails() {
           <Heading>Stake Amount</Heading>
         </SecondRow>
         <ThirdRow>
-          <Heading>109,900 ALGO</Heading>
+          <Heading>109,900 GARD</Heading>
           <div>
             <Img src={gardLogo}></Img>
             <Arrow src={arrowIcon}></Arrow>
@@ -175,7 +175,7 @@ export default function StakeDetails() {
           </StakeBox>
         </ThirdRow>
         <FourthRow>
-          <Effect title="Your Stake" val={`${0} ALGO`} hasToolTip={false} />
+          <Effect title="Your Stake" val={`${0} GARD`} hasToolTip={false} />
           <Effect
             title="Rewards / Day"
             val="..."
