@@ -1,7 +1,7 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { validatorAddress, cdpGen } from "./contracts";
-import { setLoadingStage, getGardBalance } from "./lib";
+import { cdpGen } from "./contracts";
+import { setLoadingStage, getGardBalance, microGARD } from "./lib";
 import {
   accountInfo,
   getParams,
@@ -30,11 +30,6 @@ export let currentPrice = 0.30; // XXX: This should be kept close to the actual 
 
 // XXX: All of these assume accountInfo has already been set! We should improve the UX of this after getting core functionality done
 // XXX: All of these assume the user signs all transactions, we don't currently catch when a user doesn't do so!
-
-function microGARD(GARD) {
-  // Helper function so we don't type the number of zeros anytime
-  return parseInt(GARD * 1000000);
-}
 
 export async function getPrice() {
   // Could cache price eventually
@@ -162,13 +157,12 @@ async function findOpenID(address) {
 }
 
 export function verifyOptIn(info, assetID) {
-  let verified = false;
   for (var i = 0; i < info["assets"].length; i++) {
     if (info["assets"][i]["asset-id"] == assetID) {
-      verified = true;
+      return true;
     }
   }
-  return verified;
+  return false;
 }
 
 export function createOptInTxn(params, info, assetID) {
@@ -460,7 +454,6 @@ export async function mint(accountID, newGARD) {
   checkChainForCDP(info.address, accountID);
 
   return response;
-  // XXX: May want to do something else besides this, a promise? loading screen?
 }
 
 export async function addCollateral(accountID, newAlgos) {
@@ -602,7 +595,7 @@ export async function repayCDP(accountID, repayGARD) {
   // txn 2 - send the closing gard
   let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
-    to: validatorAddress,
+    to: algosdk.getApplicationAddress(ids.app.validator),
     amount: microRepayGARD,
     suggestedParams: params,
     assetIndex: ids.asa.gard,
@@ -685,7 +678,7 @@ export async function closeCDP(accountID) {
   // txn 2 - send the closing gard
   let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
-    to: validatorAddress,
+    to: algosdk.getApplicationAddress(ids.app.validator),
     amount: microRepayGARD,
     suggestedParams: params,
     assetIndex: ids.asa.gard,
