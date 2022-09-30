@@ -67,7 +67,7 @@ if (VERSION == "MAINNET") {
                 claim : 113823947,
              },
          },
-         sgard_gard : V,
+         sgard_gard : 113823899,
          validator : 113823944,
          revenue : 113823900,
          funder : 113823945,
