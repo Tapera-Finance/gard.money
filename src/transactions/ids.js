@@ -15,6 +15,32 @@ let _pactAlgoGardPoolAddress =
   "F4HXMBXLFLT7IQAKXUVTVEU4HIW5WGULA5RFYN6QE5AALUB54JQCAY2NBI";
 
 if (VERSION == "MAINNET") {
+  _ids = {
+    asa : {
+        // gain : 113823778,
+        gard : 684649672,
+    },
+    app : {
+        dao : {
+            staking : 889549907,
+            manager : 889549958,
+            interest : 889549959,
+            updates : {
+               validator : 889550041,
+               claim : 889550107,
+            },
+        },
+        sgard_gard : 889550042,
+        validator : 889550104,
+        revenue : 889550043,
+        funder : 889550105,
+        auction_checker : 96679309,
+        oracle : 53083112,
+        gard_staking : 889550160,
+        treasury : 889550106,
+        claimer : 889550159,
+    }
+ }
   // ASAs
   // _gainID = 684649672;
   // _gardID = 684649988;
@@ -25,8 +51,6 @@ if (VERSION == "MAINNET") {
   _pactUSDCGARDID = 701249684
   _pactALGOGARDID = 801613881;
   _pactALGOUSDID = 620995314;
-
-
   // App ids
   // _stakingID = 684649809;
   // _openFeeID = 684649985;
