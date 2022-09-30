@@ -124,6 +124,7 @@ export default function Drawer({
                       paddingLeft: "3vw",
                       display: "flex",
                       alignItems: "center",
+                      textAlign: "left",
                       ...(selected === v.name
                         ? { backgroundColor: "#172756" }
                         : {}),
@@ -386,7 +387,7 @@ function DropdownNavButton({ name, icon, subOptions }) {
                 <NavButton
                   style={{
                     paddingLeft: 107,
-                    displey: "flex",
+                    display: "flex",
                     alignItems: "center",
                   }}
                 >
