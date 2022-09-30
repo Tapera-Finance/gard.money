@@ -35,7 +35,7 @@ if (VERSION == "MAINNET") {
         revenue : 889550043,
         funder : 889550105,
         auction_checker : 96679309,
-        oracle : 53083112,
+        oracle : 673925841,
         gard_staking : 889550160,
         treasury : 889550106,
         claimer : 889550159,
