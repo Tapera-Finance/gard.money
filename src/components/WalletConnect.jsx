@@ -344,6 +344,7 @@ function TermsOfService({ closeModal, accept }) {
       >
         <PrimaryButton
           text="I Accept"
+          blue={true}
           onClick={() => {
             accept();
           }}

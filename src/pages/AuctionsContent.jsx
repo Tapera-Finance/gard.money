@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { formatToDollars } from "../utils";
 import Modal from "../components/Modal";
@@ -16,7 +18,6 @@ import {
 import { accountInfo } from "../wallets/wallets";
 import { ids } from "../transactions/ids";
 import { liquidate } from "../transactions/liquidation";
-import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 
 let chainDataResponse;
@@ -98,6 +99,7 @@ async function loadDefaulted() {
  * Content for the Auctions option on the Drawer
  */
 export default function AuctionsContent() {
+  const walletAddress = useSelector(state => state.wallet.address);
   const [selected, setSelected] = useState(OPTIONS.LIVE_AUCTIONS);
   const [selectedTab, setSelectedTab] = useState("one")
   const [loading, setLoading] = useState(false);
@@ -110,7 +112,11 @@ export default function AuctionsContent() {
   const [transDebt, setTransDebt] = useState([]);
   const [canAnimate, setCanAnimate] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!walletAddress) navigate("/");
+  }, [walletAddress]);
 
   useEffect(async () => {
     curr_price = await getCurrentAlgoUsd();

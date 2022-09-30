@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer, useState, useContext } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled, { keyframes, css } from "styled-components";
 import closeIcon from "../assets/icons/close_icon.png";
 import PrimaryButton from "./PrimaryButton";
@@ -50,6 +51,7 @@ const OldContainer = styled.div`
 
 export default function AlertOverlay({ text, requestClose }) {
   const [content, setContent] = useState(<></>);
+  const navigate = useNavigate();
   const walletAddress = useSelector(state => state.wallet.address);
   useEffect(() => {
     if (!text) return;
@@ -74,7 +76,24 @@ export default function AlertOverlay({ text, requestClose }) {
           </div>
           {celebrate ? Math.round(Math.random()) == 0 ? <img style={{borderRadius: 10, objectFit:"cover",}} src={celebration} />: <img style={{borderRadius: 10, objectFit:"cover",}} src={celebration2} />: <></>}
           <div style={{marginTop: 10}}>{content}</div>
-
+            <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+              <PrimaryButton blue={true} onClick={() => {
+                navigate("/stake")
+                requestClose()
+                }} text="Go To Stake" />
+              <PrimaryButton blue={true} onClick={() => {
+                navigate("/swap")
+                requestClose()
+                }} text="Go To Swap"/>
+              <PrimaryButton blue={true} onClick={() => {
+                navigate("/borrow")
+                requestClose()
+            }} text="Go To Borrow"/>
+            <PrimaryButton blue={true} onClick={() => {
+                navigate("/")
+                requestClose()
+            }} text="Back To Home"/>
+            </div>
         </Container>
       </Backdrop>
 

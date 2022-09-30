@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { setAlert } from "../../redux/slices/alertSlice";
 import * as tips from "../../assets/tooltiptext";
 import styled from "styled-components";
@@ -38,6 +39,7 @@ console.log("enabled?", swapEnabled)
 
 
 export default function SwapDetails() {
+  const walletAddress = useSelector(state => state.wallet.address);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
 
@@ -81,6 +83,7 @@ export default function SwapDetails() {
   const [disabled, setDisabled] = useState(true);
   const [getBal, setGetBal] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const assets = ["ALGO", "GARD"];
 
@@ -380,6 +383,10 @@ export default function SwapDetails() {
       }
     }
   }, [slippageTolerance]);
+
+  useEffect(() => {
+    if (!walletAddress) navigate("/");
+  }, [walletAddress]);
 
   return (
     <div>

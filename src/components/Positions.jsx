@@ -214,7 +214,7 @@ export default function Positions({maxGARD}) {
       /> : <></>}
         <Header>
             <b>Your Positions</b>
-            <b style={{textAlign: "center"}}>Rewards</b>
+            <b style={{textAlign: "center"}}>Governance Rewards</b>
             <b style={{textAlign: "center"}}>CDP Health</b>
         </Header>
         <Container>
@@ -222,7 +222,7 @@ export default function Positions({maxGARD}) {
                 loadedCDPs.map((cdp) => {
                     return (
             <Position key={cdp.id}>
-                <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div>
+                {/* <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div> */}
                 <PositionInfo>
                     <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
                         <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
