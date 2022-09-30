@@ -461,6 +461,7 @@ const ConnectStep = styled.div`
 
 const Text = styled.text`
   font-weight: 500px;
+  cursor: pointer;
   margin: 0px 14px 0px 0px;
 `;
 
