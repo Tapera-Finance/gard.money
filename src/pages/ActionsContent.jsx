@@ -28,7 +28,7 @@ export default function ActionsContainer() {
 
   return (
     <div>
-      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+      {loading ? <LoadingOverlay text={loadingText} close={()=>{setLoading(false);}}/> : <></>}
       <PageToggle
         selectedTab={setSelectedTab}
         tabs={{

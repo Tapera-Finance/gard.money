@@ -93,7 +93,12 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
 
 
     return <div>
-            {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+            {loading ? <LoadingOverlay
+            text={loadingText}
+            close={()=>{
+                setLoading(false);
+            }}
+            /> : <></>}
             <Container>
             <SubContainer>
                 <Background>

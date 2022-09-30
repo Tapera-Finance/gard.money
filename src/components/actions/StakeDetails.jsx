@@ -100,7 +100,7 @@ export default function StakeDetails() {
 
   return (
     <div>
-      {loading ? (<LoadingOverlay text={loadingText} />) : <></>}
+      {loading ? (<LoadingOverlay text={loadingText} close={()=>{setLoading(false);}} />) : <></>}
       <div style={{display: "flex", flexDirection: "column"}} >
       <Banner>
       <div

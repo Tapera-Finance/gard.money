@@ -385,7 +385,7 @@ export default function SwapDetails() {
     <div>
       {swapEnabled ? (
         <div>
-          {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+          {loading ? <LoadingOverlay text={loadingText} close={()=>{setLoading(false);}}/> : <></>}
           <ExchangeBar>
             <ExchangeFields
               ids={["left-select", "left-input"]}

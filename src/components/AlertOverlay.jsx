@@ -4,6 +4,7 @@ import styled, { keyframes, css } from "styled-components";
 import closeIcon from "../assets/icons/close_icon.png";
 import PrimaryButton from "./PrimaryButton";
 import celebration from "../assets/icons/celebration.png"
+import celebration2 from "../assets/icons/celebration2.png"
 
 const Backdrop = styled.div`
   position: fixed;
@@ -54,8 +55,8 @@ export default function AlertOverlay({ text, requestClose }) {
     if (!text) return;
     setContent(textWithLink(text));
   }, []);
-  var textParse = text.match( /[^.!?]+[.!?]+/g );
-  var celebrate = textParse ? textParse.includes("Successfully opened a new CDP.") : false;
+  var textParse = text.match(/\b(\w+)\b/g );
+  var celebrate = textParse ? textParse.includes("Successfully") : false;
   return (
     <div>
       {walletAddress ? (
@@ -71,7 +72,7 @@ export default function AlertOverlay({ text, requestClose }) {
               <img src={closeIcon} />
             </CloseButton>
           </div>
-          {celebrate ? <img style={{borderRadius: 10, objectFit:"cover",}} src={celebration} />: <></>}
+          {celebrate ? Math.round(Math.random()) == 0 ? <img style={{borderRadius: 10, objectFit:"cover",}} src={celebration} />: <img style={{borderRadius: 10, objectFit:"cover",}} src={celebration2} />: <></>}
           <div style={{marginTop: 10}}>{content}</div>
 
         </Container>

@@ -206,7 +206,12 @@ export default function Positions({maxGARD}) {
       }, [price])
 
     return <div>
-      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+      {loading ? <LoadingOverlay
+      text={loadingText}
+      close={()=>{
+        setLoading(false);
+      }}
+      /> : <></>}
         <Header>
             <b>Your Positions</b>
             <b style={{textAlign: "center"}}>Rewards</b>
