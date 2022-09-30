@@ -111,7 +111,7 @@ export default function StakeDetails() {
             color: "#172756",
           }}
         >
-          <div style={{ fontSize: "10pt",  }}>GARD Staking Rewards!</div>
+          <div style={{ fontSize: "12pt",  }}>GARD Staking Rewards!</div>
         </div>
         <div
           style={{
@@ -154,7 +154,7 @@ export default function StakeDetails() {
           <Heading>Stake Amount</Heading>
         </SecondRow>
         <ThirdRow>
-          <Heading>109,900 ALGO</Heading>
+          <Heading>109,900 GARD</Heading>
           <div>
             <Img src={gardLogo}></Img>
             <Arrow src={arrowIcon}></Arrow>
@@ -171,6 +171,8 @@ export default function StakeDetails() {
             <StakeInput
               id="stake-amt"
               placeholder="0.00"
+              min="0"
+              step=".01"
               type="number"
               value={stakeAmount}
               callback={handleInput}
@@ -184,7 +186,7 @@ export default function StakeDetails() {
           </StakeBox>
         </ThirdRow>
         <FourthRow>
-          <Effect title="Your Stake" val={`${0} ALGO`} hasToolTip={false} />
+          <Effect title="Your Stake" val={`${0} GARD`} hasToolTip={false} />
           <Effect
             title="Rewards / Day"
             val="..."
@@ -195,7 +197,7 @@ export default function StakeDetails() {
             val="..."
             hasToolTip={false}
           />
-          <div style={{display: "flex", flexDirection: "row"}}>
+          <div style={{display: "flex", flexDirection: "row", alignSelf: "baseline"}}>
 
           <PrimaryButton text="Stake" blue={true} onClick={handleStake} />
           <PrimaryButton text="Unstake" blue={true} onClick={handleUnstake} />
@@ -239,7 +241,7 @@ const AssetOptions = ({ open, setAsset, setOpen }) => {
 const Link = styled.text`
   text-decoration: none;
   font-weight: 400;
-  font-size: 8pt;
+  font-size: 10pt;
   color: #172756;
   margin-right: 6px;
   /* &:hover {
@@ -296,7 +298,7 @@ const ThirdRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   justify-content: center;
-  margin: 22px;
+  margin: 22px 22px 4px 22px;
 `;
 const StakeBox = styled.div`
   display: flex;
@@ -339,8 +341,8 @@ const Heading = styled.text`
 `;
 
 const StakeInput = styled(InputField)`
-  width: 4vw;
-  height: 4vh;
+  width: 12vw;
+  height: 6vh;
   border: 1px transparent;
   text-decoration-color: #7c52ff;
   text-decoration-thickness: 2px;

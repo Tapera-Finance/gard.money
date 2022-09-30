@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PrimaryButton from "./PrimaryButton";
+import { useSelector } from "react-redux";
 // import Help from "./Help";
 
 export default function Step({
@@ -15,6 +16,7 @@ export default function Step({
   linkText,
   allOpen,
 }) {
+  const walletAddress = useSelector(state => state.wallet.address)
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -84,9 +86,10 @@ export default function Step({
             <StepButton
               text={`Go to ${goTo}`}
               blue={true}
+              disabled={!walletAddress}
               onClick={() => navigate(`/${goTo.toLowerCase()}`)}
             />
-            {secondGoTo !== "" && secondGoTo !== null ? <StepButton text={`Go to ${secondGoTo}`} blue={true} onClick={() => navigate(`/${secondGoTo.toLowerCase()}`)} /> : <></>}
+            {secondGoTo !== "" && secondGoTo !== null ? <StepButton text={`Go to ${secondGoTo}`} blue={true} disabled={!walletAddress} onClick={() => navigate(`/${secondGoTo.toLowerCase()}`)} /> : <></>}
 
             {/* <div style={{ marginLeft: "75%" }}></div> */}
           </div>

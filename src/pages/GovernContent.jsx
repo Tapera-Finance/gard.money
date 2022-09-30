@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useSelector, shallowEqual } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Details from "../components/Details";
 import PrimaryButton from "../components/PrimaryButton";
@@ -14,6 +16,8 @@ import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
 import { textAlign } from "@mui/system";
 import { Switch } from "@mui/material";
+
+
 
 const axios = require("axios");
 
@@ -38,6 +42,7 @@ export async function getGovernanceInfo() {
 }
 
 export default function Govern() {
+  const walletAddress = useSelector(state => state.wallet.address)
   const [commitment, setCommitment] = useState(undefined);
   const [maxBal, setMaxBal] = useState("");
   const [selectedAccount, setSelectedAccount] = useState("");
@@ -46,6 +51,13 @@ export default function Govern() {
   const [governors, setGovernors] = useState("...");
   const [enrollmentEnd, setEnrollmentEnd] = useState("");
   const [voteTableDisabled, setVoteTable] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!getWallet()) return navigate("/");
+  }, []);
+
+
   var details = [
     {
       title: "Total Vaulted",
@@ -73,11 +85,14 @@ export default function Govern() {
     setCommitment(await loadFireStoreCDPs());
   }, [refresh]);
 
+
   let loadedCDPs = CDPsToList();
   if (loadedCDPs[0].id == "N/A") {
     loadedCDPs = dummyCdps;
   }
+
   const owner_address = getWallet().address;
+
   let adjusted = loadedCDPs.map((value) => {
     const cdp_address = cdpGen(owner_address, value.id).address;
     return {
@@ -104,7 +119,7 @@ export default function Govern() {
               setSelectedAccount(value.id);
               setMaxBal(value.balance);
             }}
-            // variant ={true}
+
             disabled={
               value.balance === value.committed ||
               !(Date.now() < commitmentPeriodEnd)
@@ -121,23 +136,16 @@ export default function Govern() {
               setSelectedAccount(value.id);
               setMaxBal(value.balance);
             }}
-            // variant ={true}
+
             disabled={!(Date.now() < commitmentPeriodEnd)}
           />
         ),
     };
   });
   console.log("cdps", cdps);
-  return (
+  return ( !walletAddress ? navigate("/") :
     <div>
-      {/* <RewardNotice
-          program={"ALGO Governance Rewards"}
-          timespan={""}
-          estimatedRewards={"7M Algo Bonus"}
-          action={""}
-          linkText={"Learn More"}
-          link="https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors"
-          /> */}
+      {/* {!walletAddress ? navigate("/") : <></>} */}
 <Banner
       >
         <div
@@ -167,14 +175,12 @@ export default function Govern() {
           }}>
 
           <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
-          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
           </div>
         </div>
         <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
 
         <Link onClick={() => {
             window.open("https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors")
-            // navigate("/borrow")
           }}>Learn More</Link>
         </div>
       </Banner>

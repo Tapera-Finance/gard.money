@@ -135,7 +135,7 @@ export default function Drawer({
                           "Account",
                           // "Manage CDPs",
                           "Borrow",
-                          // "Actions",
+                          "Algo Governance",
                           "Swap",
                           "Stake",
                           "Govern",
@@ -487,12 +487,6 @@ const menuItems = [
     subOptions: [],
     route: "/govern",
   },
-  // {
-  //   name: CONTENT_NAMES.REPAY,
-  //   icon: repayIcon,
-  //   subOptions: [],
-  //   route: "/manage",
-  // },
   {
     name: CONTENT_NAMES.AUCTIONS,
     icon: auctionsIcon,

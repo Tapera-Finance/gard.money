@@ -117,6 +117,8 @@ export function disconnectWallet() {
   activeWallet = undefined;
   activeWalletInfo = undefined;
   localStorage.removeItem("wallet");
+  window.history.pushState({}, "", window.location.origin + "/")
+  window.location.reload()
 }
 
 
