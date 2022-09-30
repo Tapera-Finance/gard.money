@@ -323,7 +323,6 @@ export async function connectWallet(type, address) {
   }
   console.log(activeWallet);
   localStorage.setItem("wallet", JSON.stringify(activeWallet));
-  window.location.reload();
   return await updateWalletInfo();
 }
 
