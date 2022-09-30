@@ -28,9 +28,11 @@ const fetchTvl = async () => {
 };
 
 const buttons = [
-  "Actions",
+  "Swap",
+  "Stake",
   "Borrow",
-  "Govern",
+  "Algo Governance",
+  "Auctions",
   "Analytics",
   // "Auctions",
   // "Pool",
@@ -101,7 +103,7 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Overcollateralization %",
+      title: "GARD Overcollateralization",
       val: `${backed}%`,
       hasToolTip: true,
     },
@@ -150,27 +152,20 @@ export default function HomeContent() {
         flexDirection: "column",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          borderRadius: 10,
-          justifyContent: "space-between",
-          textAlign: "center",
-          background: "linear-gradient(to right, #80deff 65%, #ffffff)",
-          padding: "8px 20px 10px 8px",
-        }}
+      <div style={{display: "flex", flexDirection: "column"}}>
+
+      <Banner
       >
         <div
           style={{
             justifyContent: "center",
             textAlign: "left",
+            alignItems: "center",
             color: "#172756",
           }}
         >
-          <div>Governance Period #5</div>
-          <div style={{ fontSize: "10pt" }}>Now - October 22, 2022</div>
-          <div >12% - 33% APR Rewards</div>
+          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
         </div>
         <div
           style={{
@@ -178,24 +173,72 @@ export default function HomeContent() {
             flexDirection: "column",
             justifyContent: "center",
             textAlign: "center",
-            marginLeft: "25px",
+            marginLeft: "0px",
           }}
         >
-          <span style={{ color: "#172756" }}>Enrollment is now live!</span>
-          {/* <CountdownTimer targetDate={1761180257000} /> */}
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
+          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
+          </div>
         </div>
-        <EnrollButton
-          text="Enroll"
-          blue={true}
-          onClick={() => {
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <Link onClick={() => {
             walletAddress ?
             navigate("/borrow") : dispatch(
               setAlert(
                 "You cannot enter without first connecting a Wallet",
               ),
             );
+          }}>Enroll</Link>
+        </div>
+      </Banner>
+      <Banner>
+      <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
           }}
-        ></EnrollButton>
+        >
+          <div style={{ fontSize: "10pt",  }}>GARD Staking Rewards!</div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>Earn protocol rewards boosted by the Algorand Foundation via Aeneas grant!</div>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <Link onClick={() => {
+            walletAddress ?
+            navigate("/stake") : dispatch(
+              setAlert(
+                "You cannot enter without first connecting a Wallet",
+              ),
+            );
+          }}>Stake</Link>
+        </div>
+      </Banner>
       </div>
       <div
         style={{
@@ -279,7 +322,7 @@ export default function HomeContent() {
 
               >
                 <Text>
-                {walletAddress ? "√" : ""} Step 1: Connect Your Wallet
+                {walletAddress ? " √" : ""} Step 1: Connect Your Wallet
                 </Text>
                 <div>
                   <WalletConnect style={{ alignSelf: "flex-start" }} />
@@ -290,21 +333,23 @@ export default function HomeContent() {
             <Step
               header="Step 2: Get Gard"
               badges={[]}
-              subtitle="Exchange ALGO to borrow GARD"
-              text="The easiest way to get GARD is to simply swap ALGOs for GARD on the GARD WebApp to enter the GARD ecosystem which enables users to earn staking rewards, GARDian rewards, and much more."
-              link="https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/gard"
-              linkText="GARD"
+              subtitle=""
+              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD go to the swap page. To borrow GARD go to the borrow page."
+              link="https://gard.gitbook.io/gard-system-guide/"
+              linkText="How to get GARD"
               goTo="Swap"
+              secondGoTo="Borrow"
               allOpen={allOpen}
             />
             <Step
               header="Step 3: Gain Rewards"
               badges={["Staking Rate", "Governance Rate"]}
-              subtitle="Add Liquidity to Pool"
-              text="Open Collateralized Debt Positions using ALGO to draw a stable line of credit in GARD, our stablecoin."
-              link="https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/tutorial/supplying-assets"
-              linkText="needed to participate"
-              goTo="Borrow"
+              subtitle=""
+              text="To gain additional rewards via the GARD Protocol a user may stake their GARD or participate in Algorand governance. Staking GARD entitles users to their share of revenues earned by the protocol in real time. Participating in Algorand Governace via the GARD Protocol entitles users to leverage their committed ALGOs to borrow GARD as well as their share of a 7M ALGO boost paid out quarterly by the Algorand Foundation."
+              link="https://gard.gitbook.io/gard-system-guide/how-to/participate-in-algorand-governance-via-gard-protocol"
+              linkText="What is needed to participate?"
+              goTo="Stake"
+              secondGoTo="Govern"
               allOpen={allOpen}
             />
             {/* <Step
@@ -320,10 +365,12 @@ export default function HomeContent() {
       ) : (
         <div style={{
           display: "flex",
-          justifyContent: "space-evenly",
+          justifyContent: "space-between",
           alignItems: "center",
-          width: "80%"
+          marginBottom: 14
+          // width: "80%"
         }}>
+          <Text>Quick Access</Text>
           {buttons.map((action) => {
             return (
               <PrimaryButton text={action} blue={true} onClick={() => navigate(`/${action.toLowerCase()}`)} key={Math.random()} />
@@ -335,6 +382,27 @@ export default function HomeContent() {
   );
 }
 
+const Link = styled.text`
+  text-decoration: none;
+  font-weight: 500;
+  color: #172756;
+  margin-right: 12px;
+  &:hover {
+    color: #03a0ff;
+    cursor: pointer;
+  }
+`;
+
+const Banner = styled.div`
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  justify-content: space-between;
+  text-align: center;
+  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  padding: 8px 6px 10px 8px;
+  margin: 8px;
+`
 
 
 const Container = styled.div`
@@ -375,20 +443,17 @@ const StepContainer = styled.div`
 
 const ConnectStep = styled.div`
   display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  background: #0f1733;
-  color: #019fff;
   font-weight: 500;
   font-size: large;
-  /* height: 80px; */
-  /* width: 30vw; */
+  text-align: left;
+  align-items: center;
+  background: #0f1733;
+  color: #019fff;
+  height: 80px;
+  width: 60vw;
   border-radius: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
   ${(props) =>
     props.open &&
     css`
@@ -403,7 +468,30 @@ const ConnectStep = styled.div`
       color: #0f1733;
       width: 60vw;
     `}
+    @media (max-width:663)
+    {
+      button {
+        font-size: smaller
+      }
 
+    }
+
+  /* display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  background: #0f1733;
+  color: #019fff;
+  font-weight: 500;
+  font-size: large;
+  /* height: 80px; */
+  /* width: 30vw; */
+  /* border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+*/
 `;
 
 const Text = styled.text`

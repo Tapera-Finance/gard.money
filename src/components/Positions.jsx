@@ -12,6 +12,7 @@ import PrimaryButton from "./PrimaryButton";
 import TextButton from "./TextButton";
 import PageToggle from "./PageToggle"
 import BorrowMore from "./BorrowMore";
+import SupplyMore from "./SupplyMore";
 import RepayPosition from "./RepayPosition";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
@@ -171,7 +172,7 @@ export default function Positions({maxGARD}) {
             hasToolTip: true,
           },
           {
-            title: "Liquidation Ratio",
+            title: "Collateralization Ratio",
             val: `${
               getMinted() == null || getCollateral() == null ? "..." : displayRatio()
             }`,
@@ -191,9 +192,9 @@ export default function Positions({maxGARD}) {
     // };
     const tabs = {
         one: "Borrow More",
-        // two: "Supply More",
-        two: "Repay Postion",
-        three: "Close Position",
+        two: "Supply More",
+        three: "Repay Postion",
+        four: "Close Position",
     };
     useEffect(async () => {
         setAPR(await getAlgoGovAPR())
@@ -247,6 +248,7 @@ export default function Positions({maxGARD}) {
                  text={cdp.id === currentCDP ? "Collapse" : "Manage Position"}
                  onClick={cdp.id === currentCDP ? () => {
                     setCurrentCDP(null)
+                    setSelectedTab("one")
                  } : () => {
                     setCurrentCDP(cdp.id)
                  }
@@ -255,8 +257,9 @@ export default function Positions({maxGARD}) {
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
                     {selectedTab === "one" ? <BorrowMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} apr={apr} />
-                    : selectedTab === "two" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
-                    //
+                    : selectedTab === "two" ? <SupplyMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} apr={apr} />
+                    //<RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
+                    : selectedTab === "three" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     :
                     // : selectedTab === "three" ?
                 //     <div>

@@ -5,7 +5,7 @@ import styled, {css} from "styled-components";
 import Effect from "./Effect";
 import ToolTip from "./ToolTip";
 import PrimaryButton from "./PrimaryButton";
-import { addCollateral, closeCDP, mint } from "../transactions/cdp";
+import { repayCDP } from "../transactions/cdp";
 import { handleTxError } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
@@ -16,12 +16,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
     const [loadingText, setLoadingText] = useState(null);
     const dispatch = useDispatch();
 
-    const [withdrawl, setWithdrawl] = useState("")
     const [repayment, setRepayment] = useState("")
-
-    const handleWithdrawl = (event) => {
-        setWithdrawl(event.target.value === "" ? "" : Number(event.target.value));
-      };
 
     const handleRepay = (event) => {
         setRepayment(event.target.value === "" ? "" : Number(event.target.value));
@@ -55,7 +50,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
                             onChange={handleRepay}
                             />
                             <MaxButton>
-                                <ToolTip toolTip={"+MAX"} toolTipText={"Click to lend maximum amount"}/>
+                                <ToolTip toolTip={"+MAX"} toolTipText={"Click to repay the maximum amount"}/>
                             </MaxButton>
                         </div>
                         <Valuation>$Value: ${(repayment * 1).toFixed(2)}</Valuation>
@@ -65,19 +60,18 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
                 blue={true}
                 positioned={true}
                 text="Repay"
-                disabled={withdrawl === ""}
                 onClick={ async () => {
                     setLoading(true);
                     try {
-                        let res = await closeCDP(
+                        let res = await repayCDP(
                           cdp.id,
-                          repayment * 1000000,
+                          repayment,
                         );
                         if (res.alert) {
                           dispatch(setAlert(res.text));
                         }
                       } catch (e) {
-                        handleTxError(e, "Error minting from CDP");
+                        handleTxError(e, "Error repaying CDP");
                       }
                     setLoading(false);
                     setCurrentCDP(null);

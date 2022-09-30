@@ -25,13 +25,13 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [additionalSupply, setAdditionalSupply] = useState("")
+    // const [additionalSupply, setAdditionalSupply] = useState("")
     const [additionalBorrow, setAdditionalBorrow] = useState("")
 
-    const handleAddSupply = (event) => {
-        setAdditionalSupply(event.target.value === "" ? "" : Number(event.target.value));
-        collateral(event.target.value === "" ? "" : Number(event.target.value))
-      };
+    // const handleAddSupply = (event) => {
+    //     setAdditionalSupply(event.target.value === "" ? "" : Number(event.target.value));
+    //     collateral(event.target.value === "" ? "" : Number(event.target.value))
+    //   };
 
     const handleAddBorrow = (event) => {
     setAdditionalBorrow(event.target.value === "" ? "" : Number(event.target.value));
@@ -54,18 +54,17 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
         if (!walletAddress) navigate("/");
       }, [walletAddress]);
 
-    var supplyDetails = [
-        {
-            title: "Supply Limit",
-            val: `${supplyLimit} ALGOs`,
-            hasToolTip: true,
-        },
-        // {
-        //     title: "Supply Rewards",
-        //     val: `${apr}%`,
-        //     hasToolTip: true,
-        // }
-    ];
+    // var supplyDetails = [
+    //     {
+    //         title: "Supply Limit",
+    //         val: `${supplyLimit} ALGOs`,
+    //         hasToolTip: true,
+    //     },
+    //     {
+    //         title: "Supply Rewards",
+    //         val: `${apr}%`,
+    //         hasToolTip: true,
+    //     },];
     var borrowDetails = [
         {
             title: "Borrow Limit",
@@ -96,7 +95,7 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
     return <div>
             {loading ? <LoadingOverlay text={loadingText} /> : <></>}
             <Container>
-            <SubContainer>
+            {/* <SubContainer>
                 <Background>
                     <Title>Supply More ALGO</Title>
                     <InputContainer>
@@ -151,7 +150,7 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
                     setCurrentCDP(null);
                 }}
                 />
-            </SubContainer>
+            </SubContainer> */}
             <SubContainer>
                 <Background>
                     <Title>Borrow More GARD</Title>
@@ -213,15 +212,18 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
 
 }
 const Container = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 49%);
+/* display: grid;
+    grid-template-columns: repeat(1, 69%);
     column-gap: 2%;
-    position: relative;
+    position: relative; */
+    display: flex;
+    justify-content: center;
     top: -40px;
 `
 
 const SubContainer = styled.div`
     position: relative;
+    margin-bottom: 30px;
 `
 const Background = styled.div`
     margin-top: 30px;
@@ -238,13 +240,13 @@ const Title = styled.div`
 const InputContainer = styled.div`
     background: rgba(13, 18, 39, .75);
     border-radius: 10px;
-    border: 1px solid white;
+    border: 1px solid #80edff;
 
 `
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(2, 40%);
+grid-template-columns:repeat(1, 49%);
 row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;

@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
-import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
+import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 
 
@@ -256,41 +256,79 @@ var supplyDetails = [
     val: `${maxCollateral} ALGOs`,
     hasToolTip: true,
   },
-  {
-      title: "Supply Rewards",
-      val: `+${0.00}% Algo Rewards`,
-      hasToolTip: true,
-      rewards: true,
-  },];
+  // {
+  //     title: "Supply Rewards",
+  //     val: `+${0.00}% Algo Rewards`,
+  //     hasToolTip: true,
+  //     rewards: true,
+  // },
+];
 var borrowDetails = [
   {
     title: "Borrow Limit",
     val: `${maxGARD} GARD`,
     hasToolTip: true,
   },
-  {
-      title: "Borrow Rewards",
-      val: `+${0.02}% Algo Rewards`,
-      hasToolTip: true,
-      rewards: true,
-  },];
+  // {
+  //     title: "Borrow Rewards",
+  //     val: `+${0.02}% Algo Rewards`,
+  //     hasToolTip: true,
+  //     rewards: true,
+  // }
+  ];
     return <div>
         {loading ? <LoadingOverlay text={loadingText}
         close={()=>{
           setLoading(false);
         }} /> : <></>}
-        <RewardNotice
-        program={"Governance Rewards"}
-        timespan={"Now - October 22, 2022"}
-        estimatedRewards={"12% - 33% APR Rewards"}
-        action={"Borrow ALGO to Claim Rewards"}
-        />
+        {/* <BorrowRewardNotice
+        program={"Algorand Governance Enrollment"}
+        timespan={"Now - October 15, 2022"}
+        estimatedRewards={"7M Algo bonus governance rewards when participating via DeFi protocols"}
+        action={"Open CDP to Participate"}
+
+        /> */}
+        <Banner
+      >
+        <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
+          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <Link>Open CDP to Participate</Link>
+        </div>
+      </Banner>
         {createPositionShown ? <div><Container>
           <SubContainer>
               <Background>
-                  <Title>Supply
-                    <AlgoImg src={algoLogo} />
-                    ALGO</Title>
+                  <Title>Supply ALGO <AlgoImg src={algoLogo} /></Title>
                   <InputContainer>
                       <div style={{display: "flex"}}>
                           <Input
@@ -331,9 +369,8 @@ var borrowDetails = [
 
           <SubContainer>
               <Background>
-                  <Title>Borrow
-                    <GardImg src={gardLogo} />
-                    GARD</Title>
+                  <BorrowTitle>Borrow GARD <GardImg src={gardLogo} /></BorrowTitle>
+
                   <InputContainer>
                       <div style={{display: "flex"}}>
                           <Input
@@ -404,7 +441,7 @@ var borrowDetails = [
       <div>
         <PrimaryButton
         text={createPositionShown ? "Exit" : "Create New Position"}
-        blue={!createPositionShown}
+        blue={true}
         positioned={createPositionShown}
         onClick={() => {
           setCreatePositionShown(!createPositionShown)
@@ -415,23 +452,56 @@ var borrowDetails = [
     </div>
 }
 
+const Link = styled.text`
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 10pt;
+  color: #172756;
+  text-align: left;
+  /* margin-right: 12px; */
+  /* &:hover {
+    color: #03a0ff;
+    cursor: pointer;
+  } */
+`;
+
+const Banner = styled.div`
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  justify-content: space-between;
+  text-align: center;
+  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  padding: 8px 6px 10px 8px;
+  margin: 8px;
+  margin-bottom: 20px;
+`
+
+const BorrowRewardNotice = styled(RewardNotice)`
+  font-size: 10pt;
+  text {
+    font-size: 8pt;
+  }
+`
+
 const AlgoImg = styled.img`
-  filter: invert();
-  height: 45px;
+  /* filter: invert(); */
+  height: 75px;
+  width: 75px;
+  right: --4px;
   position: relative;
-  top: -11px;
 `
 
 const GardImg = styled.img`
-  height: 40px;
-  margin: 2px 14px 2px 14px;
+  height: 50px;
+  margin: 2px 18px 2px 14px;
   position: relative;
-  top: -8px;
+  top: -2px;
 `
 
 const Container = styled.div`
     display: grid;
-    grid-template-columns: repeat(2, 49%);
+    grid-template-columns: repeat(1, 49%);
     column-gap: 2%;
 `
 
@@ -448,8 +518,21 @@ const Background = styled.div`
 const Title = styled.div`
     display: flex;
     justify-content: center;
+    font-size: 18pt;
+    align-items: center;
     text-align: center;
     padding: 20px 0px 20px;
+`
+
+const BorrowTitle = styled.div`
+  display: flex;
+  justify-content: center;
+  font-size: 18pt;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0px 20px;
+  margin-bottom: 9px;
+  padding-top: 31px;
 `
 
 const InputContainer = styled.div`
@@ -460,7 +543,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(2, 40%);
+grid-template-columns:repeat(1, 40%);
 row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
@@ -598,3 +681,52 @@ const dummyCDPs = [
     debt: 0,
   },
 ];
+
+
+/**
+ * banner code
+ *
+<div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          borderRadius: 10,
+          justifyContent: "space-between",
+          textAlign: "center",
+          background: "linear-gradient(to right, #80deff 65%, #ffffff)",
+          padding: "8px 6px 10px 8px",
+        }}
+      >
+        <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt", }}>Algorand Governance Period #5</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus through DeFi Protocols</div>
+          <span style={{ color: "#172756", fontSize: "8pt" }}>Enrollment is now live!</span>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+ */

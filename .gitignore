@@ -26,3 +26,5 @@ accounts.md
 
 src/wallets/keys.js
 .vscode/launch.json
+
+*.swp

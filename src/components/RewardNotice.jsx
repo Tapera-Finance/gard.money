@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import styled, {css} from "styled-components";
 
 
-export default function RewardNotice({program, timespan, estimatedRewards, action, link, linkText}){
+export default function RewardNotice({className, program, timespan, estimatedRewards, action, link, linkText}){
     const [showNotice, setShowNotice]= useState(true)
-    return <div>
+    return <div className={className} >
         {showNotice ? <div>
-        <div style={{
+        <div className={className} style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -21,15 +21,15 @@ export default function RewardNotice({program, timespan, estimatedRewards, actio
             position: "relative"
         }}>
             <div>
-                <div>{program}</div>
-                <TimeSpan>{timespan}</TimeSpan>
+                <div className={className}>{program}</div>
+                <TimeSpan className={className}>{timespan}</TimeSpan>
             </div>
-            <b>
+            <b className={className}>
                 {estimatedRewards}
             </b>
-            <div>
+            <div className={className}>
                 {action}
-                {link ? <Link href={link}>{linkText}</Link> : <></>}
+                {link ? <Link className={className} href={link}>{linkText}</Link> : <></>}
             </div>
         </div>
         <button

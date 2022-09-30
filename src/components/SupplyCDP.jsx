@@ -26,17 +26,17 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
     const dispatch = useDispatch();
 
     const [additionalSupply, setAdditionalSupply] = useState("")
-    const [additionalBorrow, setAdditionalBorrow] = useState("")
+    // const [additionalBorrow, setAdditionalBorrow] = useState("")
 
     const handleAddSupply = (event) => {
         setAdditionalSupply(event.target.value === "" ? "" : Number(event.target.value));
         collateral(event.target.value === "" ? "" : Number(event.target.value))
       };
 
-    const handleAddBorrow = (event) => {
-    setAdditionalBorrow(event.target.value === "" ? "" : Number(event.target.value));
-    minted(event.target.value === "" ? "" : Number(event.target.value))
-    };
+    // const handleAddBorrow = (event) => {
+    // setAdditionalBorrow(event.target.value === "" ? "" : Number(event.target.value));
+    // minted(event.target.value === "" ? "" : Number(event.target.value))
+    // };
     useEffect(async() => {
         await updateWalletInfo();
         let wallet = await getWalletInfo()
@@ -66,25 +66,24 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
         //     hasToolTip: true,
         // }
     ];
-    var borrowDetails = [
-        {
-            title: "Borrow Limit",
-            val: `${Math.max(
-                0,
-                Math.trunc(
-                  (100 * ((price * cdp.collateral) / 1000000)) /
-                    1.4 -
-                    (100 * cdp.debt) / 1000000,
-                ) / 100,
-              )} GARD`,
-            hasToolTip: true,
-        },
-        // {
-        //     title: "Borrow Rewards",
-        //     val: `${0.00}%`,
-        //     hasToolTip: true,
-        // }
-    ];
+    // var borrowDetails = [
+    //     {
+    //         title: "Borrow Limit",
+    //         val: `${Math.max(
+    //             0,
+    //             Math.trunc(
+    //               (100 * ((price * cdp.collateral) / 1000000)) /
+    //                 1.4 -
+    //                 (100 * cdp.debt) / 1000000,
+    //             ) / 100,
+    //           )} GARD`,
+    //         hasToolTip: true,
+    //     },
+    //     {
+    //         title: "Borrow Rewards",
+    //         val: `${0.00}%`,
+    //         hasToolTip: true,
+    //     },];
 
     var sessionStorageSetHandler = function (e) {
         setLoadingText(JSON.parse(e.value));
@@ -152,7 +151,7 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
                 }}
                 />
             </SubContainer>
-            <SubContainer>
+            {/* <SubContainer>
                 <Background>
                     <Title>Borrow More GARD</Title>
                     <InputContainer>
@@ -207,21 +206,24 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
                     setCurrentCDP(null);
                 }}
                 />
-            </SubContainer>
+            </SubContainer> */}
         </Container>
 </div>
 
 }
 const Container = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 49%);
+    /* display: grid;
+    grid-template-columns: repeat(1, 69%);
     column-gap: 2%;
-    position: relative;
+    position: relative; */
+    display: flex;
+    justify-content: center;
     top: -40px;
 `
 
 const SubContainer = styled.div`
     position: relative;
+    margin-bottom: 30px;
 `
 const Background = styled.div`
     margin-top: 30px;
@@ -238,13 +240,13 @@ const Title = styled.div`
 const InputContainer = styled.div`
     background: rgba(13, 18, 39, .75);
     border-radius: 10px;
-    border: 1px solid white;
+    border: 1px solid #80edff;
 
 `
 
 const InputDetails = styled.div`
 display: grid;
-grid-template-columns:repeat(2, 40%);
+grid-template-columns:repeat(1, 40%);
 row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
