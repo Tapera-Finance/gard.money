@@ -31,7 +31,7 @@ const buttons = [
   "Swap",
   "Stake",
   "Borrow",
-  "Algo Governance",
+  "Govern",
   "Auctions",
   "Analytics",
   // "Auctions",
@@ -87,11 +87,6 @@ export default function HomeContent() {
       val: `$${circulating.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
       hasToolTip: true,
     },
-    // {
-    //   title: "ALGO APR",
-    //   val: `${apr}%`,
-    //   hasToolTip: true,
-    // },
     {
       title: "GARD Staking APY",
       val: `${2}%`,
@@ -288,27 +283,6 @@ export default function HomeContent() {
       </div>
       {difficulty === "Help Me Out" ? (
         <div>
-          {/* <div
-            style={{
-              display: "flex",
-              marginTop: "8px",
-              marginLeft: "14px",
-              marginBottom: "8px",
-              marginRight: "14px",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "0px 16px 0px 16px",
-              fontWeight: "bolder",
-            }}
-          >
-            <Text>
-              The GARD Protocol is the first of its kind to offer marry stable
-              coins, yield products, staking, and liquidity purchasing. To start
-              capitalizing off of this unique blend of capabilities, click
-              through the options below to see some of the common paths users
-              take to make money!
-            </Text>
-          </div> */}
           <StepContainer>
             <Text
               style={{ color: "#80edff" }}
@@ -351,14 +325,6 @@ export default function HomeContent() {
               secondGoTo="Govern"
               allOpen={allOpen}
             />
-            {/* <Step
-              header="Step 3: Gain More"
-              badges={["LP"]}
-              subtitle="Sell LP tokens"
-              text="Click the button below to be taken to the Sell LP Tokens Page; Here you can sell LP tokens accumulated through interfacing with our liquidity pools, as well as auction and sell CPDs/positions created on our Borrow Page"
-              goTo="Govern"
-              allOpen={allOpen}
-            /> */}
           </StepContainer>
         </div>
       ) : (
@@ -372,7 +338,7 @@ export default function HomeContent() {
           <Text>Quick Access</Text>
           {buttons.map((action) => {
             return (
-              <PrimaryButton text={action} blue={true} onClick={() => navigate(`/${action.toLowerCase()}`)} key={Math.random()} />
+              <PrimaryButton disabled={!walletAddress} text={action} blue={true} onClick={() => navigate(`/${action.toLowerCase()}`)} key={Math.random()} />
             )
           })}
           </div>
