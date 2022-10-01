@@ -56,6 +56,13 @@ export async function stake(pool, gardAmount) {
     assetIndex: ids.asa.gard,
   });
   txns.push(txn1)
+  let txn2 = = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(ids.app.gard_staking),
+    amount: 1000,
+    suggestedParams: params,
+  });
+  txns.push(txn2)
   
   algosdk.assignGroupID(txns);
   
@@ -64,9 +71,9 @@ export async function stake(pool, gardAmount) {
 
   setLoadingStage("Confirming Transaction...");
 
-  let stxns = [signedGroup[0].blob, signedGroup[1].blob];
-  if (signedGroup.length == 3) {
-    stxns.push(signedGroup[2].blob)
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
+  if (signedGroup.length == 4) {
+    stxns.push(signedGroup[3].blob)
   }
 
   let response = await sendTxn(
