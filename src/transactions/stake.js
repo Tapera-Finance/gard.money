@@ -23,6 +23,19 @@ export async function stake(pool, gardAmount) {
   let params = await getParams(1000);
   let info = await infoPromise;
   
+  const gard_bal = getGardBalance(info)
+  if (gard_bal == null || gard_bal < microGARDAmount) {
+    return {
+      alert: true,
+      text:
+        "Insufficient GARD for transaction. Balance: " +
+        (gard_bal / 1000000).toFixed(2).toString() +
+        "\n" +
+        "Required: " +
+        (microGARDAmount / 1000000 + mod).toFixed(2).toString(),
+    };
+  }
+  
   let txns = [];
   
   const optedIn = isOptedIn(ids.app.gard_staking, info);
@@ -87,7 +100,7 @@ export async function stake(pool, gardAmount) {
 
 export async function unstake(pool, gardAmount) {
   setLoadingStage("Loading...");
-
+  
   let infoPromise = accountInfo();
   let microGARDAmount = microGARD(gardAmount);
 
@@ -98,7 +111,6 @@ export async function unstake(pool, gardAmount) {
   let info = await infoPromise;
   
   // txn 0 - app call
-  params.fee = 0
   let txn0 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: ids.app.gard_staking,
@@ -109,9 +121,25 @@ export async function unstake(pool, gardAmount) {
     foreignAssets: [ids.asa.gard], // XXX: When we do NLL, this will have to change
     suggestedParams: params,
   });
-  
+  // txn 1 - useless transaction, required for structure
+  params.fee = 1000
+  let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(ids.app.gard_staking),
+    amount: 0,
+    suggestedParams: params,
+  });
+  txns.push(txn1)
+  // txn 2 - extra opcode budget
+  let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(ids.app.gard_staking),
+    amount: 1000,
+    suggestedParams: params,
+  });
+  txns.push(txn2)
 
-  let txns = [txn0];
+  let txns = [txn0, txn1, txn2];
   algosdk.assignGroupID(txns);
   
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
@@ -119,7 +147,7 @@ export async function unstake(pool, gardAmount) {
 
   setLoadingStage("Confirming Transaction...");
 
-  let stxns = [signedGroup[0].blob];
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
 
   let response = await sendTxn(
     stxns,
