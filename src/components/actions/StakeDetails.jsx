@@ -68,14 +68,15 @@ export default function StakeDetails() {
     }
   }
 
-  const handleUnstake = () => {
+  const handleUnstake = async () => {
     console.log(`action to unstake ${stakeAmount}`)
-    // setLoading(true)
+    setLoading(true)
     try {
-      // await unstake(params)
-      // setLoading(false)
+      await unstake("NL", stakeAmount)
+      setLoading(false)
     } catch (e) {
-      console.log("Error attempting to unstake", e)
+      alert("Error attempting to stake: " + e)
+      console.log(e)
     }
   }
 

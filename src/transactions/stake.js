@@ -1,6 +1,6 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { setLoadingStage, microGARD } from "./lib"
+import { setLoadingStage, microGARD, getGardBalance } from "./lib"
 import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
 
 const enc = new TextEncoder();
@@ -32,7 +32,7 @@ export async function stake(pool, gardAmount) {
         (gard_bal / 1000000).toFixed(2).toString() +
         "\n" +
         "Required: " +
-        (microGARDAmount / 1000000 + mod).toFixed(2).toString(),
+        (microGARDAmount / 1000000).toFixed(2).toString(),
     };
   }
   
@@ -107,8 +107,9 @@ export async function unstake(pool, gardAmount) {
   // XXX: This could be more optimally set -
   //      for locked pools if it's not a valid
   //      withdrawal period, only needs to be 1000
-  let params = await getParams(2000);
+  let params = await getParams(3000);
   let info = await infoPromise;
+  
   
   // txn 0 - app call
   let txn0 = algosdk.makeApplicationCallTxnFromObject({
@@ -117,7 +118,7 @@ export async function unstake(pool, gardAmount) {
     onComplete: 0,
     appArgs: [enc.encode("exit_" + pool + "_pool"), algosdk.encodeUint64(microGARDAmount)],
     accounts: [],
-    foreignApps: [],
+    foreignApps: [ids.app.dummy],
     foreignAssets: [ids.asa.gard], // XXX: When we do NLL, this will have to change
     suggestedParams: params,
   });
@@ -129,7 +130,6 @@ export async function unstake(pool, gardAmount) {
     amount: 0,
     suggestedParams: params,
   });
-  txns.push(txn1)
   // txn 2 - extra opcode budget
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -137,7 +137,6 @@ export async function unstake(pool, gardAmount) {
     amount: 1000,
     suggestedParams: params,
   });
-  txns.push(txn2)
 
   let txns = [txn0, txn1, txn2];
   algosdk.assignGroupID(txns);
