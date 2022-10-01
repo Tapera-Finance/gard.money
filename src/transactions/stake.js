@@ -42,7 +42,7 @@ export async function stake(pool, gardAmount) {
     onComplete: 0,
     appArgs: [enc.encode("enter_" + pool + "_pool")],
     accounts: [],
-    foreignApps: [],
+    foreignApps: [ids.app.dummy],
     foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
