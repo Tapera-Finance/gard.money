@@ -56,7 +56,7 @@ export async function stake(pool, gardAmount) {
     assetIndex: ids.asa.gard,
   });
   txns.push(txn1)
-  let txn2 = = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+  let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: algosdk.getApplicationAddress(ids.app.gard_staking),
     amount: 1000,
