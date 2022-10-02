@@ -500,15 +500,7 @@ export async function addCollateral(accountID, newAlgos) {
     amount: microNewAlgos,
     suggestedParams: params,
   });
-  let txn2 = algosdk.makeApplicationCallTxnFromObject({
-    from: info.address,
-    appIndex: ids.app.auction_checker,
-    onComplete: 0,
-    appArgs: [enc.encode("CDP_Check")],
-    accounts: [cdp.address],
-    foreignApps: [ids.app.validator],
-    suggestedParams: params,
-  });
+  let txn2 = makeUpdateInterestTxn(info, params)
   let txns = [txn1, txn2];
   algosdk.assignGroupID(txns);
 
