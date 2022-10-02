@@ -559,15 +559,20 @@ export async function repayCDP(accountID, repayGARD) {
   let microRepayGARD = microGARD(repayGARD)
   console.log(microRepayGARD)
   
-  /*
-  let gard_bal = getGardBalance(info);
-  if (gard_bal - microRepayGARD < 1) {
+  let gard_debt = await totalDebt(cdpInfo);
+  if (gard_debt - microRepayGARD < 1000000) {
     return {
       alert: true,
       text: "You must maintain a balance of 1 GARD to keep a CDP open!",
     };
-  } // TODO: Fix this
-  */ 
+  } 
+  else if (getGardBalance(info) < microRepayGARD){
+    return {
+      alert: true,
+      text: "You have insufficient GARD to complete the transaction. You need " + 
+      ((microRepayGARD/1000000).toFixed(3)).toString() + " GARD."
+    };
+  }
   
   // txn 0 - updated interest
   let txn0 = makeUpdateInterestTxn(info, params)
