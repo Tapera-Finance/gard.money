@@ -61,7 +61,7 @@ export default function Govern() {
   var details = [
     {
       title: "Total Vaulted",
-      val: `${88.3}M ALGO`,
+      val: `TBD`, // `${88.3}M ALGO`,
       hasToolTip: true,
     },
     {
@@ -70,9 +70,9 @@ export default function Govern() {
       hasToolTip: true,
     },
     {
-      title: "GARD Governors",
+      title: "Total Governors", // We want this to be GARD governors later
       val: `${governors} Governors`,
-      hasToolTip: true,
+      hasToolTip: false,
     },
   ];
   useEffect(async () => {
@@ -210,7 +210,7 @@ export default function Govern() {
             <h3>Algorand Governance Period #5</h3>
             <div style={{ fontSize: 11 }}>Registration Ends</div>
             <CountDownContainer>
-              <CountdownTimer targetDate={1666439999000} showZero={false} />
+              <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
               {/* 1761180257000 */}
             </CountDownContainer>
             <div>
@@ -233,7 +233,7 @@ export default function Govern() {
             </div>
           </div>
 
-          <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on ALGO Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-4/period-4-voting-session-1")}/></legend>
+          <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on Foundation Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-5")}/></legend>
         </fieldset>
       </div>
       <div
@@ -258,11 +258,11 @@ export default function Govern() {
           </CountContainer>
         </div>
         <div style={{ marginRight: 20 }}>
-          <PrimaryButton text="Commit All" blue={true} />
+          <PrimaryButton text="Commit All" blue={true} disabled={true}/>
         </div>
       </div>
       <Table data={cdps} />
-      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} />
+      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} disabled={true}/>
       {voteTableDisabled ? <></>:
       <div>
         <div
