@@ -19,6 +19,7 @@ if (VERSION == "MAINNET") {
     asa : {
         gain : 684649672,
         gard : 684649988,
+        gardian : 692432647,
     },
     app : {
         dao : {
