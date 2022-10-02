@@ -540,7 +540,7 @@ async function sgardToGard(amt) {
   for (let i = 0; i < sgardGardInfo["global-state"].length; i++) {
     if (sgardGardInfo["global-state"][i]["key"] == encodedConversionRate) {
       let rate = sgardGardInfo["global-state"][i]["value"]["uint"];
-      return amt * rate / (10 ** 9)
+      return amt * rate / (10 ** 10)
     }
   }
 }
@@ -638,7 +638,7 @@ export async function closeCDP(accountID) {
   let cdp = cdpGen(info.address, accountID);
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
-  
+
   let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * .02)/365/24/60)) + 3000
   console.log(microRepayGARD)
   

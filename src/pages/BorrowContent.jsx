@@ -381,7 +381,6 @@ export default function BorrowContent() {
                       placeholder={"enter amount"}
                       type="number"
                       min="1.00"
-                      step="1"
                       id="minted"
                       value={mGARD}
                       size="small"
