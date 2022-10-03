@@ -61,6 +61,19 @@ export async function accountInfo(address = null) {
     });
 }
 
+export async function appInfo(appId) {
+  return algodClient
+    .getApplicationByID(appId)
+    .do()
+    .catch(async (e) => {
+      if (rerun(e)) {
+        await sleep(1);
+        return await appInfo(appId);
+      }
+      throw e;
+    });
+}
+
 export async function updateWalletInfo() {
   let info = await accountInfo();
   activeWalletInfo = info;

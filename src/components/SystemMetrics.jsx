@@ -43,12 +43,12 @@ export default function SystemMetrics() {
     },
     {
       title: "Staked GARD",
-      val: `${0}`,
+      val: `TBD`,
       hasToolTip: true,
     },
     {
       title: "Circulating GARD",
-      val: `${0}`,
+      val: `TBD`,
       hasToolTip: true,
     },
   ]

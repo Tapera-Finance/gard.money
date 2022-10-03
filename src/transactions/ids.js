@@ -17,28 +17,30 @@ let _pactAlgoGardPoolAddress =
 if (VERSION == "MAINNET") {
   _ids = {
     asa : {
-        // gain : 113823778,
-        gard : 684649672,
+        gain : 684649672,
+        gard : 684649988,
+        gardian : 692432647,
     },
     app : {
         dao : {
-            staking : 889549907,
-            manager : 889549958,
-            interest : 889549959,
+            staking : 890603826,
+            manager : 890603874,
+            interest : 890603875,
             updates : {
-               validator : 889550041,
-               claim : 889550107,
+               validator : 890603919,
+               claim : 890603994,
             },
         },
-        sgard_gard : 889550042,
-        validator : 889550104,
-        revenue : 889550043,
-        funder : 889550105,
+        dummy : 890603876,
+        sgard_gard : 890603920,
+        validator : 890603991,
+        revenue : 890603921,
+        funder : 890603992,
         auction_checker : 96679309,
         oracle : 673925841,
-        gard_staking : 889550160,
-        treasury : 889550106,
-        claimer : 889550159,
+        gard_staking : 890604041,
+        treasury : 890603993,
+        claimer : 890604040,
     }
  }
   // ASAs
@@ -60,21 +62,6 @@ if (VERSION == "MAINNET") {
   // _treasuryID = 684650318;
   // _oracleID = 673925841;
   // _checkerID = 787191335;
-} else if (VERSION == "TESTNET1") {
-  // ASAs
-  // _gainID = 73680771;
-  // _gardID = 73680809;
-  // _gardianID = 73680881;
-
-  // App ids
-  // _stakingID = 73680776;
-  // _openFeeID = 73680806;
-  // _closeFeeID = 73680807;
-  // _managerID = 73680808;
-  // _validatorID = 73680824;
-  // _treasuryID = 73680850;
-  // _oracleID = 53083112;
-  // _checkerID = 96679309;
 } else if (VERSION == "TESTNET2") {
   _ids = {
      asa : {

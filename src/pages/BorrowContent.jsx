@@ -14,7 +14,7 @@ import {
   handleTxError,
   updateWalletInfo,
 } from "../wallets/wallets";
-import { calcRatio, getCDPs, getPrice, openCDP } from "../transactions/cdp.js";
+import { calcRatio, getCDPs, getPrice, openCDP, cdpInterest } from "../transactions/cdp.js";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
@@ -208,7 +208,7 @@ export default function BorrowContent() {
     },
     {
       title: "GARD Borrow APR",
-      val: `${(100 / 140).toFixed(2)}`,
+      val: `${cdpInterest*100}%`,
       hasToolTip: true,
     },
     {
@@ -381,7 +381,6 @@ export default function BorrowContent() {
                       placeholder={"enter amount"}
                       type="number"
                       min="1.00"
-                      step="1"
                       id="minted"
                       value={mGARD}
                       size="small"

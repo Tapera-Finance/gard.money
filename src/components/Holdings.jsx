@@ -30,10 +30,11 @@ function getAssets() {
   for (var i = 0, len = x.length; i < len; i++) {
     if ([684649988, 684649672, 692432647].includes(x[i]["asset-id"])) {
       let amnt = (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3);
+      let token_price = x[i]["asset-id"] == 684649988 ? 1 : 0;
       assets.push({
         name: x[i]["name"],
         amount: amnt,
-        value: formatToDollars(parseFloat(amnt) * parseFloat(price)),
+        value: parseFloat(amnt) * token_price,
       });
     }
   }
@@ -43,6 +44,7 @@ function getAssets() {
         id: "N/A",
         name: "N/A",
         amount: 0,
+        value: 0,
       },
     ];
   }
@@ -84,7 +86,7 @@ export default function Holdings() {
   ];
 
   useEffect(() => {
-    let walletSum = accumulateTotal(assets, "amount");
+    let walletSum = accumulateTotal(assets, "value");
     let netBorrowSum = accumulateTotal(cdps, "collateral");
     let netBorrowDebt = accumulateTotal(cdps, "debt");
     setWalletTotal(walletSum);
@@ -95,7 +97,11 @@ export default function Holdings() {
     // one: <div>stake</div>,
     one: (
       <WalletTable
-        data={assets}
+        data={getAssets().map((x) => {
+          let temp = x;
+          temp.value = formatToDollars(x["value"]);
+          return temp;
+        })}
         title="Wallet"
         subtitle={`(${formatToDollars(walletTotal.toString())} Total Value)`}
         columns={holdColumns}

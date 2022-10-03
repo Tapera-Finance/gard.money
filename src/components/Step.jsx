@@ -48,7 +48,6 @@ export default function Step({
               }}
             >
               {" "}
-              {badges? console.log("badges?", badges) : null}
               {badges && badges.length > 0 ? (
                 badges.map((badge) => {
                   return <Badge type={badge} key={Math.random()} />;

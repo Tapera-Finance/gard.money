@@ -131,7 +131,6 @@ export default function Drawer({
                         : {}),
                     }}
                     onClick={() => {
-                      console.log("checking for page name",v.name)
                       if (
                         [
                           "Account",
@@ -227,7 +226,7 @@ export default function Drawer({
               <SocialMediaButton
                 onClick={() =>
                   window.open(
-                    "https://app.gitbook.com/o/5oJ4sTgVdG2kBaUnMZo8/s/8VZSF3kvxptRoe90GXYz/gard-protocol/gard",
+                    "https://docs.algogard.com",
                   )
                 }
               >
