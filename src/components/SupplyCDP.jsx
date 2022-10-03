@@ -27,10 +27,16 @@ export default function ManageCDP({
   const [supplyLimit, setSupplyLimit] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
+  const [commitChecked, setCommitChecked] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [additionalSupply, setAdditionalSupply] = useState("");
+
+  const handleCheckboxChange = () => {
+    setCommitChecked(!commitChecked);
+  };
 
   const handleAddSupply = (event) => {
     setAdditionalSupply(
@@ -89,12 +95,12 @@ export default function ManageCDP({
                   value={additionalSupply}
                   onChange={handleAddSupply}
                 />
-                <MaxButton>
+                {/* <MaxButton>
                   <ToolTip
                     toolTip={"+MAX"}
                     toolTipText={"Click to lend maximum amount"}
                   />
-                </MaxButton>
+                </MaxButton> */}
               </div>
               <Valuation>
                 $Value: ${(additionalSupply * price).toFixed(2)}
@@ -113,6 +119,20 @@ export default function ManageCDP({
                       );
                     })
                   : null}
+                  <label
+                  style={{
+                    display: "flex",
+                    alignContent: "center",
+                  }}
+                >
+                   <InputTitle>
+                  Commit to governance
+                </InputTitle>
+                      <input
+                        type={"checkbox"}
+                        onChange={handleCheckboxChange}
+                      />
+                </label>
               </InputDetails>
             </InputContainer>
           </Background>
@@ -178,6 +198,11 @@ const InputDetails = styled.div`
   justify-content: center;
   padding: 30px 0px 30px;
   border-radius: 10px;
+`;
+
+const InputTitle = styled.text`
+  font-weight: bold;
+  font-size: 16px;
 `;
 
 const Item = styled.div`

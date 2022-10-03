@@ -222,7 +222,7 @@ function WalletOptions({ onClick }) {
           <img src={AlgoSignerLogo} style={{ width: 60 }} />
         </div>
         <div>
-          <WalletOptionText>Install AlgoSigner</WalletOptionText>
+          <WalletOptionText>AlgoSigner</WalletOptionText>
         </div>
         <div>
           <img src={arrow} />
@@ -238,7 +238,7 @@ function WalletOptions({ onClick }) {
           <img src={MyAlgoLogo} style={{ width: 50 }} />
         </div>
         <div style={{ marginRight: 10 }}>
-          <WalletOptionText>My Algo Wallet</WalletOptionText>
+          <WalletOptionText>MyAlgo Wallet</WalletOptionText>
         </div>
         <div>
           <img src={arrow} />

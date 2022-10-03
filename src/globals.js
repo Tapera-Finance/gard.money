@@ -7,7 +7,7 @@ export const CONTENT_NAMES = {
   SWAP: "Swap",
   STAKE: "Stake",
   DAO: "DAO",
-  GOVERN: "Algo Governance",
+  GOVERN: "ALGO Governance",
   ANALYTICS: "Analytics",
 };
 
