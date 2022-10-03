@@ -129,7 +129,6 @@ export default function Drawer({
                         : {}),
                     }}
                     onClick={() => {
-                      console.log("checking for page name",v.name)
                       if (
                         [
                           "Account",

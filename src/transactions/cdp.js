@@ -1,13 +1,12 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
 import { cdpGen } from "./contracts";
-import { setLoadingStage, getGardBalance, microGARD } from "./lib";
+import { setLoadingStage, getGardBalance, microGARD, getAppField } from "./lib";
 import {
   accountInfo,
   getParams,
   sendTxn,
   getWallet,
-  getAppByID,
   signGroup,
 } from "../wallets/wallets";
 import {
@@ -27,12 +26,13 @@ const fundingAmount = 300000;
 let currentBigPrice = 816;
 let currentDecimals = 3;
 export let currentPrice = 0.30; // XXX: This should be kept close to the actual price - it is updated on initialization though
+export let cdpInterest = .02; // XXX: This should be kept close to the actual interest rate - it is updated on initialization though
 
 // XXX: All of these assume accountInfo has already been set! We should improve the UX of this after getting core functionality done
 // XXX: All of these assume the user signs all transactions, we don't currently catch when a user doesn't do so!
 
 export async function getPrice() {
-  // Could cache price eventually
+  // TODO: cache price
   const currentPriceJSON = await $.getJSON(
     "https://storage.googleapis.com/algo-pricing-data-2022/latest_pricing.json",
   );
@@ -44,6 +44,17 @@ export async function getPrice() {
 // We immeadiately update the price in a background thread
 getPrice();
 
+export async function getInterest() {
+  // TODO: cache interest
+  console.log("getInterest called")
+  const interestInfo = await getAppField(ids.app.dao.interest, "interest_rate")
+  console.log("getInterest returned: ", interestInfo)
+  return interestInfo / 1000
+}
+
+// We immeadiately update the interest in a background thread
+getInterest()
+
 export function calcRatio(collateral, minted, string = false) {
   // collateral: Microalgos
   // minted: GARD
@@ -53,9 +64,6 @@ export function calcRatio(collateral, minted, string = false) {
   }
   return ratio;
 }
-
-const EncodedPrincipal = "UHJpbmNpcGFs";
-const EncodedDebt = "U0dBUkRfREVCVA==";
 
 function getCDPState(cdpInfo) {
   let res = {
@@ -71,9 +79,9 @@ function getCDPState(cdpInfo) {
           // This if statement checks for borked CDPs (first tx = good, second = bad)
           // Improvement: Do something with borked CDP
           for (let n = 0; n < validatorInfo["key-value"].length; n++) {
-            if (validatorInfo["key-value"][n]["key"] == EncodedPrincipal) {
+            if (validatorInfo["key-value"][n]["key"] == btoa("Principal")) {
               res.principal = validatorInfo["key-value"][n]["value"]["uint"];
-            } else if (validatorInfo["key-value"][n]["key"] == EncodedDebt) {
+            } else if (validatorInfo["key-value"][n]["key"] == btoa("SGARD_DEBT")) {
               res.debt = validatorInfo["key-value"][n]["value"]["uint"];
             }
           }
@@ -523,18 +531,9 @@ export async function addCollateral(accountID, newAlgos) {
 }
 
 
-const encodedConversionRate = 'Y29udmVyc2lvbl9yYXRl'
-
-
 async function sgardToGard(amt) {
-  const sgardGardInfo = (await getAppByID(ids.app.sgard_gard)).params
-  console.log(sgardGardInfo)
-  for (let i = 0; i < sgardGardInfo["global-state"].length; i++) {
-    if (sgardGardInfo["global-state"][i]["key"] == encodedConversionRate) {
-      let rate = sgardGardInfo["global-state"][i]["value"]["uint"];
-      return amt * rate / (10 ** 10)
-    }
-  }
+  const conversionRate = await getAppField(ids.app.sgard_gard, "conversion_rate")
+  return conversionRate * amt / (10 ** 10)
 }
 
 
@@ -636,7 +635,7 @@ export async function closeCDP(accountID) {
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
 
-  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * .02)/365/24/60)) + 3000
+  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * cdpInterest)/365/24/60)) + 3000
   console.log(microRepayGARD)
   
   let gard_bal = getGardBalance(info);
