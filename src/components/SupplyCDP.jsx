@@ -72,7 +72,7 @@ export default function ManageCDP({
 
   return (
     <div>
-      {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+      {loading ? <LoadingOverlay text={loadingText} close={()=>{setLoading(false);}}/> : <></>}
       <Container>
         <SubContainer>
           <Background>

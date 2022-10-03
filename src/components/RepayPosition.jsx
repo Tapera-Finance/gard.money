@@ -32,7 +32,12 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
 
 
     return <div style={{marginTop: 30}}>
-            {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+            {loading ? <LoadingOverlay
+            text={loadingText}
+            close={()=>{
+                setLoading(false);
+            }}
+            /> : <></>}
             <Container>
             <SubContainer>
                 <Background>
