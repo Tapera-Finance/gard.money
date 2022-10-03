@@ -21,6 +21,7 @@ import RedditIcon from "../assets/icons/reddit_icon.png";
 import ALGOPrice from "./ALGOPrice";
 import TelegramIcon from "../assets/icons/telegram_icon.png";
 import DiscordIcon from "../assets/icons/discord_icon.png";
+import MediumIcon from "../assets/icons/icons8-medium-48.png"
 import DocumentIcon from "../assets/icons/document_icon.png";
 import TutorialIcon from "../assets/icons/tutorial_icon.png";
 import { useNavigate } from "react-router-dom";
@@ -279,6 +280,12 @@ export default function Drawer({
               >
                 <SocialMediaIcon src={TwitterIcon} />
               </SocialMediaButton>
+              <SocialMediaButton onClick={() => window.open("https://t.me/AlgoGARD")}>
+                <SocialMediaIcon src={TelegramIcon} />
+              </SocialMediaButton>
+              <SocialMediaButton onClick={() => window.open("https://medium.com/@AlgoGARD")}>
+                <MediumLogo src={MediumIcon} />
+              </SocialMediaButton>
             </SocialMediaContainer>
           </div>
         </div>
@@ -326,6 +333,16 @@ const SocialMediaIcon = styled.img`
     opacity: 0.5;
   }
 `;
+
+const MediumLogo = styled.img`
+height: 30px;
+color: white;
+filter: invert();
+${SocialMediaButton}:hover & {
+  opacity: 0.5;
+}
+`;
+
 const LinkText = styled.text`
   font-size: 16px;
   font-weight: 600;
