@@ -139,6 +139,7 @@ export default function Govern() {
       "":
         value.committed !== 0 && value.committed !== "unknown" ? (
           <PrimaryButton
+          blue={true}
             text={"Committed"}
             onClick={() => {
               if (value.id == "N/A") {
@@ -174,6 +175,7 @@ export default function Govern() {
         ),
         info: (
           <PrimaryButton
+            blue={true}
             text={"Governor Page"}
             onClick={() => {
               window.open(getGovernorPage(account_id));
@@ -206,7 +208,7 @@ export default function Govern() {
           }}
         >
           <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 14, 2022 EOD</div>
         </div>
         <div
           style={{
@@ -259,7 +261,7 @@ export default function Govern() {
             <h3>Algorand Governance Period #5</h3>
             <div style={{ fontSize: 11 }}>Registration Ends</div>
             <CountDownContainer>
-              <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
+            <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
               {/* 1761180257000 */}
             </CountDownContainer>
             <div>
@@ -395,6 +397,7 @@ export default function Govern() {
             </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
               <PrimaryButton
+                blue={true}
                 text="Confirm Commitment"
                 onClick={async () => {
                   setModalCanAnimate(true);

@@ -1,6 +1,6 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { setLoadingStage, microGARD, getGardBalance } from "./lib"
+import { setLoadingStage, microGARD, getMicroGardBalance } from "./lib"
 import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
 
 const enc = new TextEncoder();
@@ -23,7 +23,7 @@ export async function stake(pool, gardAmount) {
   let params = await getParams(1000);
   let info = await infoPromise;
   
-  const gard_bal = getGardBalance(info)
+  const gard_bal = getMicroGardBalance(info)
   if (gard_bal == null || gard_bal < microGARDAmount) {
     return {
       alert: true,

@@ -14,6 +14,7 @@ import BinaryToggle from "../components/BinaryToggle";
 import { setAlert } from "../redux/slices/alertSlice";
 import { getGovernanceInfo } from "./GovernContent";
 import Effect from "../components/Effect";
+import { cdpInterest } from "../transactions/cdp"
 
 const fetchTvl = async () => {
   try {
@@ -66,10 +67,6 @@ export default function HomeContent() {
     chainData ? chainData["circulating-gard"][8064 - 1] : 0,
   )
 
-  const check = () => {
-     return chainData ? console.log("chain data", chainData) : 0
-  }
-  check()
   useEffect(async () => {
     const govInfo = await getGovernanceInfo();
     setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
@@ -103,8 +100,8 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Borrow APY",
-      val: "TBD",
+      title: "GARD Borrow APR",
+      val: `${cdpInterest*100}%`,
       hasToolTip: true,
     },
     {
@@ -122,7 +119,6 @@ export default function HomeContent() {
   useEffect(async () => {
     let res = await fetchTvl();
     if (res) {
-      console.log("respose from tvl call", res);
       setTvl(res.currentChainTvls.Algorand.toFixed(2));
       setBacked(
         (100 * res.currentChainTvls.Algorand / res.currentChainTvls.borrowed).toFixed(
@@ -135,7 +131,6 @@ export default function HomeContent() {
   useEffect(async () => {
     let res = await getAlgoGovAPR();
     if (res) {
-      console.log("apr", res);
       setApr(res);
     }
   }, []);
@@ -160,7 +155,7 @@ export default function HomeContent() {
           }}
         >
           <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 14, 2022 EOD</div>
         </div>
         <div
           style={{
@@ -247,7 +242,7 @@ export default function HomeContent() {
         <div style={{ margin: "8px 0px 8px 0px" }}>
           <BinaryToggle
             optionA="Help Me Out"
-            optionB="De-Fi Expert"
+            optionB="DeFi Expert"
             selectedOption={setDifficulty}
           />
         </div>

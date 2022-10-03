@@ -62,21 +62,6 @@ if (VERSION == "MAINNET") {
   // _treasuryID = 684650318;
   // _oracleID = 673925841;
   // _checkerID = 787191335;
-} else if (VERSION == "TESTNET1") {
-  // ASAs
-  // _gainID = 73680771;
-  // _gardID = 73680809;
-  // _gardianID = 73680881;
-
-  // App ids
-  // _stakingID = 73680776;
-  // _openFeeID = 73680806;
-  // _closeFeeID = 73680807;
-  // _managerID = 73680808;
-  // _validatorID = 73680824;
-  // _treasuryID = 73680850;
-  // _oracleID = 53083112;
-  // _checkerID = 96679309;
 } else if (VERSION == "TESTNET2") {
   _ids = {
      asa : {

@@ -18,7 +18,18 @@ export default function BinaryToggle({ optionA, optionB, selectedOption }) {
           width: "30%",
         }}
       >
-        <Text selected={a}>{optionA}</Text>
+        <Text
+          selected={a}
+          onClick={() => {
+            selectedOption(optionA);
+            if (a !== true) {
+              setA(true);
+              setB(false);
+            }
+          }}
+        >
+          {optionA}
+        </Text>
         <Bar className="container">
           <Box
             selected={a}
@@ -41,7 +52,18 @@ export default function BinaryToggle({ optionA, optionB, selectedOption }) {
             }}
           ></Box>
         </Bar>
-        <Text selected={b}>{optionB}</Text>
+        <Text
+          selected={b}
+          onClick={() => {
+            selectedOption(optionB);
+            if (b !== true) {
+              setA(false);
+              setB(true);
+            }
+          }}
+        >
+          {optionB}
+        </Text>
       </div>
     </div>
   );
@@ -69,17 +91,18 @@ const Box = styled.div`
       border: 1px solid #ffffff;
       background: #80edff;
       &:hover {
-        border: unset;
+        /* border: unset; */
       }
     `}
   &:hover {
-    border: 1px solid #ffffff;
+    /* border: 1px solid #ffffff; */
   }
 `;
 
 const Text = styled.text`
   font-weight: 500px;
   color: #999696;
+  cursor: pointer;
   ${(props) =>
     props.selected &&
     css`

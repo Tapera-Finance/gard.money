@@ -21,6 +21,7 @@ import RedditIcon from "../assets/icons/reddit_icon.png";
 import ALGOPrice from "./ALGOPrice";
 import TelegramIcon from "../assets/icons/telegram_icon.png";
 import DiscordIcon from "../assets/icons/discord_icon.png";
+import MediumIcon from "../assets/icons/icons8-medium-48.png"
 import DocumentIcon from "../assets/icons/document_icon.png";
 import TutorialIcon from "../assets/icons/tutorial_icon.png";
 import { useNavigate } from "react-router-dom";
@@ -124,12 +125,12 @@ export default function Drawer({
                       paddingLeft: "3vw",
                       display: "flex",
                       alignItems: "center",
+                      textAlign: "left",
                       ...(selected === v.name
                         ? { backgroundColor: "#172756" }
                         : {}),
                     }}
                     onClick={() => {
-                      console.log("checking for page name",v.name)
                       if (
                         [
                           "Account",
@@ -278,6 +279,12 @@ export default function Drawer({
               >
                 <SocialMediaIcon src={TwitterIcon} />
               </SocialMediaButton>
+              <SocialMediaButton onClick={() => window.open("https://t.me/AlgoGARD")}>
+                <SocialMediaIcon src={TelegramIcon} />
+              </SocialMediaButton>
+              <SocialMediaButton onClick={() => window.open("https://medium.com/@AlgoGARD")}>
+                <MediumLogo src={MediumIcon} />
+              </SocialMediaButton>
             </SocialMediaContainer>
           </div>
         </div>
@@ -325,6 +332,16 @@ const SocialMediaIcon = styled.img`
     opacity: 0.5;
   }
 `;
+
+const MediumLogo = styled.img`
+height: 30px;
+color: white;
+filter: invert();
+${SocialMediaButton}:hover & {
+  opacity: 0.5;
+}
+`;
+
 const LinkText = styled.text`
   font-size: 16px;
   font-weight: 600;
@@ -386,7 +403,7 @@ function DropdownNavButton({ name, icon, subOptions }) {
                 <NavButton
                   style={{
                     paddingLeft: 107,
-                    displey: "flex",
+                    display: "flex",
                     alignItems: "center",
                   }}
                 >
@@ -416,7 +433,7 @@ const HideNavButton = styled.button`
   background-color: transparent;
   cursor: pointer;
   &:hover {
-    background-color: #381d77;
+    background-color: #019fff;
   }
 `;
 const HamburgerButton = styled.button`
