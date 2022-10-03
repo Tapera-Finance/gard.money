@@ -434,7 +434,7 @@ const HideNavButton = styled.button`
   background-color: transparent;
   cursor: pointer;
   &:hover {
-    background-color: #381d77;
+    background-color: #019fff;
   }
 `;
 const HamburgerButton = styled.button`
