@@ -11,6 +11,7 @@ import TextButton from "../components/TextButton";
 import Table from "../components/Table";
 import { CDPsToList } from "../components/Positions";
 import { loadFireStoreCDPs } from "../components/Firebase";
+import LoadingOverlay from "../components/LoadingOverlay";
 import { cdpGen } from "../transactions/contracts";
 import { commitCDP } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
@@ -78,6 +79,10 @@ export default function Govern() {
     setToWallet(!toWallet);
   };
 
+  var sessionStorageSetHandler = function (e) {
+    setLoadingText(JSON.parse(e.value));
+  };
+  document.addEventListener("itemInserted", sessionStorageSetHandler, false);
   var details = [
     {
       title: "Total Vaulted",
@@ -180,7 +185,16 @@ export default function Govern() {
   console.log("cdps", cdps);
   return ( !walletAddress ? navigate("/") :
     <div>
-      {/* {!walletAddress ? navigate("/") : <></>} */}
+      {loading ? (
+        <LoadingOverlay
+          text={loadingText}
+          close={() => {
+            setLoading(false);
+          }}
+        />
+      ) : (
+        <></>
+      )}
 <Banner
       >
         <div
