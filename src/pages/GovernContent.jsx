@@ -157,7 +157,7 @@ export default function Govern() {
           }}
         >
           <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 15, 2022</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 14, 2022 EOD</div>
         </div>
         <div
           style={{
@@ -210,7 +210,7 @@ export default function Govern() {
             <h3>Algorand Governance Period #5</h3>
             <div style={{ fontSize: 11 }}>Registration Ends</div>
             <CountDownContainer>
-              <CountdownTimer targetDate={1666439999000} showZero={false} />
+              <CountdownTimer targetDate={1665806340000} showZero={false} />
               {/* 1761180257000 */}
             </CountDownContainer>
             <div>
