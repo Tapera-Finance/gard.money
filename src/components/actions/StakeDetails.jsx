@@ -55,7 +55,7 @@ export default function StakeDetails() {
   const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
-  const [stakeAmount, setStakeAmount] = useState("");
+  const [stakeAmount, setStakeAmount] = useState(0.000);
   const [maxStake, setMaxStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const [NL_TVL, setNLTVL] = useState("...")
@@ -65,7 +65,7 @@ export default function StakeDetails() {
   const navigate = useNavigate();
 
   const handleInput = (e) => {
-    setStakeAmount(e.target.value === "" ? "" : Number(e.target.value));
+    setStakeAmount(e.target.value);
   }
 
   var sessionStorageSetHandler = function (e) {
@@ -194,7 +194,7 @@ export default function StakeDetails() {
             <StakeInput
               id="stake-amt"
               placeholder="0.00"
-              min="0"
+              min="0.0"
               step=".01"
               type="number"
               value={stakeAmount}
