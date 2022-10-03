@@ -104,6 +104,7 @@ export default function Holdings() {
         })}
         title="Wallet"
         subtitle={`(${formatToDollars(walletTotal.toString())} Total Value)`}
+        countSubtitle={"LP Tokens excluded"}
         columns={holdColumns}
       />
     ),

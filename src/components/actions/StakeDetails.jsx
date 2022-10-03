@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setAlert } from "../../redux/slices/alertSlice";
 import styled from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
@@ -59,8 +61,8 @@ export default function StakeDetails() {
   const [stakeAmount, setStakeAmount] = useState("");
   const [maxStake, setMaxStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
+  const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...")
-
   const [balance, setBalance] = useState("...");
   const navigate = useNavigate();
 
@@ -84,24 +86,30 @@ export default function StakeDetails() {
     console.log(`action to stake ${stakeAmount}`)
     setLoading(true)
     try {
-      await stake("NL", stakeAmount)
-      setLoading(false)
+      const res = await stake("NL", stakeAmount)
+      if (res.alert) {
+        dispatch(setAlert(res.text));
+      }
     } catch (e) {
       alert("Error attempting to stake: " + e)
       console.log(e)
     }
+    setLoading(false)
   }
 
   const handleUnstake = async () => {
     console.log(`action to unstake ${stakeAmount}`)
     setLoading(true)
     try {
-      await unstake("NL", stakeAmount)
-      setLoading(false)
+      const res = await unstake("NL", stakeAmount)
+      if (res.alert) {
+        dispatch(setAlert(res.text));
+      }
     } catch (e) {
-      alert("Error attempting to stake: " + e)
+      alert("Error attempting to unstake: " + e)
       console.log(e)
     }
+    setLoading(false)
   }
 
   useEffect(async () => {
