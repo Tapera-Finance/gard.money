@@ -24,6 +24,13 @@ import Modal from "../components/Modal";
 
 const axios = require("axios");
 
+function getGovernorPage(id) {
+  return (
+    "https://governance.algorand.foundation/governance-period-5/governors/" +
+    cdpGen(getWallet().address, id).address
+  );
+}
+
 export async function getGovernanceInfo() {
   let response;
   try {
@@ -159,6 +166,14 @@ export default function Govern() {
 
             disabled={!(Date.now() < commitmentPeriodEnd)}
           />
+        ),
+        info: (
+          <PrimaryButton
+            text={"Governor Page"}
+            onClick={() => {
+              window.open(getGovernorPage(account_id));
+            }}
+            />
         ),
     };
   });
