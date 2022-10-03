@@ -5,10 +5,9 @@ export let cdpInterest = .02; // XXX: This should be kept close to the actual in
 
 export async function getInterest() {
   // TODO: cache interest
-  console.log("getInterest called")
   const interestInfo = await getAppField(ids.app.dao.interest, "interest_rate")
-  console.log("getInterest returned: ", interestInfo)
-  return interestInfo / 1000
+  cdpInterest = interestInfo / 1000
+  return cdpInterest
 }
 
 // We immeadiately update the interest in a background thread
