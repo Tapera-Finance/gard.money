@@ -14,6 +14,7 @@ import BinaryToggle from "../components/BinaryToggle";
 import { setAlert } from "../redux/slices/alertSlice";
 import { getGovernanceInfo } from "./GovernContent";
 import Effect from "../components/Effect";
+import { cdpInterest } from "../transactions/cdp"
 
 const fetchTvl = async () => {
   try {
@@ -99,8 +100,8 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Borrow APY",
-      val: "TBD",
+      title: "GARD Borrow APR",
+      val: `${cdpInterest*100}%`,
       hasToolTip: true,
     },
     {

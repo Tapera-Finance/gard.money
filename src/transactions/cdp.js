@@ -1,15 +1,13 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
 import { cdpGen } from "./contracts";
-import { setLoadingStage, getGardBalance, microGARD } from "./lib";
+import { setLoadingStage, getGardBalance, microGARD, getAppField } from "./lib";
 import {
   accountInfo,
   getParams,
   sendTxn,
   getWallet,
-  getAppByID,
   signGroup,
-  appInfo,
 } from "../wallets/wallets";
 import {
   updateCommitmentFirestore,
@@ -49,8 +47,9 @@ getPrice();
 export async function getInterest() {
   // TODO: cache interest
   console.log("getInterest called")
-  const interestInfo = await appInfo(ids.app.dao.interest)
+  const interestInfo = await getAppField(ids.app.dao.interest, "interest_rate")
   console.log("getInterest returned: ", interestInfo)
+  return interestInfo / 1000
 }
 
 // We immeadiately update the interest in a background thread
@@ -66,9 +65,6 @@ export function calcRatio(collateral, minted, string = false) {
   return ratio;
 }
 
-const EncodedPrincipal = "UHJpbmNpcGFs";
-const EncodedDebt = "U0dBUkRfREVCVA==";
-
 function getCDPState(cdpInfo) {
   let res = {
     state: 'closed',
@@ -83,9 +79,9 @@ function getCDPState(cdpInfo) {
           // This if statement checks for borked CDPs (first tx = good, second = bad)
           // Improvement: Do something with borked CDP
           for (let n = 0; n < validatorInfo["key-value"].length; n++) {
-            if (validatorInfo["key-value"][n]["key"] == EncodedPrincipal) {
+            if (validatorInfo["key-value"][n]["key"] == btoa("Principal")) {
               res.principal = validatorInfo["key-value"][n]["value"]["uint"];
-            } else if (validatorInfo["key-value"][n]["key"] == EncodedDebt) {
+            } else if (validatorInfo["key-value"][n]["key"] == btoa("SGARD_DEBT")) {
               res.debt = validatorInfo["key-value"][n]["value"]["uint"];
             }
           }
@@ -535,18 +531,9 @@ export async function addCollateral(accountID, newAlgos) {
 }
 
 
-const encodedConversionRate = 'Y29udmVyc2lvbl9yYXRl'
-
-
 async function sgardToGard(amt) {
-  const sgardGardInfo = (await getAppByID(ids.app.sgard_gard)).params
-  console.log(sgardGardInfo)
-  for (let i = 0; i < sgardGardInfo["global-state"].length; i++) {
-    if (sgardGardInfo["global-state"][i]["key"] == encodedConversionRate) {
-      let rate = sgardGardInfo["global-state"][i]["value"]["uint"];
-      return amt * rate / (10 ** 10)
-    }
-  }
+  const conversionRate = await getAppField(ids.app.sgard_gard, "conversion_rate")
+  return conversionRate * amt / (10 ** 10)
 }
 
 
