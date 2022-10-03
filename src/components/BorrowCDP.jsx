@@ -93,12 +93,12 @@ export default function ManageCDP({
                   value={additionalBorrow}
                   onChange={handleAddBorrow}
                 />
-                <MaxButton>
+                {/* <MaxButton>
                   <ToolTip
                     toolTip={"+MAX"}
                     toolTipText={"Click to lend maximum amount"}
                   />
-                </MaxButton>
+                </MaxButton> */}
               </div>
               <Valuation>
                 $Value: ${(additionalBorrow * 1).toFixed(2)}

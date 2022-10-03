@@ -337,12 +337,12 @@ export default function BorrowContent() {
                       value={cAlgos}
                       onChange={handleSupplyChange}
                     />
-                    <MaxButton onClick={handleMaxCollateral}>
+                    {/* <MaxButton onClick={handleMaxCollateral}>
                       <ToolTip
                         toolTip={"+MAX"}
                         toolTipText={"Click to lend maximum amount"}
                       />
-                    </MaxButton>
+                    </MaxButton> */}
                   </div>
                   <Valuation>
                     $Value: $
@@ -363,6 +363,20 @@ export default function BorrowContent() {
                           );
                         })
                       : null}
+                      <label
+                  style={{
+                    display: "flex",
+                    alignContent: "center",
+                  }}
+                >
+                   <InputTitle>
+                  Commit to governance
+                </InputTitle>
+                      <input
+                        type={"checkbox"}
+                        onChange={handleCheckboxChange}
+                      />
+                </label>
                   </InputDetails>
                 </InputContainer>
               </Background>
@@ -386,12 +400,12 @@ export default function BorrowContent() {
                       size="small"
                       onChange={handleBorrowChange}
                     />
-                    <MaxButton onClick={handleMaxBorrow}>
+                    {/* <MaxButton onClick={handleMaxBorrow}>
                       <ToolTip
                         toolTip={"+MAX"}
                         toolTipText={"Click to borrow maximum amount"}
                       />
-                    </MaxButton>
+                    </MaxButton> */}
                   </div>
                   <Valuation>$Value: ${mGARD === "" ? 0 : mGARD}</Valuation>
                   <InputDetails>
