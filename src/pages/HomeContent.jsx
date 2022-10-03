@@ -247,7 +247,7 @@ export default function HomeContent() {
         <div style={{ margin: "8px 0px 8px 0px" }}>
           <BinaryToggle
             optionA="Help Me Out"
-            optionB="De-Fi Expert"
+            optionB="DeFi Expert"
             selectedOption={setDifficulty}
           />
         </div>
