@@ -94,7 +94,7 @@ export default function HomeContent() {
     },
     {
       title: "Number of Users",
-      val: 500,
+      val: `TBD`,
       hasToolTip: true,
     },
     {

@@ -108,12 +108,12 @@ export default function SwapDetails() {
   const effects = [
     {
       title: "Asset A Total",
-      val: `${assetA.type}: ${formatPrice(pool.state.totalPrimary)}`,
+      val: `${assetA.type}: ${formatPrice((pool.state.totalPrimary/1000000).toFixed(0))}`,
       hasToolTip: false,
     },
     {
       title: "Asset B Total",
-      val: `${assetB.type}: ${formatPrice(pool.state.totalSecondary)}`,
+      val: `${assetB.type}: ${formatPrice((pool.state.totalSecondary/1000000).toFixed(0))}`,
     },
     {
       title: "Price Impact",
