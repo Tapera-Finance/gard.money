@@ -5,12 +5,13 @@ import styled from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
 import { ids } from "../../transactions/ids";
+import { getAppField } from "../../transactions/lib";
 import {
   getWallet,
   getWalletInfo,
   updateWalletInfo,
 } from "../../wallets/wallets";
-import { getPrice } from "../../transactions/cdp.js";
+import { getGardBalance } from "../../transactions/lib.js";
 import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
@@ -57,8 +58,8 @@ export default function StakeDetails() {
   const [assetType, setAssetType] = useState(0);
   const [stakeAmount, setStakeAmount] = useState("");
   const [maxStake, setMaxStake] = useState(0);
-  const [price, setPrice] = useState(0);
   const [noLock, setNoLock] = useState(0);
+  const [NL_TVL, setNLTVL] = useState("...")
 
   const [balance, setBalance] = useState("...");
   const navigate = useNavigate();
@@ -104,18 +105,13 @@ export default function StakeDetails() {
   }
 
   useEffect(async () => {
-    setPrice(await getPrice());
-    await updateWalletInfo();
-    getWallet();
+    const infoPromise = updateWalletInfo();
+    const TVLPromise = getAppField(ids.app.gard_staking, "NL")
+    await infoPromise
     setNoLock(getNLStake())
-    setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
-    setMaxStake(
-      mAlgosToAlgos(
-        getWalletInfo()["amount"] -
-          307000 -
-          100000 * (getWalletInfo()["assets"].length + 4),
-      ).toFixed(3),
-    );
+    setBalance(getGardBalance(getWalletInfo()).toFixed(2));
+    setMaxStake(getGardBalance(getWalletInfo()).toFixed(2));
+    setNLTVL(((await TVLPromise) / 1000000).toFixed(2))
   }, []);
 
   useEffect(() => {
@@ -179,7 +175,7 @@ export default function StakeDetails() {
           <Heading>Stake Amount</Heading>
         </SecondRow>
         <ThirdRow>
-          <Heading>TBD GARD</Heading>
+          <Heading>{NL_TVL}</Heading>
           <div>
             <Img src={gardLogo}></Img>
             <Arrow src={arrowIcon}></Arrow>
@@ -206,7 +202,7 @@ export default function StakeDetails() {
               <MaxBtn onClick={handleMaxStake}>
                 +MAX
               </MaxBtn>
-              <Result>{formatToDollars(balance * price)}</Result>
+              <Result>{formatToDollars(balance)}</Result>
             </EffectContainer>
           </StakeBox>
         </ThirdRow>

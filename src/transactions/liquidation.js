@@ -1,4 +1,4 @@
-import { setLoadingStage, getGardBalance } from "./lib";
+import { setLoadingStage, getMicroGardBalance } from "./lib";
 import { ids } from "./ids";
 import {
   accountInfo,
@@ -37,7 +37,7 @@ export async function liquidate(
 
   const liquid_fee = Math.floor(microPremium / 5);
   const to_user = liquid_fee * 4;
-  let gard_bal = getGardBalance(info);
+  let gard_bal = getMicroGardBalance(info);
 
   if (gard_bal == null || gard_bal < microDebt + to_user + liquid_fee) {
     return {

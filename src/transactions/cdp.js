@@ -1,7 +1,7 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
 import { cdpGen } from "./contracts";
-import { setLoadingStage, getGardBalance, microGARD, getAppField } from "./lib";
+import { setLoadingStage, getMicroGardBalance, microGARD, getAppField } from "./lib";
 import {
   accountInfo,
   getParams,
@@ -565,7 +565,7 @@ export async function repayCDP(accountID, repayGARD) {
       text: "You must maintain a balance of 1 GARD to keep a CDP open!",
     };
   } 
-  else if (getGardBalance(info) < microRepayGARD){
+  else if (getMicroGardBalance(info) < microRepayGARD){
     return {
       alert: true,
       text: "You have insufficient GARD to complete the transaction. You need " + 
@@ -638,7 +638,7 @@ export async function closeCDP(accountID) {
   let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * cdpInterest)/365/24/60)) + 3000
   console.log(microRepayGARD)
   
-  let gard_bal = getGardBalance(info);
+  let gard_bal = getMicroGardBalance(info);
   if (gard_bal == null || gard_bal < microRepayGARD) {
     let mod = 0;
     if ((gard_bal / 1000000).toFixed(2) == (microRepayGARD / 1000000).toFixed(2)) {
