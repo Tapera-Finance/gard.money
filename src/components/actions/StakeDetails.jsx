@@ -175,7 +175,7 @@ export default function StakeDetails() {
           <Heading>Stake Amount</Heading>
         </SecondRow>
         <ThirdRow>
-          <Heading>{NL_TVL}</Heading>
+          <Heading>{`$${NL_TVL}`}</Heading>
           <div>
             <Img src={gardLogo}></Img>
             <Arrow src={arrowIcon}></Arrow>
