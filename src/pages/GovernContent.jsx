@@ -79,7 +79,7 @@ export default function Govern() {
     },
     {
       title: "GARD Governance APY",
-      val: `${34.3}%`,
+      val: `TBD`,
       hasToolTip: true,
     },
     {

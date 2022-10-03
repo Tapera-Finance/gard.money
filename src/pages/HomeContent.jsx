@@ -104,7 +104,7 @@ export default function HomeContent() {
     },
     {
       title: "GARD Borrow APY",
-      val: 0,
+      val: "TBD",
       hasToolTip: true,
     },
     {
@@ -114,7 +114,7 @@ export default function HomeContent() {
     },
     {
       title: "GARD Governance APY",
-      val: `${34.3}%`,
+      val: `TBD`,
       hasToolTip: true,
     },
   ];

@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
+import { ids } from "../../transactions/ids";
 import {
   getWallet,
   getWalletInfo,
@@ -27,6 +28,27 @@ function algosToMAlgos(num) {
   return num * 1000000;
 }
 
+// Gets Active wallet Stake in simple no-lock pool
+function getNLStake() {
+  const user_info = getWalletInfo();
+  const encodedNLStake = "TkwgR0FSRCBTdGFrZWQ=";
+
+  for (let i = 0; i < user_info["apps-local-state"].length; i++) 
+  {
+    if (user_info["apps-local-state"][i].id == ids.app.gard_staking) {
+      const gs_info = user_info["apps-local-state"][i];
+        if (gs_info.hasOwnProperty("key-value")) {
+          for (let n = 0; n < gs_info["key-value"].length; n++) {
+            if (gs_info["key-value"][n]["key"] == encodedNLStake) {
+              return gs_info["key-value"][n]["value"]["uint"];
+            } 
+          }
+        }
+    }
+  }
+  return 0;
+}
+
 export default function StakeDetails() {
   const walletAddress = useSelector((state) => state.wallet.address);
   const [loading, setLoading] = useState(false);
@@ -36,6 +58,7 @@ export default function StakeDetails() {
   const [stakeAmount, setStakeAmount] = useState("");
   const [maxStake, setMaxStake] = useState(0);
   const [price, setPrice] = useState(0);
+  const [noLock, setNoLock] = useState(0);
 
   const [balance, setBalance] = useState("...");
   const navigate = useNavigate();
@@ -84,6 +107,7 @@ export default function StakeDetails() {
     setPrice(await getPrice());
     await updateWalletInfo();
     getWallet();
+    setNoLock(getNLStake())
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
     setMaxStake(
       mAlgosToAlgos(
@@ -155,7 +179,7 @@ export default function StakeDetails() {
           <Heading>Stake Amount</Heading>
         </SecondRow>
         <ThirdRow>
-          <Heading>109,900 GARD</Heading>
+          <Heading>TBD GARD</Heading>
           <div>
             <Img src={gardLogo}></Img>
             <Arrow src={arrowIcon}></Arrow>
@@ -187,15 +211,15 @@ export default function StakeDetails() {
           </StakeBox>
         </ThirdRow>
         <FourthRow>
-          <Effect title="Your Stake" val={`${0} GARD`} hasToolTip={false} />
+          <Effect title="Your Stake" val={`${(noLock/1000000).toFixed(3)} GARD`} hasToolTip={false} />
           <Effect
             title="Rewards / Day"
-            val="..."
+            val="TBD"
             hasToolTip={false}
           />
           <Effect
             title="Rewards Accrued"
-            val="..."
+            val="TBD"
             hasToolTip={false}
           />
           <div style={{display: "flex", flexDirection: "row", alignSelf: "baseline"}}>
@@ -409,6 +433,3 @@ const Options = styled.ul`
 const Option = styled.li`
   appearance: none;
 `;
-
-// #80deff
-// #ff00ff

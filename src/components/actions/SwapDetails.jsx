@@ -68,7 +68,7 @@ export default function SwapDetails() {
   const [priceImpactA, setPriceImpactA] = useState(0);
   const [priceImpactB, setPriceImpactB] = useState(0);
   const [liquidityFee, setLiquidityFee] = useState(0);
-  const [exchangeRate, setExchangeRate] = useState(0);
+  const [exchangeRate, setExchangeRate] = useState(pool.state.totalPrimary / pool.state.totalSecondary);
   const [slippageTolerance, setSlippageTolerance] = useState(0.005);
   const [feeRate, setFeeRate] = useState(0.01);
   const [minimumReceived, setMinimumReceived] = useState(0);
