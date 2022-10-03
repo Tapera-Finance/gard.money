@@ -247,7 +247,7 @@ export default function Govern() {
             <h3>Algorand Governance Period #5</h3>
             <div style={{ fontSize: 11 }}>Registration Ends</div>
             <CountDownContainer>
-              <CountdownTimer targetDate={commitmentPeriodEnd} showZero={false} />
+            <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
               {/* 1761180257000 */}
             </CountDownContainer>
             <div>

@@ -102,7 +102,7 @@ export default function Holdings() {
           temp.value = formatToDollars(x["value"]);
           return temp;
         })}
-        title="Assets"
+        title="Wallet"
         subtitle={`(${formatToDollars(walletTotal.toString())} Total Value)`}
         columns={holdColumns}
       />
