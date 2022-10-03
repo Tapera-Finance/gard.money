@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, shallowEqual } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setAlert } from "../redux/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Details from "../components/Details";
@@ -10,13 +12,14 @@ import Table from "../components/Table";
 import { CDPsToList } from "../components/Positions";
 import { loadFireStoreCDPs } from "../components/Firebase";
 import { cdpGen } from "../transactions/contracts";
-import { getWallet } from "../wallets/wallets";
+import { commitCDP } from "../transactions/cdp";
+import { handleTxError, getWallet } from "../wallets/wallets";
 import { commitmentPeriodEnd } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
 import { textAlign } from "@mui/system";
 import { Switch } from "@mui/material";
-
+import Modal from "../components/Modal";
 
 
 const axios = require("axios");
@@ -50,13 +53,23 @@ export default function Govern() {
   const [shownAll, setAllVotes] = useState(true);
   const [governors, setGovernors] = useState("...");
   const [enrollmentEnd, setEnrollmentEnd] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState(null);
   const [voteTableDisabled, setVoteTable] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalCanAnimate, setModalCanAnimate] = useState(false);
+  const [toWallet, setToWallet] = useState(false);
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!getWallet()) return navigate("/");
   }, []);
 
+  const handleCheckboxChange1 = () => {
+    setToWallet(!toWallet);
+  };
 
   var details = [
     {
@@ -103,9 +116,12 @@ export default function Govern() {
           : commitment[cdp_address].lastCommitment == -1
           ? 0
           : commitment[cdp_address].lastCommitment / 1000000,
+          id: value.id,
     };
   });
   let cdps = adjusted.map((value, index) => {
+    let account_id = parseInt(value.id);
+    delete value.id;
     return {
       ...value,
       "":
@@ -116,7 +132,9 @@ export default function Govern() {
               if (value.id == "N/A") {
                 return;
               }
-              setSelectedAccount(value.id);
+              setModalCanAnimate(true);
+              setModalVisible(true);
+              setSelectedAccount(account_id);
               setMaxBal(value.balance);
             }}
 
@@ -133,7 +151,9 @@ export default function Govern() {
               if (value.id == "N/A") {
                 return;
               }
-              setSelectedAccount(value.id);
+              setModalCanAnimate(true);
+              setModalVisible(true);
+              setSelectedAccount(account_id);
               setMaxBal(value.balance);
             }}
 
@@ -292,6 +312,91 @@ export default function Govern() {
         </div>
         <Table data={dummyVotes} />
       </div>}
+      <Modal
+        title={"ALGOs to Commit"}
+        subtitle={(
+            <div>
+              <text>
+                Enter the number of Algo tokens you would like commit for
+                governance period #5 from this CDP
+              </text>
+            </div>
+          )
+        }
+        close={() => setModalVisible(false)}
+        animate={modalCanAnimate}
+        visible={modalVisible}
+      >
+        {(
+          <div>
+            <div style={{ marginBottom: 45, marginTop: 80 }}>
+              <div style={{ marginBottom: 8 }}>
+                <InputTitle>Number of Algos to Commit</InputTitle>
+                <InputMandatory>*</InputMandatory>
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <InputSubtitle>{`${maxBal} Algos will be committed`}</InputSubtitle>
+              </div>
+              <div style={{ marginBottom: 8 }}>
+                <InputTitle>
+                  Optional: Send governance rewards directly to your ALGO
+                  wallet?
+                </InputTitle>
+              </div>
+              <div>
+                <label
+                  style={{
+                    display: "flex",
+                    alignContent: "center",
+                  }}
+                >
+                  <input
+                    type={"checkbox"}
+                    checked={toWallet}
+                    onChange={handleCheckboxChange1}
+                  />
+                  <InputSubtitle>
+                    Governance rewards will be sent to your{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {toWallet ? "ALGO Wallet" : "CDP"}
+                    </span>
+                  </InputSubtitle>
+                </label>
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <PrimaryButton
+                text="Confirm Commitment"
+                onClick={async () => {
+                  setModalCanAnimate(true);
+                  setModalVisible(false);
+                  setLoading(true);
+                  try {
+                    const res = await commitCDP(
+                      selectedAccount,
+                      maxBal,
+                      toWallet,
+                    );
+                    if (res.alert) {
+                      dispatch(setAlert(res.text));
+                    }
+                  } catch (e) {
+                    handleTxError(e, "Error committing");
+                  }
+                  setModalCanAnimate(false);
+                  setLoading(false);
+                  setRefresh(refresh + 1);
+                }}
+              />
+              <CancelButton style={{ marginLeft: 30 }}>
+                <CancelButtonText>
+                  Cancel
+                </CancelButtonText>
+              </CancelButton>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
@@ -428,6 +533,35 @@ const dummyVotes = [
     ),
   },
 ];
+const InputMandatory = styled.text`
+  font-weight: bold;
+  font-size: 16px;
+  color: #ff9999;
+`;
+const InputTitle = styled.text`
+  font-weight: bold;
+  font-size: 16px;
+`;
+const BoldText = styled.text`
+  font-weight: 700;
+`;
+const InputSubtitle = styled.text`
+  font-weight: normal;
+  font-size: 12px;
+`;
+const CancelButton = styled.button`
+  border: 0px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  height: "100%";
+  cursor: pointer;
+`;
+const CancelButtonText = styled.text`
+  font-weight: 500;
+  font-size: 16px;
+  color: white;
+`;
 
 const dummyCdps = [
   {

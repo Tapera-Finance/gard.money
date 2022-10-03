@@ -338,7 +338,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
       from: info.address,
       appIndex: ids.app.validator,
       onComplete: 0,
-      appArgs: [enc.encode("OwnerCheck")],
+      appArgs: [enc.encode("OwnerCheck"), algosdk.encodeUint64(accountID)],
       accounts: [cdp.address],
       foreignApps: [],
       foreignAssets: [],
@@ -349,7 +349,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     params.fee = 0;
     txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: cdp.address,
-      to: "UAME4M7T2NWECVNCUDGQX6LJ7OVDLZP234GFQL3TH6YZUPRV3VF5NGRSRI",
+      to: "7K5TT4US7M3FM7L3XBJXSXLJGF2WCXPBV2YZJJO2FH46VCZOS3ICJ7E4QU",
       amount: 0,
       note: note,
       suggestedParams: params,
@@ -784,16 +784,18 @@ export async function commitCDP(account_id, amount, toWallet) {
   let cdp = cdpGen(info.address, account_id);
 
   let params = await paramsPromise;
-  let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+  let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
-    to: info.address,
-    amount: parseInt(account_id),
+    appIndex: ids.app.validator,
+    onComplete: 0,
+    appArgs: [enc.encode("OwnerCheck"), algosdk.encodeUint64(account_id)],
+    accounts: [cdp.address],
     suggestedParams: params,
   });
   params.fee = 0;
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    to: "UAME4M7T2NWECVNCUDGQX6LJ7OVDLZP234GFQL3TH6YZUPRV3VF5NGRSRI",
+    to: "7K5TT4US7M3FM7L3XBJXSXLJGF2WCXPBV2YZJJO2FH46VCZOS3ICJ7E4QU",
     amount: 0,
     note: note,
     suggestedParams: params,
@@ -815,11 +817,9 @@ export async function commitCDP(account_id, amount, toWallet) {
   let stxns = [stxn1.blob, stxn2.blob];
   let response = await sendTxn(
     stxns,
-    "Succesfully committed your algos from cdp " +
-      account_id +
-      " to governance! You may verify" +
+    "Succesfully committed your algos to governance! You may verify" +
       " <a href=\"" +
-      "https://governance.algorand.foundation/governance-period-4/governors/" +
+      "https://governance.algorand.foundation/governance-period-5/governors/" +
       cdp.address +
       "\">here</a>.\n",
     true,
