@@ -14,7 +14,8 @@ import BinaryToggle from "../components/BinaryToggle";
 import { setAlert } from "../redux/slices/alertSlice";
 import { getGovernanceInfo } from "./GovernContent";
 import Effect from "../components/Effect";
-import { cdpInterest } from "../transactions/cdp"
+import { cdpInterest } from "../transactions/lib"
+import { getStakingAPY } from "../transactions/stake"
 
 const fetchTvl = async () => {
   try {
@@ -45,8 +46,8 @@ const buttons = [
  * Content found on home
  */
 export default function HomeContent() {
-  const [tvl, setTvl] = useState(0);
-  const [apy, setApy] = useState(8);
+  const [tvl, setTvl] = useState("...");
+  const [apy, setApy] = useState("...");
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
   const [chainData, setChainData] = useState("");
@@ -68,9 +69,11 @@ export default function HomeContent() {
   )
 
   useEffect(async () => {
+    const apyPromise = getStakingAPY("NL")
     const govInfo = await getGovernanceInfo();
     setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
     console.log("2", govInfo[1]);
+    setApy(await apyPromise)
   }, []);
 
   const homeDetails = [
@@ -86,7 +89,7 @@ export default function HomeContent() {
     },
     {
       title: "GARD Staking APY",
-      val: `${2}%`,
+      val: `${apy}%`,
       hasToolTip: true,
     },
     {
