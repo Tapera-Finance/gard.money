@@ -5,19 +5,18 @@ import styled from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
 import { ids } from "../../transactions/ids";
-import { getAppField } from "../../transactions/lib";
+import { getAppField, getGardBalance } from "../../transactions/lib";
 import {
   getWallet,
   getWalletInfo,
   updateWalletInfo,
 } from "../../wallets/wallets";
-import { getGardBalance } from "../../transactions/lib.js";
 import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
 import { formatToDollars } from "../../utils";
-import { stake, unstake } from "../../transactions/stake"
+import { stake, unstake, getStakingAPY } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
 
 // asset types: 0 === GARD, 1 === ALGO
@@ -60,6 +59,7 @@ export default function StakeDetails() {
   const [maxStake, setMaxStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const [NL_TVL, setNLTVL] = useState("...")
+  const [NLAPY, setNLAPY] = useState("...")
 
   const [balance, setBalance] = useState("...");
   const navigate = useNavigate();
@@ -107,10 +107,12 @@ export default function StakeDetails() {
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
+    const APYPromise = getStakingAPY("NL")
     await infoPromise
     setNoLock(getNLStake())
     setBalance(getGardBalance(getWalletInfo()).toFixed(2));
     setMaxStake(getGardBalance(getWalletInfo()).toFixed(2));
+    setNLAPY((await APYPromise))
     setNLTVL(((await TVLPromise) / 1000000).toFixed(2))
   }, []);
 
@@ -187,7 +189,7 @@ export default function StakeDetails() {
             />
           </div>
           <Heading>No-Lock</Heading>
-          <Heading>.1%</Heading>
+          <Heading>{`${NLAPY}%`}</Heading>
           <StakeBox>
             <StakeInput
               id="stake-amt"

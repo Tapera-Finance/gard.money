@@ -1,9 +1,16 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { setLoadingStage, microGARD, getMicroGardBalance } from "./lib"
+import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest } from "./lib"
 import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
 
 const enc = new TextEncoder();
+
+export async function getStakingAPY(pool) {
+  const expectedBonus = 5000 * 52 * 1000000
+  const nltvlpromise = getAppField(ids.app.gard_staking, pool)
+  const gardIssued = await getAppField(ids.app.validator, "GARD_ISSUED")
+  return 100 * (cdpInterest * gardIssued + expectedBonus) / (await nltvlpromise)
+}
 
 function isOptedIn(appID, info) {
   for (var i = 0; i < info["apps-local-state"].length; i++) {

@@ -1,7 +1,7 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
 import { cdpGen } from "./contracts";
-import { setLoadingStage, getMicroGardBalance, microGARD, getAppField } from "./lib";
+import { setLoadingStage, getMicroGardBalance, microGARD, getAppField, cdpInterest, } from "./lib";
 import {
   accountInfo,
   getParams,
@@ -26,7 +26,6 @@ const fundingAmount = 300000;
 let currentBigPrice = 816;
 let currentDecimals = 3;
 export let currentPrice = 0.30; // XXX: This should be kept close to the actual price - it is updated on initialization though
-export let cdpInterest = .02; // XXX: This should be kept close to the actual interest rate - it is updated on initialization though
 
 // XXX: All of these assume accountInfo has already been set! We should improve the UX of this after getting core functionality done
 // XXX: All of these assume the user signs all transactions, we don't currently catch when a user doesn't do so!
@@ -43,17 +42,6 @@ export async function getPrice() {
 }
 // We immeadiately update the price in a background thread
 getPrice();
-
-export async function getInterest() {
-  // TODO: cache interest
-  console.log("getInterest called")
-  const interestInfo = await getAppField(ids.app.dao.interest, "interest_rate")
-  console.log("getInterest returned: ", interestInfo)
-  return interestInfo / 1000
-}
-
-// We immeadiately update the interest in a background thread
-getInterest()
 
 export function calcRatio(collateral, minted, string = false) {
   // collateral: Microalgos
