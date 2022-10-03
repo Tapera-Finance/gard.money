@@ -35,6 +35,7 @@ const initEffectState = {
 };
 
 const swapEnabled = VERSION === "MAINNET" ? true : false;
+// const swapEnabled = true;
 console.log("enabled?", swapEnabled)
 
 
@@ -106,15 +107,15 @@ export default function SwapDetails() {
   };
 
   const effects = [
-    {
-      title: "Asset A Total",
-      val: `${assetA.type}: ${formatPrice((pool.state.totalPrimary/1000000).toFixed(0))}`,
-      hasToolTip: false,
-    },
-    {
-      title: "Asset B Total",
-      val: `${assetB.type}: ${formatPrice((pool.state.totalSecondary/1000000).toFixed(0))}`,
-    },
+    // {
+    //   title: "Asset A Total",
+    //   val: `${assetA.type}: ${formatPrice(pool.state.totalPrimary)}`,
+    //   hasToolTip: false,
+    // },
+    // {
+    //   title: "Asset B Total",
+    //   val: `${assetB.type}: ${formatPrice(pool.state.totalSecondary)}`,
+    // },
     {
       title: "Price Impact",
       val: `${(priceImpactA * 100).toFixed(4)}%`,
@@ -390,9 +391,9 @@ export default function SwapDetails() {
 
   return (
     <div>
-      {swapEnabled ? (
         <div>
-          {loading ? <LoadingOverlay text={loadingText} close={()=>{setLoading(false);}}/> : <></>}
+          {loading ? <LoadingOverlay text={loadingText} /> : <></>}
+            {!swapEnabled ? (<div style={{display: "flex", justifyContent: "center", textAlign: "center"}}><TestAlert>Swap only available on Main Net</TestAlert></div>)  : <></>}
           <ExchangeBar>
             <ExchangeFields
               ids={["left-select", "left-input"]}
@@ -449,7 +450,8 @@ export default function SwapDetails() {
             <ExchangeButton
               text="Execute Swap"
               onClick={handleSwap}
-              disabled={disabled ? true : false}
+              blue={true}
+              disabled={!swapEnabled ? true : disabled ? true : false}
             ></ExchangeButton>
           </BtnBox>
           <div
@@ -468,12 +470,12 @@ export default function SwapDetails() {
                           <SlippageEffect key={Math.random()}>
                             <NewToolTip
                               toolTip={item.title}
-                              toolTipText={tips[titleToToolTip(item.title)]}
+                              toolTipText={tips[item.title]}
                             ></NewToolTip>
                             <hr style={{ border: "dashed 1px" }} />
                             <EffectContainer>
-                              <EffText></EffText>
-                              <SlippageBtn
+                              {/* <EffText></EffText> */}
+                              {/* <SlippageBtn
                                 id="slippage-001"
                                 onClick={() => setSlippageTolerance(0.01)}
                               >
@@ -490,7 +492,7 @@ export default function SwapDetails() {
                                 onClick={() => setSlippageTolerance(0.1)}
                               >
                                 0.1
-                              </SlippageBtn>
+                              </SlippageBtn> */}
                               <Text>{slippageTolerance}</Text>
                             </EffectContainer>
                           </SlippageEffect>
@@ -510,7 +512,8 @@ export default function SwapDetails() {
             </DetailsContainer>
           </div>
         </div>
-      ) : (
+
+      {/* : (
         <div
           style={{
             display: "flex",
@@ -534,13 +537,21 @@ export default function SwapDetails() {
             <Text>Swapping not currently available on TestNet</Text>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
 
 const SlippageEffect = styled.div`
+align-self: center;
+text-align: center;
 `;
+
+const TestAlert = styled.text`
+  margin: 4px;
+  font-weight: bolder;
+  text-align: center;
+`
 
 const Text = styled.text`
   margin: 4px;
@@ -597,7 +608,7 @@ const BtnBox = styled.div`
 `;
 
 const ExchangeButton = styled(PrimaryButton)`
-  margin-top: 25px;
+  margin-top: 15px;
 `;
 
 const DetailsContainer = styled.div`
@@ -610,7 +621,7 @@ const DetailsContainer = styled.div`
   background: #0f1733;
   border-radius: 10px;
   border: 1px solid #80edff;
-  margin-top: 30px;
+  margin-top: 10px;
   margin-bottom: 20vh;
 `;
 
