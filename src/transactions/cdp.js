@@ -9,6 +9,7 @@ import {
   getWallet,
   getAppByID,
   signGroup,
+  appInfo,
 } from "../wallets/wallets";
 import {
   updateCommitmentFirestore,
@@ -27,12 +28,13 @@ const fundingAmount = 300000;
 let currentBigPrice = 816;
 let currentDecimals = 3;
 export let currentPrice = 0.30; // XXX: This should be kept close to the actual price - it is updated on initialization though
+export let cdpInterest = .02; // XXX: This should be kept close to the actual interest rate - it is updated on initialization though
 
 // XXX: All of these assume accountInfo has already been set! We should improve the UX of this after getting core functionality done
 // XXX: All of these assume the user signs all transactions, we don't currently catch when a user doesn't do so!
 
 export async function getPrice() {
-  // Could cache price eventually
+  // TODO: cache price
   const currentPriceJSON = await $.getJSON(
     "https://storage.googleapis.com/algo-pricing-data-2022/latest_pricing.json",
   );
@@ -43,6 +45,16 @@ export async function getPrice() {
 }
 // We immeadiately update the price in a background thread
 getPrice();
+
+export async function getInterest() {
+  // TODO: cache interest
+  console.log("getInterest called")
+  const interestInfo = await appInfo(ids.app.dao.interest)
+  console.log("getInterest returned: ", interestInfo)
+}
+
+// We immeadiately update the interest in a background thread
+getInterest()
 
 export function calcRatio(collateral, minted, string = false) {
   // collateral: Microalgos
@@ -636,7 +648,7 @@ export async function closeCDP(accountID) {
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
 
-  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * .02)/365/24/60)) + 3000
+  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * cdpInterest)/365/24/60)) + 3000
   console.log(microRepayGARD)
   
   let gard_bal = getGardBalance(info);

@@ -66,10 +66,6 @@ export default function HomeContent() {
     chainData ? chainData["circulating-gard"][8064 - 1] : 0,
   )
 
-  const check = () => {
-     return chainData ? console.log("chain data", chainData) : 0
-  }
-  check()
   useEffect(async () => {
     const govInfo = await getGovernanceInfo();
     setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
@@ -122,7 +118,6 @@ export default function HomeContent() {
   useEffect(async () => {
     let res = await fetchTvl();
     if (res) {
-      console.log("respose from tvl call", res);
       setTvl(res.currentChainTvls.Algorand.toFixed(2));
       setBacked(
         (100 * res.currentChainTvls.Algorand / res.currentChainTvls.borrowed).toFixed(
@@ -135,7 +130,6 @@ export default function HomeContent() {
   useEffect(async () => {
     let res = await getAlgoGovAPR();
     if (res) {
-      console.log("apr", res);
       setApr(res);
     }
   }, []);
