@@ -63,10 +63,10 @@ export default function HomeContent() {
     setChainData(chainDataResponse);
   }, []);
 
-  // const circulating = 0
-  const circulating = JSON.parse(
+  const circulating = "TBD"
+  /* const circulating = JSON.parse(
     chainData ? chainData["circulating-gard"][8064 - 1] : 0,
-  )
+  ) */
 
   useEffect(async () => {
     const apyPromise = getStakingAPY("NL")

@@ -62,7 +62,7 @@ export default function StakeDetails() {
   const [noLock, setNoLock] = useState(0);
   const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...")
-  const [NLAPY, setNLAPY] = useState("...")
+  const [NLAPY, setNLAPY] = useState(0)
   const [balance, setBalance] = useState("...");
   const navigate = useNavigate();
 
@@ -197,7 +197,7 @@ export default function StakeDetails() {
             />
           </div>
           <Heading>No-Lock</Heading>
-          <Heading>{`${NLAPY}%`}</Heading>
+          <Heading>{`${(NLAPY).toFixed(3)}%`}</Heading>
           <StakeBox>
             <StakeInput
               id="stake-amt"
@@ -219,8 +219,8 @@ export default function StakeDetails() {
         <FourthRow>
           <Effect title="Your Stake" val={`${(noLock/1000000).toFixed(3)} GARD`} hasToolTip={false} />
           <Effect
-            title="Rewards / Day"
-            val="TBD"
+            title="Estimated Rewards / Day"
+            val={`${(NLAPY / 100 * noLock / 1000000 / 365).toFixed(3)} GARD`}
             hasToolTip={false}
           />
           <Effect
