@@ -396,7 +396,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   if (commit) {
     updateCommitmentFirestore(info.address, accountID, openingMicroALGOs);
     response.text =
-      response.text + "\nFull Balance committed to Governance Period #4!";
+      response.text + "\nFull Balance committed to Governance Period #5!";
   }
   
   setLoadingStage(null);

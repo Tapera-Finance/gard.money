@@ -79,7 +79,7 @@ export default function BorrowContent() {
   const [mGARD, setGARD] = useState("");
   const [maxGARD, setMaxGARD] = useState(0);
   const [commitChecked, setCommitChecked] = useState(false);
-  const [toWallet, setToWallet] = useState(false);
+  const [toWallet, setToWallet] = useState(true);
 
   const [createPositionShown, setCreatePositionShown] = useState(false);
 
