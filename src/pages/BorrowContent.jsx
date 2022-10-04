@@ -121,6 +121,9 @@ export default function BorrowContent() {
 
   const handleSupplyChange = (event) => {
     setCollateral(event.target.value === "" ? "" : Number(event.target.value));
+    if (typeof Number(event.target.value) === "number" && mGARD === "") {
+      setGARD(1)
+    }
     let max =
       Math.trunc(
         (100 *
@@ -136,7 +139,7 @@ export default function BorrowContent() {
   };
 
   const handleMaxCollateral = () => {
-    setCollateral(maxCollateral);
+    setCollateral((maxCollateral * .998).toFixed(3)); // lower submittable max to prevent wallet balance error
     let max =
       Math.trunc(
         (100 *
@@ -175,7 +178,7 @@ export default function BorrowContent() {
   };
 
   const handleMaxBorrow = () => {
-    setGARD(maxGARD);
+    setGARD((maxGARD * .998).toFixed(3));
     let max = mAlgosToAlgos(
       getWalletInfo()["amount"] -
         307000 -
@@ -338,12 +341,12 @@ export default function BorrowContent() {
                       value={cAlgos}
                       onChange={handleSupplyChange}
                     />
-                    {/* <MaxButton onClick={handleMaxCollateral}>
+                    <MaxButton onClick={handleMaxCollateral}>
                       <ToolTip
                         toolTip={"+MAX"}
                         toolTipText={"Click to lend maximum amount"}
                       />
-                    </MaxButton> */}
+                    </MaxButton>
                   </div>
                   <Valuation>
                     $Value: $
@@ -401,12 +404,12 @@ export default function BorrowContent() {
                       size="small"
                       onChange={handleBorrowChange}
                     />
-                    {/* <MaxButton onClick={handleMaxBorrow}>
+                    <MaxButton onClick={handleMaxBorrow}>
                       <ToolTip
                         toolTip={"+MAX"}
                         toolTipText={"Click to borrow maximum amount"}
                       />
-                    </MaxButton> */}
+                    </MaxButton>
                   </div>
                   <Valuation>$Value: ${mGARD === "" ? 0 : mGARD}</Valuation>
                   <InputDetails>
