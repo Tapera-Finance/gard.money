@@ -97,12 +97,6 @@ export default function BorrowContent() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (mGARD === "" && (!(cAlgos === "" || cAlgos === null || cAlgos === undefined) && cAlgos > 0)) {
-  //     setGARD(1)
-  //   }
-  // }, [cAlgos])
-
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
@@ -127,9 +121,6 @@ export default function BorrowContent() {
 
   const handleSupplyChange = (event) => {
     setCollateral(event.target.value === "" ? "" : Number(event.target.value));
-    if (typeof Number(event.target.value) === "number" && mGARD === "") {
-      setGARD(1)
-    }
     let max =
       Math.trunc(
         (100 *
