@@ -97,12 +97,6 @@ export default function BorrowContent() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (mGARD === "" && (!(cAlgos === "" || cAlgos === null || cAlgos === undefined) && cAlgos > 0)) {
-  //     setGARD(1)
-  //   }
-  // }, [cAlgos])
-
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
