@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 /**
  * Used as our main navigation
@@ -45,10 +46,11 @@ export default function Drawer({
   toggleOpenStatus,
   allowAnimate,
 }) {
-  const [dev, setDev] = useState(true)
+  const [dev, setDev] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
+
 
   return (
     <div>
@@ -65,7 +67,7 @@ export default function Drawer({
       ) : (
         <></>
       )}
-      <DrawerDiv open={open} animate={animate}>
+      <DrawerDiv id="drawer" open={open} animate={animate}>
         <div
           style={{
             display: "flex",
@@ -196,13 +198,20 @@ export default function Drawer({
             />
           </HideNavButton>
         </div>
-        <div style={{ position: "absolute", top: 650, left: 0, right: 0 }}>
+        <div style={{
+          position: "absolute", top: "85vh", left: 0, right: 0
+          }}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
               flexDirection: "column",
               marginTop: 10,
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              height: "2.5rem"
+
             }}
           >
             <SocialMediaContainer
