@@ -108,7 +108,7 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "Total Governors", // GARD Governors later
+      title: "GARD Governors",
       val: `${governors} Governors`,
       hasToolTip: true,
     },
