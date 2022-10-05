@@ -13,7 +13,7 @@ import LoadingOverlay from "./LoadingOverlay";
 import { useDispatch, useSelector } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { setWallet } from "../redux/slices/walletSlice";
-import { userInDB, addUserToFireStore } from "../components/Firebase";
+import { userInDB, addUserToFireStore, userInTotals, addUserToTotals } from "../components/Firebase";
 import { getCDPs } from "../transactions/cdp";
 import { cdpGen } from "../transactions/contracts";
 import { useNavigate } from "react-router-dom";
@@ -67,9 +67,19 @@ export default function WalletConnect() {
                       dispatch(setWallet({ address: displayWallet() }));
                       const owner_address = getWallet().address;
                       let in_DB = await userInDB(owner_address);
+                      let in_Totals = await userInTotals(owner_address);
                       if (!in_DB) {
                         const user = instantiateUser(owner_address);
                         addUserToFireStore(user, owner_address);
+                      }
+                      if (!in_Totals) {
+                        var initialTotals = {
+                          id: owner_address,
+                          totalCommitted: 0,
+                          totalMinted: 0,
+                          totalStaked: 0,
+                        };
+                        addUserToTotals(initialTotals, owner_address);
                       }
                     } else {
                       dispatch(setAlert(wallet.text));
@@ -90,9 +100,19 @@ export default function WalletConnect() {
                       dispatch(setWallet({ address: displayWallet() }));
                       const owner_address = getWallet().address;
                       let in_DB = await userInDB(owner_address);
+                      let in_Totals = await userInTotals(owner_address);
                       if (!in_DB) {
                         const user = instantiateUser(owner_address);
                         addUserToFireStore(user, owner_address);
+                      }
+                      if (!in_Totals) {
+                        var initialTotals = {
+                          id: owner_address,
+                          totalCommitted: 0,
+                          totalMinted: 0,
+                          totalStaked: 0,
+                        };
+                        addUserToTotals(initialTotals, owner_address);
                       }
                     } else {
                       dispatch(setAlert(wallet.text));
