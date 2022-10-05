@@ -64,6 +64,7 @@ export default function StakeDetails() {
   const [NL_TVL, setNLTVL] = useState("...")
   const [NLAPY, setNLAPY] = useState(0)
   const [balance, setBalance] = useState("...");
+  const [accrued, setAccrued] = useState("...");
   const navigate = useNavigate();
 
   const handleInput = (e) => {
@@ -76,10 +77,7 @@ export default function StakeDetails() {
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
   const handleMaxStake = () => {
-    setMaxStake(maxStake);
-    let max = balance
-    setStakeAmount(max)
-    console.log("stake", stakeAmount);
+    setStakeAmount(maxStake)
   };
 
   const handleStake = async () => {
@@ -119,9 +117,9 @@ export default function StakeDetails() {
     await infoPromise
     setNoLock(getNLStake())
     setBalance(getGardBalance(getWalletInfo()).toFixed(2));
-    setMaxStake(getGardBalance(getWalletInfo()).toFixed(2));
+    setMaxStake(getGardBalance(getWalletInfo()));
     setNLAPY((await APYPromise))
-    setNLTVL(((await TVLPromise) / 1000000).toFixed(2))
+    setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
   }, []);
 
   useEffect(() => {
@@ -225,7 +223,7 @@ export default function StakeDetails() {
           />
           <Effect
             title="Rewards Accrued"
-            val="TBD"
+            val={`${accrued}`}
             hasToolTip={false}
           />
           <div style={{display: "flex", flexDirection: "row", alignSelf: "baseline"}}>
