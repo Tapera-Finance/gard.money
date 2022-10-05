@@ -2,6 +2,11 @@ import algosdk from "algosdk";
 import { ids } from "./ids";
 import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest } from "./lib"
 import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
+import {
+  addUserToGleam,
+  updateTotal,
+  loadUserTotals
+} from "../components/Firebase";
 
 const enc = new TextEncoder();
 let stakingRevenuePercent = .7 // TODO: Get this dynamically off the chain
@@ -102,6 +107,12 @@ export async function stake(pool, gardAmount) {
     stxns,
     "Successfully staked " + gardAmount + " GARD.",
   );
+  await updateTotal(info.address, "totalStaked", parseInt(gardAmount * 1000000))
+  let user_totals = await loadUserTotals()
+  console.log('totals', user_totals)
+  if(user_totals["totalStaked"] >= 10000000){
+    addUserToGleam("stakeGARD", info.address)
+  }
   setLoadingStage(null);
 
   return response;

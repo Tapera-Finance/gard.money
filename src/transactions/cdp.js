@@ -14,7 +14,9 @@ import {
   addCDPToFireStore,
   updateDBWebActions,
   updateLiquidationFirestore,
-  addUserToGleam
+  addUserToGleam,
+  updateTotal,
+  loadUserTotals
 } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
 
@@ -391,13 +393,23 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   );
   
   addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, 0);
-  addUserToGleam("openCDP", info.address)
-  
+  await updateTotal(info.address, "totalMinted", microOpeningGard)
+  let user_totals = await loadUserTotals()
+  console.log('totals', user_totals)
+  if(user_totals["totalMinted"] >= 10000000){
+    addUserToGleam("mintGARD", info.address)
+  }
   if (commit) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, openingMicroALGOs);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #5!";
+    await updateTotal(info.address, "totalCommitted", openingMicroALGOs)
+    let user_totals = await loadUserTotals()
+    console.log('totals', user_totals)
+    if(user_totals["totalCommitted"] >= 100000000){
+      addUserToGleam("commitAlgos", info.address)
+    }
   }
   
   setLoadingStage(null);
@@ -818,6 +830,12 @@ export async function commitCDP(account_id, amount, toWallet) {
     account_id,
     parseInt(amount * 1000000),
   );
+  await updateTotal(info.address, "totalCommitted", parseInt(amount * 1000000))
+  let user_totals = await loadUserTotals()
+  console.log('totals', user_totals)
+  if(user_totals["totalCommitted"] >= 100000000){
+    addUserToGleam("commitAlgos", info.address)
+  }
   return response;
 }
 
