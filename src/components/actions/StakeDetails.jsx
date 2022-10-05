@@ -7,7 +7,7 @@ import styled from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
 import { ids } from "../../transactions/ids";
-import { getAppField, getGardBalance } from "../../transactions/lib";
+import { getAppField, getGardBalance, getLocalAppField } from "../../transactions/lib";
 import {
   getWallet,
   getWalletInfo,
@@ -18,7 +18,7 @@ import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
 import { formatToDollars } from "../../utils";
-import { stake, unstake, getStakingAPY } from "../../transactions/stake"
+import { stake, unstake, getStakingAPY, getAccruedRewards } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
 
 // asset types: 0 === GARD, 1 === ALGO
@@ -32,23 +32,11 @@ function algosToMAlgos(num) {
 
 // Gets Active wallet Stake in simple no-lock pool
 function getNLStake() {
-  const user_info = getWalletInfo();
-  const encodedNLStake = "TkwgR0FSRCBTdGFrZWQ=";
-
-  for (let i = 0; i < user_info["apps-local-state"].length; i++) 
-  {
-    if (user_info["apps-local-state"][i].id == ids.app.gard_staking) {
-      const gs_info = user_info["apps-local-state"][i];
-        if (gs_info.hasOwnProperty("key-value")) {
-          for (let n = 0; n < gs_info["key-value"].length; n++) {
-            if (gs_info["key-value"][n]["key"] == encodedNLStake) {
-              return gs_info["key-value"][n]["value"]["uint"];
-            } 
-          }
-        }
-    }
+  const res = getLocalAppField(ids.app.gard_staking, "NL GARD Staked")
+  if (res === undefined) {
+    return 0;
   }
-  return 0;
+  return res
 }
 
 export default function StakeDetails() {
@@ -114,12 +102,14 @@ export default function StakeDetails() {
     const infoPromise = updateWalletInfo();
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
     const APYPromise = getStakingAPY("NL")
+    const accruePromise = getAccruedRewards("NL")
     await infoPromise
     setNoLock(getNLStake())
     setBalance(getGardBalance(getWalletInfo()).toFixed(2));
     setMaxStake(getGardBalance(getWalletInfo()));
     setNLAPY((await APYPromise))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
+    setAccrued((await accruePromise) / 1000000)
   }, []);
 
   useEffect(() => {

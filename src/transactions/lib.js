@@ -1,5 +1,5 @@
 import { ids } from "./ids";
-import { getAppByID } from "../wallets/wallets";
+import { getAppByID, getWalletInfo } from "../wallets/wallets";
 
 export let cdpInterest = .02; // XXX: This should be kept close to the actual interest rate - it is updated on initialization though
 
@@ -35,7 +35,28 @@ export function getGardBalance(info) {
   return getMicroGardBalance(info)/1000000
 }
 
+export function getLocalAppField(appId, field) {
+  // XXX: Currently only works for uints
+  const user_info = getWalletInfo();
+
+  for (let i = 0; i < user_info["apps-local-state"].length; i++) {
+    if (user_info["apps-local-state"][i].id == appId) {
+      const gs_info = user_info["apps-local-state"][i];
+      if (gs_info.hasOwnProperty("key-value")) {
+        for (let n = 0; n < gs_info["key-value"].length; n++) {
+          if (gs_info["key-value"][n]["key"] === btoa(field)) {
+            return gs_info["key-value"][n]["value"]["uint"];
+          } 
+        }
+      }
+      break;
+    }
+  }
+  return undefined;
+}
+
 export async function getAppField(appId, field, appInfo = undefined){
+  // XXX: Currently only works for uints
   if (!appInfo) {
     appInfo = (await getAppByID(appId)).params
   }
