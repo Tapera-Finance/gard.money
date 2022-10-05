@@ -394,9 +394,10 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   addUserToGleam("openCDP", info.address)
   
   if (commit) {
+    await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, openingMicroALGOs);
     response.text =
-      response.text + "\nFull Balance committed to Governance Period #4!";
+      response.text + "\nFull Balance committed to Governance Period #5!";
   }
   
   setLoadingStage(null);

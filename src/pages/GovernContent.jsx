@@ -21,7 +21,7 @@ import Effect from "../components/Effect";
 import { textAlign } from "@mui/system";
 import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
-
+import { getAlgoGovAPR } from "../components/Positions";
 
 const axios = require("axios");
 
@@ -67,6 +67,7 @@ export default function Govern() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [toWallet, setToWallet] = useState(false);
+  const [apr, setAPR] = useState("...");
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -90,8 +91,8 @@ export default function Govern() {
       hasToolTip: true,
     },
     {
-      title: "GARD Governance APY",
-      val: `TBD`,
+      title: "GARD Governance APR",
+      val: `${apr}%`,
       hasToolTip: true,
     },
     {
@@ -102,6 +103,7 @@ export default function Govern() {
   ];
   useEffect(async () => {
     const govInfo = await getGovernanceInfo();
+    setAPR(await getAlgoGovAPR());
     setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
     console.log("2", govInfo[1]);
   }, []);
@@ -240,7 +242,7 @@ export default function Govern() {
         <fieldset
           style={{
             borderRadius: 10,
-            border: "1px solid white",
+            border: "1px solid #80edff",
             width:"70%",
             transform: "rotate(180deg)",
             background: "#0E1834",
@@ -296,7 +298,7 @@ export default function Govern() {
           justifyContent: "space-between",
           alignItems: "center",
           background: "#0E1834",
-          border: "1px solid white",
+          border: "1px solid #80edff",
           borderBottom: "none"
         }}
       >
