@@ -69,7 +69,7 @@ export default function WalletConnect() {
                       let in_DB = await userInDB(owner_address);
                       let in_Totals = await userInTotals(owner_address);
                       if (!in_DB) {
-                        const user = instantiateUser(owner_address);
+                        const user = await instantiateUser(owner_address);
                         addUserToFireStore(user, owner_address);
                       }
                       if (!in_Totals) {
