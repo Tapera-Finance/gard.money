@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import graph from "../assets/graph.png";
 import Chart from "./Chart";
+import { ids } from "../transactions/ids"; 
 import TransactionHistory from "./TransactionHistory";
 import PrimaryButton from "./PrimaryButton";
 import { getCurrentAlgoUsd, getChainData } from "../prices/prices";
@@ -12,6 +13,7 @@ import { loadDbActionAndMetrics } from "./Firebase";
 import { getWalletInfo } from "../wallets/wallets";
 import Effect from "../components/Effect";
 import PageToggle from "./PageToggle";
+import { getAppField } from "../transactions/lib";
 
 const fetchTvl = async () => {
   try {
@@ -34,6 +36,8 @@ const transHistory = dbData ? dbData.webappActions : [];
 
 export default function SystemMetrics() {
   const [tvl, setTvl] = useState(0);
+  const [circulating, setCirculating] = useState(0);
+  const [staked, setStaked] = useState(0);
   var volume = 200000
   var details = [
     {
@@ -43,18 +47,22 @@ export default function SystemMetrics() {
     },
     {
       title: "Staked GARD",
-      val: `TBD`,
+      val: `${staked}`,
       hasToolTip: true,
     },
     {
       title: "Circulating GARD",
-      val: `TBD`,
+      val: `${circulating}`,
       hasToolTip: true,
     },
   ]
 
   useEffect(async () => {
     let res = await fetchTvl();
+    let nl = await getAppField(ids.app.gard_staking, "NL")/1000000
+    let issued = await getAppField(ids.app.validator, "GARD_ISSUED")/1000000
+    setStaked(nl);
+    setCirculating(issued-nl);
     if (res) {
       setTvl(res.currentChainTvls.Algorand.toFixed(2));
     }
