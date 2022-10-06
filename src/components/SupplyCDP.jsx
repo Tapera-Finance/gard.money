@@ -14,12 +14,18 @@ import {
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 
-export default function ManageCDP({
+function mAlgosToAlgos(num) {
+  return num / 1000000;
+}
+
+export default function SupplyCDP({
   collateral,
   minted,
   cdp,
   price,
   setCurrentCDP,
+  maxSupply,
+  manageUpdate,
   apr,
 }) {
   const walletAddress = useSelector((state) => state.wallet.address);
@@ -45,11 +51,18 @@ export default function ManageCDP({
     collateral(event.target.value === "" ? "" : Number(event.target.value));
   };
 
+  const handleMaxSupply = (event) => {
+    collateral(Number(maxSupply))
+    setAdditionalSupply(Number(maxSupply))
+    // manageUpdate(true);
+    // console.log("update cdp params via manage position in supplyMore", manageUpdate)
+  }
+
   useEffect(async () => {
     await updateWalletInfo();
     let wallet = await getWalletInfo();
     if (wallet !== null) {
-      setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+      setBalance(mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3));
       console.log("AAAAA", getWalletInfo());
     }
   }, []);
@@ -57,6 +70,10 @@ export default function ManageCDP({
   useEffect(() => {
     setSupplyLimit(balance);
   }, [balance]);
+
+  useEffect(() => {
+
+  }, [additionalSupply])
 
   useEffect(() => {
     if (!walletAddress) navigate("/");
@@ -95,12 +112,13 @@ export default function ManageCDP({
                   value={additionalSupply}
                   onChange={handleAddSupply}
                 />
-                {/* <MaxButton>
+                <MaxButton onClick={handleMaxSupply}>
                   <ToolTip
                     toolTip={"+MAX"}
                     toolTipText={"Click to lend maximum amount"}
+
                   />
-                </MaxButton> */}
+                </MaxButton>
               </div>
               <Valuation>
                 $Value: ${(additionalSupply * price).toFixed(2)}
@@ -168,6 +186,9 @@ const Container = styled.div`
   justify-content: center;
   top: -40px;
 `;
+const Text = styled.text`
+  //
+`
 
 const SubContainer = styled.div`
   position: relative;
