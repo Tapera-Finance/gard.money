@@ -460,6 +460,12 @@ export async function mint(accountID, newGARD) {
   );
   setLoadingStage(null);
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
+  await updateTotal(info.address, "totalMinted", microGARD(newGARD))
+  let user_totals = await loadUserTotals()
+  console.log('totals', user_totals)
+  if(user_totals["totalMinted"] >= 10000000){
+    addUserToGleam("mintGARD", info.address)
+  }
   checkChainForCDP(info.address, accountID);
 
   return response;
