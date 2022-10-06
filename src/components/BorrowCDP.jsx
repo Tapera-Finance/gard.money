@@ -20,7 +20,7 @@ export default function BorrowCDP({
   cdp,
   price,
   setCurrentCDP,
-  maxMint,
+  manageUpdate,
   apr,
 }) {
   const walletAddress = useSelector((state) => state.wallet.address);
@@ -35,6 +35,7 @@ export default function BorrowCDP({
   const [additionalBorrow, setAdditionalBorrow] = useState("");
 
   const handleAddBorrow = (event) => {
+    manageUpdate(true)
     setAdditionalBorrow(
       event.target.value === "" ? "" : Number(event.target.value),
     );
@@ -42,7 +43,7 @@ export default function BorrowCDP({
   };
 
   const handleMaxBorrow = (event) => {
-
+    manageUpdate(true)
     minted(borrowLimit)
     setAdditionalBorrow(borrowLimit)
 

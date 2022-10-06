@@ -20,7 +20,6 @@ function mAlgosToAlgos(num) {
 
 export default function SupplyCDP({
   collateral,
-  minted,
   cdp,
   price,
   setCurrentCDP,
@@ -45,6 +44,7 @@ export default function SupplyCDP({
   };
 
   const handleAddSupply = (event) => {
+    manageUpdate(true)
     setAdditionalSupply(
       event.target.value === "" ? "" : Number(event.target.value),
     );
@@ -52,10 +52,9 @@ export default function SupplyCDP({
   };
 
   const handleMaxSupply = (event) => {
+    manageUpdate(true)
     collateral(Number(maxSupply))
     setAdditionalSupply(Number(maxSupply))
-    // manageUpdate(true);
-    // console.log("update cdp params via manage position in supplyMore", manageUpdate)
   }
 
   useEffect(async () => {

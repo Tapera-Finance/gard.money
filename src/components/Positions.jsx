@@ -109,6 +109,12 @@ const dummyCDPs = [
         return parseFloat(document.getElementById("addCollateral").value);
       }
 
+      function recalcDetails() {
+        displayLiquidationPrice()
+        getMinted()
+        getCollateral()
+        displayRatio()
+      }
 
 
 export default function Positions({maxGARD, maxSupply}) {
@@ -122,7 +128,7 @@ export default function Positions({maxGARD, maxSupply}) {
     const loadedCDPs = CDPsToList();
     const [currentCDP, setCurrentCDP] = useState(null)
     const [selectedTab, setSelectedTab] = useState("one");
-    // const [manageUpdate, setManageUpdate] = useState(false)
+    const [manageUpdate, setManageUpdate] = useState(false);
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
     var details = [
@@ -202,6 +208,13 @@ export default function Positions({maxGARD, maxSupply}) {
         setSupplyPrice(price)
       }, [price])
 
+      useEffect(() => {
+        if (manageUpdate) {
+          recalcDetails()
+          setManageUpdate(!manageUpdate)
+        }
+      }, [manageUpdate])
+
     return <div>
       {loading ? <LoadingOverlay
       text={loadingText}
@@ -258,8 +271,8 @@ export default function Positions({maxGARD, maxSupply}) {
                  />
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
-                    {selectedTab === "one" ? <BorrowMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} />
-                    : selectedTab === "two" ? <SupplyMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} />
+                    {selectedTab === "one" ? <BorrowMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} manageUpdate={setManageUpdate} />
+                    : selectedTab === "two" ? <SupplyMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
                     : selectedTab === "three" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     :
                     // : selectedTab === "three" ?
