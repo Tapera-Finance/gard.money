@@ -19,7 +19,7 @@ import { VERSION } from "../globals";
 import { psToken } from "../wallets/keys";
 
 import pactsdk from "@pactfi/pactsdk";
-import { formatAmt } from "../components/actions/swapHelpers";
+import { formatAmt, mAlgosToAlgos } from "../components/actions/swapHelpers";
 
 // TODO: ONLY USING MAINNET, FIX THIS
 export const pactClient = new pactsdk.PactClient(new algosdk.Algodv2(psToken, "https://mainnet-algorand.api.purestake.io/ps2", ""));
@@ -159,7 +159,7 @@ export async function swap(
   const response = await sendTxn(
     stxns,
     "Successfully swapped " +
-      formattedAmount / parseInt(`1e${fromAsset.decimals}`) +
+      mAlgosToAlgos(formattedAmount / parseInt(`1e${fromAsset.decimals}`)) +
       " " +
       fromAsset.name.toLocaleUpperCase(),
   );

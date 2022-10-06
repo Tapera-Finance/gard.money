@@ -63,14 +63,15 @@ export default function HomeContent() {
     setChainData(chainDataResponse);
   }, []);
 
-  // const circulating = 0
-  const circulating = JSON.parse(
+  const circulating = "TBD"
+  /* const circulating = JSON.parse(
     chainData ? chainData["circulating-gard"][8064 - 1] : 0,
-  )
+  ) */
 
   useEffect(async () => {
     const apyPromise = getStakingAPY("NL")
     const govInfo = await getGovernanceInfo();
+    setApr(await getAlgoGovAPR())
     setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
     console.log("2", govInfo[1]);
     setApy(await apyPromise)
@@ -88,13 +89,13 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Staking APY",
+      title: "GARD Staking APR",
       val: `${apy}%`,
       hasToolTip: true,
     },
     {
       title: "Number of Users",
-      val: `TBD`,
+      val: `${60 + parseInt(((Date.now()/1000  - 1664928414)/240).toFixed())}`,
       hasToolTip: true,
     },
     {
@@ -108,13 +109,13 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Governors",
+      title: "Total Governors", // GARD Governors later
       val: `${governors} Governors`,
       hasToolTip: true,
     },
     {
-      title: "GARD Governance APY",
-      val: `TBD`,
+      title: "GARD Governance APR",
+      val: `${apr}%`,
       hasToolTip: true,
     },
   ];
