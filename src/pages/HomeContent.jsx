@@ -74,7 +74,7 @@ export default function HomeContent() {
     setApr(await getAlgoGovAPR())
     setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
     console.log("2", govInfo[1]);
-    setApy(await apyPromise)
+    setApy((await apyPromise).toFixed(2))
   }, []);
 
   const homeDetails = [
@@ -315,7 +315,15 @@ export default function HomeContent() {
             />
             <Step
               header="Step 3: Gain Rewards"
-              badges={["Staking Rate", "Governance Rate"]}
+              badges={[
+                {
+                  text : "Staking Rate",
+                  val : apy
+                },
+                {
+                  text : "Governance Rate",
+                  val : apr
+                }]}
               subtitle=""
               text="To gain additional rewards via the GARD Protocol a user may stake their GARD or participate in Algorand governance. Staking GARD entitles users to their share of revenues earned by the protocol in real time. Participating in Algorand Governace via the GARD Protocol entitles users to leverage their committed ALGOs to borrow GARD as well as their share of a 7M ALGO boost paid out quarterly by the Algorand Foundation."
               link="https://gard.gitbook.io/gard-system-guide/how-to/participate-in-algorand-governance-via-gard-protocol"
