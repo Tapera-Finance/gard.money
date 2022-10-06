@@ -307,7 +307,7 @@ export default function HomeContent() {
               badges={[]}
               subtitle=""
               text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD go to the swap page. To borrow GARD go to the borrow page."
-              link="https://gard.gitbook.io/gard-system-guide/"
+              link="https://docs.algogard.com/how-to/get-gard"
               linkText="How to get GARD"
               goTo="Swap"
               secondGoTo="Borrow"
