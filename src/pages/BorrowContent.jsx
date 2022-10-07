@@ -114,7 +114,7 @@ export default function BorrowContent() {
     getWallet();
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
     setMaxCollateral(adjustedMax());
-  }, [mGARD]);
+  }, []);
 
   useEffect(() => {
     setSupplyPrice(price);
