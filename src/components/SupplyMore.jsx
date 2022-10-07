@@ -29,7 +29,7 @@ export default function SupplyMore({ supplyPrice, cAsset, collateral, minted, cd
         },
         {
           title: "Liquidation Price",
-          val: `$${cAsset == null || cAsset == "" ? "..." : ((1.15 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral) + cAsset)).toFixed(4)}`,
+          val: `$${cAsset == null || cAsset == "" ? ((1.15 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral))).toFixed(4) : ((1.15 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral) + cAsset)).toFixed(4)}`,
           hasToolTip: true,
         },
         {
