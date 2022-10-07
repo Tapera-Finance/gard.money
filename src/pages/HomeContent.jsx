@@ -48,6 +48,7 @@ const buttons = [
 export default function HomeContent() {
   const [tvl, setTvl] = useState("...");
   const [apy, setApy] = useState("...");
+  const [borrowed, setBorrowed] = useState("...");
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
   const [chainData, setChainData] = useState("");
@@ -85,7 +86,7 @@ export default function HomeContent() {
     },
     {
       title: "Total GARD Borrowed",
-      val: `$${circulating.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+      val: `$${borrowed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
       hasToolTip: true,
     },
     {
@@ -111,7 +112,7 @@ export default function HomeContent() {
     {
       title: "Total Governors", // GARD Governors later
       val: `${governors} Governors`,
-      hasToolTip: true,
+      hasToolTip: false,
     },
     {
       title: "GARD Governance APR",
@@ -128,6 +129,7 @@ export default function HomeContent() {
         (100 * res.currentChainTvls.Algorand / res.currentChainTvls.borrowed).toFixed(
           2,
         ),
+        setBorrowed(res.currentChainTvls.borrowed.toFixed(2)),
       );
     }
   }, []);
@@ -318,11 +320,11 @@ export default function HomeContent() {
               badges={[
                 {
                   text : "Staking Rate",
-                  val : apy
+                  val : apy,
                 },
                 {
                   text : "Governance Rate",
-                  val : apr
+                  val : apr,
                 }]}
               subtitle=""
               text="To gain additional rewards via the GARD Protocol a user may stake their GARD or participate in Algorand governance. Staking GARD entitles users to their share of revenues earned by the protocol in real time. Participating in Algorand Governace via the GARD Protocol entitles users to leverage their committed ALGOs to borrow GARD as well as their share of a 7M ALGO boost paid out quarterly by the Algorand Foundation."

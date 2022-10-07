@@ -26,7 +26,6 @@ const ToolTipText = styled.span`
   border-radius: 10px;
   border: 1px solid white;
   padding: 10px 0;
-  margin-left: 30px;
   bottom: 100%;
 
   position: absolute;
