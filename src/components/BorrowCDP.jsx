@@ -13,15 +13,19 @@ import {
 } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
+import { mAlgosToAlgos } from "../pages/BorrowContent";
 
 export default function BorrowCDP({
+  setCollateral,
   collateral,
   minted,
   cdp,
   price,
   setCurrentCDP,
   manageUpdate,
+  maxMint,
   apr,
+  setUtilization
 }) {
   const walletAddress = useSelector((state) => state.wallet.address);
   const [balance, setBalance] = useState(0);
@@ -35,19 +39,25 @@ export default function BorrowCDP({
 
   const [additionalBorrow, setAdditionalBorrow] = useState("");
 
+  const calcUtilization = (borrowed, maxBorrow) => {
+   return ((100 * borrowed ) / maxBorrow).toFixed(2)
+  }
+
   const handleAddBorrow = (event) => {
     manageUpdate(true)
+    setUtilization(calcUtilization((event.target.value === "" ? "" : Number(event.target.value) + mAlgosToAlgos(cdp.debt)), borrowLimit))
     setAdditionalBorrow(
       event.target.value === "" ? "" : Number(event.target.value),
     );
     minted(event.target.value === "" ? "" : Number(event.target.value));
+
   };
 
   const handleMaxBorrow = (event) => {
     manageUpdate(true)
     minted(borrowLimit)
     setAdditionalBorrow(borrowLimit)
-
+    setUtilization(calcUtilization(borrowLimit, borrowLimit))
   }
 
   useEffect(async () => {
@@ -75,6 +85,11 @@ export default function BorrowCDP({
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
   var borrowDetails = [
+    {
+      title: "Already Borrowed",
+      val: `${mAlgosToAlgos(cdp.debt).toFixed(2)}`,
+      hasToolTip: true
+    },
     {
       title: "Borrow Limit",
       val: `${Math.max(
@@ -194,7 +209,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
   display: grid;
-  grid-template-columns: repeat(1, 49%);
+  grid-template-columns: repeat(2, 49%);
   row-gap: 30px;
   justify-content: center;
   padding: 30px 0px 30px;

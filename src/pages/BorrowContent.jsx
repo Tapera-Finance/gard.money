@@ -23,18 +23,18 @@ import { commitmentPeriodEnd } from "../globals";
 import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 
-function displayRatio() {
+export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
 }
 
-function mAlgosToAlgos(num) {
+export function mAlgosToAlgos(num) {
   return num / 1000000;
 }
-function algosToMAlgos(num) {
+export function algosToMAlgos(num) {
   return num * 1000000;
 }
 
-function displayLiquidationPrice() {
+export function displayLiquidationPrice() {
   return "$" + ((1.15 * getMinted()) / getCollateral()).toFixed(4);
 }
 
@@ -47,7 +47,7 @@ export const adjustedMax = () => {
   ).toFixed(3);
 };
 
-function getMinted() {
+export function getMinted() {
   if (
     document.getElementById("minted") == null ||
     isNaN(parseFloat(document.getElementById("minted").value))
@@ -57,7 +57,7 @@ function getMinted() {
   return parseFloat(document.getElementById("minted").value);
 }
 
-function getCollateral() {
+export function getCollateral() {
   if (
     document.getElementById("collateral") == null ||
     isNaN(parseFloat(document.getElementById("collateral").value))

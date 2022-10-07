@@ -124,6 +124,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const [supplyPrice, setSupplyPrice] = useState(0)
     const [apr, setAPR] = useState(0)
     const [cAlgos, setCollateral] = useState("");
+    const [mGARD, setGARD] = useState("")
     const [minted, setMinted] = useState("")
     const loadedCDPs = CDPsToList();
     const [currentCDP, setCurrentCDP] = useState(null)
@@ -274,8 +275,8 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                  />
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
-                    {selectedTab === "one" ? <BorrowMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} manageUpdate={setManageUpdate} />
-                    : selectedTab === "two" ? <SupplyMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
+                    {selectedTab === "one" ? <BorrowMore supplyPrice={supplyPrice} collateral={cAlgos} mAsset={mGARD} setCollateral={setCollateral} minted={setGARD} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} manageUpdate={setManageUpdate} />
+                    : selectedTab === "two" ? <SupplyMore supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
                     : selectedTab === "three" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     :
                     // : selectedTab === "three" ?

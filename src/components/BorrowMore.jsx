@@ -1,15 +1,63 @@
-import React from "react";
+import React, {useState} from "react";
 import BorrowCDP from "./BorrowCDP";
 import Details from "./Details";
+import {displayRatio, mAlgosToAlgos, displayLiquidationPrice, getMinted, getCollateral} from "../pages/BorrowContent"
 
-export default function BorrowMore({ collateral, minted, cdp, price, setCurrentCDP, maxMint,  manageUpdate, details, apr}) {
+
+
+export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cdp, price, setCurrentCDP, maxMint,  manageUpdate, details, apr}) {
+    const [utilization, setUtilization] = useState(null)
     // TODO: combine SupplyCDP & BorrowCDP
+    let borrowDetails = [
+      {
+        title: "Total Supplied (Asset)",
+        val: `${mAlgosToAlgos(cdp.collateral + (collateral !== "" ? collateral : 0)).toFixed(2)}`,
+        hasToolTip: true,
+      },
+      {
+        title: "Total Supplied ($)",
+        val: `$${((Number(mAlgosToAlgos(cdp.collateral + (collateral !== "" ? collateral : 0 )) * supplyPrice))).toFixed(2)}`,
+        hasToolTip: true,
+      },
+      {
+        title: "Collateral Factor",
+        val: `${(100 / 140).toFixed(2)}`,
+        hasToolTip: true,
+      },
+      {
+        title: "Borrow Utilization",
+        val: `${!utilization ? "..." : utilization}%`,
+        hasToolTip: true,
+      },
+      {
+        title: "Liquidation Price",
+        val: `$${mAsset == null || mAsset == "" ? "..." : ((1.15 * (mAlgosToAlgos(cdp.debt) + mAsset) / (mAlgosToAlgos(cdp.collateral))).toFixed(4))}`,
+        hasToolTip: true,
+      },
+      {
+        title: "Bonus Supply Rewards",
+        val: 0,
+        hasToolTip: true,
+      },
+      {
+        title: "ALGO Governance APR",
+        val: `${apr}%`,
+        hasToolTip: true,
+      },
+      {
+        title: "Collateralization Ratio",
+        val: `${
+          getMinted() == null || getCollateral() == null ? "..." : displayRatio()
+        }`,
+        hasToolTip: true,
+      },
+    ]
     return <div>
         <div style={{marginTop: 30}}>
-            <BorrowCDP collateral={collateral} minted={minted}  cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} maxMint={maxMint} apr={apr} manageUpdate={manageUpdate}/>
+            <BorrowCDP  minted={minted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} maxMint={maxMint} apr={apr} manageUpdate={manageUpdate} setUtilization={setUtilization}/>
         </div>
         <div style={{position:"relative", top:-65}}>
-            <Details details={details}/>
+            <Details details={borrowDetails}/>
         </div>
     </div>
 }
