@@ -117,7 +117,7 @@ const dummyCDPs = [
       }
 
 
-export default function Positions({maxGARD, maxSupply}) {
+export default function Positions({cdp, maxGARD, maxSupply}) {
     const dispatch = useDispatch();
     const {theme} = useContext(ThemeContext);
     const [price, setPrice] = useState(0)
@@ -175,7 +175,7 @@ export default function Positions({maxGARD, maxSupply}) {
           },
           {
             title: "ALGO Governance APR",
-            val: `${34.3}%`,
+            val: `${apr}%`,
             hasToolTip: true,
           },
           {
@@ -186,6 +186,9 @@ export default function Positions({maxGARD, maxSupply}) {
             hasToolTip: true,
           },
     ]
+    useEffect(async () => {
+      setAPR(await getAlgoGovAPR());
+    }, []);
 
     var sessionStorageSetHandler = function (e) {
       setLoadingText(JSON.parse(e.value));

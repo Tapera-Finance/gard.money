@@ -31,6 +31,7 @@ export default function BorrowCDP({
   const [loadingText, setLoadingText] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {debt} = cdp
 
   const [additionalBorrow, setAdditionalBorrow] = useState("");
 
