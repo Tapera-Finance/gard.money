@@ -47,7 +47,7 @@ export const adjustedMax = () => {
   ).toFixed(3);
 };
 
-export function getMinted() {
+function getMinted() {
   if (
     document.getElementById("minted") == null ||
     isNaN(parseFloat(document.getElementById("minted").value))
@@ -114,7 +114,7 @@ export default function BorrowContent() {
     getWallet();
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
     setMaxCollateral(adjustedMax());
-  }, [mGARD]);
+  }, []);
 
   useEffect(() => {
     setSupplyPrice(price);

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import SupplyCDP from "./SupplyCDP";
 import Details from "./Details";
-import {displayRatio, mAlgosToAlgos, displayLiquidationPrice, getMinted, getCollateral, algosToMAlgos} from "../pages/BorrowContent"
+import { mAlgosToAlgos, algosToMAlgos} from "../pages/BorrowContent"
 import { calcRatio } from "../transactions/cdp";
 
 export default function SupplyMore({ supplyPrice, cAsset, collateral, minted, cdp, price, setCurrentCDP, maxSupply, manageUpdate, details, apr}) {
@@ -44,6 +44,7 @@ export default function SupplyMore({ supplyPrice, cAsset, collateral, minted, cd
         },
         {
           title: "Collateralization Ratio",
+          val: "TBD",
           val: !cAsset ? "..." : calcRatio((algosToMAlgos(cAsset) + cdp.collateral), cdp.debt, true),
           hasToolTip: true,
         },

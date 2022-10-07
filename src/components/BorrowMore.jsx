@@ -46,9 +46,10 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
       },
       {
         title: "Collateralization Ratio",
-        val: `${
-          getMinted() == null || getCollateral() == null ? "..." : displayRatio()
-        }`,
+        val: "TBD",
+        // val: `${
+        //   getMinted() == null || getCollateral() == null ? "..." : displayRatio()
+        // }`,
         hasToolTip: true,
       },
     ]

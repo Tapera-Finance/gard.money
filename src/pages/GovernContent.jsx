@@ -23,8 +23,9 @@ import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
 
-async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
-  const axios = require('axios')
+const axios = require("axios");
+
+export async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
   const axiosObj = axios.create({
     baseURL: 'https://algoindexer.algoexplorerapi.io',
     timeout: 300000,
@@ -42,7 +43,6 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
 /* Get value locked in user-controlled smart contracts */
 async function getAlgoGovernanceAccountBals() {
 
-  const price = await getPrice()
   const v2GardPriceValidatorId = 890603991
   let nexttoken
   let response = null
@@ -66,8 +66,6 @@ async function getAlgoGovernanceAccountBals() {
   }
   return totalContractAlgo
 }
-
-const axios = require("axios");
 
 function getGovernorPage(id) {
   return (
