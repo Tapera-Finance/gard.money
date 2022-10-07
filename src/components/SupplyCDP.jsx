@@ -83,7 +83,8 @@ export default function SupplyCDP({
 
   useEffect(async () => {
     await updateWalletInfo();
-    let wallet = await getWalletInfo();
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(0))))
+    let wallet = getWalletInfo();
     if (wallet !== null) {
       setBalance(adjustedMax());
       console.log("AAAAA", getWalletInfo());
