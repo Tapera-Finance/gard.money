@@ -13,10 +13,13 @@ import {
 } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
-import { adjustedMax } from "../pages/BorrowContent"
+import {adjustedMax} from "../pages/BorrowContent"
 
 function mAlgosToAlgos(num) {
   return num / 1000000;
+}
+export function algosToMAlgos(num) {
+  return num * 1000000;
 }
 
 export default function SupplyCDP({
@@ -26,11 +29,13 @@ export default function SupplyCDP({
   setCurrentCDP,
   maxSupply,
   manageUpdate,
+  setUtilization,
   apr,
 }) {
   const walletAddress = useSelector((state) => state.wallet.address);
   const [balance, setBalance] = useState(0);
   const [supplyLimit, setSupplyLimit] = useState(0);
+  const [mintable, setMintable] = useState(0)
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [commitChecked, setCommitChecked] = useState(false);
@@ -40,12 +45,28 @@ export default function SupplyCDP({
 
   const [additionalSupply, setAdditionalSupply] = useState("");
 
+  const calcUtilization = (borrowed, maxBorrow) => {
+    return ((100 * borrowed ) / maxBorrow).toFixed(2)
+   }
+
+   const calcMaxIncrease = (supply) => {
+    return Math.trunc(
+        (100 *
+          ((algosToMAlgos(price) * algosToMAlgos(mAlgosToAlgos(cdp.collateral) + supply)) /
+            1000000)) /
+          1.4 /
+          1000000,
+      ) / 100;
+   }
+
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
   };
 
   const handleAddSupply = (event) => {
     manageUpdate(true)
+    setMintable(calcMaxIncrease(event.target.value === "" ? "" : Number(event.target.value)))
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(event.target.value === "" ? "" : Number(event.target.value))))
     setAdditionalSupply(
       event.target.value === "" ? "" : Number(event.target.value),
     );
@@ -53,14 +74,17 @@ export default function SupplyCDP({
   };
 
   const handleMaxSupply = (event) => {
+    setMintable(calcMaxIncrease(maxSupply))
     manageUpdate(true)
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(maxSupply))))
     collateral(Number(maxSupply))
     setAdditionalSupply(Number(maxSupply))
   }
 
   useEffect(async () => {
     await updateWalletInfo();
-    let wallet = await getWalletInfo();
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(0))))
+    let wallet = getWalletInfo();
     if (wallet !== null) {
       setBalance(adjustedMax());
       console.log("AAAAA", getWalletInfo());
@@ -80,6 +104,11 @@ export default function SupplyCDP({
   }, [walletAddress]);
 
   var supplyDetails = [
+    {
+      title: "Already Supplied",
+      val: `${mAlgosToAlgos(cdp.collateral).toFixed(2)}`,
+      hasToolTip: true
+    },
     {
       title: "Supply Limit",
       val: `${supplyLimit} ALGOs`,
@@ -214,7 +243,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
   display: grid;
-  grid-template-columns: repeat(1, 40%);
+  grid-template-columns: repeat(3, 30%);
   row-gap: 30px;
   justify-content: center;
   padding: 30px 0px 30px;
