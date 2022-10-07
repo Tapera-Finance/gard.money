@@ -52,7 +52,7 @@ export default function StakeDetails() {
   const [NL_TVL, setNLTVL] = useState("...")
   const [NLAPY, setNLAPY] = useState(0)
   const [balance, setBalance] = useState("...");
-  const [accrued, setAccrued] = useState("...");
+  const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
 
   const handleInput = (e) => {
@@ -205,16 +205,16 @@ export default function StakeDetails() {
           </StakeBox>
         </ThirdRow>
         <FourthRow>
-          <Effect title="Your Stake" val={`${(noLock/1000000).toFixed(3)} GARD`} hasToolTip={false} />
+          <Effect title="Your Stake" val={`${((noLock/1000000)+parseFloat(accrued)).toFixed(3)} GARD`} hasToolTip={false} />
           <Effect
             title="Estimated Rewards / Day"
-            val={`${(NLAPY / 100 * noLock / 1000000 / 365).toFixed(3)} GARD`}
+            val={`${(NLAPY / 100 * (noLock/1000000+parseFloat(accrued)) / 365).toFixed(3)} GARD`}
             hasToolTip={false}
           />
           <Effect
-            title="Rewards Accrued"
-            val={`${accrued}`}
-            hasToolTip={false}
+            title="New Rewards"
+            val={`${parseFloat(accrued).toFixed(4)}`}
+            hasToolTip={true}
           />
           <div style={{display: "flex", flexDirection: "row", alignSelf: "baseline"}}>
 

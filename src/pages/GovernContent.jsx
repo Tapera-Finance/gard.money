@@ -13,7 +13,7 @@ import { CDPsToList } from "../components/Positions";
 import { loadFireStoreCDPs } from "../components/Firebase";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { cdpGen } from "../transactions/contracts";
-import { commitCDP } from "../transactions/cdp";
+import { commitCDP, getPrice } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
 import { commitmentPeriodEnd } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
@@ -22,6 +22,50 @@ import { textAlign } from "@mui/system";
 import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
+
+async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
+  const axios = require('axios')
+  const axiosObj = axios.create({
+    baseURL: 'https://algoindexer.algoexplorerapi.io',
+    timeout: 300000,
+  })
+  const response = (await axiosObj.get('/v2/accounts', {
+    params: {
+      'application-id': appId,
+      limit,
+      next: nexttoken
+    }
+  }))
+  return response.data
+}
+
+/* Get value locked in user-controlled smart contracts */
+async function getAlgoGovernanceAccountBals() {
+
+  const price = await getPrice()
+  const v2GardPriceValidatorId = 890603991
+  let nexttoken
+  let response = null
+  let totalContractAlgo = 0
+
+  const validators = [v2GardPriceValidatorId]
+  for(var i = 0; i < validators.length; i++){
+    do {
+      // Find accounts that are opted into the GARD price validator application
+      // These accounts correspond to CDP opened on the GARD protocol
+      response = await searchAccounts({
+        appId: validators[i],
+        limit: 1000,
+        nexttoken,
+      });
+      for (const account of response['accounts']) {
+        totalContractAlgo += (account['amount'] / Math.pow(10, 6))
+      }
+      nexttoken = response['next-token']
+    } while (nexttoken != null);
+  }
+  return totalContractAlgo
+}
 
 const axios = require("axios");
 
@@ -58,6 +102,7 @@ export default function Govern() {
   const [maxBal, setMaxBal] = useState("");
   const [selectedAccount, setSelectedAccount] = useState("");
   const [refresh, setRefresh] = useState(0);
+  const [vaulted, setVaulted] = useState("Loading...");
   const [shownAll, setAllVotes] = useState(true);
   const [governors, setGovernors] = useState("...");
   const [enrollmentEnd, setEnrollmentEnd] = useState("");
@@ -87,7 +132,7 @@ export default function Govern() {
   var details = [
     {
       title: "Total Vaulted",
-      val: `TBD`, // `${88.3}M ALGO`,
+      val: vaulted, 
       hasToolTip: true,
     },
     {
@@ -110,6 +155,7 @@ export default function Govern() {
 
   useEffect(async () => {
     setCommitment(await loadFireStoreCDPs());
+    setVaulted((await getAlgoGovernanceAccountBals()/1000000).toFixed(2) + `M Algo`);
   }, [refresh]);
 
 

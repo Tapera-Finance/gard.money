@@ -47,12 +47,12 @@ export default function SystemMetrics() {
     },
     {
       title: "Staked GARD",
-      val: `${staked}`,
+      val: `${staked.toFixed(2)}`,
       hasToolTip: true,
     },
     {
       title: "Circulating GARD",
-      val: `${circulating}`,
+      val: `${circulating.toFixed(2)}`,
       hasToolTip: true,
     },
   ]
@@ -61,8 +61,9 @@ export default function SystemMetrics() {
     let res = await fetchTvl();
     let nl = await getAppField(ids.app.gard_staking, "NL")/1000000
     let issued = await getAppField(ids.app.validator, "GARD_ISSUED")/1000000
+    let borrowed = res.currentChainTvls.borrowed
     setStaked(nl);
-    setCirculating(issued-nl);
+    setCirculating(borrowed-nl);
     if (res) {
       setTvl(res.currentChainTvls.Algorand.toFixed(2));
     }
