@@ -38,6 +38,15 @@ function displayLiquidationPrice() {
   return "$" + ((1.15 * getMinted()) / getCollateral()).toFixed(4);
 }
 
+export const adjustedMax = () => {
+  return mAlgosToAlgos(
+    getWalletInfo()["amount"] -
+      307000 -
+      100000 * (getWalletInfo()["assets"].length + 4) -
+      getWalletInfo()["min-balance"],
+  ).toFixed(3);
+};
+
 function getMinted() {
   if (
     document.getElementById("minted") == null ||
@@ -97,15 +106,15 @@ export default function BorrowContent() {
     }
   }, []);
 
+
+
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
     getWallet();
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
-    setMaxCollateral(
-      mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3)
-    );
-  }, []);
+    setMaxCollateral(adjustedMax());
+  }, [mGARD]);
 
   useEffect(() => {
     setSupplyPrice(price);
@@ -120,7 +129,7 @@ export default function BorrowContent() {
     if (typeof Number(event.target.value) === "number" && mGARD === "") {
       setGARD(1)
     }
-    let max;
+    let max =
       Math.trunc(
         (100 *
           ((algosToMAlgos(price) * algosToMAlgos(Number(event.target.value))) /
@@ -136,7 +145,7 @@ export default function BorrowContent() {
   };
 
   const handleMaxCollateral = () => {
-    setCollateral((maxCollateral).toFixed(3)); // lower submittable max to prevent wallet balance error
+    setCollateral(Number((maxCollateral)).toFixed(3)); // lower submittable max to prevent wallet balance error
     let max =
       Math.trunc(
         (100 *
@@ -148,7 +157,7 @@ export default function BorrowContent() {
     if (mGARD > max) {
       setGARD(max < 1 ? 1 : max);
     }
-    console.log("collateral", cAlgos);
+    // console.log("collateral", cAlgos);
   };
 
   const handleBorrowChange = (event) => {
@@ -165,8 +174,9 @@ export default function BorrowContent() {
       console.log("heyy");
       return;
     }
+    console.log("logging max gard", maxGARD)
     if (cAlgos > max) {
-      setCollateral(max);
+      // setCollateral(max);
     }
   };
 
@@ -181,7 +191,7 @@ export default function BorrowContent() {
     if (cAlgos > max) {
       setCollateral(max);
     }
-    console.log("gard", mGARD);
+    // console.log("gard", mGARD);
   };
 
   var sessionStorageSetHandler = function (e) {
