@@ -13,6 +13,7 @@ import {
 } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
+import { adjustedMax } from "../pages/BorrowContent"
 
 function mAlgosToAlgos(num) {
   return num / 1000000;
@@ -61,7 +62,7 @@ export default function SupplyCDP({
     await updateWalletInfo();
     let wallet = await getWalletInfo();
     if (wallet !== null) {
-      setBalance(mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3));
+      setBalance(adjustedMax());
       console.log("AAAAA", getWalletInfo());
     }
   }, []);
