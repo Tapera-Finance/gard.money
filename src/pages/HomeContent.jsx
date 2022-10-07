@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled, {css} from "styled-components";
 import Details from "../components/Details";
+import { ids } from "../transactions/ids";
 import CountdownTimer from "../components/CountdownTimer";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +17,7 @@ import { getGovernanceInfo } from "./GovernContent";
 import Effect from "../components/Effect";
 import { cdpInterest } from "../transactions/lib"
 import { getStakingAPY } from "../transactions/stake"
+import { searchAccounts } from "./GovernContent";
 
 const fetchTvl = async () => {
   try {
@@ -28,6 +30,31 @@ const fetchTvl = async () => {
     throw new Error(e, "Unable to fetch gard llama.fi tvl data");
   }
 };
+
+async function getTotalUsers() {
+
+  let nexttoken;
+  let response = null;
+  const users = new Set();
+
+  const validators = [ids.app.validator, ids.app.gard_staking]
+  for(var i = 0; i < validators.length; i++){
+    do {
+      // Find accounts that are opted into the GARD price validator application
+      // These accounts correspond to CDP opened on the GARD protocol
+      response = await searchAccounts({
+        appId: validators[i],
+        limit: 1000,
+        nexttoken,
+      });
+      for (const account of response['accounts']) {
+        users.add(account);
+      }
+      nexttoken = response['next-token']
+    } while (nexttoken != null);
+  }
+  return users.size
+}
 
 const buttons = [
   "Swap",
@@ -51,6 +78,7 @@ export default function HomeContent() {
   const [borrowed, setBorrowed] = useState("...");
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
+  const [users, setUsers] = useState("Loading...")
   const [chainData, setChainData] = useState("");
   const [governors, setGovernors] = useState("...");
   const [allOpen, setAllOpen] = useState(true);
@@ -96,7 +124,7 @@ export default function HomeContent() {
     },
     {
       title: "Number of Users",
-      val: `${60 + parseInt(((Date.now()/1000  - 1664928414)/240).toFixed())}`,
+      val: users,
       hasToolTip: true,
     },
     {
@@ -139,6 +167,7 @@ export default function HomeContent() {
     if (res) {
       setApr(res);
     }
+    setUsers(await getTotalUsers());
   }, []);
 
   return (
