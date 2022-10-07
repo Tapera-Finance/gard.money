@@ -14,17 +14,19 @@ import {
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 
-export default function ManageCDP({
+export default function BorrowCDP({
   collateral,
   minted,
   cdp,
   price,
   setCurrentCDP,
+  manageUpdate,
   apr,
 }) {
   const walletAddress = useSelector((state) => state.wallet.address);
   const [balance, setBalance] = useState(0);
   const [supplyLimit, setSupplyLimit] = useState(0);
+  const [borrowLimit, setBorrowLimit] = useState(0)
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const navigate = useNavigate();
@@ -33,11 +35,20 @@ export default function ManageCDP({
   const [additionalBorrow, setAdditionalBorrow] = useState("");
 
   const handleAddBorrow = (event) => {
+    manageUpdate(true)
     setAdditionalBorrow(
       event.target.value === "" ? "" : Number(event.target.value),
     );
     minted(event.target.value === "" ? "" : Number(event.target.value));
   };
+
+  const handleMaxBorrow = (event) => {
+    manageUpdate(true)
+    minted(borrowLimit)
+    setAdditionalBorrow(borrowLimit)
+
+  }
+
   useEffect(async () => {
     await updateWalletInfo();
     let wallet = await getWalletInfo();
@@ -45,6 +56,14 @@ export default function ManageCDP({
       setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
       console.log("AAAAA", getWalletInfo());
     }
+    let borrowMax = Math.max(
+      0,
+      Math.trunc(
+        (100 * ((price * cdp.collateral) / 1000000)) / 1.4 -
+          (100 * cdp.debt) / 1000000,
+      ) / 100,
+    )
+    setBorrowLimit(borrowMax)
   }, []);
 
   useEffect(() => {
@@ -93,12 +112,13 @@ export default function ManageCDP({
                   value={additionalBorrow}
                   onChange={handleAddBorrow}
                 />
-                {/* <MaxButton>
+                <MaxButton onClick={handleMaxBorrow}>
                   <ToolTip
                     toolTip={"+MAX"}
                     toolTipText={"Click to lend maximum amount"}
+
                   />
-                </MaxButton> */}
+                </MaxButton>
               </div>
               <Valuation>
                 $Value: ${(additionalBorrow * 1).toFixed(2)}
@@ -193,6 +213,10 @@ const MaxButton = styled.button`
   cursor: pointer;
   font-size: 12px;
 `;
+
+const Text = styled.text`
+  //
+`
 const Valuation = styled.div`
   margin-left: 25px;
   margin-top: 3px;

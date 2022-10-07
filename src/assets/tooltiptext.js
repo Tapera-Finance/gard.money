@@ -20,6 +20,7 @@ module.exports = {
     "Liquidation Price" : "Price point at which you loan will be liquidated",
     "Collateralization Ratio" : "Ratio must be above 140%",
     "Liquidity Fee": "Fee from change to pool liquidity",
+    "New Rewards": "Rewards earned since last pool transaction",
     "No-Lock GARD APR" : "Annual interest rate (in GARD) paid to users staked in native no-lock pool.",
     "Number of Users":"The number of protocol users is defined as the number of unique Algorand accounts currently borrowing or staking GARD",
     "Price Impact": "Percentage asset price will change as a result of this swap",

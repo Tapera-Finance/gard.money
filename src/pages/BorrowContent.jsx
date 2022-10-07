@@ -103,11 +103,7 @@ export default function BorrowContent() {
     getWallet();
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
     setMaxCollateral(
-      mAlgosToAlgos(
-        getWalletInfo()["amount"] -
-          307000 -
-          100000 * (getWalletInfo()["assets"].length + 4),
-      ).toFixed(3),
+      mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3)
     );
   }, []);
 
@@ -119,12 +115,12 @@ export default function BorrowContent() {
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
 
-  const handleSupplyChange = (event) => {
+  const handleSupplyChange = async (event) => {
     setCollateral(event.target.value === "" ? "" : Number(event.target.value));
     if (typeof Number(event.target.value) === "number" && mGARD === "") {
       setGARD(1)
     }
-    let max =
+    let max;
       Math.trunc(
         (100 *
           ((algosToMAlgos(price) * algosToMAlgos(Number(event.target.value))) /
@@ -133,13 +129,14 @@ export default function BorrowContent() {
           1000000,
       ) / 100;
     setMaxGARD(max);
+
     if (mGARD > max) {
       setGARD(max < 1 ? 1 : max);
     }
   };
 
   const handleMaxCollateral = () => {
-    setCollateral((maxCollateral * .998).toFixed(3)); // lower submittable max to prevent wallet balance error
+    setCollateral((maxCollateral).toFixed(3)); // lower submittable max to prevent wallet balance error
     let max =
       Math.trunc(
         (100 *
@@ -162,11 +159,7 @@ export default function BorrowContent() {
         ? 1
         : Number(event.target.value),
     );
-    let max = mAlgosToAlgos(
-      getWalletInfo()["amount"] -
-        307000 -
-        100000 * (getWalletInfo()["assets"].length + 4),
-    ).toFixed(3);
+    let max = mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3)
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -178,12 +171,8 @@ export default function BorrowContent() {
   };
 
   const handleMaxBorrow = () => {
-    setGARD((maxGARD * .998).toFixed(3));
-    let max = mAlgosToAlgos(
-      getWalletInfo()["amount"] -
-        307000 -
-        100000 * (getWalletInfo()["assets"].length + 4),
-    ).toFixed(3);
+    setGARD((maxGARD).toFixed(3));
+    let max = mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3)
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -473,7 +462,7 @@ export default function BorrowContent() {
               setCreatePositionShown(!createPositionShown);
             }}
           />
-          <Positions maxGARD={maxGARD} />
+          <Positions maxSupply={maxCollateral} maxGARD={maxGARD} />
         </div>
       )}
     </div>
