@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import BorrowCDP from "./BorrowCDP";
 import Details from "./Details";
 import {displayRatio, mAlgosToAlgos, displayLiquidationPrice, getMinted, getCollateral} from "../pages/BorrowContent"
-
+import { calcRatio } from "../transactions/cdp";
 
 
 export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cdp, price, setCurrentCDP, maxMint,  manageUpdate, details, apr}) {
@@ -46,10 +46,7 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
       },
       {
         title: "Collateralization Ratio",
-        val: "TBD",
-        // val: `${
-        //   getMinted() == null || getCollateral() == null ? "..." : displayRatio()
-        // }`,
+        val: `${mAsset == null || mAsset == "" ?  calcRatio(cdp.collateral, cdp.debt, true) : calcRatio(cdp.collateral, cdp.debt + mAsset, true)}`,
         hasToolTip: true,
       },
     ]
