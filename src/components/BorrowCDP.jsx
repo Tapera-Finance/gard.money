@@ -65,7 +65,6 @@ export default function BorrowCDP({
     let wallet = await getWalletInfo();
     if (wallet !== null) {
       setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
-      console.log("AAAAA", getWalletInfo());
     }
     let borrowMax = Math.max(
       0,
