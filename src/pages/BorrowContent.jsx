@@ -47,7 +47,7 @@ export const adjustedMax = () => {
   ).toFixed(3);
 };
 
-function getMinted() {
+export function getMinted() {
   if (
     document.getElementById("minted") == null ||
     isNaN(parseFloat(document.getElementById("minted").value))

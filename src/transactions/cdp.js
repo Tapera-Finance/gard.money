@@ -46,6 +46,8 @@ getPrice();
 export function calcRatio(collateral, minted, string = false) {
   // collateral: Microalgos
   // minted: GARD
+  console.log(collateral)
+  console.log(minted)
   const ratio = (100 * collateral * currentPrice) / minted / 1000000;
   if (string) {
     return ratio.toFixed(0) + "%";
