@@ -189,7 +189,7 @@ export default function SupplyCDP({
             onClick={async () => {
               setLoading(true);
               try {
-                let res = await addCollateral(cdp.id, additionalSupply);
+                let res = await addCollateral(cdp.id, additionalSupply, commitChecked);
                 if (res.alert) {
                   dispatch(setAlert(res.text));
                 }
