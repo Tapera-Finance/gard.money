@@ -284,6 +284,42 @@ export default function BorrowContent() {
         <></>
       )}
       <Banner>
+      <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt",  }}>Missing your CDP? </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}>Make sure to migrate from V1 to V2</div>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <V1Link onClick={() => {
+            window.open("https://www.v1.gard.money/")
+          }}>V1 Site</V1Link>
+        </div>
+      </Banner>
+      <Banner>
         <div
           style={{
             justifyContent: "center",
@@ -500,6 +536,17 @@ const Link = styled.text`
     color: #03a0ff;
     cursor: pointer;
   } */
+`;
+
+const V1Link = styled.text`
+  text-decoration: none;
+  font-weight: 500;
+  color: #172756;
+  margin-right: 12px;
+  &:hover {
+    color: #03a0ff;
+    cursor: pointer;
+  }
 `;
 
 const Banner = styled.div`
