@@ -22,6 +22,7 @@ import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
 import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
+import { getAlgoGovAPR } from "../components/Positions";
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
@@ -77,6 +78,7 @@ export default function BorrowContent() {
   const [balance, setBalance] = useState("...");
   const [price, setPrice] = useState(0);
   const [supplyPrice, setSupplyPrice] = useState(0);
+  const [apr, setAPR] = useState(0);
   const [borrowPrice, setBorrowPrice] = useState(0);
   const cdps = CDPsToList();
 
@@ -119,6 +121,10 @@ export default function BorrowContent() {
   useEffect(() => {
     setSupplyPrice(price);
   }, [price]);
+
+  useEffect(async () => {
+    setAPR(await getAlgoGovAPR())
+}, []);
 
   useEffect(() => {
     if (!walletAddress) navigate("/");
@@ -239,7 +245,7 @@ export default function BorrowContent() {
     },
     {
       title: "ALGO Governance APR",
-      val: `${34.3}%`,
+      val: `${apr}%`,
       hasToolTip: true,
     },
     {
