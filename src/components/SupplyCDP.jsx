@@ -87,7 +87,6 @@ export default function SupplyCDP({
     let wallet = getWalletInfo();
     if (wallet !== null) {
       setBalance(adjustedMax());
-      console.log("AAAAA", getWalletInfo());
     }
   }, []);
 

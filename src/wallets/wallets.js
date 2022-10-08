@@ -106,7 +106,6 @@ export async function updateWalletInfo() {
     activeWalletInfo["assets"][0] = activeWalletInfo["assets"][idx];
     activeWalletInfo["assets"][idx] = temp;
   }
-  console.log(activeWalletInfo);
   return activeWalletInfo;
 }
 
