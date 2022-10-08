@@ -109,7 +109,7 @@ export default function Govern() {
   const [voteTableDisabled, setVoteTable] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
-  const [toWallet, setToWallet] = useState(false);
+  const [toWallet, setToWallet] = useState(true);
   const [apr, setAPR] = useState("...");
   const dispatch = useDispatch();
 
@@ -391,15 +391,6 @@ export default function Govern() {
       </div>}
       <Modal
         title={"ALGOs to Commit"}
-        subtitle={(
-            <div>
-              <text>
-                Enter the number of Algo tokens you would like commit for
-                governance period #5 from this CDP
-              </text>
-            </div>
-          )
-        }
         close={() => setModalVisible(false)}
         animate={modalCanAnimate}
         visible={modalVisible}
