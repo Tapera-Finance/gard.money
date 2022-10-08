@@ -99,7 +99,6 @@ export default function StakeDetails() {
     }
     setLoading(false)
   }
-
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
@@ -166,7 +165,7 @@ export default function StakeDetails() {
 
       </div>
       <Container>
-        <FirstRow>Staking Pool</FirstRow>
+        <FirstRow>{"Staking Pool (Auto-Compounding)"}</FirstRow>
         <SecondRow>
           <Heading>TVL</Heading>
           <Heading>Type</Heading>
