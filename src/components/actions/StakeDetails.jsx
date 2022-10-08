@@ -171,7 +171,7 @@ export default function StakeDetails() {
           <Heading>TVL</Heading>
           <Heading>Type</Heading>
           <Heading>Duration</Heading>
-          <Heading>APY</Heading>
+          <Heading>APR</Heading>
           <Heading>Stake Amount</Heading>
         </SecondRow>
         <ThirdRow>
