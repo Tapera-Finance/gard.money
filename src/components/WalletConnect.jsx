@@ -66,12 +66,14 @@ export default function WalletConnect() {
                     if (!wallet.alert) {
                       dispatch(setWallet({ address: displayWallet() }));
                       const owner_address = getWallet().address;
+                      let inTotalsPromise = userInTotals(owner_address);
                       let in_DB = await userInDB(owner_address);
-                      let in_Totals = await userInTotals(owner_address);
                       if (!in_DB) {
                         const user = await instantiateUser(owner_address);
                         addUserToFireStore(user, owner_address);
                       }
+                      let in_Totals = await inTotalsPromise;
+                      console.log(in_Totals)
                       if (!in_Totals) {
                         var initialTotals = {
                           id: owner_address,
@@ -80,6 +82,11 @@ export default function WalletConnect() {
                           totalStaked: 0,
                         };
                         addUserToTotals(initialTotals, owner_address);
+                        if (localStorage.getItem("gleamCommitComplete") == null){
+                          localStorage.setItem("gleamCommitComplete", JSON.stringify([]))
+                          localStorage.setItem("gleamMintComplete", JSON.stringify([]))
+                          localStorage.setItem("gleamStakeComplete", JSON.stringify([]))
+                        }
                       }
                     } else {
                       dispatch(setAlert(wallet.text));

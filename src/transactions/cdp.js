@@ -393,22 +393,34 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   );
   
   addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, 0);
-  await updateTotal(info.address, "totalMinted", microOpeningGard)
-  let user_totals = await loadUserTotals()
-  console.log('totals', user_totals)
-  if(user_totals["totalMinted"] >= 10000000){
-    addUserToGleam("mintGARD", info.address)
+  let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
+  if (!completedMint.includes(info.address)) {
+    await updateTotal(info.address, "totalMinted", microOpeningGard)
+    let user_totals = await loadUserTotals()
+    console.log('totals', user_totals)
+    if(user_totals["totalMinted"] >= 10000000){
+      addUserToGleam("mintGARD", info.address);
+      completedMint.push(info.address)
+      console.log('minted', completedMint)
+      localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
+    }
   }
   if (commit) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, openingMicroALGOs);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #5!";
-    await updateTotal(info.address, "totalCommitted", openingMicroALGOs)
-    let user_totals = await loadUserTotals()
-    console.log('totals', user_totals)
-    if(user_totals["totalCommitted"] >= 100000000){
-      addUserToGleam("commitAlgos", info.address)
+      let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
+      if (!completedCommit.includes(info.address)) {
+      await updateTotal(info.address, "totalCommitted", openingMicroALGOs)
+      let user_totals = await loadUserTotals()
+      console.log('totals', user_totals)
+      if(user_totals["totalCommitted"] >= 100000000){
+        addUserToGleam("commitAlgos", info.address)
+        completedCommit.push(info.address)
+        console.log("commited", completedCommit)
+        localStorage.setItem("gleamCommitComplete", JSON.stringify(completedCommit))
+      }
     }
   }
   
@@ -460,11 +472,17 @@ export async function mint(accountID, newGARD) {
   );
   setLoadingStage(null);
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
-  await updateTotal(info.address, "totalMinted", microGARD(newGARD))
-  let user_totals = await loadUserTotals()
-  console.log('totals', user_totals)
-  if(user_totals["totalMinted"] >= 10000000){
-    addUserToGleam("mintGARD", info.address)
+  let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
+  if (!completedMint.includes(info.address)) {
+    await updateTotal(info.address, "totalMinted", microGARD(newGARD))
+    let user_totals = await loadUserTotals()
+    console.log('totals', user_totals)
+    if(user_totals["totalMinted"] >= 10000000){
+      addUserToGleam("mintGARD", info.address)
+      completedMint.push(info.address)
+      console.log('minted', completedMint)
+      localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
+    }
   }
   checkChainForCDP(info.address, accountID);
 
@@ -836,11 +854,17 @@ export async function commitCDP(account_id, amount, toWallet) {
     account_id,
     parseInt(amount * 1000000),
   );
-  await updateTotal(info.address, "totalCommitted", parseInt(amount * 1000000))
-  let user_totals = await loadUserTotals()
-  console.log('totals', user_totals)
-  if(user_totals["totalCommitted"] >= 100000000){
-    addUserToGleam("commitAlgos", info.address)
+  let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
+  if (!completedCommit.includes(info.address)) {
+    await updateTotal(info.address, "totalCommitted", parseInt(amount * 1000000))
+    let user_totals = await loadUserTotals()
+    console.log('totals', user_totals)
+    if(user_totals["totalCommitted"] >= 100000000){
+      addUserToGleam("commitAlgos", info.address)
+      completedCommit.push(info.address)
+      console.log("commited", completedCommit)
+      localStorage.setItem("gleamCommitComplete", JSON.stringify(completedCommit))
+    }
   }
   return response;
 }
