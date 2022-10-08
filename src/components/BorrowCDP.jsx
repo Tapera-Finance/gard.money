@@ -45,7 +45,7 @@ export default function BorrowCDP({
 
   const handleAddBorrow = (event) => {
     manageUpdate(true)
-    setUtilization(calcUtilization((event.target.value === "" ? "" : Number(event.target.value) + mAlgosToAlgos(cdp.debt)), borrowLimit))
+    setUtilization(calcUtilization((event.target.value === "" ? mAlgosToAlgos(cdp.debt) : Number(event.target.value) + mAlgosToAlgos(cdp.debt)), mAlgosToAlgos(cdp.debt) + borrowLimit))
     setAdditionalBorrow(
       event.target.value === "" ? "" : Number(event.target.value),
     );
@@ -74,6 +74,7 @@ export default function BorrowCDP({
       ) / 100,
     )
     setBorrowLimit(borrowMax)
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), mAlgosToAlgos(cdp.debt) + borrowMax))
   }, []);
 
   useEffect(() => {
