@@ -45,7 +45,7 @@ export default function StakeDetails() {
   const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
-  const [stakeAmount, setStakeAmount] = useState(0.000);
+  const [stakeAmount, setStakeAmount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const dispatch = useDispatch();
@@ -70,6 +70,7 @@ export default function StakeDetails() {
 
   const handleStake = async () => {
     console.log(`action to stake ${stakeAmount}`)
+    if (stakeAmount === null || !(stakeAmount > 0)) return; 
     setLoading(true)
     try {
       const res = await stake("NL", stakeAmount)
@@ -85,6 +86,7 @@ export default function StakeDetails() {
 
   const handleUnstake = async () => {
     console.log(`action to unstake ${stakeAmount}`)
+    if (stakeAmount === null || !(stakeAmount > 0)) return;
     setLoading(true)
     try {
       const res = await unstake("NL", stakeAmount)
@@ -189,7 +191,7 @@ export default function StakeDetails() {
           <StakeBox>
             <StakeInput
               id="stake-amt"
-              placeholder="0.00"
+              placeholder="Enter Amount"
               min="0.0"
               step=".01"
               type="number"
