@@ -47,12 +47,12 @@ export default function SystemMetrics() {
     },
     {
       title: "Staked GARD",
-      val: `${staked.toFixed(2)}`,
+      val: (staked.toFixed(2)).replace(/\B(?=(\d{3})+(?!\d))/g, ","),
       hasToolTip: true,
     },
     {
       title: "Circulating GARD",
-      val: `${circulating.toFixed(2)}`,
+      val: (circulating.toFixed(2)).replace(/\B(?=(\d{3})+(?!\d))/g, ","),
       hasToolTip: true,
     },
   ]
