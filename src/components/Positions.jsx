@@ -246,7 +246,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                     <div style={{display: "flex", flexDirection: "column"}}>
                         <div style={{display: "flex", justifyContent: "space-between"}}>
                             <div> Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,true,)})`} </div>
-                            <div>Liquidation Price: ${((1.15 * mAlgosToAlgos(cdp.debt)) / mAlgosToAlgos(cdp.collateral)).toFixed(4)}</div>
+                            <div>Liquidation Price (${((1.15 * mAlgosToAlgos(cdp.debt)) / mAlgosToAlgos(cdp.collateral)).toFixed(4)})</div>
                         </div>
                         <ThemeProvider theme={theme}>
                             <Slider
