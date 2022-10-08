@@ -30,10 +30,10 @@ export default function AppRoutes() {
           path="/govern"
           element={Main(GovernContent, "Govern")}
         />
-        <Route
+        {/*<Route
           path="/analytics"
           element={Main(AnalyticsContent, "Analytics")}
-        />
+        />*/}
       </Routes>
     </BrowserRouter>
   );

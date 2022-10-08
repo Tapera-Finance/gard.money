@@ -525,12 +525,12 @@ const menuItems = [
   //   subOptions: [],
   //   route: "/dao",
   // },
-  {
-    name: CONTENT_NAMES.ANALYTICS,
-    icon: analyticsIcon,
-    subOptions: [],
-    route: "/analytics",
-  },
+  //{
+  //  name: CONTENT_NAMES.ANALYTICS,
+  //  icon: analyticsIcon,
+  //  subOptions: [],
+  //  route: "/analytics",
+  //},
   {
     name: CONTENT_NAMES.ACCOUNT,
     icon: walletIcon,
