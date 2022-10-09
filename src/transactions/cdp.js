@@ -453,7 +453,7 @@ export async function mint(accountID, newGARD) {
   return response;
 }
 
-export async function addCollateral(accountID, newAlgos) {
+export async function addCollateral(accountID, newAlgos, commit) {
   if (accountID == "N/A") {
     return {
       alert: true,
@@ -470,6 +470,7 @@ export async function addCollateral(accountID, newAlgos) {
       text: "Value needs to be greater than 0!",
     };
   }
+  accountID = Number(accountID)
 
   setLoadingStage("Loading...");
   // Core info
@@ -488,8 +489,6 @@ export async function addCollateral(accountID, newAlgos) {
   let cdp = cdpGen(info.address, accountID);
   let microNewAlgos = parseInt(newAlgos * 1000000);
 
-  setLoadingStage("Awaiting Signature from Algorand Wallet...");
-
   let params = await getParams(1000);
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -499,6 +498,41 @@ export async function addCollateral(accountID, newAlgos) {
   });
   let txn2 = makeUpdateInterestTxn(info, params)
   let txns = [txn1, txn2];
+  
+  let govAlgos = microNewAlgos
+  let txn8
+  if (commit) {
+    const cdpInfo = await accountInfo(cdp.address)
+    govAlgos += cdpInfo.amount
+    const stringVal = `af/gov1:j{"com":${govAlgos},"bnf":"${info.address}"}`;
+    const note = enc.encode(stringVal);
+    // txn 7: owner check
+    params.fee = 2000;
+    let txn7 = algosdk.makeApplicationCallTxnFromObject({
+      from: info.address,
+      appIndex: ids.app.validator,
+      onComplete: 0,
+      appArgs: [enc.encode("OwnerCheck"), algosdk.encodeUint64(accountID)],
+      accounts: [cdp.address],
+      foreignApps: [],
+      foreignAssets: [],
+      suggestedParams: params,
+    });
+    txns.push(txn7)
+    // txn 8: Commit
+    params.fee = 0;
+    txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+      from: cdp.address,
+      to: "7K5TT4US7M3FM7L3XBJXSXLJGF2WCXPBV2YZJJO2FH46VCZOS3ICJ7E4QU",
+      amount: 0,
+      note: note,
+      suggestedParams: params,
+    });
+    txns.push(txn8)
+  }
+  
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+  
   algosdk.assignGroupID(txns);
 
   const signedGroup = await signGroup(info, txns);
@@ -506,6 +540,12 @@ export async function addCollateral(accountID, newAlgos) {
   setLoadingStage("Confirming Transaction...");
 
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
+  if (commit) {
+    stxns.push(signedGroup[2].blob)
+    const lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
+    let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
+    stxns.push(stxn8.blob)
+  }
 
   const response = await sendTxn(
     stxns,
@@ -515,6 +555,13 @@ export async function addCollateral(accountID, newAlgos) {
 
   checkChainForCDP(info.address, accountID);
   updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
+  
+  if (commit) {
+    await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
+    updateCommitmentFirestore(info.address, accountID, govAlgos);
+    response.text =
+      response.text + "\nFull Balance committed to Governance Period #5!";
+  }
 
   return response;
 }

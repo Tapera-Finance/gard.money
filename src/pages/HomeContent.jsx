@@ -62,7 +62,7 @@ const buttons = [
   "Borrow",
   "Govern",
   "Auctions",
-  "Analytics",
+  // "Analytics",
   // "Auctions",
   // "Pool",
   // "Stake",

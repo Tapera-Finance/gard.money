@@ -6,15 +6,16 @@ import { calcRatio } from "../transactions/cdp";
 
 export default function SupplyMore({ supplyPrice, cAsset, collateral, minted, cdp, price, setCurrentCDP, maxSupply, manageUpdate, details, apr}) {
     const [utilization, setUtilization] = useState(null)
+    const suppliedAmount = mAlgosToAlgos(cdp.collateral) + (cAsset !== "" ? cAsset : 0)
     let supplyDetails = [
         {
           title: "Total Supplied (Asset)",
-          val: `${mAlgosToAlgos(cdp.collateral + (cAsset !== "" ? cAsset : 0)).toFixed(2)}`,
+          val: `${suppliedAmount.toFixed(2)}`,
           hasToolTip: true,
         },
         {
           title: "Total Supplied ($)",
-          val: `$${((Number(mAlgosToAlgos(cdp.collateral + (cAsset !== "" ? cAsset : 0 )) * supplyPrice))).toFixed(2)}`,
+          val: `$${((Number(suppliedAmount * supplyPrice))).toFixed(2)}`,
           hasToolTip: true,
         },
         {
