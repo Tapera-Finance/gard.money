@@ -12,6 +12,7 @@ module.exports = {
     "Circulating GARD" : "Minted GARD less GARD staked natively",
     "Collateral" : "Crypto locked in escrow to pay off debt if necessary",
     "Collateral Factor": "The maximum amount of GARD you can borrow as a function of the value of the collateral you have supplied",
+    "Estimated Rewards / Day": "The expected increase in 'Your Stake' in a 24-hour period, given current incentives, pool revenues, and pool usage.",
     "Fees Received" : "Cumulative GARD Protocol Fees",
     // "GARD Governors" : "Total number of governors participating in governance through GARD",
     "GARD Overcollateralization" : "The ratio of locked collateral value to minted GARD value",
@@ -40,4 +41,5 @@ module.exports = {
     "Total Value Locked" : "Overall value of crypto assets deposited into the GARD Protocol system",
     "Total Vaulted" : "Amount of ALGOs from CDPs that are currently commited to governance",
     "Volume" : "Number of GARD exchanged in the pas week",
+    "Your Stake" : "Number of GARD earning rewards in the pool. Also, number of GARD entitled to withdraw.",
 };

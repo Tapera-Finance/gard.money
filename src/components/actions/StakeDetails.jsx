@@ -45,7 +45,7 @@ export default function StakeDetails() {
   const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
-  const [stakeAmount, setStakeAmount] = useState(0.000);
+  const [stakeAmount, setStakeAmount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const dispatch = useDispatch();
@@ -70,6 +70,7 @@ export default function StakeDetails() {
 
   const handleStake = async () => {
     console.log(`action to stake ${stakeAmount}`)
+    if (stakeAmount === null || !(stakeAmount > 0)) return; 
     setLoading(true)
     try {
       const res = await stake("NL", stakeAmount)
@@ -85,6 +86,7 @@ export default function StakeDetails() {
 
   const handleUnstake = async () => {
     console.log(`action to unstake ${stakeAmount}`)
+    if (stakeAmount === null || !(stakeAmount > 0)) return;
     setLoading(true)
     try {
       const res = await unstake("NL", stakeAmount)
@@ -97,7 +99,6 @@ export default function StakeDetails() {
     }
     setLoading(false)
   }
-
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
@@ -164,12 +165,12 @@ export default function StakeDetails() {
 
       </div>
       <Container>
-        <FirstRow>Staking Pool</FirstRow>
+        <FirstRow>{"Staking Pool (Auto-Compounding)"}</FirstRow>
         <SecondRow>
           <Heading>TVL</Heading>
           <Heading>Type</Heading>
           <Heading>Duration</Heading>
-          <Heading>APY</Heading>
+          <Heading>APR</Heading>
           <Heading>Stake Amount</Heading>
         </SecondRow>
         <ThirdRow>
@@ -189,7 +190,7 @@ export default function StakeDetails() {
           <StakeBox>
             <StakeInput
               id="stake-amt"
-              placeholder="0.00"
+              placeholder="Enter Amount"
               min="0.0"
               step=".01"
               type="number"
@@ -205,11 +206,11 @@ export default function StakeDetails() {
           </StakeBox>
         </ThirdRow>
         <FourthRow>
-          <Effect title="Your Stake" val={`${((noLock/1000000)+parseFloat(accrued)).toFixed(3)} GARD`} hasToolTip={false} />
+          <Effect title="Your Stake" val={`${((noLock/1000000)+parseFloat(accrued)).toFixed(3)} GARD`} hasToolTip={true} />
           <Effect
             title="Estimated Rewards / Day"
             val={`${(NLAPY / 100 * (noLock/1000000+parseFloat(accrued)) / 365).toFixed(3)} GARD`}
-            hasToolTip={false}
+            hasToolTip={true}
           />
           <Effect
             title="New Rewards"

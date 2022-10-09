@@ -186,7 +186,8 @@ export default function Govern() {
         value.committed !== 0 && value.committed !== "unknown" ? (
           <PrimaryButton
           blue={true}
-            text={"Committed"}
+            text={value.balance === value.committed ? "Committed" : "Commit More"}
+            left_align={true}
             onClick={() => {
               if (value.id == "N/A") {
                 return;
@@ -206,6 +207,7 @@ export default function Govern() {
           <PrimaryButton
             text={"Commit"}
             blue={true}
+            left_align={true}
             onClick={() => {
               if (value.id == "N/A") {
                 return;
@@ -219,10 +221,11 @@ export default function Govern() {
             disabled={!(Date.now() < commitmentPeriodEnd)}
           />
         ),
-        info: (
+        "Verify Committment": (
           <PrimaryButton
             blue={true}
             text={"Governor Page"}
+            left_align={true}
             onClick={() => {
               window.open(getGovernorPage(account_id));
             }}
@@ -359,7 +362,9 @@ export default function Govern() {
         </div>
       </div>
       <Table data={cdps} />
-      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} disabled={true}/>
+      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} onClick={() => {
+            navigate("/borrow");
+          }}Enroll/>
       {voteTableDisabled ? <></>:
       <div>
         <div

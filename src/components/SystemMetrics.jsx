@@ -47,12 +47,12 @@ export default function SystemMetrics() {
     },
     {
       title: "Staked GARD",
-      val: `${staked.toFixed(2)}`,
+      val: (staked.toFixed(2)).replace(/\B(?=(\d{3})+(?!\d))/g, ","),
       hasToolTip: true,
     },
     {
       title: "Circulating GARD",
-      val: `${circulating.toFixed(2)}`,
+      val: (circulating.toFixed(2)).replace(/\B(?=(\d{3})+(?!\d))/g, ","),
       hasToolTip: true,
     },
   ]
@@ -191,7 +191,7 @@ function Graph({ title }) {
         "Current TVL: $" + historical_data[historical_data.length - 1].tvl,
       );
       setData(historical_data);
-    } else if (title === "Circulating GARD") {
+    } else if (title === "Circulating v1 GARD") {
       let step = 8;
       let end = 288;
       if (selected !== "24H") {
@@ -239,7 +239,7 @@ function Graph({ title }) {
           historical_data[historical_data.length - 1].price,
       );
       setData(historical_data);
-    } else if (title === "Open CDPs") {
+    } else if (title === "Open v1 CDPs") {
       let step = 8;
       let end = 288;
       if (selected !== "24H") {
@@ -284,7 +284,7 @@ function Graph({ title }) {
         ).format("HH:mm")})`,
       );
       setData(historical_data);
-    } else if (title === "ALGOs Locked") {
+    } else if (title === "ALGOs Locked in v1") {
       let step = 8;
       let end = 288;
       if (selected !== "24H") {
@@ -369,15 +369,15 @@ const dummyGraphs = [
     subtitle: "Current Price: $799.89 (Last Updated 12:01 pm)",
   },
   {
-    title: "ALGOs Locked",
+    title: "ALGOs Locked in v1",
     subtitle: "Current TVL: $799.89 (Last Updated 12:01 pm)",
   },
   {
-    title: "Circulating GARD",
+    title: "Circulating v1 GARD",
     subtitle: "Current Number Circulating: 799.89 (Last Updated 12:01 pm)",
   },
   {
-    title: "Open CDPs",
+    title: "Open v1 CDPs",
     subtitle: "Number Open CDPs: 8 (Last Updated 12:01 pm)",
   },
   {
