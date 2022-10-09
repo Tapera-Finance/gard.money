@@ -22,6 +22,7 @@ import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
 import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
+import { getAlgoGovAPR } from "../components/Positions";
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
@@ -77,6 +78,7 @@ export default function BorrowContent() {
   const [balance, setBalance] = useState("...");
   const [price, setPrice] = useState(0);
   const [supplyPrice, setSupplyPrice] = useState(0);
+  const [apr, setAPR] = useState(0);
   const [borrowPrice, setBorrowPrice] = useState(0);
   const cdps = CDPsToList();
 
@@ -119,6 +121,10 @@ export default function BorrowContent() {
   useEffect(() => {
     setSupplyPrice(price);
   }, [price]);
+
+  useEffect(async () => {
+    setAPR(await getAlgoGovAPR())
+}, []);
 
   useEffect(() => {
     if (!walletAddress) navigate("/");
@@ -239,7 +245,7 @@ export default function BorrowContent() {
     },
     {
       title: "ALGO Governance APR",
-      val: `${34.3}%`,
+      val: `${apr}%`,
       hasToolTip: true,
     },
     {
@@ -277,6 +283,42 @@ export default function BorrowContent() {
       ) : (
         <></>
       )}
+      <Banner>
+      <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt",  }}>Missing your CDP? </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}>Make sure to migrate from V1 to V2</div>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <V1Link onClick={() => {
+            window.open("https://www.v1.gard.money/")
+          }}>V1 Site</V1Link>
+        </div>
+      </Banner>
       <Banner>
         <div
           style={{
@@ -351,7 +393,7 @@ export default function BorrowContent() {
                     $Value: $
                     {cAlgos === "..." ? 0.0 : (cAlgos * supplyPrice).toFixed(2)}
                   </Valuation>
-                  <InputDetails>
+                  <SupplyInputDetails>
                     {supplyDetails.length && supplyDetails.length > 0
                       ? supplyDetails.map((d) => {
                           return (
@@ -369,18 +411,22 @@ export default function BorrowContent() {
                       <label
                   style={{
                     display: "flex",
-                    alignContent: "center",
+                    alignContent: "flex-start",
                   }}
                 >
+                  <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "flex-start"}}>
+
                    <InputTitle>
                   Commit to governance
                 </InputTitle>
-                      <input
+                      <CommitBox
                         type={"checkbox"}
                         onChange={handleCheckboxChange}
+
                       />
+                  </div>
                 </label>
-                  </InputDetails>
+                  </SupplyInputDetails>
                 </InputContainer>
               </Background>
             </SubContainer>
@@ -411,7 +457,7 @@ export default function BorrowContent() {
                     </MaxButton>
                   </div>
                   <Valuation>$Value: ${mGARD === "" ? 0 : mGARD}</Valuation>
-                  <InputDetails>
+                  <BorrowInputDetails>
                     {borrowDetails.length && borrowDetails.length > 0
                       ? borrowDetails.map((d) => {
                           return (
@@ -426,7 +472,7 @@ export default function BorrowContent() {
                           );
                         })
                       : null}
-                  </InputDetails>
+                  </BorrowInputDetails>
                 </InputContainer>
               </Background>
             </SubContainer>
@@ -490,6 +536,17 @@ const Link = styled.text`
     color: #03a0ff;
     cursor: pointer;
   } */
+`;
+
+const V1Link = styled.text`
+  text-decoration: none;
+  font-weight: 500;
+  color: #172756;
+  margin-right: 12px;
+  &:hover {
+    color: #03a0ff;
+    cursor: pointer;
+  }
 `;
 
 const Banner = styled.div`
@@ -566,14 +623,23 @@ const InputContainer = styled.div`
   border: 1px solid #80edff;
 `;
 
-const InputDetails = styled.div`
+const SupplyInputDetails = styled.div`
   display: grid;
-  grid-template-columns: repeat(1, 40%);
+  grid-template-columns: repeat(2, 60%);
   row-gap: 30px;
   justify-content: center;
   padding: 30px 0px 30px;
   border-radius: 10px;
 `;
+
+const BorrowInputDetails = styled.div`
+display: grid;
+  grid-template-columns: repeat(1, 40%);
+  row-gap: 30px;
+  justify-content: center;
+  padding: 30px 0px 30px;
+  border-radius: 10px;
+`
 
 const Item = styled.div`
   display: flex;
@@ -612,10 +678,28 @@ const Input = styled.input`
   }
 `;
 
+const CommitBox = styled.input`
+  display: grid;
+  place-content: center;
+  &::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em var(--form-control-color);
+}
+  border-radius: 6px;
+  &:checked {
+    color: "#019fff";
+  }
+`;
+
 //modal stuff
 const InputTitle = styled.text`
   font-weight: bold;
   font-size: 16px;
+  margin: 0px 4px 0px 2px;
 `;
 const InputSubtitle = styled.text`
   font-weight: normal;
