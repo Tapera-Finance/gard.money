@@ -7,7 +7,7 @@ import styled from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
 import { ids } from "../../transactions/ids";
-import { getAppField, getGardBalance } from "../../transactions/lib";
+import { getAppField, getGardBalance, getLocalAppField } from "../../transactions/lib";
 import {
   getWallet,
   getWalletInfo,
@@ -18,7 +18,7 @@ import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
 import { formatToDollars } from "../../utils";
-import { stake, unstake, getStakingAPY } from "../../transactions/stake"
+import { stake, unstake, getStakingAPY, getAccruedRewards } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
 
 // asset types: 0 === GARD, 1 === ALGO
@@ -32,23 +32,11 @@ function algosToMAlgos(num) {
 
 // Gets Active wallet Stake in simple no-lock pool
 function getNLStake() {
-  const user_info = getWalletInfo();
-  const encodedNLStake = "TkwgR0FSRCBTdGFrZWQ=";
-
-  for (let i = 0; i < user_info["apps-local-state"].length; i++) 
-  {
-    if (user_info["apps-local-state"][i].id == ids.app.gard_staking) {
-      const gs_info = user_info["apps-local-state"][i];
-        if (gs_info.hasOwnProperty("key-value")) {
-          for (let n = 0; n < gs_info["key-value"].length; n++) {
-            if (gs_info["key-value"][n]["key"] == encodedNLStake) {
-              return gs_info["key-value"][n]["value"]["uint"];
-            } 
-          }
-        }
-    }
+  const res = getLocalAppField(ids.app.gard_staking, "NL GARD Staked")
+  if (res === undefined) {
+    return 0;
   }
-  return 0;
+  return res
 }
 
 export default function StakeDetails() {
@@ -57,13 +45,14 @@ export default function StakeDetails() {
   const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
-  const [stakeAmount, setStakeAmount] = useState(0.000);
+  const [stakeAmount, setStakeAmount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...")
   const [NLAPY, setNLAPY] = useState(0)
   const [balance, setBalance] = useState("...");
+  const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
 
   const handleInput = (e) => {
@@ -76,14 +65,12 @@ export default function StakeDetails() {
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
   const handleMaxStake = () => {
-    setMaxStake(maxStake);
-    let max = balance
-    setStakeAmount(max)
-    console.log("stake", stakeAmount);
+    setStakeAmount(maxStake)
   };
 
   const handleStake = async () => {
     console.log(`action to stake ${stakeAmount}`)
+    if (stakeAmount === null || !(stakeAmount > 0)) return; 
     setLoading(true)
     try {
       const res = await stake("NL", stakeAmount)
@@ -99,6 +86,7 @@ export default function StakeDetails() {
 
   const handleUnstake = async () => {
     console.log(`action to unstake ${stakeAmount}`)
+    if (stakeAmount === null || !(stakeAmount > 0)) return;
     setLoading(true)
     try {
       const res = await unstake("NL", stakeAmount)
@@ -111,17 +99,18 @@ export default function StakeDetails() {
     }
     setLoading(false)
   }
-
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
     const APYPromise = getStakingAPY("NL")
+    const accruePromise = getAccruedRewards("NL")
     await infoPromise
     setNoLock(getNLStake())
     setBalance(getGardBalance(getWalletInfo()).toFixed(2));
-    setMaxStake(getGardBalance(getWalletInfo()).toFixed(2));
+    setMaxStake(getGardBalance(getWalletInfo()));
     setNLAPY((await APYPromise))
-    setNLTVL(((await TVLPromise) / 1000000).toFixed(2))
+    setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
+    setAccrued((await accruePromise) / 1000000)
   }, []);
 
   useEffect(() => {
@@ -176,12 +165,12 @@ export default function StakeDetails() {
 
       </div>
       <Container>
-        <FirstRow>Staking Pool</FirstRow>
+        <FirstRow>{"Staking Pool (Auto-Compounding)"}</FirstRow>
         <SecondRow>
           <Heading>TVL</Heading>
           <Heading>Type</Heading>
           <Heading>Duration</Heading>
-          <Heading>APY</Heading>
+          <Heading>APR</Heading>
           <Heading>Stake Amount</Heading>
         </SecondRow>
         <ThirdRow>
@@ -201,7 +190,7 @@ export default function StakeDetails() {
           <StakeBox>
             <StakeInput
               id="stake-amt"
-              placeholder="0.00"
+              placeholder="Enter Amount"
               min="0.0"
               step=".01"
               type="number"
@@ -217,16 +206,16 @@ export default function StakeDetails() {
           </StakeBox>
         </ThirdRow>
         <FourthRow>
-          <Effect title="Your Stake" val={`${(noLock/1000000).toFixed(3)} GARD`} hasToolTip={false} />
+          <Effect title="Your Stake" val={`${((noLock/1000000)+parseFloat(accrued)).toFixed(3)} GARD`} hasToolTip={true} />
           <Effect
             title="Estimated Rewards / Day"
-            val={`${(NLAPY / 100 * noLock / 1000000 / 365).toFixed(3)} GARD`}
-            hasToolTip={false}
+            val={`${(NLAPY / 100 * (noLock/1000000+parseFloat(accrued)) / 365).toFixed(3)} GARD`}
+            hasToolTip={true}
           />
           <Effect
-            title="Rewards Accrued"
-            val="TBD"
-            hasToolTip={false}
+            title="New Rewards"
+            val={`${parseFloat(accrued).toFixed(4)}`}
+            hasToolTip={true}
           />
           <div style={{display: "flex", flexDirection: "row", alignSelf: "baseline"}}>
 

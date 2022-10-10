@@ -1,15 +1,25 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest } from "./lib"
-import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
 import {
   addUserToGleam,
   updateTotal,
   loadUserTotals
 } from "../components/Firebase";
+import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField } from "./lib"
+import { accountInfo, getParams, signGroup, sendTxn, updateWalletInfo } from "../wallets/wallets";
 
 const enc = new TextEncoder();
 let stakingRevenuePercent = .7 // TODO: Get this dynamically off the chain
+
+export async function getAccruedRewards(pool) {
+  const staked = getLocalAppField(ids.app.gard_staking, pool + " GARD Staked")
+  const initialReturn = getLocalAppField(ids.app.gard_staking, pool + " Initial Return Rate")
+  if (staked === undefined || initialReturn === undefined) {
+    return 0
+  }
+  const currentReturn = await getAppField(ids.app.gard_staking, pool + " Return Rate")
+  return (staked * currentReturn) / initialReturn - staked
+}
 
 export async function getStakingAPY(pool) {
   // TODO: In the future this will need to be more granular

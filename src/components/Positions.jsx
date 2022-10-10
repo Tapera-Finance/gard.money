@@ -109,19 +109,27 @@ const dummyCDPs = [
         return parseFloat(document.getElementById("addCollateral").value);
       }
 
+      function recalcDetails() {
+        displayLiquidationPrice()
+        getMinted()
+        getCollateral()
+        displayRatio()
+      }
 
 
-export default function Positions({maxGARD}) {
+export default function Positions({cdp, maxGARD, maxSupply}) {
     const dispatch = useDispatch();
     const {theme} = useContext(ThemeContext);
     const [price, setPrice] = useState(0)
     const [supplyPrice, setSupplyPrice] = useState(0)
     const [apr, setAPR] = useState(0)
     const [cAlgos, setCollateral] = useState("");
+    const [mGARD, setGARD] = useState("")
     const [minted, setMinted] = useState("")
     const loadedCDPs = CDPsToList();
     const [currentCDP, setCurrentCDP] = useState(null)
     const [selectedTab, setSelectedTab] = useState("one");
+    const [manageUpdate, setManageUpdate] = useState(false);
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
     var details = [
@@ -168,7 +176,7 @@ export default function Positions({maxGARD}) {
           },
           {
             title: "ALGO Governance APR",
-            val: `${34.3}%`,
+            val: `${apr}%`,
             hasToolTip: true,
           },
           {
@@ -179,6 +187,9 @@ export default function Positions({maxGARD}) {
             hasToolTip: true,
           },
     ]
+    useEffect(async () => {
+      setAPR(await getAlgoGovAPR());
+    }, []);
 
     var sessionStorageSetHandler = function (e) {
       setLoadingText(JSON.parse(e.value));
@@ -186,10 +197,6 @@ export default function Positions({maxGARD}) {
 
     document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
-    // const Tabs = {
-    //     one: <SystemMetrics />,
-    //     two: <YourMetrics />,
-    // };
     const tabs = {
         one: "Borrow More",
         two: "Supply More",
@@ -204,6 +211,13 @@ export default function Positions({maxGARD}) {
     useEffect(() => {
         setSupplyPrice(price)
       }, [price])
+
+      useEffect(() => {
+        if (manageUpdate) {
+          recalcDetails()
+          setManageUpdate(!manageUpdate)
+        }
+      }, [manageUpdate])
 
     return <div>
       {loading ? <LoadingOverlay
@@ -228,10 +242,11 @@ export default function Positions({maxGARD}) {
                         <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
                         <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
                     </div>
-                    <div style={{alignSelf:"center", textAlign:"center"}}>APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
+                    <div style={{ display: "flex", flexDirection: "column", rowGap: 20, alignSelf:"center", textAlign:"center", marginBottom: 10}}>APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
                     <div style={{display: "flex", flexDirection: "column"}}>
-                        <div>
-                            Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,true,)})`}
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div> Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,true,)})`} </div>
+                            <div>Liquidation Price (${((1.15 * mAlgosToAlgos(cdp.debt)) / mAlgosToAlgos(cdp.collateral)).toFixed(4)})</div>
                         </div>
                         <ThemeProvider theme={theme}>
                             <Slider
@@ -261,9 +276,8 @@ export default function Positions({maxGARD}) {
                  />
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
-                    {selectedTab === "one" ? <BorrowMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} apr={apr} />
-                    : selectedTab === "two" ? <SupplyMore collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} apr={apr} />
-                    //<RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
+                    {selectedTab === "one" ? <BorrowMore supplyPrice={supplyPrice} collateral={cAlgos} mAsset={mGARD} setCollateral={setCollateral} minted={setGARD} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} manageUpdate={setManageUpdate} />
+                    : selectedTab === "two" ? <SupplyMore supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
                     : selectedTab === "three" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     :
                     // : selectedTab === "three" ?

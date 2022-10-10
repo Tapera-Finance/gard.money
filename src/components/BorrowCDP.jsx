@@ -13,38 +13,68 @@ import {
 } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
+import { mAlgosToAlgos } from "../pages/BorrowContent";
 
-export default function ManageCDP({
+export default function BorrowCDP({
+  setCollateral,
   collateral,
   minted,
   cdp,
   price,
   setCurrentCDP,
+  manageUpdate,
+  maxMint,
   apr,
+  setUtilization
 }) {
   const walletAddress = useSelector((state) => state.wallet.address);
   const [balance, setBalance] = useState(0);
   const [supplyLimit, setSupplyLimit] = useState(0);
+  const [borrowLimit, setBorrowLimit] = useState(0)
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {debt} = cdp
 
   const [additionalBorrow, setAdditionalBorrow] = useState("");
 
+  const calcUtilization = (borrowed, maxBorrow) => {
+   return ((100 * borrowed ) / maxBorrow).toFixed(2)
+  }
+
   const handleAddBorrow = (event) => {
+    manageUpdate(true)
+    setUtilization(calcUtilization((event.target.value === "" ? mAlgosToAlgos(cdp.debt) : Number(event.target.value) + mAlgosToAlgos(cdp.debt)), mAlgosToAlgos(cdp.debt) + borrowLimit))
     setAdditionalBorrow(
       event.target.value === "" ? "" : Number(event.target.value),
     );
     minted(event.target.value === "" ? "" : Number(event.target.value));
+
   };
+
+  const handleMaxBorrow = (event) => {
+    manageUpdate(true)
+    minted(borrowLimit)
+    setAdditionalBorrow(borrowLimit)
+    setUtilization(calcUtilization(borrowLimit, borrowLimit))
+  }
+
   useEffect(async () => {
     await updateWalletInfo();
     let wallet = await getWalletInfo();
     if (wallet !== null) {
       setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
-      console.log("AAAAA", getWalletInfo());
     }
+    let borrowMax = Math.max(
+      0,
+      Math.trunc(
+        (100 * ((price * cdp.collateral) / 1000000)) / 1.4 -
+          (100 * cdp.debt) / 1000000,
+      ) / 100,
+    )
+    setBorrowLimit(borrowMax)
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), mAlgosToAlgos(cdp.debt) + borrowMax))
   }, []);
 
   useEffect(() => {
@@ -55,6 +85,11 @@ export default function ManageCDP({
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
   var borrowDetails = [
+    {
+      title: "Already Borrowed",
+      val: `${mAlgosToAlgos(cdp.debt).toFixed(2)}`,
+      hasToolTip: true
+    },
     {
       title: "Borrow Limit",
       val: `${Math.max(
@@ -93,12 +128,13 @@ export default function ManageCDP({
                   value={additionalBorrow}
                   onChange={handleAddBorrow}
                 />
-                {/* <MaxButton>
+                <MaxButton onClick={handleMaxBorrow}>
                   <ToolTip
                     toolTip={"+MAX"}
                     toolTipText={"Click to lend maximum amount"}
+
                   />
-                </MaxButton> */}
+                </MaxButton>
               </div>
               <Valuation>
                 $Value: ${(additionalBorrow * 1).toFixed(2)}
@@ -173,7 +209,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
   display: grid;
-  grid-template-columns: repeat(1, 49%);
+  grid-template-columns: repeat(2, 49%);
   row-gap: 30px;
   justify-content: center;
   padding: 30px 0px 30px;
@@ -193,6 +229,10 @@ const MaxButton = styled.button`
   cursor: pointer;
   font-size: 12px;
 `;
+
+const Text = styled.text`
+  //
+`
 const Valuation = styled.div`
   margin-left: 25px;
   margin-top: 3px;

@@ -224,7 +224,7 @@ export default function Drawer({
               <SocialMediaButton
                 onClick={() =>
                   window.open(
-                    "https://www.youtube.com/channel/UCEVv90DTh3gRNH4YweMnBTA",
+                    "https://youtu.be/6IeOb_NZDm4",
                   )
                 }
               >

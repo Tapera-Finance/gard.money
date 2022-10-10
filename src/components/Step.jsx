@@ -184,13 +184,13 @@ const Badge = ({ type }) => {
       >
         <div>
           <text style={{ color: "#ffffff", marginRight: 2, fontSize: "8pt" }}>
-            {type} Reward
+            {type.text} Reward
           </text>
           <hr
             style={{ border: "dashed 1px #019fff", margin: "0px 0px 2px 0px" }}
           ></hr>
         </div>
-        <text style={{ color: "#80edff", fontSize: "8pt", alignItems: "center" }}>0.03%</text>
+        <text style={{ color: "#80edff", fontSize: "8pt", alignItems: "center" }}>{type.val}%</text>
       </div>
     </div>
   );

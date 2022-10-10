@@ -22,23 +22,33 @@ import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
 import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
+import { getAlgoGovAPR } from "../components/Positions";
 
-function displayRatio() {
+export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
 }
 
-function mAlgosToAlgos(num) {
+export function mAlgosToAlgos(num) {
   return num / 1000000;
 }
-function algosToMAlgos(num) {
+export function algosToMAlgos(num) {
   return num * 1000000;
 }
 
-function displayLiquidationPrice() {
+export function displayLiquidationPrice() {
   return "$" + ((1.15 * getMinted()) / getCollateral()).toFixed(4);
 }
 
-function getMinted() {
+export const adjustedMax = () => {
+  return mAlgosToAlgos(
+    getWalletInfo()["amount"] -
+      307000 -
+      100000 * (getWalletInfo()["assets"].length + 4) -
+      getWalletInfo()["min-balance"],
+  ).toFixed(3);
+};
+
+export function getMinted() {
   if (
     document.getElementById("minted") == null ||
     isNaN(parseFloat(document.getElementById("minted").value))
@@ -48,7 +58,7 @@ function getMinted() {
   return parseFloat(document.getElementById("minted").value);
 }
 
-function getCollateral() {
+export function getCollateral() {
   if (
     document.getElementById("collateral") == null ||
     isNaN(parseFloat(document.getElementById("collateral").value))
@@ -68,6 +78,7 @@ export default function BorrowContent() {
   const [balance, setBalance] = useState("...");
   const [price, setPrice] = useState(0);
   const [supplyPrice, setSupplyPrice] = useState(0);
+  const [apr, setAPR] = useState(0);
   const [borrowPrice, setBorrowPrice] = useState(0);
   const cdps = CDPsToList();
 
@@ -97,29 +108,29 @@ export default function BorrowContent() {
     }
   }, []);
 
+
+
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
     getWallet();
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
-    setMaxCollateral(
-      mAlgosToAlgos(
-        getWalletInfo()["amount"] -
-          307000 -
-          100000 * (getWalletInfo()["assets"].length + 4),
-      ).toFixed(3),
-    );
+    setMaxCollateral(adjustedMax());
   }, []);
 
   useEffect(() => {
     setSupplyPrice(price);
   }, [price]);
 
+  useEffect(async () => {
+    setAPR(await getAlgoGovAPR())
+}, []);
+
   useEffect(() => {
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
 
-  const handleSupplyChange = (event) => {
+  const handleSupplyChange = async (event) => {
     setCollateral(event.target.value === "" ? "" : Number(event.target.value));
     if (typeof Number(event.target.value) === "number" && mGARD === "") {
       setGARD(1)
@@ -133,13 +144,14 @@ export default function BorrowContent() {
           1000000,
       ) / 100;
     setMaxGARD(max);
+
     if (mGARD > max) {
       setGARD(max < 1 ? 1 : max);
     }
   };
 
   const handleMaxCollateral = () => {
-    setCollateral((maxCollateral * .998).toFixed(3)); // lower submittable max to prevent wallet balance error
+    setCollateral(Number((maxCollateral)).toFixed(3)); // lower submittable max to prevent wallet balance error
     let max =
       Math.trunc(
         (100 *
@@ -151,7 +163,7 @@ export default function BorrowContent() {
     if (mGARD > max) {
       setGARD(max < 1 ? 1 : max);
     }
-    console.log("collateral", cAlgos);
+    // console.log("collateral", cAlgos);
   };
 
   const handleBorrowChange = (event) => {
@@ -162,28 +174,21 @@ export default function BorrowContent() {
         ? 1
         : Number(event.target.value),
     );
-    let max = mAlgosToAlgos(
-      getWalletInfo()["amount"] -
-        307000 -
-        100000 * (getWalletInfo()["assets"].length + 4),
-    ).toFixed(3);
+    let max = mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3)
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
       return;
     }
+    console.log("logging max gard", maxGARD)
     if (cAlgos > max) {
-      setCollateral(max);
+      // setCollateral(max);
     }
   };
 
   const handleMaxBorrow = () => {
-    setGARD((maxGARD * .998).toFixed(3));
-    let max = mAlgosToAlgos(
-      getWalletInfo()["amount"] -
-        307000 -
-        100000 * (getWalletInfo()["assets"].length + 4),
-    ).toFixed(3);
+    setGARD((maxGARD).toFixed(3));
+    let max = mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3)
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -192,7 +197,7 @@ export default function BorrowContent() {
     if (cAlgos > max) {
       setCollateral(max);
     }
-    console.log("gard", mGARD);
+    // console.log("gard", mGARD);
   };
 
   var sessionStorageSetHandler = function (e) {
@@ -240,7 +245,7 @@ export default function BorrowContent() {
     },
     {
       title: "ALGO Governance APR",
-      val: `${34.3}%`,
+      val: `${apr}%`,
       hasToolTip: true,
     },
     {
@@ -278,6 +283,42 @@ export default function BorrowContent() {
       ) : (
         <></>
       )}
+      <Banner>
+      <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt",  }}>Missing your CDP? </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}>Make sure to migrate from V1 to V2</div>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <V1Link onClick={() => {
+            window.open("https://www.v1.gard.money/")
+          }}>V1 Site</V1Link>
+        </div>
+      </Banner>
       <Banner>
         <div
           style={{
@@ -352,7 +393,7 @@ export default function BorrowContent() {
                     $Value: $
                     {cAlgos === "..." ? 0.0 : (cAlgos * supplyPrice).toFixed(2)}
                   </Valuation>
-                  <InputDetails>
+                  <SupplyInputDetails>
                     {supplyDetails.length && supplyDetails.length > 0
                       ? supplyDetails.map((d) => {
                           return (
@@ -370,18 +411,22 @@ export default function BorrowContent() {
                       <label
                   style={{
                     display: "flex",
-                    alignContent: "center",
+                    alignContent: "flex-start",
                   }}
                 >
+                  <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "flex-start"}}>
+
                    <InputTitle>
                   Commit to governance
                 </InputTitle>
-                      <input
+                      <CommitBox
                         type={"checkbox"}
                         onChange={handleCheckboxChange}
+
                       />
+                  </div>
                 </label>
-                  </InputDetails>
+                  </SupplyInputDetails>
                 </InputContainer>
               </Background>
             </SubContainer>
@@ -412,7 +457,7 @@ export default function BorrowContent() {
                     </MaxButton>
                   </div>
                   <Valuation>$Value: ${mGARD === "" ? 0 : mGARD}</Valuation>
-                  <InputDetails>
+                  <BorrowInputDetails>
                     {borrowDetails.length && borrowDetails.length > 0
                       ? borrowDetails.map((d) => {
                           return (
@@ -427,7 +472,7 @@ export default function BorrowContent() {
                           );
                         })
                       : null}
-                  </InputDetails>
+                  </BorrowInputDetails>
                 </InputContainer>
               </Background>
             </SubContainer>
@@ -473,7 +518,7 @@ export default function BorrowContent() {
               setCreatePositionShown(!createPositionShown);
             }}
           />
-          <Positions maxGARD={maxGARD} />
+          <Positions maxSupply={maxCollateral} maxGARD={maxGARD} />
         </div>
       )}
     </div>
@@ -491,6 +536,17 @@ const Link = styled.text`
     color: #03a0ff;
     cursor: pointer;
   } */
+`;
+
+const V1Link = styled.text`
+  text-decoration: none;
+  font-weight: 500;
+  color: #172756;
+  margin-right: 12px;
+  &:hover {
+    color: #03a0ff;
+    cursor: pointer;
+  }
 `;
 
 const Banner = styled.div`
@@ -567,14 +623,23 @@ const InputContainer = styled.div`
   border: 1px solid #80edff;
 `;
 
-const InputDetails = styled.div`
+const SupplyInputDetails = styled.div`
   display: grid;
-  grid-template-columns: repeat(1, 40%);
+  grid-template-columns: repeat(2, 60%);
   row-gap: 30px;
   justify-content: center;
   padding: 30px 0px 30px;
   border-radius: 10px;
 `;
+
+const BorrowInputDetails = styled.div`
+display: grid;
+  grid-template-columns: repeat(1, 40%);
+  row-gap: 30px;
+  justify-content: center;
+  padding: 30px 0px 30px;
+  border-radius: 10px;
+`
 
 const Item = styled.div`
   display: flex;
@@ -613,10 +678,28 @@ const Input = styled.input`
   }
 `;
 
+const CommitBox = styled.input`
+  display: grid;
+  place-content: center;
+  &::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em var(--form-control-color);
+}
+  border-radius: 6px;
+  &:checked {
+    color: "#019fff";
+  }
+`;
+
 //modal stuff
 const InputTitle = styled.text`
   font-weight: bold;
   font-size: 16px;
+  margin: 0px 4px 0px 2px;
 `;
 const InputSubtitle = styled.text`
   font-weight: normal;
