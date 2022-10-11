@@ -263,6 +263,42 @@ export default function HomeContent() {
           }}>Stake</Link>
         </div>
       </Banner>
+      <Banner>
+      <div
+          style={{
+            justifyContent: "center",
+            textAlign: "left",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ fontSize: "10pt",  }}>ALGO Gov Boost!</div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+            marginLeft: "0px",
+          }}
+        >
+          <div style={{
+            display: "flex",
+            textAlign: "left",
+            flexDirection: "column"
+          }}>
+
+          <div style={{ color: "#172756", fontSize: "10pt" }}>100,000 ALGO Boost for Algorand Governance Period #5!</div>
+          </div>
+        </div>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+
+        <Link onClick={() => {
+            window.open("https://www.algogard.com/news/gard-100k-governance-boost.html")
+          }}>Learn More</Link>
+        </div>
+      </Banner>
       </div>
       <div
         style={{
