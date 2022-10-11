@@ -27,9 +27,10 @@ const axios = require("axios");
 
 export async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
   const axiosObj = axios.create({
-    baseURL: 'https://algoindexer.algoexplorerapi.io',
+    baseURL: 'https://mainnet-idx.algonode.cloud',
     timeout: 300000,
   })
+  await new Promise((r) => setTimeout(r, 100));
   const response = (await axiosObj.get('/v2/accounts', {
     params: {
       'application-id': appId,

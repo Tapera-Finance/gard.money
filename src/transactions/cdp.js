@@ -89,7 +89,7 @@ async function checkChainForCDP(address, id) {
   // This is done by getting the info, then
   const cdp = cdpGen(address, id);
   const info = await accountInfo(cdp.address);
-  
+
   const state = getCDPState(info)
   
   if (state.state == 'borked') {
@@ -97,7 +97,7 @@ async function checkChainForCDP(address, id) {
     return true;
   }
   if (state.state == 'opened') {
-    updateCDP(address, id, state.collateral, state.principal);
+    updateCDP(address, id, state.collateral, await sgardToGard(state.principal));
     return true;
   }
   removeCDP(address, id);
