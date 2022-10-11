@@ -174,7 +174,10 @@ export default function BorrowContent() {
         ? 1
         : Number(event.target.value),
     );
-    let max = mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3)
+    let max = mAlgosToAlgos(getWalletInfo()["amount"] -
+    307000 -
+    100000 * (getWalletInfo()["assets"].length + 4) -
+    getWalletInfo()["min-balance"],).toFixed(3)
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -188,7 +191,10 @@ export default function BorrowContent() {
 
   const handleMaxBorrow = () => {
     setGARD((maxGARD).toFixed(3));
-    let max = mAlgosToAlgos(getWalletInfo()["min-balance"]).toFixed(3)
+    let max = mAlgosToAlgos(getWalletInfo()["amount"] -
+    307000 -
+    100000 * (getWalletInfo()["assets"].length + 4) -
+    getWalletInfo()["min-balance"],).toFixed(3)
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
