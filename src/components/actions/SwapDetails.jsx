@@ -77,8 +77,8 @@ export default function SwapDetails() {
   // form control
   const [leftSelectVal, setLeftSelectVal] = useState("ALGO");
   const [rightSelectVal, setRightSelectVal] = useState("GARD");
-  const [leftInputAmt, setLeftInputAmt] = useState(0);
-  const [rightInputAmt, setRightInputAmt] = useState(0);
+  const [leftInputAmt, setLeftInputAmt] = useState("");
+  const [rightInputAmt, setRightInputAmt] = useState("");
   const [leftChange, setLeftChange] = useState(false);
   const [rightChange, setRightChange] = useState(false);
   const [disabled, setDisabled] = useState(true);
@@ -286,6 +286,15 @@ export default function SwapDetails() {
       setDisabled(true);
     }
   }
+
+  useEffect(() => {
+    if (leftInputAmt === "") {
+      setLeftDollars(0.00)
+    }
+    if (rightInputAmt === "") {
+      setRightDollars(0.00)
+    }
+  }, [])
 
   // set right if left changes
   useEffect(() => {

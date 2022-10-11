@@ -100,8 +100,8 @@ const Container = styled.div`
   display: flex;
   background: #0f1733;
   justify-content: space-between;
-  height: 16vh;
-  width: 30vw;
+  height: 100%;
+  /* width: max-content; */
   border-radius: 8px;
   border: 1px solid #80edff;
 `;
@@ -185,7 +185,7 @@ const ExchangeSelect = styled(Select)`
 `;
 
 const Span = styled.label`
-  font-size: 10px;
+  font-size: 14px;
   color: #ffffff;
   margin-left: 15px;
   margin-bottom: -20px;
