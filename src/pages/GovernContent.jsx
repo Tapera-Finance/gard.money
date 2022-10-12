@@ -131,7 +131,7 @@ export default function Govern() {
   var details = [
     {
       title: "Total Vaulted",
-      val: vaulted, 
+      val: vaulted,
       hasToolTip: true,
     },
     {
@@ -258,7 +258,7 @@ export default function Govern() {
           }}
         >
           <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 14, 2022 EOD</div>
+          <div style={{ fontSize: "8pt" }}>Now - October 21, 2022 EOD</div>
         </div>
         <div
           style={{
