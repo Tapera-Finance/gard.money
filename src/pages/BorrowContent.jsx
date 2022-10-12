@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import Details from "../components/Details";
 import Effect from "../components/Effect";
 import LoadingOverlay from "../components/LoadingOverlay";
@@ -21,8 +21,10 @@ import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
 import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
+import gAlgoLogo from "../assets/icons/galgo-icon.png"
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
+import Select from "../components/Select";
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
@@ -72,6 +74,7 @@ export default function BorrowContent() {
   const walletAddress = useSelector(state => state.wallet.address);
   const [modalVisible, setModalVisible] = useState(false);
   const [canAnimate, setCanAnimate] = useState(false);
+  const [collateralType, setCollateralType] = useState("ALGO")
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -91,8 +94,11 @@ export default function BorrowContent() {
   const [maxGARD, setMaxGARD] = useState(0);
   const [commitChecked, setCommitChecked] = useState(false);
   const [toWallet, setToWallet] = useState(true);
-
+  const [isGAlgo, setIsGAlgo] = useState(false);
   const [createPositionShown, setCreatePositionShown] = useState(false);
+  const assets = ["ALGO", "gALGO"];
+
+  const borrowIcon = collateralType === "ALGO" ? algoLogo : gAlgoLogo
 
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
@@ -102,13 +108,22 @@ export default function BorrowContent() {
     setToWallet(!toWallet);
   };
 
+  const handleSelect = (e) => {
+    if (e.target.value === "") {
+      return;
+    }
+    setCollateralType(e.target.value)
+  }
+
   useEffect(() => {
     if (cdps == dummyCDPs) {
       setCreatePositionShown(true);
     }
   }, []);
 
-
+  useEffect(() => {
+    setIsGAlgo(!isGAlgo)
+  }, [collateralType])
 
   useEffect(async () => {
     setPrice(await getPrice());
@@ -374,7 +389,9 @@ export default function BorrowContent() {
             <SubContainer>
               <Background>
                 <Title>
-                  Supply ALGO <AlgoImg src={algoLogo} />
+                  Supply <ExchangeSelect options={assets} value={collateralType} callback={handleSelect} />
+                  {/* ALGO */}
+                   <AlgoImg src={borrowIcon} isGAlgo={!isGAlgo}/>
                 </Title>
                 <InputContainer>
                   <div style={{ display: "flex" }}>
@@ -580,7 +597,22 @@ const AlgoImg = styled.img`
   width: 75px;
   right: --4px;
   position: relative;
+  ${(props) => props.isGAlgo &&
+    css`
+      height: 50px;
+      width: 50px;
+      margin-left: 8px;
+      margin-top: 12.5px;
+      margin-bottom: 12.5px;
+    `
+  }
 `;
+
+const gAlgoImg = styled.img`
+  height: 50px;
+  width: 50px;
+  position: relative;
+`
 
 const GardImg = styled.img`
   height: 50px;
@@ -698,6 +730,17 @@ const CommitBox = styled.input`
   border-radius: 6px;
   &:checked {
     color: "#019fff";
+  }
+`;
+
+const ExchangeSelect = styled(Select)`
+  font-size: 14pt;
+  margin: 0px 0px 0px 12px;
+  border: 1px solid #01d1ff;
+  &:hover {
+    color: black;
+    border: 1px solid #1b2d65;
+    background-color: #01d1ff;
   }
 `;
 
