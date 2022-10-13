@@ -95,14 +95,14 @@ async function checkChainForCDP(address, id) {
   const state = getCDPState(info)
   
   if (state.state == 'borked') {
-    updateCDP(address, id, state.collateral, 0, 0, "borked");
+    updateCDP(address, "algo", id, state.collateral, 0, 0, "borked");
     return true;
   }
   if (state.state == 'opened') {
-    updateCDP(address, id, state.collateral, state.principal, await sgardToGard(state.debt));
+    updateCDP(address, "algo", id, state.collateral, state.principal, await sgardToGard(state.debt));
     return true;
   }
-  removeCDP(address, id);
+  removeCDP(address, "algo", id);
   return false;
 }
 
@@ -425,7 +425,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   }
   
   setLoadingStage(null);
-  updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
+  updateCDP(info.address, "algo", accountID, openingMicroALGOs, microOpeningGard);
   return response;
 }
 
@@ -692,7 +692,7 @@ export async function repayCDP(accountID, repayGARD) {
     "Successfully repayed your cdp.",
   );
   setLoadingStage(null);
-  removeCDP(info.address, accountID);
+  removeCDP(info.address, "algo", accountID);
   checkChainForCDP(info.address, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
@@ -789,19 +789,20 @@ export async function closeCDP(accountID) {
     "Successfully closed your cdp.",
   );
   setLoadingStage(null);
-  removeCDP(info.address, accountID);
+  removeCDP(info.address, "algo", accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
 
+// TODO: add commitment
 function updateCDP(
   address,
+  assetName,
   id,
   newCollateral,
   newDebt,
   newPrincipal,
   state = "open",
-  commitment = 0, // TODO: Go through and fix commitment
 ) {
   // Could eventually add some metadata for better caching
   let CDPs = getCDPs();
@@ -809,25 +810,25 @@ function updateCDP(
   if (accountCDPs == null) {
     accountCDPs = {};
   }
-  if (accountCDPs.hasOwnProperty(id)) {
-    if (accountCDPs[id].hasOwnProperty("committed")) {
-      commitment = accountCDPs[id]["committed"];
-    }
+  let assetCDPs = accountCDPs[assetName]
+  if (assetCDPs == null) {
+    assetCDPs = {};
   }
-  accountCDPs[id] = {
+  assetCDPs[id] = {
+    asset: assetName,
     collateral: newCollateral,
     debt: newDebt,
     principal: newPrincipal,
     checked: Date.now(),
     state: state,
-    committed: commitment,
   };
+  accountCDPs[assetName] = assetCDPs;
   CDPs[address] = accountCDPs;
   localStorage.setItem("CDPs", JSON.stringify(CDPs));
 }
 
-function removeCDP(address, id) {
-  updateCDP(address, id, 0, 0, 0, "closed");
+function removeCDP(address, asset, id) {
+  updateCDP(address, asset, id, 0, 0, 0, "closed");
 }
 
 export function getCDPs() {
