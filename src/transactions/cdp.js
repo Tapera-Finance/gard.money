@@ -97,7 +97,7 @@ async function checkChainForCDP(address, id) {
     return true;
   }
   if (state.state == 'opened') {
-    updateCDP(address, id, state.collateral, await sgardToGard(state.principal));
+    updateCDP(address, id, state.collateral, await sgardToGard(state.debt));
     return true;
   }
   removeCDP(address, id);
