@@ -331,7 +331,6 @@ export default function SwapDetails() {
   // convert to dollars when inputs change
   useEffect(() => {
     let leftDollars
-    let rightDollars
     if (leftSelectVal === assets[0] && rightSelectVal === assets[1]) {
       leftDollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
     } else if (leftSelectVal === assets[1] && rightSelectVal === assets[0]) {
@@ -354,7 +353,7 @@ export default function SwapDetails() {
   useEffect(() => {
     let rightDollars
     if (rightSelectVal === assets[1]) {
-      rightDollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
+      rightDollars = formatToDollars(rightInputAmt)
     } else if (rightSelectVal === assets[0]) {
       rightDollars = inverseToDollars(rightInputAmt, leftSelectVal.toLowerCase());
     }
