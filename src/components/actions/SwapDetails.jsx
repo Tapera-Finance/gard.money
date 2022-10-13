@@ -18,10 +18,12 @@ import {
   empty,
   getBalances,
   convertToDollars,
+  inverseToDollars,
   formatPrice,
   exchangeRatioAssetXtoAssetY,
   formatAmt,
 } from "./swapHelpers";
+import { formatToDollars } from "../../utils";
 import { gardpool, swap } from "../../transactions/swap";
 import { titleToToolTip } from "../../utils";
 import { VERSION } from "../../globals";
@@ -328,8 +330,14 @@ export default function SwapDetails() {
 
   // convert to dollars when inputs change
   useEffect(() => {
-    let dollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
-    setLeftDollars(dollars);
+    let leftDollars
+    let rightDollars
+    if (leftSelectVal === assets[0] && rightSelectVal === assets[1]) {
+      leftDollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
+    } else if (leftSelectVal === assets[1] && rightSelectVal === assets[0]) {
+      leftDollars = formatToDollars(leftInputAmt)
+    }
+    setLeftDollars(leftDollars);
     if (
       !empty(leftInputAmt) &&
       !empty(rightInputAmt) &&
@@ -344,8 +352,13 @@ export default function SwapDetails() {
   }, [leftInputAmt]);
 
   useEffect(() => {
-    let dollars = convertToDollars(rightInputAmt, rightSelectVal.toLowerCase());
-    setRightDollars(dollars);
+    let rightDollars
+    if (rightSelectVal === assets[1]) {
+      rightDollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
+    } else if (rightSelectVal === assets[0]) {
+      rightDollars = inverseToDollars(rightInputAmt, leftSelectVal.toLowerCase());
+    }
+    setRightDollars(rightDollars);
     if (!empty(leftInputAmt) && !empty(rightInputAmt)) {
       setDisabled(false);
     }
