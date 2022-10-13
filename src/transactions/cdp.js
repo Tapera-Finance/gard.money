@@ -95,11 +95,11 @@ async function checkChainForCDP(address, id) {
   const state = getCDPState(info)
   
   if (state.state == 'borked') {
-    updateCDP(address, id, state.collateral, 0, "borked");
+    updateCDP(address, id, state.collateral, 0, 0, "borked");
     return true;
   }
   if (state.state == 'opened') {
-    updateCDP(address, id, state.collateral, await sgardToGard(state.debt));
+    updateCDP(address, id, state.collateral, state.principal, await sgardToGard(state.debt));
     return true;
   }
   removeCDP(address, id);
@@ -602,16 +602,20 @@ export async function addCollateral(accountID, newAlgos, commit) {
   return response;
 }
 
+let conversionRate
+let conversionRateUpdated = 0
 
-async function sgardToGard(amt) {
-  const conversionRate = await getAppField(ids.app.sgard_gard, "conversion_rate")
+async function sgardToGard(amt, force_update = false) {
+  if ((Date.now() - conversionRateUpdate) / 6000 > 1 || force_update) {
+    conversionRate = await getAppField(ids.app.sgard_gard, "conversion_rate")
+    consersionRateUpdate = Date.now()
+  }
   return conversionRate * amt / (10 ** 10)
 }
 
 
 async function totalDebt(cdpInfo) {
-  console.log(cdpInfo)
-  return await sgardToGard(getCDPState(cdpInfo).debt)
+  return await sgardToGard(getCDPState(cdpInfo).debt, true)
 }
 
 
@@ -795,6 +799,7 @@ function updateCDP(
   id,
   newCollateral,
   newDebt,
+  newPrincipal,
   state = "open",
   commitment = 0, // TODO: Go through and fix commitment
 ) {
@@ -811,7 +816,8 @@ function updateCDP(
   }
   accountCDPs[id] = {
     collateral: newCollateral,
-    debt: newDebt, // This is not total debt, this is principal
+    debt: newDebt,
+    principal: newPrincipal,
     checked: Date.now(),
     state: state,
     committed: commitment,
@@ -821,7 +827,7 @@ function updateCDP(
 }
 
 function removeCDP(address, id) {
-  updateCDP(address, id, 0, 0, "closed");
+  updateCDP(address, id, 0, 0, 0, "closed");
 }
 
 export function getCDPs() {
