@@ -12,6 +12,7 @@ import {
   where,
   doc,
   arrayUnion,
+  increment
 } from "firebase/firestore";
 import { cdpGen } from "../transactions/contracts";
 import { getWalletInfo } from "../wallets/wallets";
@@ -228,4 +229,46 @@ export async function addUserToGleam(gleamAction, walletID) {
   await updateDoc(gleamRef, {
     [gleamAction]: arrayUnion(walletID),
   });
+}
+export async function loadUserTotals() {
+  const owner_address = getWalletInfo().address;
+  const docRef = doc(db, "userTotals", owner_address);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    return data;
+  } else {
+    console.log("No such document!");
+  }
+}
+
+export async function userInTotals(walletID) {
+  // get users collection
+  const userTotalsRef = collection(db, "userTotals");
+  // query the collection to find the user with the walletID address
+  const q = query(userTotalsRef, where("id", "==", walletID));
+  // execute the query using getDocs
+  const querySnapshot = await getDocs(q);
+  // returns true if there is a document that matches the walletId and false if there isn't (there should be one matched user)
+  return querySnapshot.docs.length >= 1;
+}
+
+export async function addUserToTotals(user, walletID) {
+  try {
+    const walletRef = doc(db, "userTotals", walletID);
+    await setDoc(walletRef, user);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+
+export async function updateTotal(owner_address, totalType, amount) {
+  try {
+    const walletRef = doc(db, "userTotals", owner_address);
+    await updateDoc(walletRef, {
+      [totalType]: increment(amount),
+    });
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
 }

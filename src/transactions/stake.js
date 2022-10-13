@@ -1,5 +1,10 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
+import {
+  addUserToGleam,
+  updateTotal,
+  loadUserTotals
+} from "../components/Firebase";
 import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField } from "./lib"
 import { accountInfo, getParams, signGroup, sendTxn, updateWalletInfo } from "../wallets/wallets";
 
@@ -112,6 +117,18 @@ export async function stake(pool, gardAmount) {
     stxns,
     "Successfully staked " + gardAmount + " GARD.",
   );
+  let completedStake = JSON.parse(localStorage.getItem("gleamStakeComplete"))
+  if (!completedStake.includes(info.address)) {
+    await updateTotal(info.address, "totalStaked", parseInt(gardAmount * 1000000))
+    let user_totals = await loadUserTotals()
+    console.log('totals', user_totals)
+    if(user_totals["totalStaked"] >= 10000000){
+      addUserToGleam("stakeGARD", info.address)
+      completedStake.push(info.address)
+      console.log('staked', completedStake)
+      localStorage.setItem("gleamStakeComplete", JSON.stringify(completedStake))
+    }
+  }
   setLoadingStage(null);
 
   return response;
