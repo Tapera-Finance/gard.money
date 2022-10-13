@@ -109,15 +109,6 @@ export default function SwapDetails() {
   };
 
   const effects = [
-    // {
-    //   title: "Asset A Total",
-    //   val: `${assetA.type}: ${formatPrice((pool.state.totalPrimary/1000000).toFixed(0))}`,
-    //   hasToolTip: false,
-    // },
-    // {
-    //   title: "Asset B Total",
-    //   val: `${assetB.type}: ${formatPrice((pool.state.totalSecondary/1000000).toFixed(0))}`,
-    // },
     {
       title: "Price Impact",
       val: `${(priceImpactA * 100).toFixed(4)}%`,
@@ -126,7 +117,7 @@ export default function SwapDetails() {
     {
       title: "Exchange Rate",
       val: exchangeRate,
-      hasToolTip: false,
+      hasToolTip: true,
     },
     {
       title: "Liquidity Fee",
@@ -141,12 +132,12 @@ export default function SwapDetails() {
     {
       title: "Fee Rate",
       val: feeRate,
-      hasToolTip: false,
+      hasToolTip: true,
     },
     {
-      title: "Minimum Recieved",
+      title: "Minimum Received",
       val: minimumReceived,
-      hasToolTip: false,
+      hasToolTip: true,
     },
   ];
 
@@ -486,39 +477,39 @@ export default function SwapDetails() {
               <Details>
                 {effects.length > 0
                   ? effects.map((item) => {
-                      if (item.title === "Slippage Tolerance") {
-                        return (
-                          <SlippageEffect key={Math.random()}>
-                            <NewToolTip
-                              toolTip={item.title}
-                              toolTipText={tips[item.title]}
-                            ></NewToolTip>
-                            <hr style={{ border: "dashed 1px" }} />
-                            <EffectContainer>
-                              {/* <EffText></EffText> */}
-                              {/* <SlippageBtn
-                                id="slippage-001"
-                                onClick={() => setSlippageTolerance(0.01)}
-                              >
-                                0.01
-                              </SlippageBtn>
-                              <SlippageBtn
-                                id="default-slippage"
-                                onClick={() => setSlippageTolerance(0.05)}
-                              >
-                                0.05
-                              </SlippageBtn>
-                              <SlippageBtn
-                                id="slippage-010"
-                                onClick={() => setSlippageTolerance(0.1)}
-                              >
-                                0.1
-                              </SlippageBtn> */}
-                              <Text>{slippageTolerance}</Text>
-                            </EffectContainer>
-                          </SlippageEffect>
-                        );
-                      }
+                      // if (item.title === "Slippage Tolerance") {
+                      //   return (
+                      //     <SlippageEffect key={Math.random()}>
+                      //       <NewToolTip
+                      //         toolTip={item.title}
+                      //         toolTipText={tips[item.title]}
+                      //       ></NewToolTip>
+                      //       <hr style={{ border: "dashed 1px" }} />
+                      //       <EffectContainer>
+                      //         {/* <EffText></EffText> */}
+                      //         {/* <SlippageBtn
+                      //           id="slippage-001"
+                      //           onClick={() => setSlippageTolerance(0.01)}
+                      //         >
+                      //           0.01
+                      //         </SlippageBtn>
+                      //         <SlippageBtn
+                      //           id="default-slippage"
+                      //           onClick={() => setSlippageTolerance(0.05)}
+                      //         >
+                      //           0.05
+                      //         </SlippageBtn>
+                      //         <SlippageBtn
+                      //           id="slippage-010"
+                      //           onClick={() => setSlippageTolerance(0.1)}
+                      //         >
+                      //           0.1
+                      //         </SlippageBtn> */}
+                      //         <Text>{slippageTolerance}</Text>
+                      //       </EffectContainer>
+                      //     </SlippageEffect>
+                      //   );
+                      // }
                       return (
                         <Effect
                           title={item.title}
