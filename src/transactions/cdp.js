@@ -86,7 +86,7 @@ function getCDPState(cdpInfo) {
   return res
 }
 
-async function checkChainForCDP(address, id) {
+async function checkChainForCDP(address, id, is_asa) {
   // This function checks for the existence of a CDP
   // This is done by getting the info, then
   const cdp = cdpGen(address, id);
@@ -95,14 +95,14 @@ async function checkChainForCDP(address, id) {
   const state = getCDPState(info)
   
   if (state.state == 'borked') {
-    updateCDP(address, "algo", id, state.collateral, 0, 0, "borked");
+    updateCDP(address, is_asa, id, state.collateral, 0, 0, "borked");
     return true;
   }
   if (state.state == 'opened') {
-    updateCDP(address, "algo", id, state.collateral, state.principal, await sgardToGard(state.debt));
+    updateCDP(address, is_asa, id, state.collateral, state.principal, await sgardToGard(state.debt));
     return true;
   }
-  removeCDP(address, "algo", id);
+  removeCDP(address, is_asa, id);
   return false;
 }
 
@@ -121,7 +121,7 @@ export async function updateCDPs(address) {
       !accountCDPs.hasOwnProperty(x) ||
       accountCDPs[x]["checked"] + mins_to_refresh * 60 * 1000 < Date.now()
     ) {
-      checkChainForCDP(address, x);
+      checkChainForCDP(address, x, false);
       webcalls += 1;
     }
     if (webcalls % 3 == 0) {
@@ -144,7 +144,7 @@ async function findOpenID(address) {
       !accountCDPs.hasOwnProperty(x) ||
       accountCDPs[x]["state"] == "closed"
     ) {
-      const used = await checkChainForCDP(address, x);
+      const used = await checkChainForCDP(address, x, false);
       if (!used) {
         return x;
       }
@@ -484,7 +484,7 @@ export async function mint(accountID, newGARD) {
       localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
     }
   }
-  checkChainForCDP(info.address, accountID);
+  checkChainForCDP(info.address, accountID, false);
 
   return response;
 }
@@ -589,7 +589,7 @@ export async function addCollateral(accountID, newAlgos, commit) {
   );
   setLoadingStage(null);
 
-  checkChainForCDP(info.address, accountID);
+  checkChainForCDP(info.address, accountID, false);
   updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
   
   if (commit) {
@@ -692,8 +692,8 @@ export async function repayCDP(accountID, repayGARD) {
     "Successfully repayed your cdp.",
   );
   setLoadingStage(null);
-  removeCDP(info.address, "algo", accountID);
-  checkChainForCDP(info.address, accountID);
+  removeCDP(info.address, false, accountID);
+  checkChainForCDP(info.address, accountID, false);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
@@ -789,7 +789,7 @@ export async function closeCDP(accountID) {
     "Successfully closed your cdp.",
   );
   setLoadingStage(null);
-  removeCDP(info.address, "algo", accountID);
+  removeCDP(info.address, false, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
@@ -797,7 +797,7 @@ export async function closeCDP(accountID) {
 // TODO: add commitment
 function updateCDP(
   address,
-  assetName,
+  is_asa,
   id,
   newCollateral,
   newDebt,
@@ -810,25 +810,29 @@ function updateCDP(
   if (accountCDPs == null) {
     accountCDPs = {};
   }
-  let assetCDPs = accountCDPs[assetName]
-  if (assetCDPs == null) {
-    assetCDPs = {};
+  let typeKey = 'algo'
+  if (is_asa) {
+    typeKey = 'asa'
   }
-  assetCDPs[id] = {
-    asset: assetName,
+  let typeCDPs = accountCDPs[typeKey]
+  if (typeCDPs == null) {
+    typeCDPs = {};
+  }
+  typeCDPs[id] = {
+    asset: 'algo', // TODO: Add asset name
     collateral: newCollateral,
     debt: newDebt,
     principal: newPrincipal,
     checked: Date.now(),
     state: state,
   };
-  accountCDPs[assetName] = assetCDPs;
+  accountCDPs[typeKey] = typeCDPs;
   CDPs[address] = accountCDPs;
   localStorage.setItem("CDPs", JSON.stringify(CDPs));
 }
 
-function removeCDP(address, asset, id) {
-  updateCDP(address, asset, id, 0, 0, 0, "closed");
+function removeCDP(address, is_asa, id) {
+  updateCDP(address, is_asa, id, 0, 0, 0, "closed");
 }
 
 export function getCDPs() {
