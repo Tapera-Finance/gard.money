@@ -199,7 +199,7 @@ export default function Drawer({
           </HideNavButton>
         </div>
         <div style={{
-          position: "absolute", top: "85vh", left: 0, right: 0
+          top: "85vh", left: 0, right: 0
           }}>
           <div
             style={{
@@ -207,7 +207,6 @@ export default function Drawer({
               alignItems: "center",
               flexDirection: "column",
               marginTop: 10,
-              position: "absolute",
               bottom: 0,
               width: "100%",
               height: "2.5rem"
