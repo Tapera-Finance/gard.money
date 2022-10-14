@@ -243,10 +243,11 @@ export default function Drawer({
                 </div>
               </SocialMediaButton>
             </SocialMediaContainer>
-            <SocialMediaContainer
+            <TermLinkBox
               style={{
                 paddingTop: 12,
                 paddingBottom: 12,
+                display: "flex",
               }}
             >
               <ToS
@@ -256,15 +257,15 @@ export default function Drawer({
               >
                 Terms & Conditions
               </ToS>
-              <div style={{ color: "white", fontSize: 12 }}>|</div>
-              <ToS
+              <Divider style={{ color: "white", fontSize: 12 }}>|</Divider>
+              <PP
                 onClick={() =>
                   window.open("https://algogard.com/app-privacy-policy.html")
                 }
               >
                 Privacy Policy
-              </ToS>
-            </SocialMediaContainer>
+              </PP>
+            </TermLinkBox>
             <SocialMediaContainer
               style={{
                 paddingTop: 8,
@@ -300,6 +301,7 @@ export default function Drawer({
     </div>
   );
 }
+
 // animation for closing and opening drawer
 const closeDrawerAnimation = keyframes`
   0% {left: 0vw;}
@@ -330,6 +332,17 @@ const SocialMediaContainer = styled.div`
   flex-direction: row;
   justify-content: space-evenly;
 `;
+
+const TermLinkBox = styled.div`
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  @media (max-width: 1246px) {
+    width: 65%;
+  }
+`
+
 const SocialMediaButton = styled.div`
   cursor: pointer;
 `;
@@ -368,6 +381,24 @@ const ToS = styled.text`
     opacity: 0.5;
   }
 `;
+
+const PP = styled.text`
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 500;
+  cursor: pointer;
+  color: #ffffff;
+  :hover& {
+    opacity: 0.5;
+  }
+`
+//1246
+const Divider = styled.div`
+  @media (max-width: 1246px) {
+    appearance: none;
+    display: none;
+  }
+`
 
 /**
  * Renders a dropdown menu button for the drawer
