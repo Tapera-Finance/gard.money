@@ -74,7 +74,7 @@ export default function BorrowContent() {
   const walletAddress = useSelector(state => state.wallet.address);
   const [modalVisible, setModalVisible] = useState(false);
   const [canAnimate, setCanAnimate] = useState(false);
-  const [collateralType, setCollateralType] = useState("ALGO")
+  const [collateralType, setCollateralType] = useState("ALGO");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
