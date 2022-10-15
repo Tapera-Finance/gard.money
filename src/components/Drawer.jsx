@@ -257,7 +257,6 @@ export default function Drawer({
               >
                 Terms & Conditions
               </ToS>
-              <Divider style={{ color: "white", fontSize: 12 }}>|</Divider>
               <PP
                 onClick={() =>
                   window.open("https://algogard.com/app-privacy-policy.html")
@@ -375,6 +374,7 @@ const ToS = styled.text`
   font-size: 12px;
   font-style: italic;
   font-weight: 500;
+  padding-right: 3px;
   cursor: pointer;
   color: #ffffff;
   :hover& {
@@ -390,13 +390,6 @@ const PP = styled.text`
   color: #ffffff;
   :hover& {
     opacity: 0.5;
-  }
-`
-//1246
-const Divider = styled.div`
-  @media (max-width: 1246px) {
-    appearance: none;
-    display: none;
   }
 `
 
