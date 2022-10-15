@@ -199,7 +199,7 @@ export default function Drawer({
           </HideNavButton>
         </div>
         <div style={{
-          position: "absolute", top: "85vh", left: 0, right: 0
+          top: "85vh", left: 0, right: 0
           }}>
           <div
             style={{
@@ -207,7 +207,6 @@ export default function Drawer({
               alignItems: "center",
               flexDirection: "column",
               marginTop: 10,
-              position: "absolute",
               bottom: 0,
               width: "100%",
               height: "2.5rem"
@@ -244,10 +243,11 @@ export default function Drawer({
                 </div>
               </SocialMediaButton>
             </SocialMediaContainer>
-            <SocialMediaContainer
+            <TermLinkBox
               style={{
                 paddingTop: 12,
                 paddingBottom: 12,
+                display: "flex",
               }}
             >
               <ToS
@@ -257,15 +257,14 @@ export default function Drawer({
               >
                 Terms & Conditions
               </ToS>
-              <div style={{ color: "white", fontSize: 12 }}>|</div>
-              <ToS
+              <PP
                 onClick={() =>
                   window.open("https://algogard.com/app-privacy-policy.html")
                 }
               >
                 Privacy Policy
-              </ToS>
-            </SocialMediaContainer>
+              </PP>
+            </TermLinkBox>
             <SocialMediaContainer
               style={{
                 paddingTop: 8,
@@ -301,6 +300,7 @@ export default function Drawer({
     </div>
   );
 }
+
 // animation for closing and opening drawer
 const closeDrawerAnimation = keyframes`
   0% {left: 0vw;}
@@ -331,6 +331,17 @@ const SocialMediaContainer = styled.div`
   flex-direction: row;
   justify-content: space-evenly;
 `;
+
+const TermLinkBox = styled.div`
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  @media (max-width: 1246px) {
+    width: 65%;
+  }
+`
+
 const SocialMediaButton = styled.div`
   cursor: pointer;
 `;
@@ -363,12 +374,24 @@ const ToS = styled.text`
   font-size: 12px;
   font-style: italic;
   font-weight: 500;
+  padding-right: 3px;
   cursor: pointer;
   color: #ffffff;
   :hover& {
     opacity: 0.5;
   }
 `;
+
+const PP = styled.text`
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 500;
+  cursor: pointer;
+  color: #ffffff;
+  :hover& {
+    opacity: 0.5;
+  }
+`
 
 /**
  * Renders a dropdown menu button for the drawer
