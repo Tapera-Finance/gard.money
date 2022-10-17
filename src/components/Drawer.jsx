@@ -138,7 +138,7 @@ export default function Drawer({
                           "Account",
                           // "Manage CDPs",
                           "Borrow",
-                          "Algo Governance",
+                          "ALGO Governance",
                           "Swap",
                           "Stake",
                           "Govern",
