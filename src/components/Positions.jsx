@@ -43,7 +43,7 @@ const mGardToGard = (num) => {
 function _CDPsToList(CDPList) {
   let res = [];
   for (const [cdpID, value] of Object.entries(CDPList)) {
-          if (value["state"] == "open") {
+          if (value["state"] == "opened") {
             res.push({
             id: cdpID,
             liquidationPrice: (
@@ -56,6 +56,7 @@ function _CDPsToList(CDPList) {
             });
           }
         } // TODO: Track asset type
+  return res
 }
 
 export function CDPsToList() {
