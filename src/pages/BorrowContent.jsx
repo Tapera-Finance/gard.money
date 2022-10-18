@@ -15,7 +15,7 @@ import {
   handleTxError,
   updateWalletInfo,
 } from "../wallets/wallets";
-import { calcRatio, getCDPs, getPrice, openCDP } from "../transactions/cdp";
+import { calcRatio, getPrice, openCDP } from "../transactions/cdp";
 import { cdpInterest } from "../transactions/lib";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";

@@ -11,7 +11,6 @@ import { CDPsToList } from "../components/Positions";
 import {
   mint,
   closeCDP,
-  getCDPs,
   updateCDPs,
   addCollateral,
 } from "../transactions/cdp";
