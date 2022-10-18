@@ -5,6 +5,7 @@ import Details from "../components/Details";
 import Effect from "../components/Effect";
 import LoadingOverlay from "../components/LoadingOverlay";
 import Positions from "../components/Positions";
+import { CDPsToList, dummyCDPs } from "../components/Positions";
 import PrimaryButton from "../components/PrimaryButton";
 import RewardNotice from "../components/RewardNotice";
 import ToolTip from "../components/ToolTip";
@@ -14,7 +15,7 @@ import {
   handleTxError,
   updateWalletInfo,
 } from "../wallets/wallets";
-import { calcRatio, getCDPs, getPrice, openCDP } from "../transactions/cdp";
+import { calcRatio, getPrice, openCDP } from "../transactions/cdp";
 import { cdpInterest } from "../transactions/lib";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -806,36 +807,3 @@ function dummyTrans() {
   }
 }
 
-export function CDPsToList() {
-  const CDPs = getCDPs();
-  let res = [];
-  if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
-    const accountCDPs = CDPs[getWalletInfo().address];
-    for (const [cdpID, value] of Object.entries(accountCDPs)) {
-      if (value["state"] == "open") {
-        res.push({
-          id: cdpID,
-          liquidationPrice: (
-            (1.15 * value["debt"]) /
-            value["collateral"]
-          ).toFixed(4),
-          collateral: value["collateral"],
-          debt: value["debt"],
-          committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
-        });
-      }
-    }
-  }
-  if (res.length == 0) {
-    res = dummyCDPs;
-  }
-  return res;
-}
-const dummyCDPs = [
-  {
-    id: "N/A",
-    liquidationPrice: 0,
-    collateral: 0,
-    debt: 0,
-  },
-];

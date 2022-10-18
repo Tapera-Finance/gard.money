@@ -20,10 +20,11 @@ import { useNavigate } from "react-router-dom";
 
 const instantiateUser = async (address) => {
   let accountCDPs = getCDPs()[address];
-  let addrs = Object.keys(getCDPs()[address]);
+  let addrs = Object.keys(getCDPs()[address]['algo']);
+  addrs = addrs.concat(Object.keys(getCDPs()[address]['asa']));
   let owned = {};
   for (var i = 0; i < addrs.length; i++) {
-    if (accountCDPs[addrs[i]].state == "open") {
+    if (accountCDPs[addrs[i]].state == "opened") {
       let cdp_address = cdpGen(address, addrs[i]).address;
       Object.assign(owned, {
         [cdp_address]: {

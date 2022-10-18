@@ -86,65 +86,62 @@ function getCDPState(cdpInfo) {
   return res
 }
 
-async function checkChainForCDP(address, id) {
-  // This function checks for the existence of a CDP
-  // This is done by getting the info, then
-  const cdp = cdpGen(address, id);
-  const info = await accountInfo(cdp.address);
 
-  const state = getCDPState(info)
-  
-  if (state.state == 'borked') {
-    updateCDP(address, id, state.collateral, 0, "borked");
-    return true;
-  }
-  if (state.state == 'opened') {
-    updateCDP(address, id, state.collateral, await sgardToGard(state.debt));
-    return true;
-  }
-  removeCDP(address, id);
-  return false;
+function cdpIsCached(accountCDPs, typeKey, id) {
+  return accountCDPs && accountCDPs.hasOwnProperty(typeKey) && accountCDPs[typeKey].hasOwnProperty(id)
 }
+
+
+async function updateTypeCDPs(address, accountCDPs, isASA) {
+  const mins_to_refresh = 15;
+  let webcalls = 0;
+
+  let typeKey = "algo"
+  if (isASA) {
+    typeKey = "asa"
+  }
+  for (const x of Array(MAXID - MINID)
+    .fill()
+    .map((_, i) => i + MINID)) {
+    if (
+      !cdpIsCached(accountCDPs, typeKey, x) ||
+      accountCDPs[typeKey]["checked"] + mins_to_refresh * 60 * 1000 < Date.now()
+    ) {
+      updateCDP(address, isASA, x);
+      webcalls += 1;
+    }
+    if (webcalls % 3 == 0) {
+      await new Promise((r) => setTimeout(r, 1700));
+    }
+  }
+}
+
 
 export async function updateCDPs(address) {
   // Checks all CDPs by an address
   const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
-  let webcalls = 0;
   // Sets the frequency to double check CDPs
-  const mins_to_refresh = 15;
-  for (const x of Array(MAXID - MINID)
-    .fill()
-    .map((_, i) => i + MINID)) {
-    if (
-      !accountCDPs ||
-      !accountCDPs.hasOwnProperty(x) ||
-      accountCDPs[x]["checked"] + mins_to_refresh * 60 * 1000 < Date.now()
-    ) {
-      checkChainForCDP(address, x);
-      webcalls += 1;
-    }
-    if (webcalls % 3 == 0) {
-      await new Promise((r) => setTimeout(r, 500));
-    }
-    if (webcalls % 10 == 0) {
-      await new Promise((r) => setTimeout(r, 4000));
-    }
-  }
+  updateTypeCDPs(address, accountCDPs, false)
+  updateTypeCDPs(address, accountCDPs, true)
 }
 
-async function findOpenID(address) {
-  let CDPs = getCDPs();
-  let accountCDPs = CDPs[address];
+async function findOpenID(address, isASA) {
+  const CDPs = getCDPs();
+  const accountCDPs = CDPs[address];
+  let typeKey = "algo"
+  if (isASA) {
+    typeKey = "asa"
+  }
+  const typeCDPs = accountCDPs[typeKey]
   for (const x of Array(MAXID - MINID)
     .fill()
     .map((_, i) => i + MINID)) {
     if (
-      !accountCDPs ||
-      !accountCDPs.hasOwnProperty(x) ||
+      !cdpIsCached(accountCDPs, typeKey, x) ||
       accountCDPs[x]["state"] == "closed"
     ) {
-      const used = await checkChainForCDP(address, x);
+      const used = await updateCDP(address, isASA, x);
       if (!used) {
         return x;
       }
@@ -236,7 +233,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   setLoadingStage("Loading...");
 
   const info = await infoPromise;
-  const accountIDPromise = findOpenID(info.address);
+  const accountIDPromise = findOpenID(info.address, false);
 
   if (
     307000 +
@@ -425,7 +422,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   }
   
   setLoadingStage(null);
-  updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
+  updateCDP(info.address, false, accountID);
   return response;
 }
 
@@ -470,7 +467,9 @@ export async function mint(accountID, newGARD) {
     stxns,
     "Successfully minted " + newGARD + " GARD.",
   );
-  setLoadingStage(null);
+  updateCDP(info.address, false, accountID);
+  
+  // DB Updates
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
   if (!completedMint.includes(info.address)) {
@@ -484,8 +483,8 @@ export async function mint(accountID, newGARD) {
       localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
     }
   }
-  checkChainForCDP(info.address, accountID);
-
+  
+  setLoadingStage(null);
   return response;
 }
 
@@ -587,9 +586,8 @@ export async function addCollateral(accountID, newAlgos, commit) {
     stxns,
     "Successfully added " + newAlgos + " ALGOs as collateral.",
   );
-  setLoadingStage(null);
 
-  checkChainForCDP(info.address, accountID);
+  updateCDP(info.address, false, accountID);
   updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
   
   if (commit) {
@@ -598,20 +596,26 @@ export async function addCollateral(accountID, newAlgos, commit) {
     response.text =
       response.text + "\nFull Balance committed to Governance Period #5!";
   }
+  
+  setLoadingStage(null);
 
   return response;
 }
 
+let conversionRate
+let conversionRateUpdated = 0
 
-async function sgardToGard(amt) {
-  const conversionRate = await getAppField(ids.app.sgard_gard, "conversion_rate")
+async function sgardToGard(amt, force_update = false) {
+  if ((Date.now() - conversionRateUpdated) / 6000 > 1 || force_update) {
+    conversionRate = await getAppField(ids.app.sgard_gard, "conversion_rate")
+    conversionRateUpdated = Date.now()
+  }
   return conversionRate * amt / (10 ** 10)
 }
 
 
 async function totalDebt(cdpInfo) {
-  console.log(cdpInfo)
-  return await sgardToGard(getCDPState(cdpInfo).debt)
+  return await sgardToGard(getCDPState(cdpInfo).debt, true)
 }
 
 
@@ -688,8 +692,7 @@ export async function repayCDP(accountID, repayGARD) {
     "Successfully repayed your cdp.",
   );
   setLoadingStage(null);
-  removeCDP(info.address, accountID);
-  checkChainForCDP(info.address, accountID);
+  updateCDP(info.address, false, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
@@ -785,43 +788,68 @@ export async function closeCDP(accountID) {
     "Successfully closed your cdp.",
   );
   setLoadingStage(null);
-  removeCDP(info.address, accountID);
+  updateCDP(info.address, false, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
 
-function updateCDP(
+// TODO: add commitment
+async function updateCDP(
   address,
+  is_asa,
   id,
-  newCollateral,
-  newDebt,
-  state = "open",
-  commitment = 0, // TODO: Go through and fix commitment
 ) {
-  // Could eventually add some metadata for better caching
+
+  const cdp = cdpGen(address, id);
+  const infoPromise = accountInfo(cdp.address);
+
+  // Getting the entry to modify
   let CDPs = getCDPs();
   let accountCDPs = CDPs[address];
   if (accountCDPs == null) {
     accountCDPs = {};
   }
-  if (accountCDPs.hasOwnProperty(id)) {
-    if (accountCDPs[id].hasOwnProperty("committed")) {
-      commitment = accountCDPs[id]["committed"];
-    }
+  let typeKey = 'algo'
+  if (is_asa) {
+    typeKey = 'asa'
   }
-  accountCDPs[id] = {
-    collateral: newCollateral,
-    debt: newDebt, // This is not total debt, this is principal
+  let typeCDPs = accountCDPs[typeKey]
+  if (typeCDPs == null) {
+    typeCDPs = {};
+  }
+  
+  // Setting vals
+  const info = await infoPromise
+  const state = getCDPState(info)
+  let _collateral = 0
+  let _principal = 0
+  let _debt = 0
+  
+  if (state.state == 'borked') {
+    _collateral = state.collateral
+  } else if (state.state == 'opened') {
+    _collateral = state.collateral
+    _principal = state.principal
+    _debt = await sgardToGard(state.debt);
+  }
+  
+  
+  typeCDPs[id] = {
+    asset: 'algo', // TODO: Add asset name
+    collateral: _collateral,
+    debt: _debt,
+    principal: _principal,
     checked: Date.now(),
-    state: state,
-    committed: commitment,
+    state: state.state,
   };
+  accountCDPs[typeKey] = typeCDPs;
   CDPs[address] = accountCDPs;
   localStorage.setItem("CDPs", JSON.stringify(CDPs));
-}
-
-function removeCDP(address, id) {
-  updateCDP(address, id, 0, 0, "closed");
+  
+  if (state.state !== "closed") {
+    return true
+  }
+  return false
 }
 
 export function getCDPs() {

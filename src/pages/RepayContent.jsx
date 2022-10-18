@@ -7,10 +7,10 @@ import Table from "../components/Table";
 import WrappedSummary from "../components/WrappedSummary";
 import TransactionSummary from "../components/TransactionSummary";
 import LoadingOverlay from "../components/LoadingOverlay";
+import { CDPsToList } from "../components/Positions";
 import {
   mint,
   closeCDP,
-  getCDPs,
   updateCDPs,
   addCollateral,
 } from "../transactions/cdp";
@@ -348,39 +348,4 @@ const SpecificsTitle = styled.text`
   font-weight: normal;
   font-size: 16px;
 `;
-// TODO: load in CDPs from cache
-export function CDPsToList() {
-  const CDPs = getCDPs();
-  let res = [];
-  if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
-    const accountCDPs = CDPs[getWalletInfo().address];
-    for (const [cdpID, value] of Object.entries(accountCDPs)) {
-      if (value["state"] == "open") {
-        res.push({
-          id: cdpID,
-          liquidationPrice: (
-            (1.15 * value["debt"]) /
-            value["collateral"]
-          ).toFixed(4),
-          collateral: value["collateral"],
-          debt: value["debt"],
-          committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
-        });
-      }
-    }
-  }
-  if (res.length == 0) {
-    res = dummyCDPs;
-  }
-  return res;
-}
 
-// dummy info for the CDPs
-const dummyCDPs = [
-  {
-    id: "N/A",
-    liquidationPrice: 0,
-    collateral: 0,
-    debt: 0,
-  },
-];
