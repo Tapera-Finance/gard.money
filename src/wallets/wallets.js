@@ -83,7 +83,7 @@ export async function updateWalletInfo() {
   for (let i = 0; i < info["assets"].length; i++) {
     const j = i;
     if (
-      [684649988, 684649672, 692432647].includes(info["assets"][j]["asset-id"])
+      [684649988, 684649672, 692432647, 793124631].includes(info["assets"][j]["asset-id"])
     ) {
       promises.push(
         algodClient
