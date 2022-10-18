@@ -82,7 +82,7 @@ function getCDPState(cdpInfo) {
       }
     }
   }
-
+  
   return res
 }
 
@@ -93,7 +93,7 @@ async function checkChainForCDP(address, id) {
   const info = await accountInfo(cdp.address);
 
   const state = getCDPState(info)
-
+  
   if (state.state == 'borked') {
     updateCDP(address, id, state.collateral, 0, "borked");
     return true;
@@ -354,12 +354,12 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     });
     txns.push(txn8)
   }
-
+  
   // Signing transactions
   algosdk.assignGroupID(txns);
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   let _stxns = await signGroup(info, txns);
-
+  
   setLoadingStage("Finalizing Transactions...");
   let stxns = []
   // stxn 0
@@ -384,17 +384,17 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
     stxns.push(stxn8.blob)
   }
-
+  
   setLoadingStage("Confirming Transactions...");
-
+  
   let response = await sendTxn(
     stxns,
     "Successfully opened a new CDP.",
   );
-
+  
   addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, 0);
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
-  if (completedMint != null && !completedMint.includes(info.address)) {
+  if (!completedMint.includes(info.address)) {
     await updateTotal(info.address, "totalMinted", microOpeningGard)
     let user_totals = await loadUserTotals()
     console.log('totals', user_totals)
@@ -423,7 +423,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
       }
     }
   }
-
+  
   setLoadingStage(null);
   updateCDP(info.address, accountID, openingMicroALGOs, microOpeningGard);
   return response;
@@ -458,7 +458,7 @@ export async function mint(accountID, newGARD) {
 
   let txns = [txn0, txn1];
   algosdk.assignGroupID(txns);
-
+  
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   const signedGroup = await signGroup(info, txns);
 
@@ -473,7 +473,7 @@ export async function mint(accountID, newGARD) {
   setLoadingStage(null);
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
-  if (completedMint != null && !completedMint.includes(info.address)) {
+  if (!completedMint.includes(info.address)) {
     await updateTotal(info.address, "totalMinted", microGARD(newGARD))
     let user_totals = await loadUserTotals()
     console.log('totals', user_totals)
@@ -534,7 +534,7 @@ export async function addCollateral(accountID, newAlgos, commit) {
   });
   let txn2 = makeUpdateInterestTxn(info, params)
   let txns = [txn1, txn2];
-
+  
   let govAlgos = microNewAlgos
   let txn8
   if (commit) {
@@ -566,9 +566,9 @@ export async function addCollateral(accountID, newAlgos, commit) {
     });
     txns.push(txn8)
   }
-
+  
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
-
+  
   algosdk.assignGroupID(txns);
 
   const signedGroup = await signGroup(info, txns);
@@ -591,7 +591,7 @@ export async function addCollateral(accountID, newAlgos, commit) {
 
   checkChainForCDP(info.address, accountID);
   updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
-
+  
   if (commit) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, govAlgos);
@@ -626,25 +626,25 @@ export async function repayCDP(accountID, repayGARD) {
   let cdp = cdpGen(info.address, accountID);
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
-
+  
   let microRepayGARD = microGARD(repayGARD)
   console.log(microRepayGARD)
-
+  
   let gard_debt = await totalDebt(cdpInfo);
   if (gard_debt - microRepayGARD < 1000000) {
     return {
       alert: true,
       text: "You must maintain a balance of 1 GARD to keep a CDP open!",
     };
-  }
+  } 
   else if (getMicroGardBalance(info) < microRepayGARD){
     return {
       alert: true,
-      text: "You have insufficient GARD to complete the transaction. You need " +
+      text: "You have insufficient GARD to complete the transaction. You need " + 
       ((microRepayGARD/1000000).toFixed(3)).toString() + " GARD."
     };
   }
-
+  
   // txn 0 - updated interest
   let txn0 = makeUpdateInterestTxn(info, params)
   // THROUGH HERE
@@ -709,7 +709,7 @@ export async function closeCDP(accountID) {
 
   let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * cdpInterest)/365/24/60)) + 3000
   console.log(microRepayGARD)
-
+  
   let gard_bal = getMicroGardBalance(info);
   if (gard_bal == null || gard_bal < microRepayGARD) {
     let mod = 0;
@@ -726,9 +726,9 @@ export async function closeCDP(accountID) {
         (microRepayGARD / 1000000 + mod).toFixed(2).toString(),
     };
   }
-
+  
   console.log(microRepayGARD)
-
+  
   // txn 0 - updated interest
   let txn0 = makeUpdateInterestTxn(info, params)
   // txn 1 - closing check
@@ -759,7 +759,7 @@ export async function closeCDP(accountID) {
     amount: 0,
     suggestedParams: params,
   });
-
+  
   console.log(txn1)
   console.log(txn3)
 

@@ -148,7 +148,7 @@ const CloseButton = styled.button`
 `;
 
 function textWithLink(text) {
-  if (text && !text.includes("</a>")) return <AlertText>{text}</AlertText>;
+  if (!text.includes("</a>")) return <AlertText>{text}</AlertText>;
   const tagOpenStart = text.indexOf("<a");
   const hrefStart = text.indexOf("href=\"", tagOpenStart);
   const hrefEnd = text.indexOf("\"", hrefStart + 6);
