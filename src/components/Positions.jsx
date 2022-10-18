@@ -39,14 +39,11 @@ export async function getAlgoGovAPR() {
 const mGardToGard = (num) => {
     return num / 1000000;
   };
-
-export function CDPsToList() {
-    const CDPs = getCDPs();
-    let res = [];
-    if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
-        const accountCDPs = CDPs[getWalletInfo().address];
-        for (const [cdpID, value] of Object.entries(accountCDPs)) {
-        if (value["state"] == "open") {
+  
+function _CDPsToList(CDPList) {
+  let res = [];
+  for (const [cdpID, value] of Object.entries(CDPList)) {
+          if (value["state"] == "open") {
             res.push({
             id: cdpID,
             liquidationPrice: (
@@ -57,7 +54,20 @@ export function CDPsToList() {
             debt: value["debt"],
             committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
             });
+          }
+        } // TODO: Track asset type
+}
+
+export function CDPsToList() {
+    const CDPs = getCDPs();
+    let res = [];
+    if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
+        const accountCDPs = CDPs[getWalletInfo().address];
+        if (accountCDPs['algo'] != null) {
+          res.concat(_CDPsToList(accountCDPs['algo']))
         }
+        if (accountCDPs['asa'] != null) {
+          res.concat(_CDPsToList(accountCDPs['asa']))
         }
     }
     if (res.length == 0) {
@@ -65,7 +75,7 @@ export function CDPsToList() {
     }
     return res;
 }
-const dummyCDPs = [
+export const dummyCDPs = [
     {
       id: "N/A",
       liquidationPrice: 0,

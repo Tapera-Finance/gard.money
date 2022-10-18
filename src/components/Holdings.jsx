@@ -3,7 +3,7 @@ import styled from "styled-components";
 import PageToggle from "./PageToggle";
 import Table from "./Table";
 import { formatToDollars } from "../utils";
-import { getCDPs, getPrice } from "../transactions/cdp";
+import { getPrice } from "../transactions/cdp";
 import { getWallet, getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "../pages/BorrowContent";
 
