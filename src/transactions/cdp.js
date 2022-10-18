@@ -92,7 +92,7 @@ function cdpIsCached(accountCDPs, typeKey, id) {
 }
 
 
-async function updateTypeCDPs(accountCDPs, isASA) {
+async function updateTypeCDPs(address, accountCDPs, isASA) {
   const mins_to_refresh = 15;
   let webcalls = 0;
 
@@ -122,8 +122,8 @@ export async function updateCDPs(address) {
   const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
   // Sets the frequency to double check CDPs
-  updateTypeCDPs(accountCDPs, false)
-  updateTypeCDPs(accountCDPs, true)
+  updateTypeCDPs(address, accountCDPs, false)
+  updateTypeCDPs(address, accountCDPs, true)
 }
 
 async function findOpenID(address, isASA) {

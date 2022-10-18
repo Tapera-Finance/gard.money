@@ -5,7 +5,7 @@ import Table from "./Table";
 import { formatToDollars } from "../utils";
 import { getPrice } from "../transactions/cdp";
 import { getWallet, getWalletInfo } from "../wallets/wallets";
-import { CDPsToList } from "../pages/BorrowContent";
+import { CDPsToList } from "./Positions";
 
 const WalletTable = styled(Table)`
   margin-top: 12px;
