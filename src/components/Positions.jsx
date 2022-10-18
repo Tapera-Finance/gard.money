@@ -65,10 +65,10 @@ export function CDPsToList() {
     if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
         const accountCDPs = CDPs[getWalletInfo().address];
         if (accountCDPs['algo'] != null) {
-          res.concat(_CDPsToList(accountCDPs['algo']))
+          res = res.concat(_CDPsToList(accountCDPs['algo']))
         }
         if (accountCDPs['asa'] != null) {
-          res.concat(_CDPsToList(accountCDPs['asa']))
+          res = res.concat(_CDPsToList(accountCDPs['asa']))
         }
     }
     if (res.length == 0) {
