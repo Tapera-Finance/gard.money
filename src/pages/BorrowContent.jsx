@@ -528,12 +528,22 @@ export default function BorrowContent() {
             onClick={async () => {
               setLoading(true);
               try {
-                const res = await openCDP(
-                  getCollateral(),
-                  getMinted(),
-                  commitChecked,
-                  toWallet,
-                );
+                let res;
+                if collateralType == 'ALGO' {
+                  res = await openCDP(
+                    getCollateral(),
+                    getMinted(),
+                    0,
+                    commitChecked,
+                    toWallet,
+                  )
+                } else {
+                  res = await openCDP(
+                    getCollateral(),
+                    getMinted(),
+                    ids.asa.galgo,
+                  )
+                }
                 if (res.alert) {
                   setCreatePositionShown(false);
                   dispatch(setAlert(res.text));

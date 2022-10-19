@@ -204,77 +204,12 @@ function makeUpdateInterestTxn(userInfo, params) {
   });
 }
 
-export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
-  if (openingGARD < 1) {
-    return {
-      alert: true,
-      text:
-        "Opening GARD needs to be at least 1.\n" +
-        "Your opening GARD is is: " +
-        openingGARD,
-    };
-  }
-
-  // Setting up promises
-  const infoPromise = accountInfo();
-  const paramsPromise = getParams(2000);
-  const microOpeningGard = microGARD(openingGARD);
-
-  // XXX: Could add a nice check here to make sure the ratio is acceptable
-
-  const openingMicroALGOs = parseInt(openingALGOs * 1000000);
-  const ratio = calcRatio(openingMicroALGOs, openingGARD);
-  if (ratio < MINRATIO) {
-    return {
-      alert: true,
-      text:
-        "Ratio needs to be above " +
-        MINRATIO +
-        "%.\n" +
-        "Your ratio is: " +
-        calcRatio(openingMicroALGOs, openingGARD, true),
-    };
-  }
-
-  // Part 1: Opting in, creating needed info, etc.
-  setLoadingStage("Loading...");
-
-  const info = await infoPromise;
-  const accountIDPromise = findOpenID(info.address, 0);
-
-  if (
-    307000 +
-      openingMicroALGOs +
-      100000 * (info["assets"].length + 4) >
-    info["amount"]
-  ) {
-    return {
-      alert: true,
-      text:
-        "Depositing this much collateral will put you below your minimum balance.\n" +
-        "Your Maximum deposit is: " +
-        (info["amount"] -
-          307000 -
-          100000 * (info["assets"].length + 4)) /
-          1000000 +
-        " Algos",
-    };
-  }
-
+function makeOptInTxns(info, params) {
+  let txns = [];
   let optedInGard = verifyOptIn(info, ids.asa.gard);
   let optedInGain = verifyOptIn(info, ids.asa.gain);
   let optedInGardian =
     VERSION.slice(0,7) != "TESTNET" ? verifyOptIn(info, ids.asa.gardian) : true; //no testnet id for Gardian so this should only verify opt in if hit on mainnet
-  const accountID = await accountIDPromise;
-  const cdp = cdpGen(info.address, accountID);
-
-  let params = await paramsPromise;
-  let txns = [];
-  let optins = 0;
-  params.fee = 5000;
-  // txn 0 = update interest rate
-  let txn0 = makeUpdateInterestTxn(info, params)
-  txns.push(txn0)
   // Sets fee to 1000 for potential opt ins
   params.fee = 1000;
   // txn 1 = opt in to gard
@@ -300,6 +235,47 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   }
   // resetting fee to 0
   params.fee = 0;
+  return txns
+}
+
+async function openAlgoCDP(openingMicroALGOS, microOpeningGARD, commit, toWallet, infoPromise) {
+  // Setting up promises
+  const paramsPromise = getParams(2000);
+
+  // Part 1: Opting in, creating needed info, etc.
+
+  const info = await infoPromise;
+  const accountIDPromise = findOpenID(info.address, 0);
+
+  if (
+    307000 +
+      openingMicroALGOs +
+      100000 * (info["assets"].length + 4) >
+    info["amount"]
+  ) {
+    return {
+      alert: true,
+      text:
+        "Depositing this much collateral will put you below your minimum balance.\n" +
+        "Your Maximum deposit is: " +
+        (info["amount"] -
+          307000 -
+          100000 * (info["assets"].length + 4)) /
+          1000000 +
+        " Algos",
+    };
+  }
+
+  const accountID = await accountIDPromise;
+  const cdp = cdpGen(info.address, accountID);
+
+  let params = await paramsPromise;
+  let txns = makeOptInTxns(info, params);
+  let optins = txns.length;
+  params.fee = 5000;
+  // txn 0 = update interest rate
+  let txn0 = makeUpdateInterestTxn(info, params)
+  txns.push(txn0)
   // txn 4 = transfer algos
   let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -366,12 +342,12 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   
   setLoadingStage("Finalizing Transactions...");
   let stxns = []
-  // stxn 0
-  stxns.push(_stxns[0].blob)
-  // stxn 1-3
+  // stxn 0-2 (opt ins)
   for (let i = 0; i < optins; i++) {
-    stxns.push(_stxns[1 + i].blob)
+    stxns.push(_stxns[i].blob)
   }
+  // stxn 0
+  stxns.push(_stxns[optins].blob)
   // stxn 4
   stxns.push(_stxns[1 + optins].blob)
   // stxn 5
@@ -389,6 +365,173 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     stxns.push(stxn8.blob)
   }
   
+  return stxns;
+}
+
+async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise) {
+  const paramsPromise = getParams(2000);
+  
+  // Part 1: Opting in, creating needed info, etc.
+
+  const info = await infoPromise;
+  const accountIDPromise = findOpenID(info.address, 0);
+
+  if (
+    307000 +
+      openingMicroALGOs +
+      100000 * (info["assets"].length + 4) >
+    info["amount"]
+  ) {
+    return {
+      alert: true,
+      text:
+        "Depositing this much collateral will put you below your minimum balance.\n" +
+        "Your Maximum deposit is: " +
+        (info["amount"] -
+          307000 -
+          100000 * (info["assets"].length + 4)) /
+          1000000 +
+        " Algos",
+    };
+  }
+
+  const accountID = await accountIDPromise;
+  const cdp = cdpGen(info.address, accountID);
+
+  let params = await paramsPromise;
+  let txns = makeOptInTxns(info, params);
+  let optins = txns.length;
+  params.fee = 5000;
+  // txn 0 = update interest rate
+  let txn0 = makeUpdateInterestTxn(info, params)
+  txns.push(txn0)
+  // Sets fee to 1000 for potential opt ins
+  params.fee = 1000;
+  // txn 1 = opt in to gard
+  let txn1;
+  if (!optedInGard) {
+    txn1 = createOptInTxn(params, info, ids.asa.gard);
+    txns.push(txn1);
+    optins++;
+  }
+  // txn 2 = opt in to gain
+  let txn2;
+  if (!optedInGain) {
+    txn2 = createOptInTxn(params, info, ids.asa.gain);
+    txns.push(txn2);
+    optins++;
+  }
+  // txn 3 = opt in to gardian
+  let txn3;
+  if (!optedInGardian) {
+    txn3 = createOptInTxn(params, info, ids.asa.gardian);
+    txns.push(txn3);
+    optins++;
+  }
+  // resetting fee to 0
+  params.fee = 0;
+  // txn 4 = transfer algos
+  let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: cdp.address,
+    amount: openingMicroALGOs,
+    suggestedParams: params,
+  });
+  txns.push(txn4)
+  // txn 5 = opt in cdp txn
+  let txn5 = algosdk.makeApplicationOptInTxnFromObject({
+    from: cdp.address,
+    suggestedParams: params,
+    appIndex: ids.app.validator,
+  });
+  txns.push(txn5)
+  // txn 6 = new position
+  let txn6 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: ids.app.validator,
+    onComplete: 0,
+    appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(microOpeningGard), algosdk.encodeUint64(accountID)],
+    accounts: [cdp.address],
+    foreignApps: [ids.app.oracle, ids.app.sgard_gard, ids.app.dao.interest],
+    foreignAssets: [ids.asa.gard],
+    suggestedParams: params,
+  });
+  txns.push(txn6)
+  
+  // Signing transactions
+  algosdk.assignGroupID(txns);
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+  let _stxns = await signGroup(info, txns);
+  
+  setLoadingStage("Finalizing Transactions...");
+  let stxns = []
+  // stxn 0-2 (opt ins)
+  for (let i = 0; i < optins; i++) {
+    stxns.push(_stxns[i].blob)
+  }
+  // stxn 0
+  stxns.push(_stxns[optins].blob)
+  // stxn 4
+  stxns.push(_stxns[1 + optins].blob)
+  // stxn 5
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(2)]);
+  let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
+  stxns.push(stxn5.blob)
+  // stxn 6
+  stxns.push(_stxns[3 + optins].blob)
+  if (commit) {
+    // stxn 7
+    stxns.push(_stxns[4 + optins].blob)
+    // stxn 8
+    lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
+    let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
+    stxns.push(stxn8.blob)
+  }
+  
+  return stxns
+}
+
+export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = false, toWallet = false) {
+
+  const openingMicroAsset = parseInt(openingAssetAmount * 1000000) // XXX: This works for algos and galgos, but potentially not other assets
+
+  // Setting up promises
+  const infoPromise = accountInfo();
+
+  setLoadingStage("Loading...");
+
+  if (openingGARD < 1) {
+    return {
+      alert: true,
+      text:
+        "Opening GARD needs to be at least 1.\n" +
+        "Your opening GARD is is: " +
+        openingGARD,
+    };
+  }
+  
+  const ratio = calcRatio(openingMicroAsset, openingGARD, asaID);
+  if (ratio < MINRATIO) {
+    return {
+      alert: true,
+      text:
+        "Ratio needs to be above " +
+        MINRATIO +
+        "%.\n" +
+        "Your ratio is: " +
+        calcRatio(openingMicroALGOs, openingGARD, asaID, true),
+    };
+  }
+  
+  
+  const microOpeningGard = microGARD(openingGARD);
+  let stxns
+  if (asaID == 0) {
+    stxns = await openAlgoCDP(openingMicroAssetAmount, microOpeningGard, commit, toWallet, infoPromise)
+  } else {
+    stxns = await openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise)
+  }
+  
   setLoadingStage("Confirming Transactions...");
   
   let response = await sendTxn(
@@ -396,7 +539,9 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     "Successfully opened a new CDP.",
   );
   
-  addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, 0);
+  updateCDP(info.address, asaID, accountID);
+  
+  addCDPToFireStore(accountID, -openingMicroAsset, microOpeningGard, 0);
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
   if (!completedMint.includes(info.address)) {
     await updateTotal(info.address, "totalMinted", microOpeningGard)
@@ -411,12 +556,12 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   }
   if (commit) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
-    updateCommitmentFirestore(info.address, accountID, openingMicroALGOs);
+    updateCommitmentFirestore(info.address, accountID, openingMicroAsset);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #5!";
       let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
       if (!completedCommit.includes(info.address)) {
-      await updateTotal(info.address, "totalCommitted", openingMicroALGOs)
+      await updateTotal(info.address, "totalCommitted", openingMicroAsset)
       let user_totals = await loadUserTotals()
       console.log('totals', user_totals)
       if(user_totals["totalCommitted"] >= 100000000){
@@ -429,8 +574,8 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   }
   
   setLoadingStage(null);
-  updateCDP(info.address, 0, accountID);
-  return response;
+  
+  return response
 }
 
 export async function mint(accountID, newGARD) {
@@ -843,6 +988,7 @@ async function updateCDP(
   
   typeCDPs[id] = {
     collateralType: _collateralType,
+    asaID: asaID,
     collateral: _collateral,
     debt: _debt,
     principal: _principal,
