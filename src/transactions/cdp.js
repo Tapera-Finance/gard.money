@@ -809,9 +809,11 @@ async function updateCDP(
   if (accountCDPs == null) {
     accountCDPs = {};
   }
+  let _collateralType = 'algo'
   let typeKey = 'algo'
   if (is_asa) {
     typeKey = 'asa'
+    // TODO: Update _collateralType
   }
   let typeCDPs = accountCDPs[typeKey]
   if (typeCDPs == null) {
@@ -835,7 +837,7 @@ async function updateCDP(
   
   
   typeCDPs[id] = {
-    asset: 'algo', // TODO: Add asset name
+    collateralType: _collateralType,
     collateral: _collateral,
     debt: _debt,
     principal: _principal,
