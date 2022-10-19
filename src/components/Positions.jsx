@@ -52,6 +52,7 @@ function _CDPsToList(CDPList) {
                 value["collateral"]
             ).toFixed(4),
             collateral: value["collateral"],
+            collateralType: value["collateralType"],
             debt: value["debt"],
             committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
             });
@@ -139,7 +140,8 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const [mGARD, setGARD] = useState("")
     const [minted, setMinted] = useState("")
     const loadedCDPs = CDPsToList();
-    const [currentCDP, setCurrentCDP] = useState(null)
+    const [currentCDP, setCurrentCDP] = useState(null);
+    const [collateralType, setCollateralType] = useState("ALGO")
     const [selectedTab, setSelectedTab] = useState("one");
     const [manageUpdate, setManageUpdate] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -246,6 +248,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
         <Container>
             {loadedCDPs.length && loadedCDPs.length > 0 ?
                 loadedCDPs.map((cdp, idx) => {
+                  // console.log("logging cdp data object", cdp)
                     return (
             <Position key={cdp.id.toString() + idx.toString()}>
                 {/* <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div> */}
