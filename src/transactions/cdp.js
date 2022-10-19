@@ -394,7 +394,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   
   addCDPToFireStore(accountID, -openingMicroALGOs, microOpeningGard, 0);
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
-  if (!completedMint.includes(info.address)) {
+  if (completedMint == null | !completedMint.includes(info.address)) {
     await updateTotal(info.address, "totalMinted", microOpeningGard)
     let user_totals = await loadUserTotals()
     console.log('totals', user_totals)
@@ -411,7 +411,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
     response.text =
       response.text + "\nFull Balance committed to Governance Period #5!";
       let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
-      if (!completedCommit.includes(info.address)) {
+      if (completedCommit == null | !completedCommit.includes(info.address)) {
       await updateTotal(info.address, "totalCommitted", openingMicroALGOs)
       let user_totals = await loadUserTotals()
       console.log('totals', user_totals)
@@ -473,7 +473,8 @@ export async function mint(accountID, newGARD) {
   setLoadingStage(null);
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
-  if (!completedMint.includes(info.address)) {
+  console.log("completedMint", completedMint)
+  if (completedMint == null | !completedMint.includes(info.address)) {
     await updateTotal(info.address, "totalMinted", microGARD(newGARD))
     let user_totals = await loadUserTotals()
     console.log('totals', user_totals)
@@ -902,7 +903,8 @@ export async function commitCDP(account_id, amount, toWallet) {
     parseInt(amount * 1000000),
   );
   let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
-  if (!completedCommit.includes(info.address)) {
+  console.log("completedCommit", completedCommit)
+  if ( completedCommit == null | !completedCommit.includes(info.address)) {
     await updateTotal(info.address, "totalCommitted", parseInt(amount * 1000000))
     let user_totals = await loadUserTotals()
     console.log('totals', user_totals)
