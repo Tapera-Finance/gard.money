@@ -205,6 +205,18 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
       setAPR(await getAlgoGovAPR());
     }, []);
 
+    useEffect(() => {
+      let type
+      if (currentCDP !== null) {
+        type = currentCDP.collateralType
+        if (type === "galgo") {
+          setCollateralType("gALGO")
+        } else if (type === "algo") {
+          setCollateralType("ALGO")
+        }
+      }
+    }, [currentCDP])
+
     var sessionStorageSetHandler = function (e) {
       setLoadingText(JSON.parse(e.value));
     };
@@ -292,7 +304,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
                     {selectedTab === "one" ? <BorrowMore supplyPrice={supplyPrice} collateral={cAlgos} mAsset={mGARD} setCollateral={setCollateral} minted={setGARD} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} manageUpdate={setManageUpdate} />
-                    : selectedTab === "two" ? <SupplyMore supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
+                    : selectedTab === "two" ? <SupplyMore collateralType={collateralType} supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
                     : selectedTab === "three" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     :
                     // : selectedTab === "three" ?

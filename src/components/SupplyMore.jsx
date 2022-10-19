@@ -4,7 +4,7 @@ import Details from "./Details";
 import { mAlgosToAlgos, algosToMAlgos} from "../pages/BorrowContent"
 import { calcRatio } from "../transactions/cdp";
 
-export default function SupplyMore({ supplyPrice, cAsset, collateral, minted, cdp, price, setCurrentCDP, maxSupply, manageUpdate, details, apr}) {
+export default function SupplyMore({ collateralType, supplyPrice, cAsset, collateral, minted, cdp, price, setCurrentCDP, maxSupply, manageUpdate, details, apr}) {
     const [utilization, setUtilization] = useState(null)
     const suppliedAmount = mAlgosToAlgos(cdp.collateral) + (cAsset !== "" ? cAsset : 0)
     let supplyDetails = [
@@ -52,7 +52,7 @@ export default function SupplyMore({ supplyPrice, cAsset, collateral, minted, cd
     // TODO: combine SupplyCDP & BorrowCDP
     return <div>
         <div style={{marginTop: 30}}>
-            <SupplyCDP collateral={collateral} minted={minted}  cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} maxSupply={maxSupply} manageUpdate={manageUpdate} apr={apr} setUtilization={setUtilization}/>
+            <SupplyCDP collateralType={collateralType} collateral={collateral} minted={minted}  cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} maxSupply={maxSupply} manageUpdate={manageUpdate} apr={apr} setUtilization={setUtilization}/>
         </div>
         <div style={{position:"relative", top:-65}}>
             <Details details={supplyDetails}/>
