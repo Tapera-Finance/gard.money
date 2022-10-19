@@ -324,7 +324,7 @@ export default function BorrowContent() {
         <></>
       )}
       <Banner>
-      <div
+        <div
           style={{
             justifyContent: "center",
             textAlign: "left",
@@ -332,7 +332,7 @@ export default function BorrowContent() {
             color: "#172756",
           }}
         >
-          <div style={{ fontSize: "10pt",  }}>Missing your CDP? </div>
+          <div style={{ fontSize: "10pt" }}>Missing your CDP? </div>
         </div>
         <div
           style={{
@@ -343,20 +343,34 @@ export default function BorrowContent() {
             marginLeft: "0px",
           }}
         >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
-
-          <div style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}>Make sure to migrate from V1 to V2</div>
+          <div
+            style={{
+              display: "flex",
+              textAlign: "left",
+              flexDirection: "column",
+            }}
+          >
+            <div
+              style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}
+            >
+              Make sure to migrate from V1 to V2
+            </div>
           </div>
         </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <V1Link onClick={() => {
-            window.open("https://www.v1.gard.money/")
-          }}>V1 Site</V1Link>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <V1Link
+            onClick={() => {
+              window.open("https://www.v1.gard.money/");
+            }}
+          >
+            V1 Site
+          </V1Link>
         </div>
       </Banner>
       <Banner>
@@ -408,9 +422,14 @@ export default function BorrowContent() {
             <SubContainer>
               <Background>
                 <Title>
-                  Supply <ExchangeSelect options={assets} value={collateralType} callback={handleSelect} />
+                  Supply{" "}
+                  <ExchangeSelect
+                    options={assets}
+                    value={collateralType}
+                    callback={handleSelect}
+                  />
                   {/* ALGO */}
-                   <AlgoImg src={borrowIcon} isGAlgo={!isGAlgo}/>
+                  <AlgoImg src={borrowIcon} isGAlgo={!isGAlgo} />
                 </Title>
                 <InputContainer>
                   <div style={{ display: "flex" }}>
@@ -450,24 +469,29 @@ export default function BorrowContent() {
                           );
                         })
                       : null}
-                      <label
-                  style={{
-                    display: "flex",
-                    alignContent: "flex-start",
-                  }}
-                >
-                  <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "flex-start"}}>
+                    <label
+                      style={{
+                        display: "flex",
+                        alignContent: "flex-start",
+                      }}
+                    >
 
-                   <InputTitle>
-                  Commit to governance
-                </InputTitle>
-                      <CommitBox
-                        type={"checkbox"}
-                        onChange={handleCheckboxChange}
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <InputTitle>{isGAlgo ? "" : "Commit to governance"}</InputTitle>
+                          <CommitBox
+                            type={isGAlgo ? "hidden" : "checkbox"}
+                            onChange={handleCheckboxChange}
+                          />
+                        </div>
 
-                      />
-                  </div>
-                </label>
+                    </label>
                   </SupplyInputDetails>
                 </InputContainer>
               </Background>
