@@ -208,10 +208,19 @@ export default function BorrowContent() {
         ? 1
         : Number(event.target.value),
     );
-    let max = mAlgosToAlgos(getWalletInfo()["amount"] -
-    307000 -
-    100000 * (getWalletInfo()["assets"].length + 4) -
-    getWalletInfo()["min-balance"],).toFixed(3)
+    let max = isGAlgo
+      ? (getWalletInfo() && getWalletInfo()["assets"].length > 0
+          ? getWalletInfo()["assets"].filter(
+              (i) => i["asset-id"] === 793124631,
+            )[0]["amount"] / 1000000
+          : 0
+        ).toFixed(3)
+      : mAlgosToAlgos(
+          getWalletInfo()["amount"] -
+            307000 -
+            100000 * (getWalletInfo()["assets"].length + 4) -
+            getWalletInfo()["min-balance"],
+        ).toFixed(3);
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -225,10 +234,19 @@ export default function BorrowContent() {
 
   const handleMaxBorrow = () => {
     setGARD((maxGARD).toFixed(3));
-    let max = mAlgosToAlgos(getWalletInfo()["amount"] -
-    307000 -
-    100000 * (getWalletInfo()["assets"].length + 4) -
-    getWalletInfo()["min-balance"],).toFixed(3)
+    let max = isGAlgo
+      ? (getWalletInfo() && getWalletInfo()["assets"].length > 0
+          ? getWalletInfo()["assets"].filter(
+              (i) => i["asset-id"] === 793124631,
+            )[0]["amount"] / 1000000
+          : 0
+        ).toFixed(3)
+      : mAlgosToAlgos(
+          getWalletInfo()["amount"] -
+            307000 -
+            100000 * (getWalletInfo()["assets"].length + 4) -
+            getWalletInfo()["min-balance"],
+        ).toFixed(3);
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -640,7 +658,7 @@ const AlgoImg = styled.img`
   width: 75px;
   right: --4px;
   position: relative;
-  ${(props) => props.isGAlgo &&
+  ${(props) => !props.isGAlgo &&
     css`
       height: 50px;
       width: 50px;
@@ -652,8 +670,8 @@ const AlgoImg = styled.img`
 `;
 
 const gAlgoImg = styled.img`
-  height: 50px;
-  width: 50px;
+  height: 30px;
+  width: 30px;
   position: relative;
 `
 
