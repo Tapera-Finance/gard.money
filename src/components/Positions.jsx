@@ -244,9 +244,9 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
         </Header>
         <Container>
             {loadedCDPs.length && loadedCDPs.length > 0 ?
-                loadedCDPs.map((cdp) => {
+                loadedCDPs.map((cdp, idx) => {
                     return (
-            <Position key={cdp.id * Math.random()}>
+            <Position key={cdp.id.toString() + idx.toString()}>
                 {/* <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div> */}
                 <PositionInfo>
                     <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
