@@ -87,27 +87,23 @@ function getCDPState(cdpInfo) {
 }
 
 
-function cdpIsCached(accountCDPs, typeKey, id) {
-  return accountCDPs && accountCDPs.hasOwnProperty(typeKey) && accountCDPs[typeKey].hasOwnProperty(id)
+function cdpIsCached(accountCDPs, asaID, id) {
+  return accountCDPs && accountCDPs.hasOwnProperty(asaID) && accountCDPs[asaID].hasOwnProperty(id)
 }
 
 
-async function updateTypeCDPs(address, accountCDPs, isASA) {
+async function updateTypeCDPs(address, accountCDPs, asaID) {
   const mins_to_refresh = 15;
   let webcalls = 0;
 
-  let typeKey = "algo"
-  if (isASA) {
-    typeKey = "asa"
-  }
   for (const x of Array(MAXID - MINID)
     .fill()
     .map((_, i) => i + MINID)) {
     if (
-      !cdpIsCached(accountCDPs, typeKey, x) ||
-      accountCDPs[typeKey]["checked"] + mins_to_refresh * 60 * 1000 < Date.now()
+      !cdpIsCached(accountCDPs, asaID, x) ||
+      accountCDPs[asaID]["checked"] + mins_to_refresh * 60 * 1000 < Date.now()
     ) {
-      updateCDP(address, isASA, x);
+      updateCDP(address, asaID, x);
       webcalls += 1;
     }
     if (webcalls % 3 == 0) {
@@ -122,26 +118,22 @@ export async function updateCDPs(address) {
   const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
   // Sets the frequency to double check CDPs
-  updateTypeCDPs(address, accountCDPs, false)
-  updateTypeCDPs(address, accountCDPs, true)
+  updateTypeCDPs(address, accountCDPs, 0)
+  updateTypeCDPs(address, accountCDPs, ids.asa.galgo)
 }
 
-async function findOpenID(address, isASA) {
+async function findOpenID(address, asaID) {
   const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
-  let typeKey = "algo"
-  if (isASA) {
-    typeKey = "asa"
-  }
-  const typeCDPs = accountCDPs[typeKey]
+  const typeCDPs = accountCDPs[asaID]
   for (const x of Array(MAXID - MINID)
     .fill()
     .map((_, i) => i + MINID)) {
     if (
-      !cdpIsCached(accountCDPs, typeKey, x) ||
+      !cdpIsCached(accountCDPs, asaID, x) ||
       accountCDPs[x]["state"] == "closed"
     ) {
-      const used = await updateCDP(address, isASA, x);
+      const used = await updateCDP(address, asaID, x);
       if (!used) {
         return x;
       }
@@ -233,7 +225,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   setLoadingStage("Loading...");
 
   const info = await infoPromise;
-  const accountIDPromise = findOpenID(info.address, false);
+  const accountIDPromise = findOpenID(info.address, 0);
 
   if (
     307000 +
@@ -422,7 +414,7 @@ export async function openCDP(openingALGOs, openingGARD, commit, toWallet) {
   }
   
   setLoadingStage(null);
-  updateCDP(info.address, false, accountID);
+  updateCDP(info.address, 0, accountID);
   return response;
 }
 
@@ -467,7 +459,7 @@ export async function mint(accountID, newGARD) {
     stxns,
     "Successfully minted " + newGARD + " GARD.",
   );
-  updateCDP(info.address, false, accountID);
+  updateCDP(info.address, 0, accountID);
   
   // DB Updates
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
@@ -587,7 +579,7 @@ export async function addCollateral(accountID, newAlgos, commit) {
     "Successfully added " + newAlgos + " ALGOs as collateral.",
   );
 
-  updateCDP(info.address, false, accountID);
+  updateCDP(info.address, 0, accountID);
   updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
   
   if (commit) {
@@ -692,7 +684,7 @@ export async function repayCDP(accountID, repayGARD) {
     "Successfully repayed your cdp.",
   );
   setLoadingStage(null);
-  updateCDP(info.address, false, accountID);
+  updateCDP(info.address, 0, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
@@ -788,7 +780,7 @@ export async function closeCDP(accountID) {
     "Successfully closed your cdp.",
   );
   setLoadingStage(null);
-  updateCDP(info.address, false, accountID);
+  updateCDP(info.address, 0, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
@@ -796,11 +788,11 @@ export async function closeCDP(accountID) {
 // TODO: add commitment
 async function updateCDP(
   address,
-  is_asa,
+  asaID,
   id,
 ) {
 
-  const cdp = cdpGen(address, id);
+  const cdp = cdpGen(address, id, asaID);
   const infoPromise = accountInfo(cdp.address);
 
   // Getting the entry to modify
@@ -809,11 +801,11 @@ async function updateCDP(
   if (accountCDPs == null) {
     accountCDPs = {};
   }
-  let typeKey = 'algo'
-  if (is_asa) {
-    typeKey = 'asa'
+  let _collateralType = 'algo'
+  if (asaID != 0) {
+    _collateralType = 'galgo'
   }
-  let typeCDPs = accountCDPs[typeKey]
+  let typeCDPs = accountCDPs[asaID]
   if (typeCDPs == null) {
     typeCDPs = {};
   }
@@ -835,14 +827,14 @@ async function updateCDP(
   
   
   typeCDPs[id] = {
-    asset: 'algo', // TODO: Add asset name
+    collateralType: _collateralType,
     collateral: _collateral,
     debt: _debt,
     principal: _principal,
     checked: Date.now(),
     state: state.state,
   };
-  accountCDPs[typeKey] = typeCDPs;
+  accountCDPs[asaID] = typeCDPs;
   CDPs[address] = accountCDPs;
   localStorage.setItem("CDPs", JSON.stringify(CDPs));
   

@@ -16,6 +16,7 @@ import SupplyMore from "./SupplyMore";
 import RepayPosition from "./RepayPosition";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
+import { ids } from "../transactions/ids"
 
 const axios = require("axios");
 
@@ -64,11 +65,11 @@ export function CDPsToList() {
     let res = [];
     if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
         const accountCDPs = CDPs[getWalletInfo().address];
-        if (accountCDPs['algo'] != null) {
-          res = res.concat(_CDPsToList(accountCDPs['algo']))
+        if (accountCDPs[0] != null) {
+          res = res.concat(_CDPsToList(accountCDPs[0]))
         }
-        if (accountCDPs['asa'] != null) {
-          res = res.concat(_CDPsToList(accountCDPs['asa']))
+        if (accountCDPs[ids.asa.galgo] != null) {
+          res = res.concat(_CDPsToList(accountCDPs[ids.asa.galgo]))
         }
     }
     if (res.length == 0) {

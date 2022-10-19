@@ -6,6 +6,7 @@ import { formatToDollars } from "../utils";
 import { getPrice } from "../transactions/cdp";
 import { getWallet, getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "./Positions";
+import { ids } from "../transactions/ids"
 
 const WalletTable = styled(Table)`
   margin-top: 12px;
@@ -28,9 +29,9 @@ function getAssets() {
   var assets = [];
   let x = getWalletInfo()["assets"];
   for (var i = 0, len = x.length; i < len; i++) {
-    if ([684649988, 684649672, 692432647, 793124631].includes(x[i]["asset-id"])) {
+    if ([ids.asa.gard, ids.asa.gain, ids.asa.gardian, ids.asa.galgo].includes(x[i]["asset-id"])) {
       let amnt = (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3);
-      let token_price = x[i]["asset-id"] == 684649988 ? 1 : 0;
+      let token_price = x[i]["asset-id"] == ids.asa.gard ? 1 : 0;
       assets.push({
         name: x[i]["name"].toUpperCase(),
         amount: amnt,
