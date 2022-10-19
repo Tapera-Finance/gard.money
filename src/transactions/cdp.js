@@ -55,13 +55,23 @@ export function calcRatio(collateral, minted, string = false) {
   return ratio;
 }
 
-function getCDPState(cdpInfo) {
+function getCDPState(cdpInfo, asaID) {
   let res = {
     state: 'closed',
   }
   if (cdpInfo.amount > 0) {
     res.state = 'opened';
-    res.collateral = cdpInfo.amount;
+    if (asaID == 0) {
+      res.collateral = cdpInfo.amount;
+    } else {
+      res.collateral = 0;
+      for (let i = 0; i < cdpInfo["assets"].length; i++) {
+        if (asaID == cdpInfo["assets"][i]["asset-id"]) {
+          res.collateral = cdpInfo["assets"][i]["amount"]
+          break
+        }
+      }
+    }
     for (let i = 0; i < cdpInfo["apps-local-state"].length; i++) {
       if (cdpInfo["apps-local-state"][i].id == ids.app.validator) {
         const validatorInfo = cdpInfo["apps-local-state"][i];
@@ -812,7 +822,7 @@ async function updateCDP(
   
   // Setting vals
   const info = await infoPromise
-  const state = getCDPState(info)
+  const state = getCDPState(info, asaID)
   let _collateral = 0
   let _principal = 0
   let _debt = 0
