@@ -29,7 +29,7 @@ import Select from "../components/Select";
 import { ids } from "../transactions/ids"
 
 export function displayRatio() {
-  return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
+  return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
 }
 
 export function mAlgosToAlgos(num) {

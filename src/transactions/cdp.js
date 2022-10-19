@@ -45,10 +45,15 @@ export async function getPrice() {
 // We immeadiately update the price in a background thread
 getPrice();
 
-export function calcRatio(collateral, minted, string = false) {
+export function calcRatio(collateral, minted, asaID, string = false) {
   // collateral: Microalgos
   // minted: GARD
-  const ratio = (100 * collateral * currentPrice) / minted / 1000000;
+  let mul = 1
+  if (asaID != 0) {
+    mul = .98 // XXX: Only works for galgos
+    // XXX: Should get this dynamically
+  }
+  const ratio = (mul * 100 * collateral * currentPrice) / minted / 1000000;
   if (string) {
     return ratio.toFixed(0) + "%";
   }
