@@ -20,7 +20,7 @@ if (VERSION == "MAINNET") {
         gain : 684649672,
         gard : 684649988,
         gardian : 692432647,
-        galgo: 793124631
+        galgo: 793124631,
     },
     app : {
         dao : {
