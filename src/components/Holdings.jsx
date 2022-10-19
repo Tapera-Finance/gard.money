@@ -28,11 +28,11 @@ function getAssets() {
   var assets = [];
   let x = getWalletInfo()["assets"];
   for (var i = 0, len = x.length; i < len; i++) {
-    if ([684649988, 684649672, 692432647].includes(x[i]["asset-id"])) {
+    if ([684649988, 684649672, 692432647, 793124631].includes(x[i]["asset-id"])) {
       let amnt = (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3);
       let token_price = x[i]["asset-id"] == 684649988 ? 1 : 0;
       assets.push({
-        name: x[i]["name"],
+        name: x[i]["name"].toUpperCase(),
         amount: amnt,
         value: parseFloat(amnt) * token_price,
       });

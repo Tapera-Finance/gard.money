@@ -114,6 +114,7 @@ export default function BorrowContent() {
       return;
     }
     setCollateralType(e.target.value)
+    console.log('collat selected',e.target.value);
   }
 
   useEffect(() => {
@@ -123,7 +124,7 @@ export default function BorrowContent() {
   }, []);
 
   useEffect(() => {
-    setIsGAlgo(!isGAlgo)
+    collateralType === "gALGO" ? setIsGAlgo(true) : setIsGAlgo(false)
   }, [collateralType])
 
   useEffect(async () => {
@@ -131,8 +132,25 @@ export default function BorrowContent() {
     await updateWalletInfo();
     getWallet();
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+    console.log("log wallet", getWalletInfo())
     setMaxCollateral(adjustedMax());
   }, []);
+
+  useEffect(() => {
+    if (isGAlgo) {
+      let max = (
+        getWalletInfo() && getWalletInfo()["assets"].length > 0
+          ? getWalletInfo()["assets"].filter(
+              (i) => i["asset-id"] === 793124631,
+            )[0]["amount"] / 1000000
+          : 0
+      ).toFixed(3); // hardcoded asa for now, should filter based on generic selected asset
+      setMaxCollateral(max);
+    } else {
+      setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+      setMaxCollateral(adjustedMax());
+    }
+  }, [isGAlgo])
 
   useEffect(() => {
     setSupplyPrice(price);
@@ -282,7 +300,7 @@ export default function BorrowContent() {
   var supplyDetails = [
     {
       title: "Supply Limit",
-      val: `${maxCollateral} ALGOs`,
+      val: `${maxCollateral} ${collateralType}`,
       hasToolTip: true,
     },
   ];
@@ -738,6 +756,7 @@ const ExchangeSelect = styled(Select)`
   font-size: 14pt;
   margin: 0px 0px 0px 12px;
   border: 1px solid #01d1ff;
+  color: white;
   &:hover {
     color: black;
     border: 1px solid #1b2d65;
