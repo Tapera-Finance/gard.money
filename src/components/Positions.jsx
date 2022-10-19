@@ -16,6 +16,7 @@ import SupplyMore from "./SupplyMore";
 import RepayPosition from "./RepayPosition";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
+import { ids } from "../transactions/ids"
 
 const axios = require("axios");
 

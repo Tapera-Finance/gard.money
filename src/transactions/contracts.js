@@ -59,7 +59,7 @@ export function cdpGen(userAddress, accountID, asaID = 0) {
   const slices = getSlices(template, template2)
   
   let contract
-  if (asaID = 0) {
+  if (asaID == 0) {
     const sub1 = template.slice(slices[0], slices[1]);
     const sub2 = template.slice(slices[2], slices[3]);
     const sub3 = template.slice(slices[4]); // TODO: Check that slicing is done in the same way
@@ -83,7 +83,7 @@ export function cdpGen(userAddress, accountID, asaID = 0) {
     // Crafts the contract with proper insertions
     contract = new Uint8Array([
       ...sub1,
-      ...asaIDBytes
+      ...asaIDBytes,
       ...sub2,
       ...accountIDBytes,
       ...sub3,

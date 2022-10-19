@@ -792,7 +792,7 @@ async function updateCDP(
   id,
 ) {
 
-  const cdp = cdpGen(address, id);
+  const cdp = cdpGen(address, id, asaID);
   const infoPromise = accountInfo(cdp.address);
 
   // Getting the entry to modify

@@ -17,6 +17,7 @@ import { userInDB, addUserToFireStore, userInTotals, addUserToTotals } from "../
 import { getCDPs } from "../transactions/cdp";
 import { cdpGen } from "../transactions/contracts";
 import { useNavigate } from "react-router-dom";
+import { ids } from "../transactions/ids"
 
 const instantiateUser = async (address) => {
   let accountCDPs = getCDPs()[address];

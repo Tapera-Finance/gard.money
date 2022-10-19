@@ -83,7 +83,7 @@ export async function updateWalletInfo() {
   for (let i = 0; i < info["assets"].length; i++) {
     const j = i;
     if (
-      [684649988, 684649672, 692432647, 793124631].includes(info["assets"][j]["asset-id"])
+      [ids.asa.gard, ids.asa.gain, ids.asa.gardian, ids.asa.galgo].includes(info["assets"][j]["asset-id"])
     ) {
       promises.push(
         algodClient
@@ -93,7 +93,7 @@ export async function updateWalletInfo() {
             activeWalletInfo["assets"][j]["decimals"] =
               response["params"]["decimals"];
             activeWalletInfo["assets"][j]["name"] = response["params"]["name"];
-            if (info["assets"][j]["asset-id"] == 684649988 && j != 0) {
+            if (info["assets"][j]["asset-id"] == ids.asa.gard && j != 0) {
               idx = j;
             }
           }),
