@@ -26,6 +26,7 @@ import gAlgoLogo from "../assets/icons/galgo-icon.png"
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
 import Select from "../components/Select";
+import { ids } from "../transactions/ids"
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
@@ -141,7 +142,7 @@ export default function BorrowContent() {
       let max = (
         getWalletInfo() && getWalletInfo()["assets"].length > 0
           ? getWalletInfo()["assets"].filter(
-              (i) => i["asset-id"] === 793124631,
+              (i) => i["asset-id"] === ids.asa.galgo,
             )[0]["amount"] / 1000000
           : 0
       ).toFixed(3); // hardcoded asa for now, should filter based on generic selected asset
@@ -208,10 +209,19 @@ export default function BorrowContent() {
         ? 1
         : Number(event.target.value),
     );
-    let max = mAlgosToAlgos(getWalletInfo()["amount"] -
-    307000 -
-    100000 * (getWalletInfo()["assets"].length + 4) -
-    getWalletInfo()["min-balance"],).toFixed(3)
+    let max = isGAlgo
+      ? (getWalletInfo() && getWalletInfo()["assets"].length > 0
+          ? getWalletInfo()["assets"].filter(
+              (i) => i["asset-id"] === ids.asa.galgo,
+            )[0]["amount"] / 1000000
+          : 0
+        ).toFixed(3)
+      : mAlgosToAlgos(
+          getWalletInfo()["amount"] -
+            307000 -
+            100000 * (getWalletInfo()["assets"].length + 4) -
+            getWalletInfo()["min-balance"],
+        ).toFixed(3);
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -225,10 +235,19 @@ export default function BorrowContent() {
 
   const handleMaxBorrow = () => {
     setGARD((maxGARD).toFixed(3));
-    let max = mAlgosToAlgos(getWalletInfo()["amount"] -
-    307000 -
-    100000 * (getWalletInfo()["assets"].length + 4) -
-    getWalletInfo()["min-balance"],).toFixed(3)
+    let max = isGAlgo
+      ? (getWalletInfo() && getWalletInfo()["assets"].length > 0
+          ? getWalletInfo()["assets"].filter(
+              (i) => i["asset-id"] === ids.asa.galgo,
+            )[0]["amount"] / 1000000
+          : 0
+        ).toFixed(3)
+      : mAlgosToAlgos(
+          getWalletInfo()["amount"] -
+            307000 -
+            100000 * (getWalletInfo()["assets"].length + 4) -
+            getWalletInfo()["min-balance"],
+        ).toFixed(3);
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -324,7 +343,7 @@ export default function BorrowContent() {
         <></>
       )}
       <Banner>
-      <div
+        <div
           style={{
             justifyContent: "center",
             textAlign: "left",
@@ -332,7 +351,7 @@ export default function BorrowContent() {
             color: "#172756",
           }}
         >
-          <div style={{ fontSize: "10pt",  }}>Missing your CDP? </div>
+          <div style={{ fontSize: "10pt" }}>Missing your CDP? </div>
         </div>
         <div
           style={{
@@ -343,20 +362,34 @@ export default function BorrowContent() {
             marginLeft: "0px",
           }}
         >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
-
-          <div style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}>Make sure to migrate from V1 to V2</div>
+          <div
+            style={{
+              display: "flex",
+              textAlign: "left",
+              flexDirection: "column",
+            }}
+          >
+            <div
+              style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}
+            >
+              Make sure to migrate from V1 to V2
+            </div>
           </div>
         </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <V1Link onClick={() => {
-            window.open("https://www.v1.gard.money/")
-          }}>V1 Site</V1Link>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <V1Link
+            onClick={() => {
+              window.open("https://www.v1.gard.money/");
+            }}
+          >
+            V1 Site
+          </V1Link>
         </div>
       </Banner>
       <Banner>
@@ -408,9 +441,14 @@ export default function BorrowContent() {
             <SubContainer>
               <Background>
                 <Title>
-                  Supply <ExchangeSelect options={assets} value={collateralType} callback={handleSelect} />
+                  Supply{" "}
+                  <ExchangeSelect
+                    options={assets}
+                    value={collateralType}
+                    callback={handleSelect}
+                  />
                   {/* ALGO */}
-                   <AlgoImg src={borrowIcon} isGAlgo={!isGAlgo}/>
+                  <AlgoImg src={borrowIcon} isGAlgo={!isGAlgo} />
                 </Title>
                 <InputContainer>
                   <div style={{ display: "flex" }}>
@@ -450,24 +488,29 @@ export default function BorrowContent() {
                           );
                         })
                       : null}
-                      <label
-                  style={{
-                    display: "flex",
-                    alignContent: "flex-start",
-                  }}
-                >
-                  <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "flex-start"}}>
+                    <label
+                      style={{
+                        display: "flex",
+                        alignContent: "flex-start",
+                      }}
+                    >
 
-                   <InputTitle>
-                  Commit to governance
-                </InputTitle>
-                      <CommitBox
-                        type={"checkbox"}
-                        onChange={handleCheckboxChange}
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <InputTitle>{isGAlgo ? "" : "Commit to governance"}</InputTitle>
+                          <CommitBox
+                            type={isGAlgo ? "hidden" : "checkbox"}
+                            onChange={handleCheckboxChange}
+                          />
+                        </div>
 
-                      />
-                  </div>
-                </label>
+                    </label>
                   </SupplyInputDetails>
                 </InputContainer>
               </Background>
@@ -616,7 +659,7 @@ const AlgoImg = styled.img`
   width: 75px;
   right: --4px;
   position: relative;
-  ${(props) => props.isGAlgo &&
+  ${(props) => !props.isGAlgo &&
     css`
       height: 50px;
       width: 50px;
@@ -628,8 +671,8 @@ const AlgoImg = styled.img`
 `;
 
 const gAlgoImg = styled.img`
-  height: 50px;
-  width: 50px;
+  height: 30px;
+  width: 30px;
   position: relative;
 `
 
