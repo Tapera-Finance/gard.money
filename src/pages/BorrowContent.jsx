@@ -26,6 +26,7 @@ import gAlgoLogo from "../assets/icons/galgo-icon.png"
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
 import Select from "../components/Select";
+import { ids } from "../transactions/ids"
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
@@ -139,9 +140,9 @@ export default function BorrowContent() {
   useEffect(() => {
     if (isGAlgo) {
       let max = (
-        getWalletInfo() && getWalletInfo()["assets"].length > 0
+        getWalletInfo() && getWalletInfo()["assets"].length > 0 && getWalletInfo()["assets"][ids.asa.galgo] !== undefined
           ? getWalletInfo()["assets"].filter(
-              (i) => i["asset-id"] === 793124631,
+              (i) => i["asset-id"] === ids.asa.galgo,
             )[0]["amount"] / 1000000
           : 0
       ).toFixed(3); // hardcoded asa for now, should filter based on generic selected asset
