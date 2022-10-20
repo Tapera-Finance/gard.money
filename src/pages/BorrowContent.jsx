@@ -529,7 +529,7 @@ export default function BorrowContent() {
               setLoading(true);
               try {
                 let res;
-                if collateralType == 'ALGO' {
+                if (collateralType == 'ALGO') {
                   res = await openCDP(
                     getCollateral(),
                     getMinted(),

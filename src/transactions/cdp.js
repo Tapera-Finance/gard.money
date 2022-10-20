@@ -217,28 +217,25 @@ function makeOptInTxns(info, params) {
   if (!optedInGard) {
     txn1 = createOptInTxn(params, info, ids.asa.gard);
     txns.push(txn1);
-    optins++;
   }
   // txn 2 = opt in to gain
   let txn2;
   if (!optedInGain) {
     txn2 = createOptInTxn(params, info, ids.asa.gain);
     txns.push(txn2);
-    optins++;
   }
   // txn 3 = opt in to gardian
   let txn3;
   if (!optedInGardian) {
     txn3 = createOptInTxn(params, info, ids.asa.gardian);
     txns.push(txn3);
-    optins++;
   }
   // resetting fee to 0
   params.fee = 0;
   return txns
 }
 
-async function openAlgoCDP(openingMicroALGOS, microOpeningGARD, commit, toWallet, infoPromise) {
+async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet, infoPromise) {
   // Setting up promises
   const paramsPromise = getParams(2000);
 
@@ -365,7 +362,7 @@ async function openAlgoCDP(openingMicroALGOS, microOpeningGARD, commit, toWallet
     stxns.push(stxn8.blob)
   }
   
-  return stxns;
+  return stxns, info, accountID
 }
 
 async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise) {
@@ -376,9 +373,10 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise
   const info = await infoPromise;
   const accountIDPromise = findOpenID(info.address, 0);
 
+  /*
   if (
     307000 +
-      openingMicroALGOs +
+      openingMicroAssetAmount +
       100000 * (info["assets"].length + 4) >
     info["amount"]
   ) {
@@ -394,6 +392,7 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise
         " Algos",
     };
   }
+  */ // TODO: Fix this
 
   const accountID = await accountIDPromise;
   const cdp = cdpGen(info.address, accountID);
@@ -405,36 +404,11 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise
   // txn 0 = update interest rate
   let txn0 = makeUpdateInterestTxn(info, params)
   txns.push(txn0)
-  // Sets fee to 1000 for potential opt ins
-  params.fee = 1000;
-  // txn 1 = opt in to gard
-  let txn1;
-  if (!optedInGard) {
-    txn1 = createOptInTxn(params, info, ids.asa.gard);
-    txns.push(txn1);
-    optins++;
-  }
-  // txn 2 = opt in to gain
-  let txn2;
-  if (!optedInGain) {
-    txn2 = createOptInTxn(params, info, ids.asa.gain);
-    txns.push(txn2);
-    optins++;
-  }
-  // txn 3 = opt in to gardian
-  let txn3;
-  if (!optedInGardian) {
-    txn3 = createOptInTxn(params, info, ids.asa.gardian);
-    txns.push(txn3);
-    optins++;
-  }
-  // resetting fee to 0
-  params.fee = 0;
   // txn 4 = transfer algos
   let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: cdp.address,
-    amount: openingMicroALGOs,
+    amount: openingMicroAssetAmount,
     suggestedParams: params,
   });
   txns.push(txn4)
@@ -479,21 +453,13 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise
   stxns.push(stxn5.blob)
   // stxn 6
   stxns.push(_stxns[3 + optins].blob)
-  if (commit) {
-    // stxn 7
-    stxns.push(_stxns[4 + optins].blob)
-    // stxn 8
-    lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
-    let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
-    stxns.push(stxn8.blob)
-  }
   
-  return stxns
+  return stxns, info, accountID
 }
 
 export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = false, toWallet = false) {
 
-  const openingMicroAsset = parseInt(openingAssetAmount * 1000000) // XXX: This works for algos and galgos, but potentially not other assets
+  const openingMicroAssetAmount = parseInt(openingAssetAmount * 1000000) // XXX: This works for algos and galgos, but potentially not other assets
 
   // Setting up promises
   const infoPromise = accountInfo();
@@ -510,7 +476,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
     };
   }
   
-  const ratio = calcRatio(openingMicroAsset, openingGARD, asaID);
+  const ratio = calcRatio(openingMicroAssetAmount, openingGARD, asaID);
   if (ratio < MINRATIO) {
     return {
       alert: true,
@@ -519,17 +485,17 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
         MINRATIO +
         "%.\n" +
         "Your ratio is: " +
-        calcRatio(openingMicroALGOs, openingGARD, asaID, true),
+        calcRatio(openingMicroAssetAmount, openingGARD, asaID, true),
     };
   }
   
   
   const microOpeningGard = microGARD(openingGARD);
-  let stxns
+  let stxns, info, accountID
   if (asaID == 0) {
-    stxns = await openAlgoCDP(openingMicroAssetAmount, microOpeningGard, commit, toWallet, infoPromise)
+    [stxns, info, accountID] = await openAlgoCDP(openingMicroAssetAmount, microOpeningGard, commit, toWallet, infoPromise)
   } else {
-    stxns = await openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise)
+    [stxns, info, accountID] = await openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise)
   }
   
   setLoadingStage("Confirming Transactions...");
@@ -541,7 +507,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
   
   updateCDP(info.address, asaID, accountID);
   
-  addCDPToFireStore(accountID, -openingMicroAsset, microOpeningGard, 0);
+  addCDPToFireStore(accountID, -openingMicroAssetAmount, microOpeningGard, 0);
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
   if (!completedMint.includes(info.address)) {
     await updateTotal(info.address, "totalMinted", microOpeningGard)
@@ -556,12 +522,12 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
   }
   if (commit) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
-    updateCommitmentFirestore(info.address, accountID, openingMicroAsset);
+    updateCommitmentFirestore(info.address, accountID, openingMicroAssetAmount);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #5!";
       let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
       if (!completedCommit.includes(info.address)) {
-      await updateTotal(info.address, "totalCommitted", openingMicroAsset)
+      await updateTotal(info.address, "totalCommitted", openingMicroAssetAmount)
       let user_totals = await loadUserTotals()
       console.log('totals', user_totals)
       if(user_totals["totalCommitted"] >= 100000000){
