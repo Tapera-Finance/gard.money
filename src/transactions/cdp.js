@@ -144,15 +144,15 @@ async function findOpenID(address, asaID) {
   for (const x of Array(MAXID - MINID)
     .fill()
     .map((_, i) => i + MINID)) {
-    if (
-      !cdpIsCached(accountCDPs, asaID, x) ||
-      accountCDPs[x]["state"] == "closed"
-    ) {
-      const used = await updateCDP(address, asaID, x);
-      if (!used) {
-        return x;
+      if (
+        !cdpIsCached(accountCDPs, asaID, x) ||
+        typeCDPs[x]["state"] == "closed"
+      ) {
+        const used = await updateCDP(address, asaID, x);
+        if (!used) {
+          return x;
+        }
       }
-    }
   }
   console.error("findOpenID: No open IDs!");
   return null;
@@ -230,8 +230,6 @@ function makeOptInTxns(info, params) {
     txn3 = createOptInTxn(params, info, ids.asa.gardian);
     txns.push(txn3);
   }
-  // resetting fee to 0
-  params.fee = 0;
   return txns
 }
 
@@ -273,6 +271,8 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
   // txn 0 = update interest rate
   let txn0 = makeUpdateInterestTxn(info, params)
   txns.push(txn0)
+  // fees
+  params.fee = 0;
   // txn 4 = transfer algos
   let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -362,7 +362,7 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     stxns.push(stxn8.blob)
   }
   
-  return stxns, info, accountID
+  return [stxns, info, accountID]
 }
 
 async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise) {
@@ -454,7 +454,7 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise
   // stxn 6
   stxns.push(_stxns[3 + optins].blob)
   
-  return stxns, info, accountID
+  return [stxns, info, accountID]
 }
 
 export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = false, toWallet = false) {
@@ -508,6 +508,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
   updateCDP(info.address, asaID, accountID);
   
   addCDPToFireStore(accountID, -openingMicroAssetAmount, microOpeningGard, 0);
+  /*
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
   if (!completedMint.includes(info.address)) {
     await updateTotal(info.address, "totalMinted", microOpeningGard)
@@ -519,24 +520,25 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
       console.log('minted', completedMint)
       localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
     }
-  }
+  } */ // TODO: Someone needs to fix this
   if (commit) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, openingMicroAssetAmount);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #5!";
-      let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
-      if (!completedCommit.includes(info.address)) {
+    /*
+    let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
+    if (!completedCommit.includes(info.address)) {
       await updateTotal(info.address, "totalCommitted", openingMicroAssetAmount)
       let user_totals = await loadUserTotals()
       console.log('totals', user_totals)
-      if(user_totals["totalCommitted"] >= 100000000){
+      if(user_totals["totalCommitted"] >= 100000000) {
         addUserToGleam("commitAlgos", info.address)
         completedCommit.push(info.address)
         console.log("commited", completedCommit)
         localStorage.setItem("gleamCommitComplete", JSON.stringify(completedCommit))
       }
-    }
+    } */ // TODO: Someone needs to fix this
   }
   
   setLoadingStage(null);
