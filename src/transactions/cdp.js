@@ -167,8 +167,8 @@ export function verifyOptIn(info, assetID) {
   return false;
 }
 
-export function createOptInTxn(params, info, assetID) {
-  params.fee = 1000;
+export function createOptInTxn(params, info, assetID, fee = 1000) {
+  params.fee = fee;
   let txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: info.address,
@@ -233,14 +233,29 @@ function makeOptInTxns(info, params) {
   return txns
 }
 
-async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet, infoPromise) {
+function _openCDPtxns1(algosToSend, cdp, info, params) {
+  let txns = []
+  // txn 3 = update interest rate
+  let txn3 = makeUpdateInterestTxn(info, params)
+  txns.push(txn3)
+  // fees
+  params.fee = 0;
+  // txn 4 = transfer algos
+  let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: cdp.address,
+    amount: algosToSend,
+    suggestedParams: params,
+  });
+  txns.push(txn4)
+  return txns
+}
+
+async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet, info, accountID, cdp) {
   // Setting up promises
   const paramsPromise = getParams(2000);
 
   // Part 1: Opting in, creating needed info, etc.
-
-  const info = await infoPromise;
-  const accountIDPromise = findOpenID(info.address, 0);
 
   if (
     307000 +
@@ -261,26 +276,13 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     };
   }
 
-  const accountID = await accountIDPromise;
-  const cdp = cdpGen(info.address, accountID);
-
   let params = await paramsPromise;
   let txns = makeOptInTxns(info, params);
   let optins = txns.length;
   params.fee = 5000;
-  // txn 0 = update interest rate
-  let txn0 = makeUpdateInterestTxn(info, params)
-  txns.push(txn0)
-  // fees
+  // next two txns
+  txns = txns.concat(_openCDPtxns1(openingMicroAlgos, cdp, info, params))
   params.fee = 0;
-  // txn 4 = transfer algos
-  let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: cdp.address,
-    amount: openingMicroALGOs,
-    suggestedParams: params,
-  });
-  txns.push(txn4)
   // txn 5 = opt in cdp txn
   let txn5 = algosdk.makeApplicationOptInTxnFromObject({
     from: cdp.address,
@@ -295,7 +297,7 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     onComplete: 0,
     appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(microOpeningGard), algosdk.encodeUint64(accountID)],
     accounts: [cdp.address],
-    foreignApps: [ids.app.oracle, ids.app.sgard_gard, ids.app.dao.interest],
+    foreignApps: [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest],
     foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
@@ -362,16 +364,13 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     stxns.push(stxn8.blob)
   }
   
-  return [stxns, info, accountID]
+  return stxns
 }
 
-async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise) {
+async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info, accountID, cdp) {
   const paramsPromise = getParams(2000);
   
   // Part 1: Opting in, creating needed info, etc.
-
-  const info = await infoPromise;
-  const accountIDPromise = findOpenID(info.address, 0);
 
   /*
   if (
@@ -394,43 +393,45 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise
   }
   */ // TODO: Fix this
 
-  const accountID = await accountIDPromise;
-  const cdp = cdpGen(info.address, accountID);
-
   let params = await paramsPromise;
   let txns = makeOptInTxns(info, params);
   let optins = txns.length;
-  params.fee = 5000;
-  // txn 0 = update interest rate
-  let txn0 = makeUpdateInterestTxn(info, params)
-  txns.push(txn0)
-  // txn 4 = transfer algos
-  let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+  params.fee = 7000;
+  // next two txns
+  txns = txns.concat(_openCDPtxns1(850000, cdp, info, params)) // XXX: This amount may not be optimized.
+  params.fee = 0;
+  // txn 5 - opt cdp into ASA
+  let txn5 = createOptInTxn(params, cdp, asaID, 0)
+  txns.push(txn5)
+  // txn6 - asset transfer
+  let txn6 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: cdp.address,
     amount: openingMicroAssetAmount,
     suggestedParams: params,
+    assetIndex: asaID,
   });
-  txns.push(txn4)
-  // txn 5 = opt in cdp txn
-  let txn5 = algosdk.makeApplicationOptInTxnFromObject({
+  txns.push(txn6)
+  // txn 7 = opt in cdp txn
+  let txn7 = algosdk.makeApplicationOptInTxnFromObject({
     from: cdp.address,
     suggestedParams: params,
     appIndex: ids.app.validator,
+    appArgs: [algosdk.encodeUint64(accountID)],
   });
-  txns.push(txn5)
-  // txn 6 = new position
+  txns.push(txn7)
+  // txn 8 = new position
   let txn6 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: ids.app.validator,
     onComplete: 0,
     appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(microOpeningGard), algosdk.encodeUint64(accountID)],
     accounts: [cdp.address],
-    foreignApps: [ids.app.oracle, ids.app.sgard_gard, ids.app.dao.interest],
-    foreignAssets: [ids.asa.gard],
+    foreignApps: [ids.app.oracle[asaID], ids.app.sgard_gard, ids.app.dao.interest],
+    foreignAssets: [ids.asa.gard, asaID],
     suggestedParams: params,
   });
-  txns.push(txn6)
+  txns.push(txn8)
   
   // Signing transactions
   algosdk.assignGroupID(txns);
@@ -443,18 +444,24 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise
   for (let i = 0; i < optins; i++) {
     stxns.push(_stxns[i].blob)
   }
-  // stxn 0
+  // stxn 3
   stxns.push(_stxns[optins].blob)
   // stxn 4
   stxns.push(_stxns[1 + optins].blob)
   // stxn 5
-  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(2)]);
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(3)]);
   let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
   stxns.push(stxn5.blob)
   // stxn 6
   stxns.push(_stxns[3 + optins].blob)
+  // stxn 7
+  lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
+  let stxn7 = algosdk.signLogicSigTransactionObject(txn5, lsig);
+  stxns.push(stxn7.blob)
+  // stxn 8
+  stxns.push(_stxns[5 + optins].blob)
   
-  return [stxns, info, accountID]
+  return stxns
 }
 
 export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = false, toWallet = false) {
@@ -491,11 +498,13 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
   
   
   const microOpeningGard = microGARD(openingGARD);
-  let stxns, info, accountID
+  const info = await infoPromise
+  const accountID = await findOpenID(info.address, asaID);
+  const cdp = cdpGen(info.address, accountID, asaID);
   if (asaID == 0) {
-    [stxns, info, accountID] = await openAlgoCDP(openingMicroAssetAmount, microOpeningGard, commit, toWallet, infoPromise)
+    [stxns, accountID] = await openAlgoCDP(openingMicroAssetAmount, microOpeningGard, commit, toWallet, info, accountID, cdp)
   } else {
-    [stxns, info, accountID] = await openASACDP(openingMicroAssetAmount, microOpeningGard, infoPromise)
+    [stxns, accountID] = await openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info, accountID, cdp)
   }
   
   setLoadingStage("Confirming Transactions...");
@@ -568,7 +577,7 @@ export async function mint(accountID, newGARD) {
     onComplete: 0,
     appArgs: [enc.encode("MoreGARD"), algosdk.encodeUint64(microNewGARD)],
     accounts: [cdp.address],
-    foreignApps: [ids.app.oracle, ids.app.sgard_gard, ids.app.dao.interest],
+    foreignApps: [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest],
     foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
