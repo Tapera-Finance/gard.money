@@ -138,12 +138,14 @@ export default function BorrowContent() {
   }, []);
 
   useEffect(() => {
+    let walletInfo = getWalletInfo() && getWalletInfo()["assets"].length > 0 ? getWalletInfo()["assets"] : null
     if (isGAlgo) {
       let max = (
-        getWalletInfo() && getWalletInfo()["assets"].length > 0 && getWalletInfo()["assets"][ids.asa.galgo] !== undefined
-          ? getWalletInfo()["assets"].filter(
-              (i) => i["asset-id"] === ids.asa.galgo,
-            )[0]["amount"] / 1000000
+        walletInfo &&
+        walletInfo.filter((i) => i["asset-id"] === ids.asa.galgo).length > 0
+          ? walletInfo.filter((i) => i["asset-id"] === ids.asa.galgo)[0][
+              "amount"
+            ] / 1000000
           : 0
       ).toFixed(3); // hardcoded asa for now, should filter based on generic selected asset
       setMaxCollateral(max);
