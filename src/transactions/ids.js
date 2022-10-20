@@ -41,7 +41,7 @@ if (VERSION == "MAINNET") {
         oracle : {
           0: 673925841,
           793124631: 908941119,
-        }
+        },
         gard_staking : 890604041,
         treasury : 890603993,
         claimer : 890604040,

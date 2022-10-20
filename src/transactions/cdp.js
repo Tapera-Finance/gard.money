@@ -281,7 +281,7 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
   let optins = txns.length;
   params.fee = 5000;
   // next two txns
-  txns = txns.concat(_openCDPtxns1(openingMicroAlgos, cdp, info, params))
+  txns = txns.concat(_openCDPtxns1(openingMicroALGOs, cdp, info, params))
   params.fee = 0;
   // txn 5 = opt in cdp txn
   let txn5 = algosdk.makeApplicationOptInTxnFromObject({
@@ -421,7 +421,7 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
   });
   txns.push(txn7)
   // txn 8 = new position
-  let txn6 = algosdk.makeApplicationCallTxnFromObject({
+  let txn8 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: ids.app.validator,
     onComplete: 0,
@@ -501,10 +501,11 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
   const info = await infoPromise
   const accountID = await findOpenID(info.address, asaID);
   const cdp = cdpGen(info.address, accountID, asaID);
+  let stxns;
   if (asaID == 0) {
-    [stxns, accountID] = await openAlgoCDP(openingMicroAssetAmount, microOpeningGard, commit, toWallet, info, accountID, cdp)
+    stxns = await openAlgoCDP(openingMicroAssetAmount, microOpeningGard, commit, toWallet, info, accountID, cdp)
   } else {
-    [stxns, accountID] = await openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info, accountID, cdp)
+    stxns = await openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info, accountID, cdp)
   }
   
   setLoadingStage("Confirming Transactions...");
