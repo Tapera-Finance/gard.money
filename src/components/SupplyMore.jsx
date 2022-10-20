@@ -45,7 +45,7 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
         },
         {
           title: "Collateralization Ratio",
-          val: !cAsset ? calcRatio(cdp.collateral, cdp.debt / 1000000, true) : calcRatio((algosToMAlgos(cAsset) + cdp.collateral), cdp.debt / 1000000, true),
+          val: !cAsset ? calcRatio(cdp.collateral, cdp.debt / 1000000, cdp.asaID, true) : calcRatio((algosToMAlgos(cAsset) + cdp.collateral), cdp.debt / 1000000, cdp.asaID, true),
           hasToolTip: true,
         },
       ]

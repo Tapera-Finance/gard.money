@@ -54,10 +54,11 @@ function _CDPsToList(CDPList) {
             collateral: value["collateral"],
             collateralType: value["collateralType"],
             debt: value["debt"],
+            asaID: value["asaID"],
             committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
             });
           }
-        } // TODO: Track asset type
+        }
   return res
 }
 
@@ -88,7 +89,7 @@ export const dummyCDPs = [
   ];
 
   function displayRatio() {
-    return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
+    return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
     }
 
     function mAlgosToAlgos(num) {
@@ -272,15 +273,15 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                     <div style={{ display: "flex", flexDirection: "column", rowGap: 20, alignSelf:"center", textAlign:"center", marginBottom: 10}}>APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
                     <div style={{display: "flex", flexDirection: "column"}}>
                         <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <div> Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,true,)})`} </div>
+                            <div> Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,cdp.asaID,true,)})`} </div>
                             <div>Liquidation Price (${((1.15 * mAlgosToAlgos(cdp.debt)) / mAlgosToAlgos(cdp.collateral)).toFixed(4)})</div>
                         </div>
                         <ThemeProvider theme={theme}>
                             <Slider
-                                color={calcRatio(cdp.collateral, cdp.debt / 1e6, false,) < 140 ? "danger": calcRatio(cdp.collateral, cdp.debt / 1e6, false,) < 250 ? "moderate" : "healthy"}
+                                color={calcRatio(cdp.collateral, cdp.debt / 1e6, false,) < 140 ? "danger": calcRatio(cdp.collateral, cdp.debt / 1e6, cdp.asaID, false,) < 250 ? "moderate" : "healthy"}
                                 min={115}
                                 max={600}
-                                value={calcRatio(cdp.collateral, cdp.debt / 1e6, false,)}
+                                value={calcRatio(cdp.collateral, cdp.debt / 1e6, cdp.asaID, false,)}
                             />
                         </ThemeProvider>
                         <SliderRange>

@@ -129,6 +129,7 @@ export function Child(props) {
                   : calcRatio(
                       props.transactionData.collateral + props.someVar * 1e6,
                       props.transactionData.debt / 1e6,
+                      0, // TODO: Need to set ASA ID Properly
                       true,
                     )}
               </SpecificsValue>
@@ -220,6 +221,7 @@ export function Child(props) {
                   : calcRatio(
                       props.transactionData.collateral,
                       (props.transactionData.debt + props.someVar * 1e6) / 1e6,
+                      0, // TODO: Need to set ASA ID Properly
                       true,
                     )}
               </SpecificsValue>

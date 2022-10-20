@@ -29,7 +29,7 @@ import Select from "../components/Select";
 import { ids } from "../transactions/ids"
 
 export function displayRatio() {
-  return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
+  return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
 }
 
 export function mAlgosToAlgos(num) {
@@ -140,7 +140,7 @@ export default function BorrowContent() {
   useEffect(() => {
     if (isGAlgo) {
       let max = (
-        getWalletInfo() && getWalletInfo()["assets"].length > 0
+        getWalletInfo() && getWalletInfo()["assets"].length > 0 && getWalletInfo()["assets"][ids.asa.galgo] !== undefined
           ? getWalletInfo()["assets"].filter(
               (i) => i["asset-id"] === ids.asa.galgo,
             )[0]["amount"] / 1000000
@@ -570,12 +570,22 @@ export default function BorrowContent() {
             onClick={async () => {
               setLoading(true);
               try {
-                const res = await openCDP(
-                  getCollateral(),
-                  getMinted(),
-                  commitChecked,
-                  toWallet,
-                );
+                let res;
+                if (collateralType == 'ALGO') {
+                  res = await openCDP(
+                    getCollateral(),
+                    getMinted(),
+                    0,
+                    commitChecked,
+                    toWallet,
+                  )
+                } else {
+                  res = await openCDP(
+                    getCollateral(),
+                    getMinted(),
+                    ids.asa.galgo,
+                  )
+                }
                 if (res.alert) {
                   setCreatePositionShown(false);
                   dispatch(setAlert(res.text));

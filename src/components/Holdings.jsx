@@ -33,7 +33,7 @@ function getAssets() {
       let amnt = (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3);
       let token_price = x[i]["asset-id"] == ids.asa.gard ? 1 : 0;
       assets.push({
-        name: x[i]["name"].toUpperCase(),
+        name: x[i]["name"],
         amount: amnt,
         value: parseFloat(amnt) * token_price,
       });
