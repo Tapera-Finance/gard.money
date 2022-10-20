@@ -25,8 +25,8 @@ const asaTemplate2 = contractStringToBytes(asaTemplateString2);
 function getSlices(template1, template2) {
   let _slices = [0]
   let different = false
-  for (let i = 0; i < cdpTemplate.length; i++) {
-    if (cdpTemplate[i] != cdpTemplate2[i]) {
+  for (let i = 0; i < template1.length; i++) {
+    if (template1[i] != template2[i]) {
       if (!different) {
         _slices.push(i)
       }
@@ -53,7 +53,7 @@ export function cdpGen(userAddress, accountID, asaID = 0) {
   let template2 = cdpTemplate2
   if (asaID != 0) {
     template = asaTemplate
-    template = asaTemplate2
+    template2 = asaTemplate2
   }
   
   const slices = getSlices(template, template2)
@@ -73,10 +73,11 @@ export function cdpGen(userAddress, accountID, asaID = 0) {
       ...sub3,
     ]);
   } else {
+    console.log(slices)
     const sub1 = template.slice(slices[0], slices[1]);
     const sub2 = template.slice(slices[2], slices[3]);
     const sub3 = template.slice(slices[4], slices[5]);
-    const sub4 = template.slice(slices[5])
+    const sub4 = template.slice(slices[6])
     
     const asaIDBytes = new Uint8Array([asaID])
 

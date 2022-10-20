@@ -456,7 +456,7 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
   stxns.push(_stxns[3 + optins].blob)
   // stxn 7
   lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
-  let stxn7 = algosdk.signLogicSigTransactionObject(txn5, lsig);
+  let stxn7 = algosdk.signLogicSigTransactionObject(txn7, lsig);
   stxns.push(stxn7.blob)
   // stxn 8
   stxns.push(_stxns[5 + optins].blob)
