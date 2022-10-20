@@ -427,7 +427,7 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
     onComplete: 0,
     appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(microOpeningGard), algosdk.encodeUint64(accountID)],
     accounts: [cdp.address],
-    foreignApps: [ids.app.oracle[asaID], ids.app.sgard_gard, ids.app.dao.interest],
+    foreignApps: [ids.app.oracle[0], ids.app.oracle[asaID], ids.app.sgard_gard, ids.app.dao.interest],
     foreignAssets: [ids.asa.gard, asaID],
     suggestedParams: params,
   });

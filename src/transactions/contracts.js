@@ -11,8 +11,8 @@ const encoder = new TextEncoder();
 // Last updated: 22.02.2022
 let cdpTemplateString = "BiAEAQKNs6g2ADEgMgMSMQElEhAtFyUSQACrLRciEkAANi0XIxJAACMtF4EDEkAAAQAxGCQSMRklEhA2GgCAB0F1Y3Rpb24SEEIAuDEZIhIxGCQSEEIArDEQgQYSQAAlMRYjCTgAMQASMRYjCTgYJBIQMRYjCTgZIxIQMRAiEhAiEEIAfzYcAoAgidvdgUvaEmcgvQpmihRuPxTHx528uJZ7duefZhSx298SMRgkEhAxFiMIOAAxABIQMRYjCDgQIhIQQv+6MRYiCTkaAReBDxIxFiIJORoAgApPd25lckNoZWNrEhAxFiIJOBgkEhAxECISMQglEhAxCTIDEhAxECMSERAQQw=="
 let cdpTemplateString2 = "BiAEAQLXk9aoAwAxIDIDEjEBJRIQLRclEkAAqy0XIhJAADYtFyMSQAAjLReBAxJAAAEAMRgkEjEZJRIQNhoAgAdBdWN0aW9uEhBCALgxGSISMRgkEhBCAKwxEIEGEkAAJTEWIwk4ADEAEjEWIwk4GCQSEDEWIwk4GSMSEDEQIhIQIhBCAH82HAKAIL7p6xm8yfmfnSyG84Q8xISSrV4W9G8N9RyEldpnDdpiEjEYJBIQMRYjCDgAMQASEDEWIwg4ECISEEL/ujEWIgk5GgEXgQgSMRYiCTkaAIAKT3duZXJDaGVjaxIQMRYiCTgYJBIQMRAiEjEIJRIQMQkyAxIQMRAjEhEQEEM="
-let asaTemplateString = "BiAFAgDR0aC/AgEEMSAyAxIxASMSEC0XIxJAAGItFyUSQABHLRciEkAAJi0XgQMSQAABADEQIQQSMRIjEhAxEYHXk9aoAxIQMRUyAxIQQgCeMRgkEjEZIxIQNhoAgAdBdWN0aW9uEhBCAIQxGSUSMRgkEhA2GgAXgQ8SEEIAcDEQgQYSQAAmMRYiCTgAMQASMRYiCTgYJBIQMRYiCTgZIhIQMRAhBBIQJRBCAEI2HAKAIInb3YFL2hJnIL0KZooUbj8Ux8edvLiWe3bnn2YUsdvfEjEYJBIQMRYiCDgAMQASEDEWIgg4ECEEEhBC/7kQQw=="
-let asaTemplateString2 = "BiAFAgCXvpj6AgEEMSAyAxIxASMSEC0XIxJAAGItFyUSQABHLRciEkAAJi0XgQMSQAABADEQIQQSMRIjEhAxEYHXk9aoAxIQMRUyAxIQQgCeMRgkEjEZIxIQNhoAgAdBdWN0aW9uEhBCAIQxGSUSMRgkEhA2GgAXgQgSEEIAcDEQgQYSQAAmMRYiCTgAMQASMRYiCTgYJBIQMRYiCTgZIhIQMRAhBBIQJRBCAEI2HAKAIL7p6xm8yfmfnSyG84Q8xISSrV4W9G8N9RyEldpnDdpiEjEYJBIQMRYiCDgAMQASEDEWIgg4ECEEEhBC/7kQQw=="
+let asaTemplateString = "BiAFAgDXk9aoAwEEMSAyAxIxASMSEC0XIxJAAGItFyUSQABHLRciEkAAJi0XgQMSQAABADEQIQQSMRIjEhAxEYGXvpj6AhIQMRUyAxIQQgCeMRgkEjEZIxIQNhoAgAdBdWN0aW9uEhBCAIQxGSUSMRgkEhA2GgAXgQ8SEEIAcDEQgQYSQAAmMRYiCTgAMQASMRYiCTgYJBIQMRYiCTgZIhIQMRAhBBIQJRBCAEI2HAKAIInb3YFL2hJnIL0KZooUbj8Ux8edvLiWe3bnn2YUsdvfEjEYJBIQMRYiCDgAMQASEDEWIgg4ECEEEhBC/7kQQw=="
+let asaTemplateString2 = "BiAFAgDXk9aoAwEEMSAyAxIxASMSEC0XIxJAAGItFyUSQABHLRciEkAAJi0XgQMSQAABADEQIQQSMRIjEhAxEYGXvpj6AhIQMRUyAxIQQgCeMRgkEjEZIxIQNhoAgAdBdWN0aW9uEhBCAIQxGSUSMRgkEhA2GgAXgQgSEEIAcDEQgQYSQAAmMRYiCTgAMQASMRYiCTgYJBIQMRYiCTgZIhIQMRAhBBIQJRBCAEI2HAKAIL7p6xm8yfmfnSyG84Q8xISSrV4W9G8N9RyEldpnDdpiEjEYJBIQMRYiCDgAMQASEDEWIgg4ECEEEhBC/7kQQw=="
 if (VERSION == "MAINNET") {
   cdpTemplateString =
     "BiAEAQLXk9aoAwAxIDIDEjEBJRIQLRclEkAAqy0XIhJAADYtFyMSQAAjLReBAxJAAAEAMRgkEjEZJRIQNhoAgAdBdWN0aW9uEhBCALgxGSISMRgkEhBCAKwxEIEGEkAAJTEWIwk4ADEAEjEWIwk4GCQSEDEWIwk4GSMSEDEQIhIQIhBCAH82HAKAIInb3YFL2hJnIL0KZooUbj8Ux8edvLiWe3bnn2YUsdvfEjEYJBIQMRYjCDgAMQASEDEWIwg4ECISEEL/ujEWIgk5GgEXgQ8SMRYiCTkaAIAKT3duZXJDaGVjaxIQMRYiCTgYJBIQMRAiEjEIJRIQMQkyAxIQMRAjEhEQEEM=";
@@ -60,6 +60,7 @@ export function cdpGen(userAddress, accountID, asaID = 0) {
   
   let contract
   if (asaID == 0) {
+    // XXX: Will only work for galgo for now
     const sub1 = template.slice(slices[0], slices[1]);
     const sub2 = template.slice(slices[2], slices[3]);
     const sub3 = template.slice(slices[4]);
@@ -76,20 +77,17 @@ export function cdpGen(userAddress, accountID, asaID = 0) {
     console.log(slices)
     const sub1 = template.slice(slices[0], slices[1]);
     const sub2 = template.slice(slices[2], slices[3]);
-    const sub3 = template.slice(slices[4], slices[5]);
-    const sub4 = template.slice(slices[6])
+    const sub3 = template.slice(slices[4]);
     
     const asaIDBytes = new Uint8Array([asaID])
 
     // Crafts the contract with proper insertions
     contract = new Uint8Array([
       ...sub1,
-      ...asaIDBytes,
-      ...sub2,
       ...accountIDBytes,
-      ...sub3,
+      ...sub2,
       ...userAddressBytes.publicKey,
-      ...sub4,
+      ...sub3,
     ]);
   }
 
