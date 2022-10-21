@@ -603,7 +603,7 @@ export async function mint(accountID, newGARD, asaID) {
     stxns,
     "Successfully minted " + newGARD + " GARD.",
   );
-  updateCDP(info.address, 0, accountID);
+  updateCDP(info.address, asaID, accountID);
   
   // DB Updates
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
@@ -736,7 +736,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
     "Successfully added " + newAlgos + " ALGOs as collateral.",
   );
 
-  updateCDP(info.address, 0, accountID);
+  updateCDP(info.address, asaID, accountID);
   updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
   
   if (commit && asaID == 0) {
@@ -841,7 +841,7 @@ export async function repayCDP(accountID, repayGARD, asaID) {
     "Successfully repayed your cdp.",
   );
   setLoadingStage(null);
-  updateCDP(info.address, 0, accountID);
+  updateCDP(info.address, asaID, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
@@ -944,7 +944,7 @@ export async function closeCDP(accountID, asaID) {
     "Successfully closed your cdp.",
   );
   setLoadingStage(null);
-  updateCDP(info.address, 0, accountID);
+  updateCDP(info.address, asaID, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }

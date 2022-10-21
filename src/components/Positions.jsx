@@ -45,7 +45,7 @@ function _CDPsToList(CDPList) {
   for (const [cdpID, value] of Object.entries(CDPList)) {
           if (value["state"] == "opened") {
             res.push({
-            id: cdpID + value["collateralType"],
+            id: cdpID,
             liquidationPrice: (
                 (1.15 * value["debt"]) /
                 value["collateral"]
@@ -296,16 +296,16 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                 </PositionInfo>
                 <TextButton
                  positioned={true}
-                 text={cdp.id === currentCDP ? "Collapse" : "Manage Position"}
-                 onClick={cdp.id === currentCDP ? () => {
+                 text={cdp.id + cdp.asaID === currentCDP ? "Collapse" : "Manage Position"}
+                 onClick={cdp.id + cdp.asaID === currentCDP ? () => {
                     setCurrentCDP(null)
                     setSelectedTab("one")
                  } : () => {
-                    setCurrentCDP(cdp.id)
+                    setCurrentCDP(cdp.id + cdp.asaID)
                  }
                 }
                  />
-                {cdp.id === currentCDP ? <div>
+                {cdp.id + cdp.asaID === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
                     {selectedTab === "one" ? <BorrowMore supplyPrice={supplyPrice} collateral={cAlgos} mAsset={mGARD} setCollateral={setCollateral} minted={setGARD} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} manageUpdate={setManageUpdate} />
                     : selectedTab === "two" ? <SupplyMore collateralType={cdp.collateralType} supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
