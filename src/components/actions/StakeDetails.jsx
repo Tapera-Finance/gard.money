@@ -39,6 +39,12 @@ function getNLStake() {
   return res
 }
 
+export const checkStaked = async () => {
+  const accruePromise = getAccruedRewards("NL")
+  const accrued = await accruePromise
+  return ((getNLStake()/1000000)+parseFloat(accrued)).toFixed(3) > 0
+}
+
 export default function StakeDetails() {
   const walletAddress = useSelector((state) => state.wallet.address);
   const [loading, setLoading] = useState(false);

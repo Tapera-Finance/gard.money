@@ -19,6 +19,9 @@ import { cdpInterest } from "../transactions/lib"
 import { getStakingAPY } from "../transactions/stake"
 import { searchAccounts } from "./GovernContent";
 import { getWalletInfo } from "../wallets/wallets";
+import { getCDPs } from "../transactions/cdp";
+import { CDPsToList } from "./BorrowContent";
+import { checkStaked } from "../components/actions/StakeDetails";
 
 const fetchTvl = async () => {
   try {
@@ -85,6 +88,7 @@ export default function HomeContent() {
   const [allOpen, setAllOpen] = useState(true);
   const [difficulty, setDifficulty] = useState("Help Me Out");
   const [gardInWallet, setGardInWallet] = useState(false);
+  const [gaining, setGaining] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
@@ -100,6 +104,14 @@ export default function HomeContent() {
      let gardInfo = info["assets"].filter((asset) => asset["asset-id"] === ids.asa.gard)
       if (gardInfo.length > 0 && gardInfo[0]["amount"] > 0) {
         setGardInWallet(true)
+      }
+    }
+    if (walletAddress) {
+      let stakePromise = await checkStaked()
+      console.log("staked check", stakePromise)
+      let cdps = CDPsToList();
+      if (cdps.length > 0 || stakePromise === true) {
+        setGaining(true)
       }
     }
   }, [])
@@ -373,7 +385,7 @@ export default function HomeContent() {
 
               >
                 <Text>
-                {walletAddress ? " √" : ""} Step 1: Connect Your Wallet
+                {walletAddress ? `  √` : ""} Step 1: Connect Your Wallet
                 </Text>
                 <div>
                   <WalletConnect style={{ alignSelf: "flex-start" }} />
@@ -404,6 +416,7 @@ export default function HomeContent() {
                   text : "Governance Rate",
                   val : apr,
                 }]}
+              checked={gaining}
               subtitle=""
               text="To gain additional rewards via the GARD Protocol a user may stake their GARD or participate in Algorand governance. Staking GARD entitles users to their share of revenues earned by the protocol in real time. Participating in Algorand Governace via the GARD Protocol entitles users to leverage their committed ALGOs to borrow GARD as well as their share of a 7M ALGO boost paid out quarterly by the Algorand Foundation."
               link="https://gard.gitbook.io/gard-system-guide/how-to/participate-in-algorand-governance-via-gard-protocol"
