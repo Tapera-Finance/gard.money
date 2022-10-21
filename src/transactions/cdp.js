@@ -556,7 +556,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
   return response
 }
 
-export async function mint(accountID, newGARD) {
+export async function mint(accountID, newGARD, asaID) {
   // Improvenment: Add catches
   //		Ratio is good
 
@@ -572,6 +572,12 @@ export async function mint(accountID, newGARD) {
   let txn0 = makeUpdateInterestTxn(info, params)
   // txn1 - more gard!
   params.fee = 0
+  let apps = [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest]
+  let assets = [ids.asa.gard]
+  if (asaID != 0) {
+    apps = [ids.app.oracle[0], ids.app.oracle[asaID], ids.app.sgard_gard, ids.app.dao.interest]
+    assets = [ids.asa.gard, asaID]
+  }
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
     appIndex: ids.app.validator,

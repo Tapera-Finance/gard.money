@@ -196,6 +196,7 @@ export default function ManageCDP({collateral, minted, cdp, price, setCurrentCDP
                         let res = await mint(
                           cdp.id,
                           additionalBorrow,
+                          cdp.asaID,
                         );
                         if (res.alert) {
                           dispatch(setAlert(res.text));

@@ -163,7 +163,7 @@ export default function BorrowCDP({
             onClick={async () => {
               setLoading(true);
               try {
-                let res = await mint(cdp.id, additionalBorrow);
+                let res = await mint(cdp.id, additionalBorrow, cdp.asaID);
                 if (res.alert) {
                   dispatch(setAlert(res.text));
                 }
