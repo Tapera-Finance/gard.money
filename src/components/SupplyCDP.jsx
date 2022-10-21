@@ -28,6 +28,7 @@ export function algosToMAlgos(num) {
 
 export default function SupplyCDP({
   collateral,
+  collateralType,
   cdp,
   price,
   setCurrentCDP,
@@ -42,8 +43,14 @@ export default function SupplyCDP({
   const [mintable, setMintable] = useState(0)
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
-  const [collateralType, setCollateralType] = useState("ALGO");
+  const [isGAlgo, setIsGAlgo] = useState(false);
+  // const [supplyCollateralType, setSupplyCollateralType] = useState("ALGO");
   const [commitChecked, setCommitChecked] = useState(false);
+
+  const typeCDP = {
+    galgo: "gALGO",
+    algo: "ALGO"
+  }
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -64,12 +71,12 @@ export default function SupplyCDP({
       ) / 100;
    }
 
-   const handleSelect = (e) => {
-    if (e.target.value === "") {
-      return;
-    }
-    setCollateralType(e.target.value)
-  }
+  //  const handleSelect = (e) => {
+  //   if (e.target.value === "") {
+  //     return;
+  //   }
+  //   setSupplyCollateralType(e.target.value)
+  // }
 
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
@@ -102,6 +109,8 @@ export default function SupplyCDP({
     }
   }, []);
 
+
+
   useEffect(() => {
     setSupplyLimit(balance);
   }, [balance]);
@@ -122,7 +131,7 @@ export default function SupplyCDP({
     },
     {
       title: "Supply Limit",
-      val: `${supplyLimit} ALGOs`,
+      val: `${supplyLimit} ${typeCDP[collateralType]}`,
       hasToolTip: true,
     },
   ];
@@ -139,7 +148,7 @@ export default function SupplyCDP({
       <Container>
         <SubContainer>
           <Background>
-            <Title>Supply More <ExchangeSelect options={assets} value={collateralType} callback={handleSelect} /></Title>
+            <Title>Supply More {typeCDP[collateralType]}</Title>
             <InputContainer>
               <div style={{ display: "flex" }}>
                 <Input

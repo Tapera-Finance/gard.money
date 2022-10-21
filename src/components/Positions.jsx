@@ -46,17 +46,19 @@ function _CDPsToList(CDPList) {
   for (const [cdpID, value] of Object.entries(CDPList)) {
           if (value["state"] == "opened") {
             res.push({
-            id: cdpID,
+            id: cdpID + value["collateralType"],
             liquidationPrice: (
                 (1.15 * value["debt"]) /
                 value["collateral"]
             ).toFixed(4),
             collateral: value["collateral"],
+            collateralType: value["collateralType"],
             debt: value["debt"],
+            asaID: value["asaID"],
             committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
             });
           }
-        } // TODO: Track asset type
+        }
   return res
 }
 
@@ -87,7 +89,7 @@ export const dummyCDPs = [
   ];
 
   function displayRatio() {
-    return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
+    return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
     }
 
     function mAlgosToAlgos(num) {
@@ -139,11 +141,16 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const [mGARD, setGARD] = useState("")
     const [minted, setMinted] = useState("")
     const loadedCDPs = CDPsToList();
-    const [currentCDP, setCurrentCDP] = useState(null)
+    const [currentCDP, setCurrentCDP] = useState(null);
+    const [collateralType, setCollateralType] = useState("ALGO")
     const [selectedTab, setSelectedTab] = useState("one");
     const [manageUpdate, setManageUpdate] = useState(false);
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
+    const typeCDP = {
+      galgo: "gALGO",
+      algo: "ALGO"
+    }
     var details = [
         {
             title: "Total Supplied (Asset)",
@@ -203,6 +210,18 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
       setAPR(await getAlgoGovAPR());
     }, []);
 
+    useEffect(() => {
+      let type
+      if (currentCDP !== null) {
+        type = currentCDP.collateralType
+        if (type === "galgo") {
+          setCollateralType("gALGO")
+        } else if (type === "algo") {
+          setCollateralType("ALGO")
+        }
+      }
+    }, [currentCDP])
+
     var sessionStorageSetHandler = function (e) {
       setLoadingText(JSON.parse(e.value));
     };
@@ -246,26 +265,27 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
         <Container>
             {loadedCDPs.length && loadedCDPs.length > 0 ?
                 loadedCDPs.map((cdp, idx) => {
+                  // console.log("logging cdp data object", cdp)
                     return (
             <Position key={cdp.id.toString() + idx.toString()}>
                 {/* <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div> */}
                 <PositionInfo>
                     <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
-                        <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
+                        <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} {typeCDP[cdp.collateralType]}</div>
                         <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", rowGap: 20, alignSelf:"center", textAlign:"center", marginBottom: 10}}>APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
                     <div style={{display: "flex", flexDirection: "column"}}>
                         <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <div> Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,true,)})`} </div>
+                            <div> Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,cdp.asaID,true,)})`} </div>
                             <div>Liquidation Price (${((1.15 * mAlgosToAlgos(cdp.debt)) / mAlgosToAlgos(cdp.collateral)).toFixed(4)})</div>
                         </div>
                         <ThemeProvider theme={theme}>
                             <Slider
-                                color={calcRatio(cdp.collateral, cdp.debt / 1e6, false,) < 140 ? "danger": calcRatio(cdp.collateral, cdp.debt / 1e6, false,) < 250 ? "moderate" : "healthy"}
+                                color={calcRatio(cdp.collateral, cdp.debt / 1e6, false,) < 140 ? "danger": calcRatio(cdp.collateral, cdp.debt / 1e6, cdp.asaID, false,) < 250 ? "moderate" : "healthy"}
                                 min={115}
                                 max={600}
-                                value={calcRatio(cdp.collateral, cdp.debt / 1e6, false,)}
+                                value={calcRatio(cdp.collateral, cdp.debt / 1e6, cdp.asaID, false,)}
                             />
                         </ThemeProvider>
                         <SliderRange>
@@ -289,7 +309,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
                     {selectedTab === "one" ? <BorrowMore supplyPrice={supplyPrice} collateral={cAlgos} mAsset={mGARD} setCollateral={setCollateral} minted={setGARD} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} manageUpdate={setManageUpdate} />
-                    : selectedTab === "two" ? <SupplyMore supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
+                    : selectedTab === "two" ? <SupplyMore collateralType={cdp.collateralType} supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
                     : selectedTab === "three" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     :
                     // : selectedTab === "three" ?
