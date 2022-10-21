@@ -46,7 +46,7 @@ function _CDPsToList(CDPList) {
   for (const [cdpID, value] of Object.entries(CDPList)) {
           if (value["state"] == "opened") {
             res.push({
-            id: cdpID,
+            id: cdpID + value["collateralType"],
             liquidationPrice: (
                 (1.15 * value["debt"]) /
                 value["collateral"]
@@ -271,7 +271,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                 {/* <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div> */}
                 <PositionInfo>
                     <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
-                      {console.log("cdp info", cdp)}
                         <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} {typeCDP[cdp.collateralType]}</div>
                         <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
                     </div>
