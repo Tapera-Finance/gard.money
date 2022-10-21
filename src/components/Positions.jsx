@@ -147,6 +147,10 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const [manageUpdate, setManageUpdate] = useState(false);
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
+    const typeCDP = {
+      galgo: "gALGO",
+      algo: "ALGO"
+    }
     var details = [
         {
             title: "Total Supplied (Asset)",
@@ -267,7 +271,8 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                 {/* <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div> */}
                 <PositionInfo>
                     <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
-                        <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
+                      {console.log("cdp info", cdp)}
+                        <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} {typeCDP[cdp.collateralType]}</div>
                         <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", rowGap: 20, alignSelf:"center", textAlign:"center", marginBottom: 10}}>APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
@@ -305,7 +310,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                 {cdp.id === currentCDP ? <div>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
                     {selectedTab === "one" ? <BorrowMore supplyPrice={supplyPrice} collateral={cAlgos} mAsset={mGARD} setCollateral={setCollateral} minted={setGARD} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} manageUpdate={setManageUpdate} />
-                    : selectedTab === "two" ? <SupplyMore collateralType={collateralType} supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
+                    : selectedTab === "two" ? <SupplyMore collateralType={cdp.collateralType} supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
                     : selectedTab === "three" ? <RepayPosition cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} />
                     :
                     // : selectedTab === "three" ?

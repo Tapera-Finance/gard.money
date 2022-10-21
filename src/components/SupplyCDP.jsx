@@ -47,6 +47,11 @@ export default function SupplyCDP({
   // const [supplyCollateralType, setSupplyCollateralType] = useState("ALGO");
   const [commitChecked, setCommitChecked] = useState(false);
 
+  const typeCDP = {
+    galgo: "gALGO",
+    algo: "ALGO"
+  }
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -126,7 +131,7 @@ export default function SupplyCDP({
     },
     {
       title: "Supply Limit",
-      val: `${supplyLimit} ALGOs`,
+      val: `${supplyLimit} ${typeCDP[collateralType]}`,
       hasToolTip: true,
     },
   ];
@@ -143,7 +148,7 @@ export default function SupplyCDP({
       <Container>
         <SubContainer>
           <Background>
-            <Title>Supply More {collateralType}</Title>
+            <Title>Supply More {typeCDP[collateralType]}</Title>
             <InputContainer>
               <div style={{ display: "flex" }}>
                 <Input
