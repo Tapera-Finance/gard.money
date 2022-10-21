@@ -912,6 +912,7 @@ export async function closeCDP(accountID, asaID) {
     amount: 0,
     suggestedParams: params,
   });
+  let lsigNum = 1
   if (asaID != 0) {
     txn3 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
       from: cdp.address,
@@ -921,6 +922,7 @@ export async function closeCDP(accountID, asaID) {
       suggestedParams: params,
       assetIndex: asaID,
     });
+    lsigNum = 0
   }
 
 
@@ -931,7 +933,7 @@ export async function closeCDP(accountID, asaID) {
 
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
 
-  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(lsigNum)]);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
   const stxn3 = algosdk.signLogicSigTransactionObject(txn3, lsig);
   const signedGroup = await signedGroupPromise;
