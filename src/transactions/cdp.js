@@ -847,7 +847,7 @@ export async function repayCDP(accountID, repayGARD, asaID) {
 }
 
 
-export async function closeCDP(accountID) {
+export async function closeCDP(accountID, asaID) {
 
   // Promise setup
   setLoadingStage("Loading...");
@@ -911,9 +911,16 @@ export async function closeCDP(accountID) {
     amount: 0,
     suggestedParams: params,
   });
-  
-  console.log(txn1)
-  console.log(txn3)
+  if (asaID != 0) {
+    txn3 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+      from: cdp.address,
+      to: info.address,
+      closeRemainderTo: info.address,
+      amount: 0,
+      suggestedParams: params,
+      assetIndex: asaID,
+    });
+  }
 
 
   let txns = [txn0, txn1, txn2, txn3];

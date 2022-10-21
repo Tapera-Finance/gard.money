@@ -350,7 +350,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         onClick={ async () => {
                           setLoading(true);
                           try {
-                              let res = await closeCDP(cdp.id);
+                              let res = await closeCDP(cdp.id, cdp.asaID);
                               if (res.alert) {
                                 dispatch(setAlert(res.text));
                               }
