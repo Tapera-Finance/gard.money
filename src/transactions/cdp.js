@@ -768,7 +768,7 @@ async function totalDebt(cdpInfo) {
 }
 
 
-export async function repayCDP(accountID, repayGARD) {
+export async function repayCDP(accountID, repayGARD, asaID) {
 
   // Promise setup
   setLoadingStage("Loading...");
@@ -776,7 +776,7 @@ export async function repayCDP(accountID, repayGARD) {
   const accountInfoPromise = accountInfo();
   const paramsPromise = getParams(3000);
   const info = await accountInfoPromise;
-  let cdp = cdpGen(info.address, accountID);
+  let cdp = cdpGen(info.address, accountID, asaID);
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
   
@@ -1106,7 +1106,7 @@ export async function voteCDP(account_id, option1, option2) {
 
   const info = await infoPromise;
 
-  let cdp = cdpGen(info.address, account_id);
+  let cdp = cdpGen(info.address, account_id, 0);
 
   let params = await paramsPromise;
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
