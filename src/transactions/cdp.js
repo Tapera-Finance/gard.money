@@ -584,8 +584,8 @@ export async function mint(accountID, newGARD, asaID) {
     onComplete: 0,
     appArgs: [enc.encode("MoreGARD"), algosdk.encodeUint64(microNewGARD)],
     accounts: [cdp.address],
-    foreignApps: [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest],
-    foreignAssets: [ids.asa.gard],
+    foreignApps: apps,
+    foreignAssets: assets,
     suggestedParams: params,
   });
 
@@ -608,6 +608,7 @@ export async function mint(accountID, newGARD, asaID) {
   // DB Updates
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
+  /*
   if (!completedMint.includes(info.address)) {
     await updateTotal(info.address, "totalMinted", microGARD(newGARD))
     let user_totals = await loadUserTotals()
@@ -618,7 +619,7 @@ export async function mint(accountID, newGARD, asaID) {
       console.log('minted', completedMint)
       localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
     }
-  }
+  } */ // TODO: Someone needs to fix this
   
   setLoadingStage(null);
   return response;
