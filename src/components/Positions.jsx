@@ -7,7 +7,6 @@ import { getWalletInfo, handleTxError } from "../wallets/wallets";
 import { Slider, ThemeProvider } from "@mui/material";
 import { ThemeContext } from "../contexts/ThemeContext";
 import Details from "./Details";
-import ManageCDP from "./ManageCDP";
 import PrimaryButton from "./PrimaryButton";
 import TextButton from "./TextButton";
 import PageToggle from "./PageToggle"

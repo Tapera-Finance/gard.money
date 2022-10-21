@@ -564,7 +564,7 @@ export async function mint(accountID, newGARD, asaID) {
   setLoadingStage("Loading...");
 
   let info = await accountInfo();
-  let cdp = cdpGen(info.address, accountID);
+  let cdp = cdpGen(info.address, accountID, asaID);
   let microNewGARD = microGARD(newGARD);
 
   let params = await getParams(3000);
@@ -624,7 +624,8 @@ export async function mint(accountID, newGARD, asaID) {
   return response;
 }
 
-export async function addCollateral(accountID, newAlgos, commit) {
+export async function addCollateral(accountID, newAlgos, commit, asaID) {
+  // XXX: This only is setup to work for algos and galgos currently
   if (accountID == "N/A") {
     return {
       alert: true,
@@ -647,17 +648,20 @@ export async function addCollateral(accountID, newAlgos, commit) {
   // Core info
   let info = await accountInfo();
 
-  if (newAlgos + 100000 * (info["assets"].length + 1) > info["amount"]) {
-    return {
-      alert: true,
-      text:
-        "Depositing this much collateral will put you below your minimum balance.\n" +
-        "Your Maximum deposit is: " +
-        (newAlgos + 100000 * (info["assets"].length + 1)) / 1000000 +
-        " Algos",
-    };
+  if (asaID == 0) {
+    if (newAlgos + 100000 * (info["assets"].length + 1) > info["amount"]) {
+      return {
+        alert: true,
+        text:
+          "Depositing this much collateral will put you below your minimum balance.\n" +
+          "Your Maximum deposit is: " +
+          (newAlgos + 100000 * (info["assets"].length + 1)) / 1000000 +
+          " Algos",
+      };
+    }
   }
-  let cdp = cdpGen(info.address, accountID);
+  
+  let cdp = cdpGen(info.address, accountID, asaID);
   let microNewAlgos = parseInt(newAlgos * 1000000);
 
   let params = await getParams(1000);
@@ -667,12 +671,21 @@ export async function addCollateral(accountID, newAlgos, commit) {
     amount: microNewAlgos,
     suggestedParams: params,
   });
+  if (asaID != 0) {
+    txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+      from: info.address,
+      to: cdp.address,
+      amount: microNewAlgos,
+      suggestedParams: params,
+      assetIndex: asaID,
+    });
+  }
   let txn2 = makeUpdateInterestTxn(info, params)
   let txns = [txn1, txn2];
   
   let govAlgos = microNewAlgos
   let txn8
-  if (commit) {
+  if (commit && asaID == 0) {
     const cdpInfo = await accountInfo(cdp.address)
     govAlgos += cdpInfo.amount
     const stringVal = `af/gov1:j{"com":${govAlgos},"bnf":"${info.address}"}`;
@@ -711,7 +724,7 @@ export async function addCollateral(accountID, newAlgos, commit) {
   setLoadingStage("Confirming Transaction...");
 
   const stxns = [signedGroup[0].blob, signedGroup[1].blob];
-  if (commit) {
+  if (commit && asaID == 0) {
     stxns.push(signedGroup[2].blob)
     const lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
     let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
@@ -726,7 +739,7 @@ export async function addCollateral(accountID, newAlgos, commit) {
   updateCDP(info.address, 0, accountID);
   updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
   
-  if (commit) {
+  if (commit && asaID == 0) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, govAlgos);
     response.text =
