@@ -71,6 +71,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
                         let res = await repayCDP(
                           cdp.id,
                           repayment,
+                          cdp.asaID,
                         );
                         if (res.alert) {
                           dispatch(setAlert(res.text));
