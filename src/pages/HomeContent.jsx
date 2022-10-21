@@ -18,6 +18,7 @@ import Effect from "../components/Effect";
 import { cdpInterest } from "../transactions/lib"
 import { getStakingAPY } from "../transactions/stake"
 import { searchAccounts } from "./GovernContent";
+import { getWalletInfo } from "../wallets/wallets";
 
 const fetchTvl = async () => {
   try {
@@ -83,6 +84,7 @@ export default function HomeContent() {
   const [governors, setGovernors] = useState("...");
   const [allOpen, setAllOpen] = useState(true);
   const [difficulty, setDifficulty] = useState("Help Me Out");
+  const [gardInWallet, setGardInWallet] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
@@ -91,6 +93,16 @@ export default function HomeContent() {
     const chainDataResponse = await getChainData();
     setChainData(chainDataResponse);
   }, []);
+
+  useEffect(async () => {
+    if (walletAddress) {
+     let info = await getWalletInfo()
+     let gardInfo = info["assets"].filter((asset) => asset["asset-id"] === ids.asa.gard)
+      if (gardInfo.length > 0 && gardInfo[0]["amount"] > 0) {
+        setGardInWallet(true)
+      }
+    }
+  }, [])
 
   const circulating = "TBD"
   /* const circulating = JSON.parse(
@@ -124,7 +136,7 @@ export default function HomeContent() {
     },
     {
       title: "Number of Users",
-      val: users,
+      val: `${users.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
       hasToolTip: true,
     },
     {
@@ -372,6 +384,7 @@ export default function HomeContent() {
             <Step
               header="Step 2: Get Gard"
               badges={[]}
+              checked={gardInWallet}
               subtitle=""
               text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD go to the swap page. To borrow GARD go to the borrow page."
               link="https://docs.algogard.com/how-to/get-gard"
