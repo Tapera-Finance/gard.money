@@ -171,7 +171,7 @@ export default function Govern() {
 
   const owner_address = getWallet().address;
 
-  let adjusted = loadedCDPs.map((value) => {
+  let adjusted = loadedCDPs.filter(value => !value.asaID).map((value) => {
     const cdp_address = cdpGen(owner_address, value.id).address;
     return {
       balance: value.collateral == "N/A" ? "N/A" : value.collateral / 1000000,
