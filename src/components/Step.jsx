@@ -10,6 +10,7 @@ export default function Step({
   badges,
   subtitle,
   text,
+  checked,
   goTo,
   secondGoTo,
   link,
@@ -31,7 +32,7 @@ export default function Step({
   return (
     <ExpandedStep open={open}>
       <StepItem onClick={handleOpen} open={open}>
-        <div style={{ marginLeft: 8 }}>{header}</div>
+        <div style={{ marginLeft: 8 }}>{checked ? " √" : ""}{header}</div>
         <div
           style={{
             display: "flex",

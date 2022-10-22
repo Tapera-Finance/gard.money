@@ -15,6 +15,8 @@ const prices = {
 export const convertToDollars = (amt, idx) =>
   formatToDollars(amt * prices[idx]);
 
+export const inverseToDollars = (amt, idx) => formatToDollars(amt / prices[idx])
+
 export const formatPrice = (num) => {
   let cut = 3;
   let p = num.toString();

@@ -118,6 +118,10 @@ export async function stake(pool, gardAmount) {
     "Successfully staked " + gardAmount + " GARD.",
   );
   let completedStake = JSON.parse(localStorage.getItem("gleamStakeComplete"))
+  if (completedStake == null){
+    localStorage.setItem("gleamStakeComplete", JSON.stringify([]))
+    completedStake = []
+  }
   if (!completedStake.includes(info.address)) {
     await updateTotal(info.address, "totalStaked", parseInt(gardAmount * 1000000))
     let user_totals = await loadUserTotals()

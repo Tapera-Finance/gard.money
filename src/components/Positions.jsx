@@ -230,7 +230,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const tabs = {
         one: "Borrow More",
         two: "Supply More",
-        three: "Repay Postion",
+        three: "Repay Position",
         four: "Close Position",
     };
     useEffect(async () => {
