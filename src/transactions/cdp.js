@@ -64,7 +64,7 @@ function getCDPState(cdpInfo, asaID) {
   let res = {
     state: 'closed',
   }
-  if (cdpInfo.amount > 0) {
+  if (cdpInfo.amount > 0 && (!asaID || (asaID && cdpInfo["assets"].length))) {
     res.state = 'opened';
     if (asaID == 0) {
       res.collateral = cdpInfo.amount;
@@ -866,10 +866,9 @@ export async function closeCDP(accountID, asaID) {
   const accountInfoPromise = accountInfo();
   const paramsPromise = getParams(5000);
   const info = await accountInfoPromise;
-  let cdp = cdpGen(info.address, accountID);
+  let cdp = cdpGen(info.address, accountID, asaID);
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
-
   let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * cdpInterest)/365/24/60)) + 3000
   console.log(microRepayGARD)
   

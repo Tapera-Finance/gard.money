@@ -74,7 +74,6 @@ export function cdpGen(userAddress, accountID, asaID = 0) {
       ...sub3,
     ]);
   } else {
-    console.log(slices)
     const sub1 = template.slice(slices[0], slices[1]);
     const sub2 = template.slice(slices[2], slices[3]);
     const sub3 = template.slice(slices[4]);
