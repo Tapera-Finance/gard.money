@@ -39,6 +39,12 @@ function getNLStake() {
   return res
 }
 
+export const checkStaked = async () => {
+  const accruePromise = getAccruedRewards("NL")
+  const accrued = await accruePromise
+  return ((getNLStake()/1000000)+parseFloat(accrued)).toFixed(3) > 0
+}
+
 export default function StakeDetails() {
   const walletAddress = useSelector((state) => state.wallet.address);
   const [loading, setLoading] = useState(false);
@@ -70,7 +76,7 @@ export default function StakeDetails() {
 
   const handleStake = async () => {
     console.log(`action to stake ${stakeAmount}`)
-    if (stakeAmount === null || !(stakeAmount > 0)) return; 
+    if (stakeAmount === null || !(stakeAmount > 0)) return;
     setLoading(true)
     try {
       const res = await stake("NL", stakeAmount)
@@ -148,7 +154,7 @@ export default function StakeDetails() {
             flexDirection: "column"
           }}>
 
-          <div style={{ color: "#172756", fontSize: "10pt" }}>Earn protocol rewards boosted by the Algorand Foundation via Aeneas grant!</div>
+          <div style={{ color: "#172756", fontSize: "10pt" }}>5k - 10k GARD being paid out WEEKLY for users staking GARD on V2</div>
           </div>
         </div>
         <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
