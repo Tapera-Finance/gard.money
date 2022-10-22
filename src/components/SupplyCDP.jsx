@@ -14,6 +14,10 @@ import {
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import {adjustedMax} from "../pages/BorrowContent"
+import Select from "./Select";
+
+const assets = ["ALGO", "gALGO"];
+
 
 function mAlgosToAlgos(num) {
   return num / 1000000;
@@ -24,6 +28,7 @@ export function algosToMAlgos(num) {
 
 export default function SupplyCDP({
   collateral,
+  collateralType,
   cdp,
   price,
   setCurrentCDP,
@@ -38,7 +43,14 @@ export default function SupplyCDP({
   const [mintable, setMintable] = useState(0)
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
+  const [isGAlgo, setIsGAlgo] = useState(false);
+  // const [supplyCollateralType, setSupplyCollateralType] = useState("ALGO");
   const [commitChecked, setCommitChecked] = useState(false);
+
+  const typeCDP = {
+    galgo: "gALGO",
+    algo: "ALGO"
+  }
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -58,6 +70,13 @@ export default function SupplyCDP({
           1000000,
       ) / 100;
    }
+
+  //  const handleSelect = (e) => {
+  //   if (e.target.value === "") {
+  //     return;
+  //   }
+  //   setSupplyCollateralType(e.target.value)
+  // }
 
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
@@ -90,6 +109,8 @@ export default function SupplyCDP({
     }
   }, []);
 
+
+
   useEffect(() => {
     setSupplyLimit(balance);
   }, [balance]);
@@ -110,7 +131,7 @@ export default function SupplyCDP({
     },
     {
       title: "Supply Limit",
-      val: `${supplyLimit} ALGOs`,
+      val: `${supplyLimit} ${typeCDP[collateralType]}`,
       hasToolTip: true,
     },
   ];
@@ -127,7 +148,7 @@ export default function SupplyCDP({
       <Container>
         <SubContainer>
           <Background>
-            <Title>Supply More ALGO</Title>
+            <Title>Supply More {typeCDP[collateralType]}</Title>
             <InputContainer>
               <div style={{ display: "flex" }}>
                 <Input
@@ -189,7 +210,7 @@ export default function SupplyCDP({
             onClick={async () => {
               setLoading(true);
               try {
-                let res = await addCollateral(cdp.id, additionalSupply, commitChecked);
+                let res = await addCollateral(cdp.id, additionalSupply, commitChecked, cdp.asaID);
                 if (res.alert) {
                   dispatch(setAlert(res.text));
                 }
@@ -216,6 +237,16 @@ const Container = styled.div`
 `;
 const Text = styled.text`
   //
+`
+const ExchangeSelect = styled(Select)`
+  font-size: 14pt;
+  margin: 0px 0px 0px 12px;
+  border: 1px solid #01d1ff;
+  &:hover {
+    color: black;
+    border: 1px solid #1b2d65;
+    background-color: #01d1ff;
+  }
 `
 
 const SubContainer = styled.div`

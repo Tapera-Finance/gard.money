@@ -20,6 +20,7 @@ export const AUCTIONS_CONTENT_NAMES = {
 export const commitmentPeriodEnd = 1666368000000;
 
 export const VERSION = "MAINNET";
+const UPDATE = 3;
 // TESTNET1 = initial testnet release
 // TESTNET2 = testnet w/ updated backend code
 // MAINNET = mainnet
@@ -27,8 +28,8 @@ export const VERSION = "MAINNET";
 export const MINID = 7;
 export const MAXID = 127;
 
-const localStorageVersion = localStorage.getItem("version");
-if (localStorageVersion != VERSION) {
+if (localStorage.getItem("version") != VERSION || localStorage.getItem("update") != UPDATE) {
   localStorage.clear();
 }
 localStorage.setItem("version", VERSION);
+localStorage.setItem("update", UPDATE);

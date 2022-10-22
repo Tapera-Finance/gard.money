@@ -7,7 +7,6 @@ import AnalyticsContent from "../pages/AnalyticsContent";
 import HomeContent from "../pages/HomeContent";
 import Main from "./Main";
 import BorrowContent from "../pages/BorrowContent";
-import RepayContent from "../pages/RepayContent";
 import ActionsContent from "../pages/ActionsContent";
 import AccountContent from "../pages/AccountContent";
 import SwapDetails from "./actions/SwapDetails";
@@ -20,7 +19,6 @@ export default function AppRoutes() {
         <Route path="/" element={Main(HomeContent, "Home")} />
         <Route path="/account" element={Main(AccountContent, "Wallet")} />
         <Route path="/borrow" element={Main(BorrowContent, "Borrow")} />
-        <Route path="/manage" element={Main(RepayContent, "Manage CDPs")} />
         <Route path="/auctions" element={Main(AuctionsContent, "Auctions")} />
         {/* <Route path="/actions" element={Main(ActionsContent, "Actions")} /> */}
         <Route path="/swap" element={Main(SwapDetails, "Swap")} />

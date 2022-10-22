@@ -20,6 +20,7 @@ if (VERSION == "MAINNET") {
         gain : 684649672,
         gard : 684649988,
         gardian : 692432647,
+        galgo: 793124631,
     },
     app : {
         dao : {
@@ -37,7 +38,10 @@ if (VERSION == "MAINNET") {
         revenue : 890603921,
         funder : 890603992,
         auction_checker : 96679309,
-        oracle : 673925841,
+        oracle : {
+          0: 673925841,
+          793124631: 908941119,
+        },
         gard_staking : 890604041,
         treasury : 890603993,
         claimer : 890604040,

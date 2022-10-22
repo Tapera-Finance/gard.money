@@ -20,7 +20,7 @@ import { getStakingAPY } from "../transactions/stake"
 import { searchAccounts } from "./GovernContent";
 import { getWalletInfo } from "../wallets/wallets";
 import { getCDPs } from "../transactions/cdp";
-import { CDPsToList } from "./BorrowContent";
+import { CDPsToList } from "../components/Positions"
 import { checkStaked } from "../components/actions/StakeDetails";
 
 const fetchTvl = async () => {

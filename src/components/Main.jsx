@@ -7,7 +7,6 @@ import { CONTENT_NAMES } from "../globals";
 import AnalyticsContent from "../pages/AnalyticsContent";
 import AccountContent from "../pages/AccountContent";
 import BorrowContent from "../pages/BorrowContent";
-import RepayContent from "../pages/RepayContent";
 import AuctionsContent from "../pages/AuctionsContent";
 import ActionsContent from "../pages/ActionsContent";
 import DaoContent from "../pages/DaoContent";
@@ -194,8 +193,6 @@ function MainContentHandler({ content, walletAddress }) {
       return <AccountContent walletAddress={walletAddress} />;
     case CONTENT_NAMES.BORROW:
       return <BorrowContent />;
-    case CONTENT_NAMES.REPAY:
-      return <RepayContent />;
     case CONTENT_NAMES.AUCTIONS:
       return <AuctionsContent />;
     case CONTENT_NAMES.SWAP:
