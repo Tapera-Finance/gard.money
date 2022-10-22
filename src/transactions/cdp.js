@@ -518,7 +518,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
   updateCDP(info.address, asaID, accountID);
   
   addCDPToFireStore(accountID, -openingMicroAssetAmount, microOpeningGard, 0);
-  /*
+
   let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
   if (completedMint == null){
     localStorage.setItem("gleamMintComplete", JSON.stringify([]))
@@ -534,9 +534,9 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
       console.log('minted', completedMint)
       localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
     }
-  } */ // TODO: Someone needs to fix this
+  } 
   if (commit) {
-    await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
+    await new Promise(r => setTimeout(r, 1000));
     updateCommitmentFirestore(info.address, accountID, openingMicroAssetAmount);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #5!";
@@ -546,7 +546,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
         completedCommit = []
       }
       if (!completedCommit.includes(info.address)) {
-      await updateTotal(info.address, "totalCommitted", openingMicroALGOs)
+      await updateTotal(info.address, "totalCommitted", openingAssetAmount)
       let user_totals = await loadUserTotals()
       console.log('totals', user_totals)
       if(user_totals["totalCommitted"] >= 100000000) {
@@ -555,7 +555,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
         console.log("commited", completedCommit)
         localStorage.setItem("gleamCommitComplete", JSON.stringify(completedCommit))
       }
-    } */ // TODO: Someone needs to fix this
+    } 
   }
   
   setLoadingStage(null);
