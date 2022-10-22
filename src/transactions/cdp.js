@@ -573,7 +573,7 @@ export async function mint(accountID, newGARD, asaID) {
   let info = await accountInfo();
   let cdp = cdpGen(info.address, accountID, asaID);
   let microNewGARD = microGARD(newGARD);
-  let params = await getParams(3000);
+  let params = await getParams(1000);
   // txn 0 - update the interest rate
   let txn_neg1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -582,9 +582,10 @@ export async function mint(accountID, newGARD, asaID) {
     suggestedParams: params,
     assetIndex: asaID,
   });
+  params.fee = 3000
   let txn0 = makeUpdateInterestTxn(info, params)
-  // txn1 - more gard!
   params.fee = 0
+  // txn1 - more gard!
   let apps = [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest]
   let assets = [ids.asa.gard]
   if (asaID != 0) {
@@ -603,6 +604,9 @@ export async function mint(accountID, newGARD, asaID) {
   });
 
   let txns = [txn_neg1, txn0, txn1];
+  if (asaID == 0) {
+    txns.shift() // Removes first txn
+  }
   algosdk.assignGroupID(txns);
   
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
