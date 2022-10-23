@@ -614,7 +614,10 @@ export async function mint(accountID, newGARD, asaID) {
 
   setLoadingStage("Confirming Transaction...");
 
-  let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob];
+  if (asaID){
+    stxns = stxns.concat([signedGroup[2].blob])
+  }
 
   let response = await sendTxn(
     stxns,
