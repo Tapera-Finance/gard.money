@@ -272,7 +272,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 30%);
+  grid-template-columns: repeat(2, 30%);
   row-gap: 30px;
   justify-content: center;
   padding: 30px 0px 30px;

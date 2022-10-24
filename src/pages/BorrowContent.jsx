@@ -736,8 +736,8 @@ const InputContainer = styled.div`
 `;
 
 const SupplyInputDetails = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 40%);
+  // display: grid;
+  grid-template-columns: repeat(1, 40%);
   row-gap: 30px;
   justify-content: center;
   padding: 30px 0px 30px;
