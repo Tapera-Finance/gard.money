@@ -15,6 +15,7 @@ import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import {adjustedMax} from "../pages/BorrowContent"
 import Select from "./Select";
+import { commitmentPeriodEnd } from "../globals"; 
 
 const assets = ["ALGO", "gALGO"];
 
