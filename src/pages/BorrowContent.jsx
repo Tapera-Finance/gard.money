@@ -505,9 +505,9 @@ export default function BorrowContent() {
                             alignItems: "flex-start",
                           }}
                         >
-                          <InputTitle>{isGAlgo ? "" : "Commit to governance"}</InputTitle>
+                          <InputTitle>{isGAlgo || Date.now() > commitmentPeriodEnd? "" : "Commit to governance"}</InputTitle>
                           <CommitBox
-                            type={isGAlgo ? "hidden" : "checkbox"}
+                            type={isGAlgo || Date.now() > commitmentPeriodEnd  ? "hidden" : "checkbox"}
                             onChange={handleCheckboxChange}
                           />
                         </div>

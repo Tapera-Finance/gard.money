@@ -192,12 +192,10 @@ export default function SupplyCDP({
                     alignContent: "center",
                   }}
                 >
-                   <InputTitle>
-                  Commit to governance
-                </InputTitle>
+                   <InputTitle>{Date.now() > commitmentPeriodEnd ? "" : "Commit to governance"}</InputTitle>
                       <input
-                        type={"checkbox"}
-                        onChange={handleCheckboxChange}
+                      type={Date.now() > commitmentPeriodEnd  ? "hidden" : "checkbox"}
+                      onChange={handleCheckboxChange}
                       />
                 </label>
               </InputDetails>
