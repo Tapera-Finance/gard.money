@@ -46,6 +46,7 @@ export async function getPrice() {
 getPrice();
 
 let CDPs;
+let old = localStorage.getItem("CDPs") !== null;
 
 export function getCDPs() {
   // V1: Only loads from cache
@@ -141,7 +142,7 @@ async function updateTypeCDPs(address, accountCDPs, asaID) {
     if (
       !cdpIsCached(accountCDPs, asaID, x) ||
       accountCDPs[asaID]["checked"] + mins_to_refresh * 60 * 1000 < Date.now()
-    ) {
+    || old) {
       updateCDP(address, asaID, x);
       webcalls += 1;
     }
@@ -149,6 +150,7 @@ async function updateTypeCDPs(address, accountCDPs, asaID) {
       await new Promise((r) => setTimeout(r, 1700));
     }
   }
+  old = false;
 }
 
 
