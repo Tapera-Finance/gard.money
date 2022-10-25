@@ -64,7 +64,6 @@ export default function Holdings() {
   const [walletTotal, setWalletTotal] = useState(0);
   const [borrowTotal, setBorrowTotal] = useState(0);
 
-  let assets = getAssets();
   const cdps = CDPsToList();
   const cdpData = cdps.map((cdp, i) => {
     console.log(cdp)
@@ -87,8 +86,7 @@ export default function Holdings() {
   ];
 
   useEffect(() => {
-    let assets = getAssets();
-    let walletSum = accumulateTotal(assets, "value");
+    let walletSum = accumulateTotal(getAssets(), "value");
     let netBorrowSum = accumulateTotal(cdps, "collateral");
     let netBorrowDebt = accumulateTotal(cdps, "debt");
     setWalletTotal(walletSum);
