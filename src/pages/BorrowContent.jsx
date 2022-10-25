@@ -394,6 +394,7 @@ export default function BorrowContent() {
           </V1Link>
         </div>
       </Banner>
+      {/*
       <Banner>
         <div
           style={{
@@ -437,6 +438,7 @@ export default function BorrowContent() {
           <Link>Open CDP to Participate</Link>
         </div>
       </Banner>
+        */}
       {createPositionShown ? (
         <div>
           <Container>
