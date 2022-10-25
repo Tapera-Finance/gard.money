@@ -202,50 +202,6 @@ export default function HomeContent() {
       }}
     >
       <div style={{display: "flex", flexDirection: "column"}}>
-
-      <Banner
-      >
-        <div
-          style={{
-            justifyContent: "center",
-            textAlign: "left",
-            alignItems: "center",
-            color: "#172756",
-          }}
-        >
-          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 21, 2022 EOD</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
-          }}
-        >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
-
-          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
-          </div>
-        </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <Link onClick={() => {
-            walletAddress ?
-            navigate("/borrow") : dispatch(
-              setAlert(
-                "You cannot enter without first connecting a Wallet",
-              ),
-            );
-          }}>Enroll</Link>
-        </div>
-      </Banner>
       <Banner>
       <div
           style={{
