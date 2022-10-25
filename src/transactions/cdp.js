@@ -45,6 +45,30 @@ export async function getPrice() {
 // We immeadiately update the price in a background thread
 getPrice();
 
+let CDPs;
+
+export function getCDPs() {
+  // V1: Only loads from cache
+  // CDPs is a list of CDP dictionaries. These dictionaries include:
+  // {
+  //   collateral: MICROALGOS,
+  //   debt: MICROGARD,
+  // }
+  if (typeof CDPs === 'undefined') {
+    const stored = localStorage.getItem("CDPs");
+    if (stored !== null) {
+      CDPs = JSON.parse(stored);
+    } else {
+      CDPs = {};
+    }
+  }
+  return CDPs;
+}
+
+
+getCDPs()
+
+
 export function calcRatio(collateral, minted, asaID, string = false) {
   // collateral: Microalgos
   // minted: GARD
@@ -130,7 +154,6 @@ async function updateTypeCDPs(address, accountCDPs, asaID) {
 
 export async function updateCDPs(address) {
   // Checks all CDPs by an address
-  const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
   // Sets the frequency to double check CDPs
   updateTypeCDPs(address, accountCDPs, 0)
@@ -138,7 +161,6 @@ export async function updateCDPs(address) {
 }
 
 async function findOpenID(address, asaID) {
-  const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
   const typeCDPs = accountCDPs[asaID]
   for (const x of Array(MAXID - MINID)
@@ -990,7 +1012,6 @@ async function updateCDP(
   const infoPromise = accountInfo(cdp.address);
 
   // Getting the entry to modify
-  let CDPs = getCDPs();
   let accountCDPs = CDPs[address];
   if (accountCDPs == null) {
     accountCDPs = {};
@@ -1039,19 +1060,6 @@ async function updateCDP(
   return false
 }
 
-export function getCDPs() {
-  // V1: Only loads from cache
-  // CDPs is a list of CDP dictionaries. These dictionaries include:
-  // {
-  //   collateral: MICROALGOS,
-  //   debt: MICROGARD,
-  // }
-  let CDPs = localStorage.getItem("CDPs");
-  if (CDPs !== null) {
-    return JSON.parse(CDPs);
-  }
-  return {};
-}
 
 export async function commitCDP(account_id, amount, toWallet) {
   // Setting up promises
