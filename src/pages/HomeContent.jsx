@@ -22,6 +22,7 @@ import { getWalletInfo } from "../wallets/wallets";
 import { getCDPs } from "../transactions/cdp";
 import { CDPsToList } from "../components/Positions"
 import { checkStaked } from "../components/actions/StakeDetails";
+import { commitmentPeriodEnd } from "../globals";
 
 const fetchTvl = async () => {
   try {
@@ -202,7 +203,7 @@ export default function HomeContent() {
       }}
     >
       <div style={{display: "flex", flexDirection: "column"}}>
-
+      {/* 
       <Banner
       >
         <div
@@ -246,6 +247,7 @@ export default function HomeContent() {
           }}>Enroll</Link>
         </div>
       </Banner>
+        */}
       <Banner>
       <div
           style={{
@@ -287,6 +289,7 @@ export default function HomeContent() {
           }}>Stake</Link>
         </div>
       </Banner>
+      {/*
       <Banner>
       <div
           style={{
@@ -323,6 +326,7 @@ export default function HomeContent() {
           }}>Learn More</Link>
         </div>
       </Banner>
+        */}
       </div>
       <div
         style={{

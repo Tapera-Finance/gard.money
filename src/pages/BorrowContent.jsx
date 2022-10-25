@@ -394,6 +394,7 @@ export default function BorrowContent() {
           </V1Link>
         </div>
       </Banner>
+      {/*
       <Banner>
         <div
           style={{
@@ -437,6 +438,7 @@ export default function BorrowContent() {
           <Link>Open CDP to Participate</Link>
         </div>
       </Banner>
+        */}
       {createPositionShown ? (
         <div>
           <Container>
@@ -505,9 +507,9 @@ export default function BorrowContent() {
                             alignItems: "flex-start",
                           }}
                         >
-                          <InputTitle>{isGAlgo ? "" : "Commit to governance"}</InputTitle>
+                          <InputTitle>{isGAlgo || Date.now() > commitmentPeriodEnd? "" : "Commit to governance"}</InputTitle>
                           <CommitBox
-                            type={isGAlgo ? "hidden" : "checkbox"}
+                            type={isGAlgo || Date.now() > commitmentPeriodEnd  ? "hidden" : "checkbox"}
                             onChange={handleCheckboxChange}
                           />
                         </div>
@@ -736,8 +738,8 @@ const InputContainer = styled.div`
 `;
 
 const SupplyInputDetails = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 40%);
+  // display: grid;
+  grid-template-columns: repeat(1, 40%);
   row-gap: 30px;
   justify-content: center;
   padding: 30px 0px 30px;
