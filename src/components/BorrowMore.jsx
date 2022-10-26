@@ -46,7 +46,7 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
       },
       {
         title: "Collateralization Ratio",
-        val: `${mAsset == null || mAsset == "" ?  calcRatio(cdp.collateral, cdp.debt / 1000000, true) : calcRatio(cdp.collateral, cdp.debt / 1000000 + mAsset, true)}`,
+        val: `${mAsset == null || mAsset == "" ?  calcRatio(cdp.collateral, cdp.debt / 1000000, cdp.asaID, true) : calcRatio(cdp.collateral, cdp.debt / 1000000 + mAsset, cdp.asaID, true)}`,
         hasToolTip: true,
       },
     ]

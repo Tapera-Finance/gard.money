@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import Details from "../components/Details";
 import Effect from "../components/Effect";
 import LoadingOverlay from "../components/LoadingOverlay";
 import Positions from "../components/Positions";
+import { CDPsToList, dummyCDPs } from "../components/Positions";
 import PrimaryButton from "../components/PrimaryButton";
 import RewardNotice from "../components/RewardNotice";
 import ToolTip from "../components/ToolTip";
@@ -14,18 +15,21 @@ import {
   handleTxError,
   updateWalletInfo,
 } from "../wallets/wallets";
-import { calcRatio, getCDPs, getPrice, openCDP } from "../transactions/cdp";
+import { calcRatio, getPrice, openCDP } from "../transactions/cdp";
 import { cdpInterest } from "../transactions/lib";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
 import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
+import gAlgoLogo from "../assets/icons/galgo-icon.png"
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
+import Select from "../components/Select";
+import { ids } from "../transactions/ids"
 
 export function displayRatio() {
-  return calcRatio(algosToMAlgos(getCollateral()), getMinted(), true);
+  return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
 }
 
 export function mAlgosToAlgos(num) {
@@ -72,6 +76,7 @@ export default function BorrowContent() {
   const walletAddress = useSelector(state => state.wallet.address);
   const [modalVisible, setModalVisible] = useState(false);
   const [canAnimate, setCanAnimate] = useState(false);
+  const [collateralType, setCollateralType] = useState("ALGO");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -91,8 +96,11 @@ export default function BorrowContent() {
   const [maxGARD, setMaxGARD] = useState(0);
   const [commitChecked, setCommitChecked] = useState(false);
   const [toWallet, setToWallet] = useState(true);
-
+  const [isGAlgo, setIsGAlgo] = useState(false);
   const [createPositionShown, setCreatePositionShown] = useState(false);
+  const assets = ["ALGO", "gALGO"];
+
+  const borrowIcon = collateralType === "ALGO" ? algoLogo : gAlgoLogo
 
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
@@ -102,21 +110,50 @@ export default function BorrowContent() {
     setToWallet(!toWallet);
   };
 
+  const handleSelect = (e) => {
+    if (e.target.value === "") {
+      return;
+    }
+    setCollateralType(e.target.value)
+    console.log('collat selected',e.target.value);
+  }
+
   useEffect(() => {
     if (cdps == dummyCDPs) {
       setCreatePositionShown(true);
     }
   }, []);
 
-
+  useEffect(() => {
+    collateralType === "gALGO" ? setIsGAlgo(true) : setIsGAlgo(false)
+  }, [collateralType])
 
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
     getWallet();
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+    console.log("log wallet", getWalletInfo())
     setMaxCollateral(adjustedMax());
   }, []);
+
+  useEffect(() => {
+    let walletInfo = getWalletInfo() && getWalletInfo()["assets"].length > 0 ? getWalletInfo()["assets"] : null
+    if (isGAlgo) {
+      let max = (
+        walletInfo &&
+        walletInfo.filter((i) => i["asset-id"] === ids.asa.galgo).length > 0
+          ? walletInfo.filter((i) => i["asset-id"] === ids.asa.galgo)[0][
+              "amount"
+            ] / 1000000
+          : 0
+      ).toFixed(3); // hardcoded asa for now, should filter based on generic selected asset
+      setMaxCollateral(max);
+    } else {
+      setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
+      setMaxCollateral(adjustedMax());
+    }
+  }, [isGAlgo])
 
   useEffect(() => {
     setSupplyPrice(price);
@@ -174,10 +211,19 @@ export default function BorrowContent() {
         ? 1
         : Number(event.target.value),
     );
-    let max = mAlgosToAlgos(getWalletInfo()["amount"] -
-    307000 -
-    100000 * (getWalletInfo()["assets"].length + 4) -
-    getWalletInfo()["min-balance"],).toFixed(3)
+    let max = isGAlgo
+      ? (getWalletInfo() && getWalletInfo()["assets"].length > 0
+          ? getWalletInfo()["assets"].filter(
+              (i) => i["asset-id"] === ids.asa.galgo,
+            )[0]["amount"] / 1000000
+          : 0
+        ).toFixed(3)
+      : mAlgosToAlgos(
+          getWalletInfo()["amount"] -
+            307000 -
+            100000 * (getWalletInfo()["assets"].length + 4) -
+            getWalletInfo()["min-balance"],
+        ).toFixed(3);
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -191,10 +237,19 @@ export default function BorrowContent() {
 
   const handleMaxBorrow = () => {
     setGARD((maxGARD).toFixed(3));
-    let max = mAlgosToAlgos(getWalletInfo()["amount"] -
-    307000 -
-    100000 * (getWalletInfo()["assets"].length + 4) -
-    getWalletInfo()["min-balance"],).toFixed(3)
+    let max = isGAlgo
+      ? (getWalletInfo() && getWalletInfo()["assets"].length > 0
+          ? getWalletInfo()["assets"].filter(
+              (i) => i["asset-id"] === ids.asa.galgo,
+            )[0]["amount"] / 1000000
+          : 0
+        ).toFixed(3)
+      : mAlgosToAlgos(
+          getWalletInfo()["amount"] -
+            307000 -
+            100000 * (getWalletInfo()["assets"].length + 4) -
+            getWalletInfo()["min-balance"],
+        ).toFixed(3);
     setMaxCollateral(max);
     if (isNaN(cAlgos)) {
       console.log("heyy");
@@ -266,7 +321,7 @@ export default function BorrowContent() {
   var supplyDetails = [
     {
       title: "Supply Limit",
-      val: `${maxCollateral} ALGOs`,
+      val: `${maxCollateral} ${collateralType}`,
       hasToolTip: true,
     },
   ];
@@ -290,7 +345,7 @@ export default function BorrowContent() {
         <></>
       )}
       <Banner>
-      <div
+        <div
           style={{
             justifyContent: "center",
             textAlign: "left",
@@ -298,7 +353,7 @@ export default function BorrowContent() {
             color: "#172756",
           }}
         >
-          <div style={{ fontSize: "10pt",  }}>Missing your CDP? </div>
+          <div style={{ fontSize: "10pt" }}>Missing your CDP? </div>
         </div>
         <div
           style={{
@@ -309,20 +364,34 @@ export default function BorrowContent() {
             marginLeft: "0px",
           }}
         >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
-
-          <div style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}>Make sure to migrate from V1 to V2</div>
+          <div
+            style={{
+              display: "flex",
+              textAlign: "left",
+              flexDirection: "column",
+            }}
+          >
+            <div
+              style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}
+            >
+              Make sure to migrate from V1 to V2
+            </div>
           </div>
         </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <V1Link onClick={() => {
-            window.open("https://www.v1.gard.money/")
-          }}>V1 Site</V1Link>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <V1Link
+            onClick={() => {
+              window.open("https://www.v1.gard.money/");
+            }}
+          >
+            V1 Site
+          </V1Link>
         </div>
       </Banner>
       <Banner>
@@ -374,7 +443,14 @@ export default function BorrowContent() {
             <SubContainer>
               <Background>
                 <Title>
-                  Supply ALGO <AlgoImg src={algoLogo} />
+                  Supply{" "}
+                  <ExchangeSelect
+                    options={assets}
+                    value={collateralType}
+                    callback={handleSelect}
+                  />
+                  {/* ALGO */}
+                  <AlgoImg src={borrowIcon} isGAlgo={!isGAlgo} />
                 </Title>
                 <InputContainer>
                   <div style={{ display: "flex" }}>
@@ -414,24 +490,29 @@ export default function BorrowContent() {
                           );
                         })
                       : null}
-                      <label
-                  style={{
-                    display: "flex",
-                    alignContent: "flex-start",
-                  }}
-                >
-                  <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "flex-start"}}>
+                    <label
+                      style={{
+                        display: "flex",
+                        alignContent: "flex-start",
+                      }}
+                    >
 
-                   <InputTitle>
-                  Commit to governance
-                </InputTitle>
-                      <CommitBox
-                        type={"checkbox"}
-                        onChange={handleCheckboxChange}
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <InputTitle>{isGAlgo ? "" : "Commit to governance"}</InputTitle>
+                          <CommitBox
+                            type={isGAlgo ? "hidden" : "checkbox"}
+                            onChange={handleCheckboxChange}
+                          />
+                        </div>
 
-                      />
-                  </div>
-                </label>
+                    </label>
                   </SupplyInputDetails>
                 </InputContainer>
               </Background>
@@ -491,12 +572,22 @@ export default function BorrowContent() {
             onClick={async () => {
               setLoading(true);
               try {
-                const res = await openCDP(
-                  getCollateral(),
-                  getMinted(),
-                  commitChecked,
-                  toWallet,
-                );
+                let res;
+                if (collateralType == 'ALGO') {
+                  res = await openCDP(
+                    getCollateral(),
+                    getMinted(),
+                    0,
+                    commitChecked,
+                    toWallet,
+                  )
+                } else {
+                  res = await openCDP(
+                    getCollateral(),
+                    getMinted(),
+                    ids.asa.galgo,
+                  )
+                }
                 if (res.alert) {
                   setCreatePositionShown(false);
                   dispatch(setAlert(res.text));
@@ -580,7 +671,22 @@ const AlgoImg = styled.img`
   width: 75px;
   right: --4px;
   position: relative;
+  ${(props) => !props.isGAlgo &&
+    css`
+      height: 50px;
+      width: 50px;
+      margin-left: 8px;
+      margin-top: 12.5px;
+      margin-bottom: 12.5px;
+    `
+  }
 `;
+
+const gAlgoImg = styled.img`
+  height: 30px;
+  width: 30px;
+  position: relative;
+`
 
 const GardImg = styled.img`
   height: 50px;
@@ -701,6 +807,18 @@ const CommitBox = styled.input`
   }
 `;
 
+const ExchangeSelect = styled(Select)`
+  font-size: 14pt;
+  margin: 0px 0px 0px 12px;
+  border: 1px solid #01d1ff;
+  color: white;
+  &:hover {
+    color: black;
+    border: 1px solid #1b2d65;
+    background-color: #01d1ff;
+  }
+`;
+
 //modal stuff
 const InputTitle = styled.text`
   font-weight: bold;
@@ -763,36 +881,3 @@ function dummyTrans() {
   }
 }
 
-export function CDPsToList() {
-  const CDPs = getCDPs();
-  let res = [];
-  if (getWalletInfo() && CDPs[getWalletInfo().address] != null) {
-    const accountCDPs = CDPs[getWalletInfo().address];
-    for (const [cdpID, value] of Object.entries(accountCDPs)) {
-      if (value["state"] == "open") {
-        res.push({
-          id: cdpID,
-          liquidationPrice: (
-            (1.15 * value["debt"]) /
-            value["collateral"]
-          ).toFixed(4),
-          collateral: value["collateral"],
-          debt: value["debt"],
-          committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
-        });
-      }
-    }
-  }
-  if (res.length == 0) {
-    res = dummyCDPs;
-  }
-  return res;
-}
-const dummyCDPs = [
-  {
-    id: "N/A",
-    liquidationPrice: 0,
-    collateral: 0,
-    debt: 0,
-  },
-];

@@ -111,6 +111,7 @@ export default function Govern() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [toWallet, setToWallet] = useState(true);
+  const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
   const dispatch = useDispatch();
 
@@ -159,13 +160,18 @@ export default function Govern() {
 
 
   let loadedCDPs = CDPsToList();
-  if (loadedCDPs[0].id == "N/A") {
-    loadedCDPs = dummyCdps;
-  }
+  useEffect(() => {
+    if (loadedCDPs[0].id == "N/A") {
+      loadedCDPs = dummyCdps;
+      setCommitDisabled(true);
+    } else {
+      setCommitDisabled(false);
+    }
+  }, [])
 
   const owner_address = getWallet().address;
 
-  let adjusted = loadedCDPs.map((value) => {
+  let adjusted = loadedCDPs.filter(value => !value.asaID).map((value) => {
     const cdp_address = cdpGen(owner_address, value.id).address;
     return {
       balance: value.collateral == "N/A" ? "N/A" : value.collateral / 1000000,
@@ -219,7 +225,7 @@ export default function Govern() {
               setMaxBal(value.balance);
             }}
 
-            disabled={!(Date.now() < commitmentPeriodEnd)}
+            disabled={(!(Date.now() < commitmentPeriodEnd)) || commitDisabled}
           />
         ),
         "Verify Committment": (
@@ -230,6 +236,7 @@ export default function Govern() {
             onClick={() => {
               window.open(getGovernorPage(account_id));
             }}
+            disabled={commitDisabled}
             />
         ),
     };
