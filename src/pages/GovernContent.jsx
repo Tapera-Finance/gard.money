@@ -95,6 +95,26 @@ export async function getGovernanceInfo() {
   return null;
 }
 
+export async function getCommDict(){
+  const cdps = CDPsToList()
+  if (cdps[0].id == "N/A"){
+    return {}
+  }
+  let res = {}
+  const owner_address = getWallet().address
+  const addresses = cdps.filter(value => !value.asaID).map(value => cdpGen(owner_address, value.id).address)
+  const axiosObj = axios.create({
+    baseURL: 'https://governance.algorand.foundation/api/governors/',
+    timeout: 300000,
+  })
+  for (let k = 0; k < addresses.length; k++){
+    let response = (await axiosObj.get(addresses[k] + '/status/', {}))
+    res[addresses[k]] = parseInt(response.data["committed_algo_amount"])
+  }
+  console.log(res)
+  return res
+}
+
 export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address)
   const [commitment, setCommitment] = useState(undefined);
@@ -167,6 +187,11 @@ export default function Govern() {
     } else {
       setCommitDisabled(false);
     }
+  }, [])
+
+  useEffect(async () => {
+    let dict = await getCommDict()
+    console.log("comm dict", dict)
   }, [])
 
   const owner_address = getWallet().address;
@@ -254,7 +279,7 @@ export default function Govern() {
       ) : (
         <></>
       )}
-{/*      
+{/*
 <Banner
       >
         <div
