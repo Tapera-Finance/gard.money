@@ -57,3 +57,5 @@ export function titleToToolTip(str) {
     .map((term) => term.slice(0, 1).toLowerCase() + term.slice(1, term.length))
     .join("_");
 }
+
+export const px2vw = (size, width = 1440) => `${(size / width) * 100}vw`
