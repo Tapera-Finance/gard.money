@@ -74,12 +74,38 @@ export async function appInfo(appId) {
     });
 }
 
+
+async function getNFD(address) {
+  const res = await fetch('https://api.nf.domains/nfd/address?address=' + address + '&limit=1&view=thumbnail')
+  if (res.status != 404) {
+    const entry = (await res.json())[0]
+    console.log(entry)
+    if (entry.caAlgo.find(i => i == address)) {
+      return entry.name
+    }
+  }
+  return null
+}
+
+
+async function updateNFD() {
+  if (activeWallet.address) {
+    const nfd = await getNFD(activeWallet.address)
+    if (nfd) {
+      activeWallet.name = nfd
+    }
+  }
+  return
+}
+
+
 export async function updateWalletInfo() {
   let info = await accountInfo();
   activeWalletInfo = info;
   updateCDPs(activeWallet.address);
   let idx = -1;
   let promises = [];
+  promises.push(updateNFD())
   for (let i = 0; i < info["assets"].length; i++) {
     const j = i;
     if (

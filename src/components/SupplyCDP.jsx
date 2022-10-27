@@ -15,6 +15,7 @@ import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import {adjustedMax} from "../pages/BorrowContent"
 import Select from "./Select";
+import { commitmentPeriodEnd } from "../globals"; 
 
 const assets = ["ALGO", "gALGO"];
 
@@ -192,12 +193,10 @@ export default function SupplyCDP({
                     alignContent: "center",
                   }}
                 >
-                   <InputTitle>
-                  Commit to governance
-                </InputTitle>
+                   <InputTitle>{Date.now() > commitmentPeriodEnd ? "" : "Commit to governance"}</InputTitle>
                       <input
-                        type={"checkbox"}
-                        onChange={handleCheckboxChange}
+                      type={Date.now() > commitmentPeriodEnd  ? "hidden" : "checkbox"}
+                      onChange={handleCheckboxChange}
                       />
                 </label>
               </InputDetails>
@@ -273,7 +272,7 @@ const InputContainer = styled.div`
 
 const InputDetails = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 30%);
+  grid-template-columns: repeat(2, 30%);
   row-gap: 30px;
   justify-content: center;
   padding: 30px 0px 30px;

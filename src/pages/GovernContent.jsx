@@ -254,6 +254,7 @@ export default function Govern() {
       ) : (
         <></>
       )}
+{/*      
 <Banner
       >
         <div
@@ -292,7 +293,7 @@ export default function Govern() {
           }}>Learn More</Link>
         </div>
       </Banner>
-
+        */}
       <div style={{marginBottom: 30}}>
         <fieldset
           style={{

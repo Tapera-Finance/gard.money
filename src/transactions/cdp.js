@@ -45,6 +45,31 @@ export async function getPrice() {
 // We immeadiately update the price in a background thread
 getPrice();
 
+let CDPs;
+let old = localStorage.getItem("CDPs") !== null;
+
+export function getCDPs() {
+  // V1: Only loads from cache
+  // CDPs is a list of CDP dictionaries. These dictionaries include:
+  // {
+  //   collateral: MICROALGOS,
+  //   debt: MICROGARD,
+  // }
+  if (typeof CDPs === 'undefined') {
+    const stored = localStorage.getItem("CDPs");
+    if (stored !== null) {
+      CDPs = JSON.parse(stored);
+    } else {
+      CDPs = {};
+    }
+  }
+  return CDPs;
+}
+
+
+getCDPs()
+
+
 export function calcRatio(collateral, minted, asaID, string = false) {
   // collateral: Microalgos
   // minted: GARD
@@ -117,7 +142,7 @@ async function updateTypeCDPs(address, accountCDPs, asaID) {
     if (
       !cdpIsCached(accountCDPs, asaID, x) ||
       accountCDPs[asaID]["checked"] + mins_to_refresh * 60 * 1000 < Date.now()
-    ) {
+    || old) {
       updateCDP(address, asaID, x);
       webcalls += 1;
     }
@@ -125,12 +150,12 @@ async function updateTypeCDPs(address, accountCDPs, asaID) {
       await new Promise((r) => setTimeout(r, 1700));
     }
   }
+  old = false;
 }
 
 
 export async function updateCDPs(address) {
   // Checks all CDPs by an address
-  const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
   // Sets the frequency to double check CDPs
   updateTypeCDPs(address, accountCDPs, 0)
@@ -138,7 +163,6 @@ export async function updateCDPs(address) {
 }
 
 async function findOpenID(address, asaID) {
-  const CDPs = getCDPs();
   const accountCDPs = CDPs[address];
   const typeCDPs = accountCDPs[asaID]
   for (const x of Array(MAXID - MINID)
@@ -233,24 +257,6 @@ function makeOptInTxns(info, params) {
   return txns
 }
 
-function _openCDPtxns1(algosToSend, cdp, info, params) {
-  let txns = []
-  // txn 3 = update interest rate
-  let txn3 = makeUpdateInterestTxn(info, params)
-  txns.push(txn3)
-  // fees
-  params.fee = 0;
-  // txn 4 = transfer algos
-  let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: cdp.address,
-    amount: algosToSend,
-    suggestedParams: params,
-  });
-  txns.push(txn4)
-  return txns
-}
-
 async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet, info, accountID, cdp) {
   // Setting up promises
   const paramsPromise = getParams(2000);
@@ -280,9 +286,18 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
   let txns = makeOptInTxns(info, params);
   let optins = txns.length;
   params.fee = 5000;
-  // next two txns
-  txns = txns.concat(_openCDPtxns1(openingMicroALGOs, cdp, info, params))
+  // txn 3 = update interest rate
+  let txn3 = makeUpdateInterestTxn(info, params)
+  txns.push(txn3)
+  // txn 4 = collateral
   params.fee = 0;
+  let txn4 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: cdp.address,
+    amount: openingMicroALGOs,
+    suggestedParams: params,
+  });
+  txns.push(txn4)
   // txn 5 = opt in cdp txn
   let txn5 = algosdk.makeApplicationOptInTxnFromObject({
     from: cdp.address,
@@ -368,6 +383,7 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
 }
 
 async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info, accountID, cdp) {
+  const cdpInfoPromise = accountInfo(cdp.address)
   const paramsPromise = getParams(2000);
   
   // Part 1: Opting in, creating needed info, etc.
@@ -395,10 +411,28 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
 
   let params = await paramsPromise;
   let txns = makeOptInTxns(info, params);
-  let optins = txns.length;
-  params.fee = 7000;
-  // next two txns
-  txns = txns.concat(_openCDPtxns1(850000, cdp, info, params)) // XXX: This amount may not be optimized.
+  let extraTxns = txns.length;
+  const cdpInfo = await cdpInfoPromise
+
+  let algosToSend = 850000 - cdpInfo.amount // XXX: This amount may not be optimal, but it works
+  params.fee = 6000
+  if (algosToSend > 0) {
+    params.fee = 7000;
+    // txn 3 = funding
+    let txn3 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+      from: info.address,
+      to: cdp.address,
+      amount: algosToSend,
+      suggestedParams: params,
+    });
+    txns.push(txn3)
+    extraTxns += 1
+    params.fee = 0;
+  }
+  
+  // txn 4 = update interest rate
+  let txn4 = makeUpdateInterestTxn(info, params)
+  txns.push(txn4)
   params.fee = 0;
   // txn 5 - opt cdp into ASA
   let txn5 = createOptInTxn(params, cdp, asaID, 0)
@@ -440,26 +474,24 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
   
   setLoadingStage("Finalizing Transactions...");
   let stxns = []
-  // stxn 0-2 (opt ins)
-  for (let i = 0; i < optins; i++) {
+  // stxn 0-3 (opt ins + funding)
+  for (let i = 0; i < extraTxns; i++) {
     stxns.push(_stxns[i].blob)
   }
-  // stxn 3
-  stxns.push(_stxns[optins].blob)
   // stxn 4
-  stxns.push(_stxns[1 + optins].blob)
+  stxns.push(_stxns[extraTxns].blob)
   // stxn 5
   let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(3)]);
   let stxn5 = algosdk.signLogicSigTransactionObject(txn5, lsig);
   stxns.push(stxn5.blob)
   // stxn 6
-  stxns.push(_stxns[3 + optins].blob)
+  stxns.push(_stxns[2 + extraTxns].blob)
   // stxn 7
   lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
   let stxn7 = algosdk.signLogicSigTransactionObject(txn7, lsig);
   stxns.push(stxn7.blob)
   // stxn 8
-  stxns.push(_stxns[5 + optins].blob)
+  stxns.push(_stxns[4 + extraTxns].blob)
   
   return stxns
 }
@@ -883,7 +915,6 @@ export async function closeCDP(accountID, asaID) {
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
   let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * cdpInterest)/365/24/60)) + 3000
-  console.log(microRepayGARD)
   
   let gard_bal = getMicroGardBalance(info);
   if (gard_bal == null || gard_bal < microRepayGARD) {
@@ -901,8 +932,6 @@ export async function closeCDP(accountID, asaID) {
         (microRepayGARD / 1000000 + mod).toFixed(2).toString(),
     };
   }
-  
-  console.log(microRepayGARD)
   
   // txn 0 - updated interest
   let txn0 = makeUpdateInterestTxn(info, params)
@@ -985,7 +1014,6 @@ async function updateCDP(
   const infoPromise = accountInfo(cdp.address);
 
   // Getting the entry to modify
-  let CDPs = getCDPs();
   let accountCDPs = CDPs[address];
   if (accountCDPs == null) {
     accountCDPs = {};
@@ -1034,19 +1062,6 @@ async function updateCDP(
   return false
 }
 
-export function getCDPs() {
-  // V1: Only loads from cache
-  // CDPs is a list of CDP dictionaries. These dictionaries include:
-  // {
-  //   collateral: MICROALGOS,
-  //   debt: MICROGARD,
-  // }
-  let CDPs = localStorage.getItem("CDPs");
-  if (CDPs !== null) {
-    return JSON.parse(CDPs);
-  }
-  return {};
-}
 
 export async function commitCDP(account_id, amount, toWallet) {
   // Setting up promises
