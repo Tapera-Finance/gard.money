@@ -227,7 +227,6 @@ export default function Govern() {
     return {
       ...value,
       "":
-        value.committed === "" ? (<a href="https://governance.algorand.foundation/governance-period-5/governors">See external site</a>) :
         value.committed !== 0 ? (
           <PrimaryButton
           blue={true}
