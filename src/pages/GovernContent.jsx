@@ -209,13 +209,13 @@ export default function Govern() {
     const cdp_address = cdpGen(owner_address, value.id).address;
     if (isFirefox()) {
       return {
-        balance: value.collateral == "N/A" ? "N/A" : value.collateral / 1000000,
+        balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
         committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-5/governors">See external site</a>
       }
     } else {
       return {
         balance: value.collateral == "N/A" ? "N/A" : value.collateral / 1000000,
-        committed: commitDict[cdp_address] == 0 || !commitDict[cdp_address] ? 0 : `${(commitDict[cdp_address] / 1000000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+        committed: commitDict[cdp_address] == 0 || !commitDict[cdp_address] ? 0 : `${(commitDict[cdp_address] / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
         id: value.id,
       };
     }
