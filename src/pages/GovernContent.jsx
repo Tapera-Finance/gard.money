@@ -103,7 +103,6 @@ export async function getCommDict(){
     return {}
   }
   const owner_address = getWallet().address
-  console.log("ccccoome on")
   const addresses = cdps.filter(value => !value.asaID).map(value => cdpGen(owner_address, value.id).address)
   try {
   const axiosObj = axios.create({
