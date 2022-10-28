@@ -22,6 +22,7 @@ import { textAlign } from "@mui/system";
 import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
+import { isFirefox } from "../utils";
 
 const axios = require("axios");
 
@@ -109,11 +110,14 @@ export async function getCommDict(){
   })
   for (let k = 0; k < addresses.length; k++){
     let response = (await axiosObj.get(addresses[k] + '/status/', {}))
-    res[addresses[k]] = parseInt(response.data["committed_algo_amount"])
+    if (response) {
+      res[addresses[k]] = parseInt(response.data["committed_algo_amount"])
+    }
   }
-  console.log(res)
+  console.log('res from func', res)
   return res
 }
+
 
 export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address)
@@ -121,6 +125,7 @@ export default function Govern() {
   const [maxBal, setMaxBal] = useState("");
   const [selectedAccount, setSelectedAccount] = useState("");
   const [refresh, setRefresh] = useState(0);
+  const [commitDict, setCommitDict] = useState(null)
   const [vaulted, setVaulted] = useState("Loading...");
   const [shownAll, setAllVotes] = useState(true);
   const [governors, setGovernors] = useState("...");
@@ -191,7 +196,9 @@ export default function Govern() {
 
   useEffect(async () => {
     let dict = await getCommDict()
-    console.log("comm dict", dict)
+    setTimeout(() => {
+        console.log("comm dict", dict)
+    }, 4000)
   }, [])
 
   const owner_address = getWallet().address;
