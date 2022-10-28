@@ -57,3 +57,7 @@ export function titleToToolTip(str) {
     .map((term) => term.slice(0, 1).toLowerCase() + term.slice(1, term.length))
     .join("_");
 }
+
+export function isFirefox() {
+  return navigator.userAgent.includes("Firefox")
+}
