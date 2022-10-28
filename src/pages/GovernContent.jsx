@@ -86,7 +86,6 @@ export async function getGovernanceInfo() {
     console.log(ex);
   }
   if (response) {
-    console.log(response);
     const governorCount = parseInt(response["data"].unique_governors_count);
     const enrollmentEnd =
       response["data"]["periods"][0].registration_end_datetime;
