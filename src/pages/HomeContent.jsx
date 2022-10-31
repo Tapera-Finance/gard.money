@@ -36,6 +36,36 @@ const fetchTvl = async () => {
   }
 };
 
+export async function getBorrowed() {
+  const v2GardPriceValidatorId = 890603991
+  const sgardGardId = 890603920
+  async function lookupApplications(appId) {
+    const axiosObj = axios.create({
+      baseURL: 'https://mainnet-idx.algonode.cloud',
+      timeout: 300000,
+    })
+    return (await axiosObj.get(`/v2/applications/${appId}`)).data
+  }
+  function getStateUint(state, key) {
+    const val = state.find((entry) => {
+      if (entry.key === key) {
+        return entry;
+      }
+    })
+    return val.value.uint
+  }
+  async function getAppState(appId) {
+    const res = await lookupApplications(appId);
+    return res.application.params["global-state"];
+  }
+
+  const validatorState = await getAppState(v2GardPriceValidatorId);
+  const SGardDebt = getStateUint(validatorState, btoa('SGARD_OWED'))
+  const sgardState = await getAppState(sgardGardId);
+  const SGardConversion = getStateUint(sgardState, btoa('conversion_rate'))
+  return (SGardDebt * SGardConversion / 1e10)/1e6
+}
+
 async function getTotalUsers() {
 
   let nexttoken;
@@ -109,7 +139,6 @@ export default function HomeContent() {
     }
     if (walletAddress) {
       let stakePromise = await checkStaked()
-      console.log("staked check", stakePromise)
       let cdps = CDPsToList();
       if (cdps.length > 0 || stakePromise === true) {
         setGaining(true)
@@ -176,13 +205,14 @@ export default function HomeContent() {
 
   useEffect(async () => {
     let res = await fetchTvl();
-    if (res) {
+    let borrowed_res = await getBorrowed();
+    if (res && borrowed_res) {
       setTvl(res.currentChainTvls.Algorand.toFixed(2));
       setBacked(
-        (100 * res.currentChainTvls.Algorand / res.currentChainTvls.borrowed).toFixed(
+        (100 * res.currentChainTvls.Algorand / borrowed_res).toFixed(
           2,
         ),
-        setBorrowed(res.currentChainTvls.borrowed.toFixed(2)),
+        setBorrowed(borrowed_res.toFixed(2)),
       );
     }
   }, []);

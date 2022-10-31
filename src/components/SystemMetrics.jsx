@@ -14,6 +14,7 @@ import { getWalletInfo } from "../wallets/wallets";
 import Effect from "../components/Effect";
 import PageToggle from "./PageToggle";
 import { getAppField } from "../transactions/lib";
+import { getBorrowed } from "../pages/HomeContent";
 
 const fetchTvl = async () => {
   try {
@@ -61,7 +62,7 @@ export default function SystemMetrics() {
     let res = await fetchTvl();
     let nl = await getAppField(ids.app.gard_staking, "NL")/1000000
     let issued = await getAppField(ids.app.validator, "GARD_ISSUED")/1000000
-    let borrowed = res.currentChainTvls.borrowed
+    let borrowed = await getBorrowed()
     setStaked(nl);
     setCirculating(borrowed-nl);
     if (res) {

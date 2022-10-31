@@ -22,6 +22,7 @@ import { textAlign } from "@mui/system";
 import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
+import { isFirefox } from "../utils";
 
 const axios = require("axios");
 
@@ -86,7 +87,6 @@ export async function getGovernanceInfo() {
     console.log(ex);
   }
   if (response) {
-    console.log(response);
     const governorCount = parseInt(response["data"].unique_governors_count);
     const enrollmentEnd =
       response["data"]["periods"][0].registration_end_datetime;
@@ -95,12 +95,40 @@ export async function getGovernanceInfo() {
   return null;
 }
 
+export async function getCommDict(){
+  let res = {}
+  const cdps = CDPsToList()
+  if (cdps[0].id == "N/A"){
+    return {}
+  }
+  const owner_address = getWallet().address
+  const addresses = cdps.filter(value => !value.asaID).map(value => cdpGen(owner_address, value.id).address)
+  try {
+  const axiosObj = axios.create({
+    baseURL: 'https://governance.algorand.foundation/api/governors/',
+    timeout: 300000,
+  })
+  for (let k = 0; k < addresses.length; k++){
+    let response = (await axiosObj.get(addresses[k] + '/status/', {}))
+    if (response) {
+      res[addresses[k]] = parseInt(response.data["committed_algo_amount"])
+    } else {
+      res[addresses[k]] = 0
+    }
+  }} catch (e) {
+    console.log("Error", e)
+  }
+  return res
+}
+
+
 export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address)
   const [commitment, setCommitment] = useState(undefined);
   const [maxBal, setMaxBal] = useState("");
   const [selectedAccount, setSelectedAccount] = useState("");
   const [refresh, setRefresh] = useState(0);
+  const [commitDict, setCommitDict] = useState({})
   const [vaulted, setVaulted] = useState("Loading...");
   const [shownAll, setAllVotes] = useState(true);
   const [governors, setGovernors] = useState("...");
@@ -169,20 +197,27 @@ export default function Govern() {
     }
   }, [])
 
+  useEffect(async () => {
+    let dict = await getCommDict()
+    setCommitDict(dict)
+  }, [])
+
   const owner_address = getWallet().address;
 
   let adjusted = loadedCDPs.filter(value => !value.asaID).map((value) => {
     const cdp_address = cdpGen(owner_address, value.id).address;
-    return {
-      balance: value.collateral == "N/A" ? "N/A" : value.collateral / 1000000,
-      committed:
-        commitment == undefined || commitment[cdp_address] == undefined
-          ? "unknown"
-          : commitment[cdp_address].lastCommitment == -1
-          ? 0
-          : commitment[cdp_address].lastCommitment / 1000000,
-          id: value.id,
-    };
+    if (isFirefox()) {
+      return {
+        balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+        committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-5/governors">See external site</a>
+      }
+    } else {
+      return {
+        balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+        committed: commitDict[cdp_address] == 0 || !commitDict[cdp_address] ? 0 : `${(commitDict[cdp_address] / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+        id: value.id,
+      };
+    }
   });
   let cdps = adjusted.map((value, index) => {
     let account_id = parseInt(value.id);
@@ -190,7 +225,7 @@ export default function Govern() {
     return {
       ...value,
       "":
-        value.committed !== 0 && value.committed !== "unknown" ? (
+        value.committed !== 0 ? (
           <PrimaryButton
           blue={true}
             text={value.balance === value.committed ? "Committed" : "Commit More"}
@@ -254,7 +289,7 @@ export default function Govern() {
       ) : (
         <></>
       )}
-{/*      
+{/*
 <Banner
       >
         <div
