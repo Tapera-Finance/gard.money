@@ -703,22 +703,22 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
   setLoadingStage("Loading...");
   // Core info
   let info = await accountInfo();
-
+  let microNewAlgos = parseInt(newAlgos * 1000000);
+  
   if (asaID == 0) {
-    if (newAlgos + 100000 * (info["assets"].length + 1) > info["amount"]) {
+    if (info["amount"] - microNewAlgos - 4000 < info["min-balance"]) {
       return {
         alert: true,
         text:
           "Depositing this much collateral will put you below your minimum balance.\n" +
           "Your Maximum deposit is: " +
-          (newAlgos + 100000 * (info["assets"].length + 1)) / 1000000 +
-          " Algos",
+          (info["amount"] - info["min-balance"] - 4000) / 1000000 +
+          " Algos", 
       };
     }
   }
   
   let cdp = cdpGen(info.address, accountID, asaID);
-  let microNewAlgos = parseInt(newAlgos * 1000000);
 
   let params = await getParams(1000);
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
@@ -789,7 +789,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
 
   const response = await sendTxn(
     stxns,
-    "Successfully added " + newAlgos + " ALGOs as collateral.",
+    `Successfully added ${newAlgos} ${asaID == 793124631 ? " gALGO": " ALGO"} as collateral.`,
   );
 
   updateCDP(info.address, asaID, accountID);
