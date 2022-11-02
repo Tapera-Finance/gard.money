@@ -147,8 +147,8 @@ export default function BorrowContent() {
               "amount"
             ] / 1000000
           : 0
-      ).toFixed(3); // hardcoded asa for now, should filter based on generic selected asset
-      setMaxCollateral(max);
+      ); // hardcoded asa for now, should filter based on generic selected asset
+      setMaxCollateral((Math.trunc(max*1000)/1000).toFixed(3));
     } else {
       setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
       setMaxCollateral(adjustedMax());
