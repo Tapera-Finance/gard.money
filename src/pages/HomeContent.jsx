@@ -508,7 +508,7 @@ const Container = styled.div`
   background: #0E1834;
   padding-top: 30px;
   padding-bottom: 30px;
-  border: 1px solid #80edff;
+  border: 1px solid white;
   border-radius: 10px;
 `;
 

@@ -18,7 +18,7 @@ export default function LiveAuctions({
         overflow: "auto",
         display: "flex",
         flexDirection: "column",
-        border: "1px solid #80edff",
+        border: "1px solid white",
         borderRadius: 10,
         background: "#0f1733",
       }}

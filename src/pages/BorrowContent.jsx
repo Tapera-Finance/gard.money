@@ -734,7 +734,7 @@ const BorrowTitle = styled.div`
 const InputContainer = styled.div`
   background: rgba(13, 18, 39, 0.75);
   border-radius: 10px;
-  border: 1px solid #80edff;
+  border: 1px solid white;
 `;
 
 const SupplyInputDetails = styled.div`
