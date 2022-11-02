@@ -110,7 +110,7 @@ export async function swap(
   const formattedAmount = formatAmt(fromAmt);
   const formattedMin = formatAmt(toAmt);
   const minimum = formatAmt(Math.trunc((formattedMin * (1 - slippagePct)) / 1e6));
-  const opted = verifyOptIn(info, toAsset.index);
+  const opted = toAsset.index == 0 ? true : verifyOptIn(info, toAsset.index);
 
   let txn1 =
     fromAsset.index === 0
@@ -136,19 +136,17 @@ export async function swap(
     foreignAssets: f_a,
     suggestedParams: params,
   });
-  let optTxn = opted
-    ? []
-    : algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+  let optTxn = [algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
         from: info.address,
         to: info.address,
         amount: 0,
         suggestedParams: params,
         assetIndex: toAsset.index,
-      });
+      })];
 
-  let txns = !Array.isArray(optTxn)
-    ? [txn1, txn2]
-    : optTxn.concat([txn1, txn2]);
+  let txns = !opted
+    ? optTxn.concat([txn1, txn2])
+    : [txn1, txn2];
   algosdk.assignGroupID(txns);
 
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
