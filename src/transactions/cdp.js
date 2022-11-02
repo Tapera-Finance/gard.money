@@ -789,7 +789,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
 
   const response = await sendTxn(
     stxns,
-    "Successfully added " + newAlgos + " ALGOs as collateral.",
+    `Successfully added ${newAlgos} ${asaID == 793124631 ? " gALGO": " ALGO"} as collateral.`,
   );
 
   updateCDP(info.address, asaID, accountID);
