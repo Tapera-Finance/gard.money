@@ -23,6 +23,7 @@ import { getCDPs } from "../transactions/cdp";
 import { CDPsToList } from "../components/Positions"
 import { checkStaked } from "../components/actions/StakeDetails";
 import { commitmentPeriodEnd } from "../globals";
+import { Global, device } from "../styles/global";
 
 const fetchTvl = async () => {
   try {
@@ -233,7 +234,7 @@ export default function HomeContent() {
       }}
     >
       <div style={{display: "flex", flexDirection: "column"}}>
-      {/* 
+      {/*
       <Banner
       >
         <div
@@ -285,6 +286,7 @@ export default function HomeContent() {
             textAlign: "left",
             alignItems: "center",
             color: "#172756",
+
           }}
         >
           <div style={{ fontSize: "10pt",  }}>GARD Staking Rewards!</div>
@@ -366,6 +368,7 @@ export default function HomeContent() {
           textAlign: "center",
           marginTop: "18px",
           marginBottom: "18px",
+          alignItems: "center"
         }}
       >
         <div style={{ margin: "8px 0px 8px 0px" }}>
@@ -494,6 +497,7 @@ const Link = styled.text`
 
 const Banner = styled.div`
   display: flex;
+  width: 75%;
   flex-direction: row;
   border-radius: 10px;
   justify-content: space-between;
@@ -507,9 +511,13 @@ const Banner = styled.div`
 const Container = styled.div`
   background: #0E1834;
   padding-top: 30px;
+  width: 75%;
   padding-bottom: 30px;
   border: 1px solid #80edff;
   border-radius: 10px;
+  /* @media (${device.tablet}) {
+    width: 100%;
+  } */
 `;
 
 const Items = styled.div`
@@ -548,8 +556,8 @@ const ConnectStep = styled.div`
   align-items: center;
   background: #0f1733;
   color: #019fff;
-  height: 80px;
-  width: 60vw;
+  /* height: 80px; */
+  /* width: 60vw; */
   border-radius: 10px;
   margin-top: 20px;
   margin-bottom: 20px;

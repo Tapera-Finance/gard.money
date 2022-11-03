@@ -153,7 +153,8 @@ const ContentContainer = styled.div`
     margin-left: 0vw;
   }
   @media (min-width: ${size.tablet}) {
-    margin-left: 23.75vw;
+    /* margin-left: 23.75vw; */
+    /* padding-right:10vw; */
   }
 `
 
@@ -165,7 +166,7 @@ const expandMainContentAnimation = keyframes`
 
 // main styled components
 const MainContentDiv = styled.div`
-  width: 100%;
+  width: 70%;
   animation-duration: 0.5s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
@@ -179,6 +180,7 @@ const MainContentDiv = styled.div`
   `}
   @media (${device.tablet}) {
     margin-left: 0vw;
+    width: 100%;
   }
   @media (min-width: ${size.tablet}) {
     margin-left: 23.75vw;

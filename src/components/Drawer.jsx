@@ -329,6 +329,8 @@ export default function Drawer({
 const MobileDrawer = styled.div`
   background: linear-gradient(80deg, #172756 0%, #000000 100%);
   display: flex;
+  margin-bottom: 7vh;
+  z-index: 16;
   justify-content: space-between;
   align-items: baseline;
   width: 100vw;
@@ -337,6 +339,7 @@ const MobileDrawer = styled.div`
     appearance: none;
     visibility: hidden;
   }
+
 `
 
 // animation for closing and opening drawer

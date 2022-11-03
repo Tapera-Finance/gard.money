@@ -4,6 +4,7 @@ import syncIcon from "../assets/icons/sync_icon.png";
 import syncIconWhite from "../assets/icons/sync_icon_white.png";
 import AccountCard from "./AccountCard";
 import WalletConnect from "./WalletConnect";
+import {size, device} from "../styles/global";
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -12,18 +13,8 @@ import WalletConnect from "./WalletConnect";
 
 export default function Topbar({ contentName, setMainContent }) {
   return (
-    <div >
-      <TopBar
-        style={{
-          backgroundColor: "#172756",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingLeft: 36,
-          paddingRight: window.innerWidth * 0.077,
-        }}
-      >
+    <div style={{display: "flex"}}>
+      <TopBar>
         <div
           style={{
             display: "flex",
@@ -54,7 +45,19 @@ export default function Topbar({ contentName, setMainContent }) {
 // styled components for topbar
 const TopBar = styled.div`
   height: 96px;
-  background: #f9fafb;
+  background: #172756;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 36px;
+  padding-right: ${window.innerWidth * 0.077}px;
+  @media (min-width: ${size.tablet}) {
+    width: 50%;
+  }
+  @media (${device.tablet}) {
+    width: 100%;
+  }
 `;
 const TopBarText = styled.text`
   font-weight: 500;
