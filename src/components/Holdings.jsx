@@ -66,7 +66,7 @@ export default function Holdings() {
       liquidationPrice: cdp.liquidationPrice,
       collateral: formatToDollars((algo_price*cdp.collateral).toString(), true),
       debt: formatToDollars(cdp.debt.toString(), true),
-      committed: cdp.committed
+      net: formatToDollars((algo_price*cdp.collateral) - (cdp.debt), true),
     }
   })
 
@@ -76,7 +76,7 @@ export default function Holdings() {
     "Liquidation Price",
     "Collateral Value",
     "Debt Amount",
-    "Committed",
+    "Net Value"
   ];
 
   useEffect(() => {
