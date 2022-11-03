@@ -18,24 +18,23 @@ export default function LiveAuctions({
         overflow: "auto",
         display: "flex",
         flexDirection: "column",
-        border: "1px solid #80edff",
-        borderRadius: 10,
-        background: "#0f1733",
       }}
     >
       <div
         style={{
+          height: 70,
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
           display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          paddingLeft: 24,
-          marginBottom: 19,
-          marginTop: 19,
           justifyContent: "space-between",
+          alignItems: "center",
+          background: "#0E1834",
+          border: "1px solid #80edff",
+          borderBottom: "none"
         }}
       >
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ marginRight: 8 }}>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title>
               {selected === OPTIONS.LIVE_AUCTIONS
                 ? "Live Auctions"
@@ -75,7 +74,6 @@ export default function LiveAuctions({
 }
 
 const AuctionsDiv = styled.div`
-  background-color: #0f1733;
   border-radius: 10px;
 `;
 
@@ -96,13 +94,14 @@ const Title = styled.text`
 `;
 
 const CountContainer = styled.div`
-  background: #ffffff;
+  background: #172756;
   border-radius: 16px;
   padding: 2px 8px;
-`
+  height: 20px;
+`;
 
 const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
-  color: #999696;
-`
+  color: white;
+`;
