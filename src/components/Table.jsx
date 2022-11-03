@@ -195,7 +195,7 @@ export default function Table({
 const TableGrid = styled.table`
   width: 100%;
   border-collapse: separate;
-  border: 1px solid #80edff;
+  border: 1px solid white;
   border-spacing: 0px 3px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
