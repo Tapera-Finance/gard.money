@@ -412,7 +412,7 @@ const Position = styled.div`
 `
 const PositionInfo = styled.div`
     display: grid;
-    border: 1px solid #80edff;
+    border: 1px solid white;
     grid-template-columns:repeat(3, 30%);
     justify-content:center;
     align-content: center;

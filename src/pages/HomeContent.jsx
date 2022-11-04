@@ -516,7 +516,7 @@ const Container = styled.div`
   padding-top: 30px;
   width: 90%;
   padding-bottom: 30px;
-  border: 1px solid #80edff;
+  border: 1px solid white;
   border-radius: 10px;
   @media (${device.tablet}) {
     width: 100%;

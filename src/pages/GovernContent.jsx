@@ -333,7 +333,7 @@ export default function Govern() {
         <fieldset
           style={{
             borderRadius: 10,
-            border: "1px solid #80edff",
+            border: "1px solid white",
             width:"70%",
             transform: "rotate(180deg)",
             background: "#0E1834",
@@ -389,7 +389,7 @@ export default function Govern() {
           justifyContent: "space-between",
           alignItems: "center",
           background: "#0E1834",
-          border: "1px solid #80edff",
+          border: "1px solid white",
           borderBottom: "none"
         }}
       >

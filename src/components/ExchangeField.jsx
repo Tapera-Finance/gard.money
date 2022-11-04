@@ -103,7 +103,7 @@ const Container = styled.div`
   height: 100%;
   /* width: max-content; */
   border-radius: 8px;
-  border: 1px solid #80edff;
+  border: 1px solid white;
 `;
 
 const Text = styled.text`

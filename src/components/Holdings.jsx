@@ -8,12 +8,6 @@ import { getWallet, getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "./Positions";
 import { ids } from "../transactions/ids"
 
-const WalletTable = styled(Table)`
-  margin-top: 12px;
-`;
-const BorrowTable = styled(Table)`
-  margin-top: 12px;
-`;
 const SubToggle = styled(PageToggle)`
   float: right;
   background: transparent;
@@ -72,7 +66,7 @@ export default function Holdings() {
       liquidationPrice: cdp.liquidationPrice,
       collateral: formatToDollars((algo_price*cdp.collateral).toString(), true),
       debt: formatToDollars(cdp.debt.toString(), true),
-      committed: cdp.committed
+      net: formatToDollars((algo_price*cdp.collateral) - (cdp.debt), true),
     }
   })
 
@@ -82,7 +76,7 @@ export default function Holdings() {
     "Liquidation Price",
     "Collateral Value",
     "Debt Amount",
-    "Committed",
+    "Net Value"
   ];
 
   useEffect(() => {
@@ -93,47 +87,104 @@ export default function Holdings() {
     setBorrowTotal(((netBorrowSum*algo_price) - netBorrowDebt) / 1e6);
   }, []);
 
+  const [currentPrice, setPrice] = useState("Loading...");
+  const [selectedTab, setSelectedTab] = useState("one");
+
   const tabs = {
     // one: <div>stake</div>,
     one: (
-      <WalletTable
-        data={getAssets().map((x) => {
-          let temp = x;
-          temp.value = formatToDollars(x["value"]);
-          return temp;
-        })}
-        title="Wallet"
-        subtitle={`(${formatToDollars(walletTotal.toString())} Total Value)`}
-        countSubtitle={"LP Tokens excluded"}
-        columns={holdColumns}
-      />
+      <div style={{marginTop: 20}}>
+      <div
+        style={{
+          height: 70,
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: "#0E1834",
+          border: "1px solid #80edff",
+          borderBottom: "none"
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ marginLeft: 25, marginRight: 8 }}>
+            <Title>Wallet {`(${formatToDollars(walletTotal.toString())} Total Value)`}</Title>
+          </div>
+          <CountContainer>
+            <CountText>LP Tokens excluded</CountText>
+          </CountContainer>
+        </div>
+        <div style={{ marginRight: 20 }}>
+          <SubToggle
+            selectedTab={setSelectedTab}
+            tabs={{
+              // one: "Stake",
+              one: "Wallet",
+              two: "Borrows",
+            }}
+          />
+        </div>
+      </div>
+          <Table
+          data={getAssets().map((x) => {
+            let temp = x;
+            temp.value = formatToDollars(x["value"]);
+            return temp;
+          })}
+          columns={holdColumns}
+        />
+      </div>
     ),
     two: (
-      <BorrowTable
+      <div style={{marginTop: 20}}>
+      <div
+        style={{
+          height: 70,
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: "#0E1834",
+          border: "1px solid #80edff",
+          borderBottom: "none"
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ marginLeft: 25, marginRight: 8 }}>
+            <Title>Borrow Positions {`(${formatToDollars(borrowTotal.toString())} Total Value)`}</Title>
+          </div>
+          <CountContainer>
+            <CountText>{`${cdpData.length} Borrow Positions`}</CountText>
+          </CountContainer>
+        </div>
+        <div style={{ marginRight: 20 }}>
+          <SubToggle
+            selectedTab={setSelectedTab}
+            tabs={{
+              // one: "Stake",
+              one: "Wallet",
+              two: "Borrows",
+            }}
+          />
+        </div>
+      </div>
+      <Table
         data={cdpData}
-        title="Borrow Positions"
-        subtitle={`(${formatToDollars(borrowTotal.toString())}) Total Value`}
         columns={borrowColumns}
       />
+      </div>
     ),
   };
 
-  const [currentPrice, setPrice] = useState("Loading...");
-  const [selectedTab, setSelectedTab] = useState("one");
+  
   useEffect(async () => {
     let price = await getPrice();
     setPrice(price);
   }, []);
   return (
     <div>
-      <SubToggle
-        selectedTab={setSelectedTab}
-        tabs={{
-          // one: "Stake",
-          one: "Wallet",
-          two: "Borrows",
-        }}
-      />
       {tabs[selectedTab]}
     </div>
   );
@@ -150,3 +201,21 @@ var dummyAssets =
         },
       ]
     : getAssets();
+
+const Title = styled.text`
+  font-weight: 500;
+  font-size: 18px;
+`;
+
+const CountContainer = styled.div`
+  background: #172756;
+  border-radius: 16px;
+  padding: 2px 8px;
+  height: 20px;
+`;
+
+const CountText = styled.text`
+  font-weight: 500;
+  font-size: 12px;
+  color: white;
+`;

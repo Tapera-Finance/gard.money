@@ -295,7 +295,7 @@ const Container = styled.div`
   justify-content: center;
   height: 20%;
   width: 100%;
-  border: 1px solid #80deff;
+  border: 1px solid white;
   background: #0e1834;
   border-radius: 10px;
   justify-self: center;
