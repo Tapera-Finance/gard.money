@@ -59,13 +59,15 @@ const TopBar = styled.div`
   padding-right: ${window.innerWidth * 0.077}px;
   @media (min-width: ${size.tablet}) {
     width: 50%;
-    margin-left: 13.88vw;
+    /* margin-left: 13.88vw; */
   }
   @media (${device.tablet}) {
     width: 100%;
   }
   @media (${device.mobileL}) {
     flex-direction: column;
+    align-items: first-baseline;
+    margin-left: 25%;
   }
 `;
 const TopBarText = styled.text`

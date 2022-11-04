@@ -4,6 +4,7 @@ import Select from "./Select";
 import InputField from "./InputField";
 import Effect from "./Effect";
 import chevronDown from "../assets/chevron_down.png";
+import { size, device } from "../styles/global"
 
 // entire container for currency select, input field, text for displaying vals
 
@@ -40,6 +41,8 @@ export default function ExchangeField({
                   callback={onOptionSelect}
                 />
               </SelectContainer>
+              <TextContainer>
+
               <Text>{`You have
               ${
                 balances[
@@ -48,6 +51,7 @@ export default function ExchangeField({
                     : ["assetB"]
                 ].amount
               } to offer`}</Text>
+              </TextContainer>
               <InputContainer>
                 <ExchangeInput
                   id={ids[1]}
@@ -71,6 +75,8 @@ export default function ExchangeField({
                   callback={onOptionSelect}
                 />
               </SelectContainer>
+              <TextContainer>
+
               <Text>
                 {`You have
               ${
@@ -79,6 +85,7 @@ export default function ExchangeField({
                 ].amount
               } already`}
               </Text>
+              </TextContainer>
               <InputContainer>
                 <ExchangeInput
                   id={ids[1]}
@@ -104,6 +111,10 @@ const Container = styled.div`
   /* width: max-content; */
   border-radius: 8px;
   border: 1px solid white;
+  @media (${device.tablet}) {
+    border: 1px solid #7C52ff;
+    height: 9.8vh;
+  }
 `;
 
 const Text = styled.text`
@@ -112,7 +123,18 @@ const Text = styled.text`
   padding-left: 10px;
   padding-bottom: 10px;
   text-align: center;
+  @media (${device.tablet}) {
+    align-self: unset;
+    padding-bottom: unset;
+  }
 `;
+
+const TextContainer = styled.div`
+  @media (${device.tablet}) {
+    display: flex;
+    align-items: center;
+  }
+`
 
 const DollarEffect = styled(Effect)`
   color: #999696;
@@ -126,6 +148,11 @@ const InputContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  @media (${device.tablet}) {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 const ExchangeInput = styled(InputField)`
@@ -148,6 +175,10 @@ const ExchangeInput = styled(InputField)`
     color: #999696;
     background: #e8e8e8;
     text-decoration: none;
+  }
+  @media (${device.tablet}) {
+    width: 16vw;
+    font-size: small;
   }
 `;
 

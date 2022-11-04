@@ -27,6 +27,7 @@ import { formatToDollars } from "../../utils";
 import { gardpool, swap } from "../../transactions/swap";
 import { titleToToolTip } from "../../utils";
 import { VERSION } from "../../globals";
+import { size, device } from "../../styles/global"
 
 const initEffectState = {
   primaryAssetPriceAfterSwap: 0.0,
@@ -635,6 +636,9 @@ const DetailsContainer = styled.div`
   border: 1px solid white;
   margin-top: 10px;
   margin-bottom: 20vh;
+  @media (${device.tablet}) {
+    border: 1px solid #7C52ff;
+  }
 `;
 
 const Details = styled.div`
@@ -655,11 +659,17 @@ const ExchangeBar = styled.div`
   flex: 3;
   justify-content: space-between;
   margin: auto;
+  @media (${device.tablet}) {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 const ExchangeFields = styled(ExchangeField)`
   width: 40%;
   background: #0d1227;
+
 `;
 
 const SwapButton = styled.img`
