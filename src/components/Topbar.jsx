@@ -59,6 +59,7 @@ const TopBar = styled.div`
   padding-right: ${window.innerWidth * 0.077}px;
   @media (min-width: ${size.tablet}) {
     width: 50%;
+    margin-left: 13.88vw;
   }
   @media (${device.tablet}) {
     width: 100%;

@@ -153,8 +153,7 @@ const ContentContainer = styled.div`
     margin-left: 0vw;
   }
   @media (min-width: ${size.tablet}) {
-    /* margin-left: 23.75vw; */
-    /* padding-right:10vw; */
+    //
   }
 `
 

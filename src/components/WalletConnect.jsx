@@ -227,7 +227,7 @@ const WalletBarButton = styled(PrimaryButton)`
   margin: 0px 4px 0px 4px;
   @media (${device.mobileL}) {
     width: 100%;
-    margin: 4px 0px 4px 0px;
+    margin: 2px 0px 2px 0px;
   }
 `
 

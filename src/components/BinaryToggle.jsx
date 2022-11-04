@@ -15,7 +15,7 @@ export default function BinaryToggle({ optionA, optionB, selectedOption }) {
         style={{
           display: "flex",
           justifyContent: "space-evenly",
-          width: "30%",
+          alignItems: "center"
         }}
       >
         <Text
@@ -101,6 +101,8 @@ const Box = styled.div`
 
 const Text = styled.text`
   font-weight: 500px;
+  text-align: center;
+  margin: 0px 2px 0px 2px;
   color: #999696;
   cursor: pointer;
   ${(props) =>
