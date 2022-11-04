@@ -103,7 +103,7 @@ export default function Holdings() {
           justifyContent: "space-between",
           alignItems: "center",
           background: "#0E1834",
-          border: "1px solid #80edff",
+          border: "1px solid white",
           borderBottom: "none"
         }}
       >
@@ -147,7 +147,7 @@ export default function Holdings() {
           justifyContent: "space-between",
           alignItems: "center",
           background: "#0E1834",
-          border: "1px solid #80edff",
+          border: "1px solid white",
           borderBottom: "none"
         }}
       >
