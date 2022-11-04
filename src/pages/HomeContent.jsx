@@ -233,7 +233,7 @@ export default function HomeContent() {
         flexDirection: "column",
       }}
     >
-      <div style={{display: "flex", flexDirection: "column"}}>
+      <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
       {/*
       <Banner
       >
@@ -497,7 +497,7 @@ const Link = styled.text`
 
 const Banner = styled.div`
   display: flex;
-  width: 75%;
+  width: 90%;
   flex-direction: row;
   border-radius: 10px;
   justify-content: space-between;
@@ -505,19 +505,22 @@ const Banner = styled.div`
   background: linear-gradient(to right, #80deff 65%, #ffffff);
   padding: 8px 6px 10px 8px;
   margin: 8px;
+  /* @media (${device.tablet}) {
+    width: 100%;
+  } */
 `
 
 
 const Container = styled.div`
   background: #0E1834;
   padding-top: 30px;
-  width: 75%;
+  width: 90%;
   padding-bottom: 30px;
   border: 1px solid #80edff;
   border-radius: 10px;
-  /* @media (${device.tablet}) {
+  @media (${device.tablet}) {
     width: 100%;
-  } */
+  }
 `;
 
 const Items = styled.div`

@@ -21,6 +21,7 @@ export default function Topbar({ contentName, setMainContent }) {
             flexDirection: "row",
             alignItems: "center",
             height: "100%",
+            justifyContent: "flex-end"
           }}
         >
           <div style={{ marginRight: 9 }}>
@@ -34,8 +35,9 @@ export default function Topbar({ contentName, setMainContent }) {
           </SimplePressable>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ paddingRight: 20 }}></div>
+          <div>
           <AccountCard />
+          </div>
         </div>
       </TopBar>
     </div>
@@ -43,6 +45,9 @@ export default function Topbar({ contentName, setMainContent }) {
 }
 
 // styled components for topbar
+
+
+
 const TopBar = styled.div`
   height: 96px;
   background: #172756;
@@ -57,6 +62,9 @@ const TopBar = styled.div`
   }
   @media (${device.tablet}) {
     width: 100%;
+  }
+  @media (${device.mobileL}) {
+    flex-direction: column;
   }
 `;
 const TopBarText = styled.text`

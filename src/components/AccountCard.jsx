@@ -14,6 +14,7 @@ import PrimaryButton from "./PrimaryButton";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import WalletConnect from "./WalletConnect";
+import { size, device } from "../styles/global"
 
 const theme = createTheme({
   components: {
@@ -53,49 +54,45 @@ export default function AccountCard() {
   return (
     <div>
       <ThemeProvider theme={theme}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-evenly",
-          }}
-        >
+        <BtnContainer>
           <WalletConnect />
 
           {walletAddress ? (
-            <IconButton
-              onClick={handleClick}
-              size="small"
-              sx={{ ml: 2 }}
-              aria-controls={open ? "account-menu" : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? "true" : undefined}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-evenly",
-                }}
-              >
-                <AvatarBox
-                  style={{
-                    background: "#0f1733",
-                    border: "1px solid #01d1ff",
-                    borderRadius: "20px",
-                    width: "40px",
-                    height: "40px",
-                    padding: "2px 0px 2px 8px",
-                  }}
+            <IconButtonContainer>
+              <IconButton
+                onClick={handleClick}
+                size="small"
+                sx={{ ml: 2 }}
+                aria-controls={open ? "account-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
                 >
-                  <GardIcon src={gardIcon} />
-                </AvatarBox>
-              </div>
-            </IconButton>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                  }}
+                  >
+                  <AvatarBox
+                    style={{
+                      background: "#0f1733",
+                      border: "1px solid #01d1ff",
+                      borderRadius: "20px",
+                      width: "40px",
+                      height: "40px",
+                      padding: "2px 0px 2px 8px",
+                    }}
+                    >
+                    <GardIcon src={gardIcon} />
+                  </AvatarBox>
+                </div>
+              </IconButton>
+            </IconButtonContainer>
           ) : (
             <></>
           )}
-        </div>
+        </BtnContainer>
         <Menu
           anchorEl={anchorEl}
           id="account-menu"
@@ -176,6 +173,15 @@ export default function AccountCard() {
   );
 }
 
+const BtnContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  @media (${device.mobileL}) {
+    display: unset;
+  }
+`
+
 const AvatarBox = styled.div`
   display: flex;
   /* justify-content: space-evenly; */
@@ -192,3 +198,11 @@ const GardIcon = styled.img`
   margin-right: 8px;
 `;
 const Text = styled.text``;
+
+const IconButtonContainer = styled.div`
+display: flex;
+align-items: center;
+  @media (max-width: 542px) {
+    visibility: hidden;
+  }
+`
