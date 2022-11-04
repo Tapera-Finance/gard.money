@@ -404,7 +404,7 @@ export default function SwapDetails() {
 
   return (
     <div>
-        <div>
+        <SwapContainer>
           {loading ? <LoadingOverlay text={loadingText} /> : <></>}
             {!swapEnabled ? (<div style={{display: "flex", justifyContent: "center", textAlign: "center"}}><TestAlert>Swap only available on Main Net</TestAlert></div>)  : <></>}
           <ExchangeBar>
@@ -524,7 +524,7 @@ export default function SwapDetails() {
               </Details>
             </DetailsContainer>
           </div>
-        </div>
+        </SwapContainer>
 
       {/* : (
         <div
@@ -554,6 +554,12 @@ export default function SwapDetails() {
     </div>
   );
 }
+
+const SwapContainer = styled.div`
+  @media (min-width: ${size.tablet}) {
+    margin-left: 2vw;
+  }
+`
 
 const SlippageEffect = styled.div`
 align-self: center;
@@ -651,6 +657,9 @@ const Details = styled.div`
   margin: auto;
   justify-content: space-around;
   align-items: flex-start;
+  @media (${device.tablet}) {
+    align-items: end;
+  }
 `;
 
 const ExchangeBar = styled.div`
@@ -659,7 +668,7 @@ const ExchangeBar = styled.div`
   flex: 3;
   justify-content: space-between;
   margin: auto;
-  @media (${device.tablet}) {
+  @media (${device.laptop}) {
     flex-direction: column;
     justify-content: center;
     align-items: center;

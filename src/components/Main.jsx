@@ -128,7 +128,7 @@ export default function Main(WrappedComponent, title) {
           style={{ background: "#172756" }}
         />
         <ContentContainer isOpen={isOpen}>
-          <div
+          <Wrapper
             style={{
               paddingLeft: "6.9444444444444vw",
               paddingRight: "6.9444444444444vw",
@@ -138,12 +138,22 @@ export default function Main(WrappedComponent, title) {
           >
 
             <WrappedComponent />
-          </div>
+          </Wrapper>
         </ContentContainer>
       </MainContentDiv>
     </div>
   );
 }
+
+const Wrapper = styled.div`
+  padding-left: 6.9444444444444vw;
+  padding-right: 6.9444444444444vw;
+  padding-top: 40px;
+  flex: 1;
+  @media (min-width: ${size.tablet}) {
+    padding-left: 20px;
+  }
+`
 
 const ContentContainer = styled.div`
   display: flex;
@@ -171,12 +181,12 @@ const MainContentDiv = styled.div`
   animation-fill-mode: forwards;
   color: white;
   overflow-x: hidden;
-  ${(props) => css`
+  /* ${(props) => css`
   animation-direction: ${!props.isOpen ? "normal" : "reverse"};
   animation-name: ${props.canAnimate && window.innerWidth > 900
       ? expandMainContentAnimation
       : ""};
-  `}
+  `} */
   @media (${device.tablet}) {
     margin-left: 0vw;
     width: 100%;

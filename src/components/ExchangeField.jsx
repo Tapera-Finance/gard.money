@@ -108,12 +108,15 @@ const Container = styled.div`
   background: #0f1733;
   justify-content: space-between;
   height: 100%;
-  /* width: max-content; */
   border-radius: 8px;
   border: 1px solid white;
   @media (${device.tablet}) {
     border: 1px solid #7C52ff;
     height: 9.8vh;
+    width: 90vw;
+  }
+  @media (min-width: ${size.tablet}) and (${device.laptop}) {
+    width: 60vw;
   }
 `;
 
@@ -123,6 +126,7 @@ const Text = styled.text`
   padding-left: 10px;
   padding-bottom: 10px;
   text-align: center;
+  width: 80px;
   @media (${device.tablet}) {
     align-self: unset;
     padding-bottom: unset;
@@ -130,8 +134,9 @@ const Text = styled.text`
 `;
 
 const TextContainer = styled.div`
+  display: flex;
+  align-items: flex-end;
   @media (${device.tablet}) {
-    display: flex;
     align-items: center;
   }
 `

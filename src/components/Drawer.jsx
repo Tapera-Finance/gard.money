@@ -341,26 +341,11 @@ const MobileDrawer = styled.div`
 
 `
 
-// animation for closing and opening drawer
-const closeDrawerAnimation = keyframes`
-  0% {left: 0vw;}
-  100% {left: ${`${window.innerWidth < 900 ? -101 : -20}vw`}}
-`;
-
 const DrawerDiv = styled.div`
   background: linear-gradient(80deg, #172756 0%, #000000 100%);
   height: 101vh;
   z-index: 15;
   overflow-y: auto;
-  ${(props) =>
-    props.animate &&
-    css`
-      animation-direction: ${!props.open ? "normal" : "reverse"};
-      animation-name: ${props.animate ? closeDrawerAnimation : ""};
-      animation-duration: 0.1s;
-      animation-iteration-count: 1;
-      animation-fill-mode: forwards;
-    `}
 
   // if screen is smaller than tablet, hide drawer until opened at full width
   @media (${device.tablet}) {
