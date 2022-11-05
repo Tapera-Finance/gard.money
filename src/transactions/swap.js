@@ -153,7 +153,7 @@ export async function swap(
   const signedGroup = await signGroup(info, txns);
   setLoadingStage("Waiting for Confirmation...");
 
-  const stxns = [signedGroup[0].blob, signedGroup[1].blob];
+  const stxns = !opted ? [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob] : [signedGroup[0].blob, signedGroup[1].blob];
   const response = await sendTxn(
     stxns,
     "Successfully swapped " +
