@@ -70,7 +70,7 @@ export default function Main(WrappedComponent, title) {
         width: window.innerWidth,
         height: window.innerHeight,
       });
-    }, 300)
+    }, 1000)
 
     // Add event listener
     window.addEventListener("resize", debouncedHandleResize);

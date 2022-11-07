@@ -20,6 +20,7 @@ import PrimaryButton from "../PrimaryButton";
 import { formatToDollars } from "../../utils";
 import { stake, unstake, getStakingAPY, getAccruedRewards } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
+import { size, device } from "../../styles/global"
 
 // asset types: 0 === GARD, 1 === ALGO
 
@@ -45,11 +46,16 @@ export const checkStaked = async () => {
   return ((getNLStake()/1000000)+parseFloat(accrued)).toFixed(3) > 0
 }
 
+const mobileView = () => {
+  return window.innerWidth < parseInt(size.tablet)
+}
+
 export default function StakeDetails() {
   const walletAddress = useSelector((state) => state.wallet.address);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(mobileView());
   const [assetType, setAssetType] = useState(0);
   const [stakeAmount, setStakeAmount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
@@ -127,7 +133,7 @@ export default function StakeDetails() {
   return (
     <div>
       {loading ? (<LoadingOverlay text={loadingText} close={()=>{setLoading(false);}} />) : <></>}
-      <div style={{display: "flex", flexDirection: "column"}} >
+      <div style={{display: "flex", flexDirection: "column", alignItems: "center"}} >
       <Banner>
       <div
           style={{
@@ -172,16 +178,20 @@ export default function StakeDetails() {
       </div>
       <Container>
         <FirstRow>{"Staking Pool (Auto-Compounding)"}</FirstRow>
+        <SecondThirdCondensed>
+
         <SecondRow>
           <Heading>TVL</Heading>
           <Heading>Type</Heading>
           <Heading>Duration</Heading>
           <Heading>APR</Heading>
-          <Heading>Stake Amount</Heading>
+          {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
+          <StakeHeading>Stake Amount</StakeHeading>
+
         </SecondRow>
         <ThirdRow>
           <Heading>{`$${NL_TVL}`}</Heading>
-          <div>
+          <TypeCont>
             <Img src={gardLogo}></Img>
             <Arrow src={arrowIcon}></Arrow>
             <GardImg src={gardLogo}></GardImg>
@@ -190,7 +200,7 @@ export default function StakeDetails() {
               setAsset={setAssetType}
               setOpen={setOptionsOpen}
             />
-          </div>
+          </TypeCont>
           <Heading>No-Lock</Heading>
           <Heading>{`${(NLAPY).toFixed(3)}%`}</Heading>
           <StakeBox>
@@ -210,7 +220,27 @@ export default function StakeDetails() {
               <Result>{formatToDollars(balance)}</Result>
             </EffectContainer>
           </StakeBox>
+
         </ThirdRow>
+        </SecondThirdCondensed>
+        <MobileStakeBox>
+          <MobileHeader>Stake Amount:</MobileHeader>
+          <MobileStakeContainer><MobileStakeInput
+              id="stake-amt"
+              placeholder="Enter Amount"
+              min="0.0"
+              step=".01"
+              type="number"
+              value={stakeAmount}
+              callback={handleInput}
+            />
+            <EffectContainer>
+              <MaxBtn onClick={handleMaxStake}>
+                +MAX
+              </MaxBtn>
+              <Result>{formatToDollars(balance)}</Result>
+            </EffectContainer></MobileStakeContainer>
+        </MobileStakeBox>
         <FourthRow>
           <Effect title="Your Stake" val={`${((noLock/1000000)+parseFloat(accrued)).toFixed(3)} GARD`} hasToolTip={true} />
           <Effect
@@ -300,6 +330,9 @@ const Container = styled.div`
   border-radius: 10px;
   justify-self: center;
   margin-top: 25px;
+  @media (${device.tablet}) {
+    width: 80vw;
+  }
 `;
 
 const FirstRow = styled.div`
@@ -319,18 +352,99 @@ const SecondRow = styled.div`
   height: 18%;
   // margin: 22
   padding: 22px;
+  @media (${device.tablet}) {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+  }
 `;
 const ThirdRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   justify-content: center;
   margin: 22px 22px 4px 22px;
+  @media (${device.tablet}) {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+  }
 `;
+
+const SecondThirdCondensed = styled.div`
+  @media (${device.tablet}) {
+    display: flex;
+    flex-direction: row;
+  }
+`
+
+const TypeCont = styled.div`
+  @media (${device.tablet}) {
+    transform: scale(0.8);
+    margin-top: -8px;
+  }
+`
+const MobileStakeBox = styled.div`
+  visibility: hidden;
+  @media (${device.tablet}) {
+    visibility: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+`
+const MobileHeader = styled.div`
+    visibility: hidden;
+  @media (${device.tablet}) {
+    visibility: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+`
+
+const MobileStakeContainer = styled.div`
+    visibility: hidden;
+  @media (${device.tablet}) {
+    visibility: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+`
+
+const MobileStakeInput = styled(InputField)`
+  visibility: hidden;
+  width: 12vw;
+  height: 6vh;
+  border: 1px transparent;
+  text-decoration-color: #7c52ff;
+  text-decoration-thickness: 2px;
+  font-size: 14pt;
+  color: #ffffff;
+  text-align: center;
+  background: #0d122710;
+  margin: 10px 10px 10px 10px;
+
+  &:active {
+    appearance: none;
+  }
+  &:focus {
+    appearance: none;
+  }
+  @media (${device.tablet}) {
+    visibility: visible;
+  }
+`
+
 const StakeBox = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: row;
   align-items: center;
+  @media (${device.tablet}) {
+    flex-direction: column;
+    visibility: hidden;
+  }
 `;
 const FourthRow = styled.div`
   display: grid;
@@ -365,6 +479,11 @@ const Heading = styled.text`
   font-weight: 500;
   margin: 4px;
 `;
+const StakeHeading = styled.text`
+  @media (${device.tablet}) {
+    visibility: hidden;
+  }
+`
 
 const StakeInput = styled(InputField)`
   width: 12vw;
@@ -383,6 +502,9 @@ const StakeInput = styled(InputField)`
   }
   &:focus {
     appearance: none;
+  }
+  @media (${device.tablet}) {
+    visibility: hidden;
   }
 `;
 
