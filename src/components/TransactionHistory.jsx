@@ -8,6 +8,7 @@ import { loadDbActionAndMetrics, queryUser } from "./Firebase";
 import { onSnapshot } from "firebase/firestore";
 import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png"
+import { device } from "../styles/global"
 
 function mAlgosToAlgos(num) {
   return num / 1000000;
@@ -164,7 +165,7 @@ export default function TransactionHistory() {
   }, [documents]);
 
   return (
-    <div>
+    <TxnHistContainer>
       <div
         style={{
           display: "flex",
@@ -172,6 +173,7 @@ export default function TransactionHistory() {
           alignContent: "center",
           paddingLeft: 24,
           marginBottom: 19,
+          marginTop: 20
         }}
       >
         <div style={{ marginRight: 8, fontWeight: "bolder" }}>
@@ -187,7 +189,7 @@ export default function TransactionHistory() {
           </CountText>
         </CountContainer>
       </div>
-      <div style={{ marginBottom: 64 }}>
+      <GridBox>
         <TableGrid>
           <tbody>
             <HeaderRow>
@@ -303,10 +305,27 @@ export default function TransactionHistory() {
         ) : (
           <></>
         )}
-      </div>
-    </div>
+      </GridBox>
+    </TxnHistContainer>
   );
 }
+
+const GridBox = styled.div`
+  margin-bottom: 64px;
+  @media (${device.tablet}) {
+    align-self: center;
+    transform: scale(0.8);
+    margin-top: -70px;
+  }
+`
+
+const TxnHistContainer = styled.div`
+  @media (${device.tablet}) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+`
 
 const PaginationDiv = styled.div`
   display: flex;
@@ -315,9 +334,7 @@ const PaginationDiv = styled.div`
 
 // styled components
 const TableGrid = styled.table`
-  /* border-collapse: collapse; */
   border: 1px transparent;
-  /* border-radius: 6px; */
   width: 100%;
   margin: 10px;
   border-collapse: separate;
@@ -341,6 +358,15 @@ const TableGrid = styled.table`
   /* bottom-right border-radius */
   table tr:last-child td:last-child {
     border-bottom-right-radius: 6px;
+  }
+  @media (${device.tablet}) {
+    transform: scale(0.9);
+    margin-top: -18px;
+  }
+  @media (${device.mobileL}) {
+    transform: scale(0.8), translateX(-30px);
+    margin-top: -18px;
+
   }
 `;
 
