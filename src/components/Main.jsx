@@ -146,6 +146,10 @@ const Wrapper = styled.div`
     padding-left: 6.9444444444444vw;
     padding-right: 6.9444444444444vw;
   }
+  @media (${device.mobileM}) {
+    padding-left: 0vw;
+    width: 100%;
+  }
 `
 
 const ContentContainer = styled.div`
