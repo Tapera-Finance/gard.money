@@ -147,7 +147,6 @@ export default function AccountContent() {
       </AccountContainer>
       <div
         style={{
-          maxWidth: window.innerWidth - 0.14 * window.innerWidth,
           overflow: "auto",
           marginBottom: 8
         }}
