@@ -181,7 +181,7 @@ export default function Drawer({
                       } else if (["Actions"].includes(v.name) && !dev) {
                         dispatch(setAlert("This page is under construction!"));
                       }  else {
-                        if (window.innerWidth < 900) toggleOpenStatus();
+                        if (window.innerWidth < parseInt(size.tablet)) toggleOpenStatus();
                         navigate(v.route);
                       }
                     }}

@@ -58,7 +58,7 @@ const TopBar = styled.div`
   padding-left: 36px;
   padding-right: ${window.innerWidth * 0.077}px;
   @media (min-width: ${size.tablet}) {
-    width: 50%;
+    width: 100%;
     margin-left: 8.88vw;
   }
   @media (${device.tablet}) {
@@ -73,6 +73,9 @@ const TopBar = styled.div`
 const TopBarText = styled.text`
   font-weight: 500;
   font-size: 20px;
+  @media (${device.tablet}) {
+    margin: 4px 0px 12px 0px;
+  }
 `;
 const SimplePressable = styled.div`
   cursor: pointer;
