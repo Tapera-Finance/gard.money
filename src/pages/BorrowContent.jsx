@@ -27,6 +27,7 @@ import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
 import Select from "../components/Select";
 import { ids } from "../transactions/ids"
+import { size, device } from "../styles/global"
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
@@ -630,11 +631,6 @@ const Link = styled.text`
   font-size: 10pt;
   color: #172756;
   text-align: left;
-  /* margin-right: 12px; */
-  /* &:hover {
-    color: #03a0ff;
-    cursor: pointer;
-  } */
 `;
 
 const V1Link = styled.text`
@@ -701,6 +697,9 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 49%);
   column-gap: 2%;
+  @media (${device.tablet}) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const SubContainer = styled.div`

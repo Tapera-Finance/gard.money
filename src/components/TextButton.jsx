@@ -1,14 +1,15 @@
 import React from "react";
 import styled, { css } from "styled-components";
+import { size, device } from "../styles/global"
 
 /**
  * @prop {string} text - Text to be rendered inside the button
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function TextButton({ text, onClick, positioned, governPage }) {
+export default function TextButton({ text, onClick, positioned, governPage, className }) {
   return (
-    <ButtonText positioned={positioned} governPage={governPage} onClick={() => onClick()}>
+    <ButtonText className={className} positioned={positioned} governPage={governPage} onClick={() => onClick()}>
       {text}
     </ButtonText>
   );
@@ -38,4 +39,14 @@ const ButtonText = styled.text`
       bottom: 20px;
       margin: auto;
     `}
+
+    @media (${device.mobileL}) {
+      transform: scale(0.9)
+    }
+    @media (${device.mobileM}) {
+      transform: scale(0.85)
+    }
+    @media (${device.mobileS}) {
+      transform: scale(0.8)
+    }
 `;

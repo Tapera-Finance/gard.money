@@ -16,6 +16,8 @@ import RepayPosition from "./RepayPosition";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import { ids } from "../transactions/ids"
+import { device, size } from "../styles/global";
+import "../styles/mobile.css";
 
 const axios = require("axios");
 
@@ -249,7 +251,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
         }
       }, [manageUpdate])
 
-    return <div>
+    return <PositionContainer>
       {loading ? <LoadingOverlay
       text={loadingText}
       close={()=>{
@@ -257,9 +259,9 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
       }}
       /> : <></>}
         <Header>
-            <b>Your Positions</b>
-            <b style={{textAlign: "center"}}>Governance Rewards</b>
-            <b style={{textAlign: "center"}}>CDP Health</b>
+            <b className="m-positions_row_1" >Your Positions</b>
+            <b className="m-positions_row_2" style={{textAlign: "center"}}>Governance Rewards</b>
+            <b className="m-positions_row_3" style={{textAlign: "center"}}>CDP Health</b>
         </Header>
         <Container>
             {loadedCDPs.length && loadedCDPs.length > 0 ?
@@ -269,12 +271,12 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
             <Position key={cdp.id.toString() + idx.toString()}>
                 {/* <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div> */}
                 <PositionInfo>
-                    <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
+                    <PositionSupplyBorrow className="m_positions_item m-positions_box_1">
                         <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} {typeCDP[cdp.collateralType]}</div>
                         <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", rowGap: 20, alignSelf:"center", textAlign:"center", marginBottom: 10}}>APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
-                    <div style={{display: "flex", flexDirection: "column"}}>
+                    </PositionSupplyBorrow>
+                    <div className="m_positions_item m-positions_box_2" >APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
+                    <div className="m_positions_item m-positions_box_3" style={{display: "flex", flexDirection: "column"}}>
                         <div style={{display: "flex", justifyContent: "space-between"}}>
                             <div> Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,cdp.asaID,true,)})`} </div>
                             <div>Liquidation Price (${((1.15 * mAlgosToAlgos(cdp.debt)) / mAlgosToAlgos(cdp.collateral)).toFixed(4)})</div>
@@ -294,7 +296,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
 
                     </div>
                 </PositionInfo>
-                <TextButton
+                <ManageCollapse
                  positioned={true}
                  text={cdp.id + cdp.asaID === currentCDP ? "Collapse" : "Manage Position"}
                  onClick={cdp.id + cdp.asaID === currentCDP ? () => {
@@ -305,7 +307,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                  }
                 }
                  />
-                {cdp.id + cdp.asaID === currentCDP ? <div>
+                {cdp.id + cdp.asaID === currentCDP ? <ToggleContainer>
                     <PageToggle selectedTab={setSelectedTab} tabs={tabs}/>
                     {selectedTab === "one" ? <BorrowMore supplyPrice={supplyPrice} collateral={cAlgos} mAsset={mGARD} setCollateral={setCollateral} minted={setGARD} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxMint={maxGARD} apr={apr} manageUpdate={setManageUpdate} />
                     : selectedTab === "two" ? <SupplyMore collateralType={cdp.collateralType} supplyPrice={supplyPrice} cAsset={cAlgos} collateral={setCollateral} minted={setMinted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} details={details} maxSupply={maxSupply} apr={apr} manageUpdate={setManageUpdate}/>
@@ -362,15 +364,56 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         }}
                         />
                     </div>}
-                </div> : <></>}
+                </ToggleContainer> : <></>}
             </Position>
              )
             })
             : null
         }
         </Container>
-    </div>
+    </PositionContainer>
 }
+
+const ManageCollapse = styled(TextButton)`
+  @media (${device.mobileL}) {
+      transform: scale(0.9) translateY(-30px);
+    }
+    @media (${device.mobileM}) {
+      transform: scale(0.85) translateY(-35px);
+    }
+    @media (${device.mobileS}) {
+      transform: scale(0.8) translateY(-40px);
+    }
+`
+
+const ToggleContainer = styled.div`
+  @media (${device.tablet}) {
+    transform: scale(0.9);
+  }
+`
+
+const PositionSupplyBorrow = styled.div`
+  display: flex;
+  flex-direction: column;
+  @media (min-width: ${size.tablet}) {
+    row-gap: 20;
+  }
+
+  @media (${device.tablet}) {
+    row-gap: 6px;
+    margin: 6px 0px 6px 0px;
+    border-radius: 10px;
+    padding: 20px;
+  }
+`
+
+const PositionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* flex: 1 1 0px; */
+  width: auto;
+`
 
 const Header = styled.div`
     display: grid;
@@ -379,6 +422,26 @@ const Header = styled.div`
     align-content: center;
     font-size: 20px;
     margin-top: 50px;
+    @media (${device.tablet}) {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      align-items: flex-start;
+      border: 1px solid white;
+      width: 400px;
+      border-radius: 10px;
+      padding: 8px;
+      /* padding: 4px 10px 4px 10px; */
+    }
+    @media (${device.mobileL}) {
+      width: 350px;
+    }
+    @media (${device.mobileM}) {
+      width: 280px;
+    }
+    @media (${device.mobileS}) {
+      width: 240px;
+    }
 `
 const SalesHeader = styled.div`
     display: grid;
@@ -409,6 +472,12 @@ const Container = styled.div`
 
 const Position = styled.div`
     position: relative;
+    @media (${device.tablet}) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
 `
 const PositionInfo = styled.div`
     display: grid;
@@ -420,6 +489,20 @@ const PositionInfo = styled.div`
     border-radius: 10px;
     font-size: 18px;
     padding: 40px 0px 40px;
+    @media (${device.tablet}) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4px 10px 4px 10px;
+      max-width: 432px;
+    }
+
+    @media (${device.mobileM}) {
+      transform: scale(0.9);
+    }
+    @media (${device.mobileS}) {
+      transform: scale(0.85);
+    }
 `
 const SliderRange = styled.div`
     display: flex;

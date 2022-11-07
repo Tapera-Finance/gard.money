@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
+import { device } from "../styles/global";
 
 export default function PageToggle({ selectedTab, tabs, className }) {
   const [one, setOne] = useState(true);
@@ -79,7 +80,7 @@ export default function PageToggle({ selectedTab, tabs, className }) {
 const Box = styled.div`
   display: flex;
   border: 1px transparent;
-  height: 30px;
+  /* height: 30px; */
   max-width: max-content;
   text-align: center;
   justify-content: center;
@@ -111,10 +112,17 @@ const Bar = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 40px;
-  min-width: 74px;
+  /* min-height: 40px;
+  min-width: 74px; */
   max-width: max-content;
   background: #0f1733;
   border-radius: 6px;
   margin: auto;
+  @media (${device.mobileL}) {
+    transform: scale(0.9);
+  }
+  @media (${device.mobileM}) {
+    transform: scale(0.8);
+
+  }
 `;
