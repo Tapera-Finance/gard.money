@@ -66,6 +66,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
                 positioned={true}
                 text="Repay"
                 onClick={ async () => {
+                    if (repayment === "") return
                     setLoading(true);
                     try {
                         let res = await repayCDP(

@@ -222,6 +222,7 @@ export default function SupplyCDP({
             positioned={true}
             text="Supply More"
             onClick={async () => {
+              if (additionalSupply === "") return
               setLoading(true);
               try {
                 let res = await addCollateral(cdp.id, additionalSupply, commitChecked, cdp.asaID);

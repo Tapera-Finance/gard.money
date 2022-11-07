@@ -161,6 +161,7 @@ export default function BorrowCDP({
             positioned={true}
             text="Borrow More"
             onClick={async () => {
+              if (additionalBorrow === "") return
               setLoading(true);
               try {
                 let res = await mint(cdp.id, additionalBorrow, cdp.asaID);
