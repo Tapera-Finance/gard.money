@@ -128,15 +128,7 @@ export default function Main(WrappedComponent, title) {
           style={{ background: "#172756" }}
         />
         <ContentContainer isOpen={isOpen}>
-          <Wrapper
-            style={{
-              paddingLeft: "6.9444444444444vw",
-              paddingRight: "6.9444444444444vw",
-              paddingTop: 40,
-              flex: 1,
-            }}
-          >
-
+          <Wrapper>
             <WrappedComponent />
           </Wrapper>
         </ContentContainer>
@@ -146,12 +138,13 @@ export default function Main(WrappedComponent, title) {
 }
 
 const Wrapper = styled.div`
-  padding-left: 6.9444444444444vw;
-  padding-right: 6.9444444444444vw;
+  padding-left: 1.9444444444444vw;
+  padding-right: 1.9444444444444vw;
   padding-top: 40px;
   flex: 1;
   @media (min-width: ${size.tablet}) {
-    padding-left: 20px;
+    padding-left: 6.9444444444444vw;
+    padding-right: 6.9444444444444vw;
   }
 `
 
