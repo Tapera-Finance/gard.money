@@ -223,6 +223,8 @@ export default function StakeDetails() {
 
         </ThirdRow>
         </SecondThirdCondensed>
+        <MobileGrid>
+
         <MobileStakeBox>
           <MobileHeader>Stake Amount:</MobileHeader>
           <MobileStakeContainer><MobileStakeInput
@@ -234,13 +236,19 @@ export default function StakeDetails() {
               value={stakeAmount}
               callback={handleInput}
             />
-            <EffectContainer>
+            </MobileStakeContainer>
+        </MobileStakeBox>
+            <MobileEffectContainer>
               <MaxBtn onClick={handleMaxStake}>
                 +MAX
               </MaxBtn>
               <Result>{formatToDollars(balance)}</Result>
-            </EffectContainer></MobileStakeContainer>
-        </MobileStakeBox>
+            </MobileEffectContainer>
+        </MobileGrid>
+        <MobileActionBar>
+        <MobileStakeBtn text="Stake" blue={true} onClick={handleStake} />
+        <MobileUnstakeBtn text="Unstake" blue={true} onClick={handleUnstake} />
+        </MobileActionBar>
         <FourthRow>
           <Effect title="Your Stake" val={`${((noLock/1000000)+parseFloat(accrued)).toFixed(3)} GARD`} hasToolTip={true} />
           <Effect
@@ -255,8 +263,8 @@ export default function StakeDetails() {
           />
           <div style={{display: "flex", flexDirection: "row", alignSelf: "baseline"}}>
 
-          <PrimaryButton text="Stake" blue={true} onClick={handleStake} />
-          <PrimaryButton text="Unstake" blue={true} onClick={handleUnstake} />
+          <StakeBtn text="Stake" blue={true} onClick={handleStake} />
+          <UnstakeBtn text="Unstake" blue={true} onClick={handleUnstake} />
           </div>
         </FourthRow>
       </Container>
@@ -293,6 +301,114 @@ const AssetOptions = ({ open, setAsset, setOpen }) => {
     </div>
   );
 };
+
+// Mobile Components
+const MobileGrid = styled.div`
+  visibility: hidden;
+  height: 0px;
+  @media (${device.tablet}) {
+    visibility: visible;
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+    height: 100%;
+  }
+`
+
+const MobileStakeBox = styled.div`
+  visibility: hidden;
+  @media (${device.tablet}) {
+    visibility: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+`
+const MobileHeader = styled.div`
+    visibility: hidden;
+  @media (${device.tablet}) {
+    visibility: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 18px 0px 6px 0px;;
+    text-decoration: dotted underline;
+
+  }
+`
+
+const MobileStakeContainer = styled.div`
+    visibility: hidden;
+    height: 0px;
+  @media (${device.tablet}) {
+    visibility: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+`
+
+const MobileStakeInput = styled(InputField)`
+  visibility: hidden;
+  width: 22vw;
+  height: 6vh;
+  border: 1px transparent;
+  text-decoration-color: #7c52ff;
+  text-decoration-thickness: 2px;
+  font-size: 14pt;
+  color: #ffffff;
+  text-align: center;
+  background: #0d122710;
+  margin: 10px 10px 10px 10px;
+
+  &:active {
+    appearance: none;
+  }
+  &:focus {
+    appearance: none;
+  }
+  @media (${device.tablet}) {
+    visibility: visible;
+  }
+`
+const MobileStakeBtn = styled(PrimaryButton)`
+  visibility: hidden;
+  @media (${device.tablet}) {
+    visibility: visible;
+  }
+`
+const MobileUnstakeBtn = styled(PrimaryButton)`
+visibility: hidden;
+  @media (${device.tablet}) {
+    visibility: visible;
+  }
+`
+
+const MobileActionBar = styled.div`
+visibility: hidden;
+height: 0px;
+  @media (${device.tablet}) {
+    visibility: visible;
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+    height: 100%;
+  }
+`
+
+// Styled Components
+
+const StakeBtn = styled(PrimaryButton)`
+  @media (${device.tablet}) {
+    visibility: hidden;
+  }
+`
+const UnstakeBtn = styled(PrimaryButton)`
+  @media (${device.tablet}) {
+    visibility: hidden;
+  }
+`
+
 
 const Link = styled.text`
   text-decoration: none;
@@ -350,7 +466,6 @@ const SecondRow = styled.div`
   justify-content: center;
   background: #172756;
   height: 18%;
-  // margin: 22
   padding: 22px;
   @media (${device.tablet}) {
     display: flex;
@@ -367,6 +482,8 @@ const ThirdRow = styled.div`
     display: flex;
     flex-direction: column;
     width: 40%;
+    margin-top: 0px;
+    margin-bottom: 18px;
   }
 `;
 
@@ -378,61 +495,15 @@ const SecondThirdCondensed = styled.div`
 `
 
 const TypeCont = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
   @media (${device.tablet}) {
     transform: scale(0.8);
-    margin-top: -8px;
-  }
-`
-const MobileStakeBox = styled.div`
-  visibility: hidden;
-  @media (${device.tablet}) {
-    visibility: visible;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-`
-const MobileHeader = styled.div`
-    visibility: hidden;
-  @media (${device.tablet}) {
-    visibility: visible;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-`
-
-const MobileStakeContainer = styled.div`
-    visibility: hidden;
-  @media (${device.tablet}) {
-    visibility: visible;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-`
-
-const MobileStakeInput = styled(InputField)`
-  visibility: hidden;
-  width: 12vw;
-  height: 6vh;
-  border: 1px transparent;
-  text-decoration-color: #7c52ff;
-  text-decoration-thickness: 2px;
-  font-size: 14pt;
-  color: #ffffff;
-  text-align: center;
-  background: #0d122710;
-  margin: 10px 10px 10px 10px;
-
-  &:active {
-    appearance: none;
-  }
-  &:focus {
-    appearance: none;
-  }
-  @media (${device.tablet}) {
-    visibility: visible;
+    /* margin-top: -8px; */
+    justify-content: unset;
+    padding-right: 10px;
   }
 `
 
@@ -444,6 +515,7 @@ const StakeBox = styled.div`
   @media (${device.tablet}) {
     flex-direction: column;
     visibility: hidden;
+    height: 0px;
   }
 `;
 const FourthRow = styled.div`
@@ -451,6 +523,10 @@ const FourthRow = styled.div`
   grid-template-columns: 1fr 1fr 1fr 1fr;
   justify-content: center;
   margin: 10px;
+  @media (${device.tablet}) {
+    display: flex;
+    flex-direction: column;
+  }
 `
 
 const Img = styled.img`
@@ -516,6 +592,18 @@ const EffectContainer = styled.div`
   margin-bottom: 16px;
 `;
 
+const MobileEffectContainer = styled.div`
+  visibility: hidden;
+  @media (${device.tablet}) {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 16px;
+    visibility: visible;
+  }
+`
+
 const Text = styled.text`
   font-weight: bold;
   font-size: 12;
@@ -532,6 +620,7 @@ const MaxBtn = styled.text`
   color: #80deff;
   margin: auto;
   color: #80edff;
+  cursor: pointer;
   text-decoration: dotted underline;
   text-decoration-color: #999696;
   &:hover {
