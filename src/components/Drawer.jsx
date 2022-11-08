@@ -63,7 +63,7 @@ export default function Drawer({
       justifyContent: "space-between",
       alignItems: "baseline"
     }} >
-        <MobileDrawer>
+       {window.innerWidth < 900 ? <MobileDrawer>
           <LogoButton
             style={{
               display: "flex",
@@ -88,7 +88,7 @@ export default function Drawer({
         >
           <HamburgerIcon alt="burger" src={hamburguerIcon} />
         </HamburgerButton>
-        </MobileDrawer>
+        </MobileDrawer> : <></>}
 
       <DrawerDiv id="drawer" open={open} animate={animate}>
         <div
