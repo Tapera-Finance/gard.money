@@ -16,6 +16,7 @@ import LoadingOverlay from "./LoadingOverlay";
 import {adjustedMax} from "../pages/BorrowContent"
 import Select from "./Select";
 import { commitmentPeriodEnd } from "../globals"; 
+import { ids } from "../transactions/ids";
 
 const assets = ["ALGO", "gALGO"];
 
@@ -94,11 +95,11 @@ export default function SupplyCDP({
   };
 
   const handleMaxSupply = (event) => {
-    setMintable(calcMaxIncrease(maxSupply))
+    setMintable(calcMaxIncrease(balance))
     manageUpdate(true)
-    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(maxSupply))))
-    collateral(Number(maxSupply))
-    setAdditionalSupply(Number(maxSupply))
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(balance))))
+    collateral(Number(balance))
+    setAdditionalSupply(Number(balance))
   }
 
   useEffect(async () => {
@@ -106,7 +107,21 @@ export default function SupplyCDP({
     setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(0))))
     let wallet = getWalletInfo();
     if (wallet !== null) {
-      setBalance(adjustedMax());
+      if (typeCDP[collateralType] === "gALGO"){
+        let walletInfo = getWalletInfo() && getWalletInfo()["assets"].length > 0 ? getWalletInfo()["assets"] : null
+        let max = (
+          walletInfo &&
+          walletInfo.filter((i) => i["asset-id"] === ids.asa.galgo).length > 0
+            ? walletInfo.filter((i) => i["asset-id"] === ids.asa.galgo)[0][
+                "amount"
+              ] / 1000000
+            : 0
+        ); // hardcoded asa for now, should filter based on generic selected asset
+        setBalance((Math.trunc(max*1000)/1000).toFixed(3))
+      }
+      else{
+        setBalance(adjustedMax());
+      }
     }
   }, []);
 
@@ -207,6 +222,7 @@ export default function SupplyCDP({
             positioned={true}
             text="Supply More"
             onClick={async () => {
+              if (additionalSupply === "") return
               setLoading(true);
               try {
                 let res = await addCollateral(cdp.id, additionalSupply, commitChecked, cdp.asaID);

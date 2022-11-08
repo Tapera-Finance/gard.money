@@ -139,7 +139,11 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const [cAlgos, setCollateral] = useState("");
     const [mGARD, setGARD] = useState("")
     const [minted, setMinted] = useState("")
-    const loadedCDPs = CDPsToList();
+    const loadedCDPs = CDPsToList().sort(function  (a, b) {
+      let r1 = parseInt(calcRatio(a.collateral, a.debt / 1e6,a.asaID,true,).slice(0,-1))
+      let r2 = parseInt(calcRatio(b.collateral, b.debt / 1e6,b.asaID,true,).slice(0,-1))
+      return r1 - r2
+    });
     const [currentCDP, setCurrentCDP] = useState(null);
     const [collateralType, setCollateralType] = useState("ALGO")
     const [selectedTab, setSelectedTab] = useState("one");
