@@ -228,7 +228,7 @@ const TableHeading = styled.div`
   justify-content: space-between;
   align-items: center;
   background: #0E1834;
-  border: 1px solid #80edff;
+  border: 1px solid white;
   border-bottom: none;
   @media (${device.tablet}) {
     transform: scale(0.9);

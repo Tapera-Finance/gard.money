@@ -252,7 +252,7 @@ export default function StakeDetails() {
         <FourthRow>
           <Effect title="Your Stake" val={`${((noLock/1000000)+parseFloat(accrued)).toFixed(3)} GARD`} hasToolTip={true} />
           <Effect
-            title="Estimated Rewards / Day"
+            title="Est. Rewards / Day"
             val={`${(NLAPY / 100 * (noLock/1000000+parseFloat(accrued)) / 365).toFixed(3)} GARD`}
             hasToolTip={true}
           />

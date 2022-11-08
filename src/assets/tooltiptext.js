@@ -12,7 +12,7 @@ module.exports = {
     "Circulating GARD" : "Minted GARD less GARD staked natively",
     "Collateral" : "Crypto locked in escrow to pay off debt if necessary",
     "Collateral Factor": "The maximum amount of GARD you can borrow as a function of the value of the collateral you have supplied",
-    "Estimated Rewards / Day": "The expected increase in 'Your Stake' in a 24-hour period, given current incentives, pool revenues, and pool usage.",
+    "Est. Rewards / Day": "The expected increase in 'Your Stake' in a 24-hour period, given current incentives, pool revenues, and pool usage.",
     "Exchange Rate" : "The units of asset A required to exchange for one unit of asset B.",
     "Fees Received" : "Cumulative GARD Protocol Fees",
     "Fee Rate" : "The fee charged by the pool is represented as a percent of the value exchanged.",
