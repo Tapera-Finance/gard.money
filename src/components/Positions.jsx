@@ -482,6 +482,9 @@ const ToggleContainer = styled.div`
     display: flex;
     flex-direction: column;
   }
+  @media (${device.mobileM}) {
+    margin-top: -80px;
+  }
 `
 
 const PositionSupplyBorrow = styled.div`
