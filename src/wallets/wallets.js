@@ -10,6 +10,7 @@ import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 // Partial fix from https://github.com/randlabs/myalgo-connect/issues/27
 import buffer from "buffer";
 const { Buffer } = buffer;
+let nfd_updated = 0
 
 function sleep(seconds) {
   return new Promise((resolve) => setTimeout(resolve, 1000 * seconds));
@@ -89,6 +90,12 @@ async function getNFD(address) {
 
 
 async function updateNFD() {
+  if ((Date.now() - nfd_updated)/1000 > 600){
+    nfd_updated = Date.now()
+  }
+  else{
+    return
+  }
   if (activeWallet.address) {
     const nfd = await getNFD(activeWallet.address)
     if (nfd) {

@@ -198,6 +198,12 @@ export async function updateDBWebActions(
 // microGAIN in/out, swapPair (“0” if not applicable”), Fees Paid (in microAlgos), Timestamp}]
 
 export async function loadDbActionAndMetrics() {
+  return {
+    webappActions: [],
+    systemAssetVal: [],
+    systemDebtVal: [],
+  };
+  /*
   const owner_address = getWalletInfo().address;
   const docRef = doc(db, "users", owner_address);
   try {
@@ -215,6 +221,7 @@ export async function loadDbActionAndMetrics() {
   } catch (e) {
     throw new Error(e);
   }
+  */
 }
 
 export function queryUser() {

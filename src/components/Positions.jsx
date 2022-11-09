@@ -135,6 +135,89 @@ function recalcDetails() {
   displayRatio();
 }
 
+
+export default function Positions({cdp, maxGARD, maxSupply}) {
+    const dispatch = useDispatch();
+    const {theme} = useContext(ThemeContext);
+    const [price, setPrice] = useState(0)
+    const [supplyPrice, setSupplyPrice] = useState(0)
+    const [apr, setAPR] = useState(0)
+    const [cAlgos, setCollateral] = useState("");
+    const [mGARD, setGARD] = useState("")
+    const [minted, setMinted] = useState("")
+    const loadedCDPs = CDPsToList().sort(function  (a, b) {
+      let r1 = parseInt(calcRatio(a.collateral, a.debt / 1e6,a.asaID,true,).slice(0,-1))
+      let r2 = parseInt(calcRatio(b.collateral, b.debt / 1e6,b.asaID,true,).slice(0,-1))
+      return r1 - r2
+    });
+    const [currentCDP, setCurrentCDP] = useState(null);
+    const [collateralType, setCollateralType] = useState("ALGO")
+    const [selectedTab, setSelectedTab] = useState("one");
+    const [manageUpdate, setManageUpdate] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [loadingText, setLoadingText] = useState(null);
+    const typeCDP = {
+      galgo: "gALGO",
+      algo: "ALGO"
+    }
+    var details = [
+        {
+            title: "Total Supplied (Asset)",
+            val: `${cAlgos === "" ? "..." : cAlgos}`,
+            hasToolTip: true,
+          },
+          {
+            title: "Total Supplied ($)",
+            val: `${cAlgos === "" ? "..." : `$${(cAlgos * supplyPrice).toFixed(2)}`}`,
+            hasToolTip: true,
+          },
+          {
+            title: "Collateral Factor",
+            val: `${(100 / 140).toFixed(2)}`,
+            hasToolTip: true,
+          },
+          {
+            title: "Borrow Utilization",
+            val: `${
+              cAlgos === "" || maxGARD === "" ? "..." : (cAlgos / maxGARD).toFixed(2)
+            }%`,
+            hasToolTip: true,
+          },
+          {
+            title: "Liquidation Price",
+            val: `${
+              getMinted() == null || getCollateral() == null
+                ? "..."
+                : displayLiquidationPrice()
+            }`,
+            hasToolTip: true,
+          },
+          // {
+          //   title: "GARD Borrow APR",
+          //   val: 0,
+          //   hasToolTip: true,
+          // },
+          {
+            title: "Bonus Supply Rewards",
+            val: 0,
+            hasToolTip: true,
+          },
+          {
+            title: "ALGO Governance APR",
+            val: `${apr}%`,
+            hasToolTip: true,
+          },
+          {
+            title: "Collateralization Ratio",
+            val: `${
+              getMinted() == null || getCollateral() == null ? "..." : displayRatio()
+            }`,
+            hasToolTip: true,
+          },
+    ]
+    useEffect(async () => {
+      setAPR(await getAlgoGovAPR());
+    }, []);
 export default function Positions({ cdp, maxGARD, maxSupply }) {
   const dispatch = useDispatch();
   const { theme } = useContext(ThemeContext);
