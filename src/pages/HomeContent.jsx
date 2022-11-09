@@ -399,7 +399,7 @@ export default function HomeContent() {
             />
           </StepContainer>
         ) : (
-          <div>
+          <div style={{display: "flex", flexDirection: "column"}}>
             <Text>Quick Access</Text>
             <AccessBox expert={difficulty == "DeFi Expert" ? true : false}>
               {buttons.map((action) => {
@@ -451,6 +451,17 @@ const AccessBox = styled.div`
       margin-right: 30px;
     `
   }
+  @media (${device.tablet}) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    row-gap: 10px;
+  }
+  @media (${device.mobileM}) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
 `
 
 const Link = styled.text`
@@ -479,8 +490,8 @@ const Banner = styled.div`
     ${(props) =>
     props.expert &&
     css`
-      margin-right: 70px;
-      width: 80%;
+      margin-left: 30px;
+
     `
   }
   }
@@ -505,8 +516,7 @@ const Container = styled.div`
     ${(props) =>
     props.expert &&
     css`
-      margin-right: 70px;
-      width: 80%;
+      margin-left: 70px;
     `
   }
   }
@@ -587,6 +597,8 @@ const Text = styled.text`
   font-weight: 500px;
   cursor: pointer;
   margin: 0px 14px 0px 0px;
+  text-align: center;
+  align-self: center;
 `;
 
 const EnrollButton = styled(PrimaryButton)`

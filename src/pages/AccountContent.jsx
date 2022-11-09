@@ -18,6 +18,7 @@ import { getAlgoGovAPR } from "../components/Positions";
 import { device } from "../styles/global";
 
 
+
 const tabs = {
   one: <Holdings />,
   two: <TransactionHistory />,
@@ -149,7 +150,8 @@ export default function AccountContent() {
       <div
         style={{
           // overflowX: "hidden",
-          marginBottom: 8
+          marginBottom: 8,
+          width: `${selectedTab === "one" ? "" : "90vw"}`
         }}
       >
         <AcctPageToggle
@@ -181,6 +183,9 @@ const AccountContainer = styled.div`
   margin-bottom: 56px;
   border-radius: 10px;
   @media (${device.mobileL}) {
+    max-width: 90vw;
+  }
+  @media (${device.tablet}) {
     max-width: 90vw;
   }
 `;
