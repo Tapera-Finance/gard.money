@@ -490,8 +490,8 @@ const Banner = styled.div`
     ${(props) =>
     props.expert &&
     css`
-      margin-left: 30px;
-
+      margin-left: 60px;
+      width: 100%;
     `
   }
   }

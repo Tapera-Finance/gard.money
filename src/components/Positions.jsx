@@ -542,7 +542,7 @@ const ToggleContainer = styled.div`
     flex-direction: column;
   }
   @media (${device.mobileM}) {
-    margin-top: -80px;
+    margin-top: -40px;
   }
 `;
 
