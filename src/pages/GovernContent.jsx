@@ -515,8 +515,15 @@ const CDPTable = styled(Table)`
     margin-top: -9px;
   }
   @media (${device.mobileM}) {
-    transform: scale(0.7);
     margin-top: -16px;
+    transform: scale(0.71) translateX(-22px) translateY(-16px);
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.61) translateX(-48px) translateY(-16px);
+  }
+
+  @media (max-width: 245px) {
+    transform: scale(0.51) translateX(-68px) translateY(-16px);
   }
 `
 

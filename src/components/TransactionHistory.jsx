@@ -330,6 +330,20 @@ const TxnHistContainer = styled.div`
 const PaginationDiv = styled.div`
   display: flex;
   flex-direction: row;
+  @media (${device.tablet}) {
+    transform: scale(0.9);
+    flex-direction: column;
+    margin-top: -18px;
+    overflow-x: scroll;
+    width: 60vw;
+  }
+  @media (${device.mobileL}) {
+    transform: scale(0.84);
+
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.8);
+  }
 `;
 
 // styled components
@@ -339,6 +353,7 @@ const TableGrid = styled.table`
   margin: 10px;
   border-collapse: separate;
   border-spacing: 0px;
+  overflow-x: scroll;
 
   /* top-left border-radius */
   table tr:first-child th:first-child {
@@ -362,11 +377,16 @@ const TableGrid = styled.table`
   @media (${device.tablet}) {
     transform: scale(0.9);
     margin-top: -18px;
+    overflow-x: scroll;
   }
   @media (${device.mobileL}) {
-    transform: scale(0.8), translateX(-30px);
+    transform: scale(0.8) translateX(-30px);
     margin-top: -18px;
 
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.67) translateX(-30px);
+    margin-top: -38px;
   }
 `;
 

@@ -15,6 +15,7 @@ import Holdings from "../components/Holdings";
 import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
+import { device } from "../styles/global";
 
 
 const tabs = {
@@ -147,11 +148,11 @@ export default function AccountContent() {
       </AccountContainer>
       <div
         style={{
-          overflow: "auto",
+          // overflowX: "hidden",
           marginBottom: 8
         }}
       >
-        <PageToggle
+        <AcctPageToggle
           selectedTab={setSelectedTab}
           tabs={{ one: "Holdings", two: "Transactions" }}
           style={{
@@ -166,6 +167,12 @@ export default function AccountContent() {
 
 // syled components for our wallet content
 
+const AcctPageToggle = styled(PageToggle)`
+  @media (${device.tablet}) {
+    max-width: fit-content;
+  }
+`
+
 const AccountContainer = styled.div`
   background: rgba(13, 18, 39, 0.75);
   border: 1px solid white;
@@ -173,6 +180,9 @@ const AccountContainer = styled.div`
   margin-top: 36px;
   margin-bottom: 56px;
   border-radius: 10px;
+  @media (${device.mobileL}) {
+    max-width: 90vw;
+  }
 `;
 const AccountTitle = styled.text`
   font-weight: 500;

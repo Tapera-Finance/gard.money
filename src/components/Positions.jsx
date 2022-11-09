@@ -135,17 +135,6 @@ function recalcDetails() {
   displayRatio();
 }
 
-function debounce(fn, ms) {
-  let timer;
-  return (_) => {
-    clearTimeout(timer);
-    timer = setTimeout((_) => {
-      timer = null;
-      fn.apply(this, arguments);
-    }, ms);
-  };
-}
-
 export default function Positions({ cdp, maxGARD, maxSupply }) {
   const dispatch = useDispatch();
   const { theme } = useContext(ThemeContext);
@@ -221,38 +210,6 @@ export default function Positions({ cdp, maxGARD, maxSupply }) {
       hasToolTip: true,
     },
   ];
-  const [isMobile, setIsMobile] = useState(true);
-  // const [dimmensions, setDimmensions] = useState({
-  //   width: undefined,
-  //   height: undefined
-  // })
-
-  // useEffect(() => {
-  //   // Handler to call on window resize
-  //   const debouncedHandleResize = debounce(function handleResize() {
-  //     // Set window width/height to state
-  //     setDimmensions({
-  //       width: window.innerWidth,
-  //       height: window.innerHeight,
-  //     });
-  //   }, 200)
-
-  //   // Add event listener
-  //   window.addEventListener("resize", debouncedHandleResize);
-  //   // Call handler right away so state gets updated with initial window size
-  //   debouncedHandleResize();
-  //   // Remove event listener on cleanup
-  //   return () => window.removeEventListener("resize", debouncedHandleResize);
-  // }, []);
-
-  // useEffect(() => {
-  //   if (dimmensions && dimmensions.width > parseInt(size.tablet)) {
-  //     setIsMobile(false);
-  //   }
-  //   else {
-  //     setIsMobile(true);
-  //   }
-  // }, [dimmensions])
 
   useEffect(async () => {
     setAPR(await getAlgoGovAPR());

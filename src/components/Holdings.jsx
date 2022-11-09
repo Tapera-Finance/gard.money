@@ -141,7 +141,7 @@ export default function Holdings() {
           />
         </div>
       </TableHeading>
-      <HoldTable
+      <BorrowTable
         data={cdpData}
         columns={borrowColumns}
       />
@@ -218,6 +218,18 @@ const HoldTable = styled(Table)`
     transform: scale(0.9), translateX(-30px);
     margin-top: -18px;
 
+  }
+`
+
+const BorrowTable = styled(Table)`
+  @media (${device.tablet}) {
+    transform: scale(0.9);
+    margin-top: -18px;
+  }
+  @media (${device.mobileL}) {
+    transform: scale(0.9), translateX(-30px);
+    margin-top: -18px;
+    overflow-x: auto;
   }
 `
 

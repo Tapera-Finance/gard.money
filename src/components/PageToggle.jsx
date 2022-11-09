@@ -104,11 +104,17 @@ const Box = styled.div`
   @media (${device.mobileM}) {
     padding: 10px 0px 3px;
   }
+  @media (${device.mobileL}) {
+    &:hover {
+      border: 1px solid #ffffff;
+      background: #172756;
+    }
+  }
 `;
 
 const Btn = styled.text`
-  text-decoration: underline;
-  text-decoration-style: dotted;
+  /* text-decoration: underline; */
+  /* text-decoration-style: dotted; */
   /* max-width: max-content; */
   padding: 2px 12px 8px 6px;
   @media (${device.mobileM}) {
@@ -122,7 +128,7 @@ const Bar = styled.div`
   align-items: center;
   /* min-height: 40px;
   min-width: 74px; */
-  /* max-width: max-content; */
+  max-width: fit-content;
   background: #0f1733;
   border-radius: 6px;
   margin: auto;
