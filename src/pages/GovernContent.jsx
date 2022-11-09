@@ -23,7 +23,7 @@ import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
 import { isFirefox } from "../utils";
-import { device } from "../styles/global";
+import { device, size } from "../styles/global";
 
 const axios = require("axios");
 
@@ -551,7 +551,7 @@ const PositionTableContainer = styled.div`
   @media (${device.mobileL}) {
     transform: scale(0.9);
   }
-  @media (${device.mobileM}) {
+  @media (max-width: 391px) {
     transform: scale(0.8)
   }
 `
@@ -571,8 +571,11 @@ const GovInfoContainer = styled.div`
     transform: scale(0.9);
 
   }
-  @media (${device.mobileM}) {
+  @media (max-width: 391px) {
     transform: scale(0.8)
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.7);
   }
 `
 
