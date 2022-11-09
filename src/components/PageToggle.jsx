@@ -81,7 +81,7 @@ const Box = styled.div`
   display: flex;
   border: 1px transparent;
   /* height: 30px; */
-  max-width: max-content;
+  /* max-width: max-content; */
   text-align: center;
   justify-content: center;
   padding: 10px 15px 3px;
@@ -100,13 +100,21 @@ const Box = styled.div`
   &:hover {
     border: 1px solid #ffffff;
   }
+
+  @media (${device.mobileM}) {
+    padding: 10px 0px 3px;
+  }
 `;
 
 const Btn = styled.text`
   text-decoration: underline;
   text-decoration-style: dotted;
-  max-width: max-content;
+  /* max-width: max-content; */
   padding: 2px 12px 8px 6px;
+  @media (${device.mobileM}) {
+    padding: 0px 0px 0px 0px;
+    transform: scale(0.8);
+  }
 `;
 const Bar = styled.div`
   display: flex;
@@ -114,15 +122,16 @@ const Bar = styled.div`
   align-items: center;
   /* min-height: 40px;
   min-width: 74px; */
-  max-width: max-content;
+  /* max-width: max-content; */
   background: #0f1733;
   border-radius: 6px;
   margin: auto;
   @media (${device.mobileL}) {
     transform: scale(0.9);
+    max-width: inherit;
   }
   @media (${device.mobileM}) {
     transform: scale(0.8);
-
+    /* width: max-content; */
   }
 `;

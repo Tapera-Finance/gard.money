@@ -131,6 +131,16 @@ export const dummyCDPs = [
         displayRatio()
       }
 
+      function debounce(fn, ms) {
+        let timer
+        return _ => {
+          clearTimeout(timer)
+          timer = setTimeout(_ => {
+            timer = null
+            fn.apply(this, arguments)
+          }, ms)
+        }
+      }
 
 export default function Positions({cdp, maxGARD, maxSupply}) {
     const dispatch = useDispatch();
@@ -207,6 +217,40 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
             hasToolTip: true,
           },
     ]
+    const [isMobile, setIsMobile] = useState(true);
+    // const [dimmensions, setDimmensions] = useState({
+    //   width: undefined,
+    //   height: undefined
+    // })
+
+    // useEffect(() => {
+    //   // Handler to call on window resize
+    //   const debouncedHandleResize = debounce(function handleResize() {
+    //     // Set window width/height to state
+    //     setDimmensions({
+    //       width: window.innerWidth,
+    //       height: window.innerHeight,
+    //     });
+    //   }, 200)
+
+    //   // Add event listener
+    //   window.addEventListener("resize", debouncedHandleResize);
+    //   // Call handler right away so state gets updated with initial window size
+    //   debouncedHandleResize();
+    //   // Remove event listener on cleanup
+    //   return () => window.removeEventListener("resize", debouncedHandleResize);
+    // }, []);
+
+
+    // useEffect(() => {
+    //   if (dimmensions && dimmensions.width > parseInt(size.tablet)) {
+    //     setIsMobile(false);
+    //   }
+    //   else {
+    //     setIsMobile(true);
+    //   }
+    // }, [dimmensions])
+
     useEffect(async () => {
       setAPR(await getAlgoGovAPR());
     }, []);
@@ -258,11 +302,11 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
         setLoading(false);
       }}
       /> : <></>}
-        <Header>
+        {/* {!isMobile ? (<Header>
             <b className="m-positions_row_1" >Your Positions</b>
             <b className="m-positions_row_2" style={{textAlign: "center"}}>Governance Rewards</b>
             <b className="m-positions_row_3" style={{textAlign: "center"}}>CDP Health</b>
-        </Header>
+        </Header> ) : <></>} */}
         <Container>
             {loadedCDPs.length && loadedCDPs.length > 0 ?
                 loadedCDPs.map((cdp, idx) => {
@@ -272,11 +316,26 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                 {/* <div style={{position: "relative", textAlign: "right", bottom: -25, fontSize:14, color:"#FF00FF", paddingRight: 10}}>v1 CDP</div> */}
                 <PositionInfo>
                     <PositionSupplyBorrow className="m_positions_item m-positions_box_1">
-                        <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} {typeCDP[cdp.collateralType]}</div>
-                        <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
+                    {isMobile ? (<b className="m-positions_row_1" >Your Position</b>) : (<></>)}
+
+                        <Sply >Supplied:
+                        <div style={{display: "flex"}}><div className="currency_flow" >{(microalgosToAlgos(cdp.collateral)).toFixed(2)}</div> {typeCDP[cdp.collateralType]}</div>
+                        </Sply>
+                        <Brr >Borrowed:
+                        <div style={{display: "flex"}} >
+                        <div className="currency_flow" >{mGardToGard(cdp.debt).toFixed(2)}</div> GARD
+                        </div>
+                        </Brr>
                     </PositionSupplyBorrow>
-                    <div className="m_positions_item m-positions_box_2" >APR: <span style={{color:"#01d1ff"}}>{apr}%</span></div>
+                    <div className="m_positions_item m-positions_box_2" style={{display: "flex", flexDirection: "column"}}>
+                      {isMobile ? (<div><b className="m-positions_row_2" >Governance Rewards</b></div>) : (<></>)}
+                      <APRBox>
+                        <div>APR: </div>
+                        <span style={{color:"#01d1ff", marginLeft: 8}}>{`  ` + apr}%</span>
+                        </APRBox>
+                      </div>
                     <div className="m_positions_item m-positions_box_3" style={{display: "flex", flexDirection: "column"}}>
+                    {isMobile ? (<b className="m-positions_row_3" >CDP Health</b>) : (<></>)}
                         <div style={{display: "flex", justifyContent: "space-between"}}>
                             <div> Health {`(${calcRatio(cdp.collateral, cdp.debt / 1e6,cdp.asaID,true,)})`} </div>
                             <div>Liquidation Price (${((1.15 * mAlgosToAlgos(cdp.debt)) / mAlgosToAlgos(cdp.collateral)).toFixed(4)})</div>
@@ -374,6 +433,34 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     </PositionContainer>
 }
 
+const Sply = styled.div`
+  display: flex;
+  @media (${device.laptop}) {
+    flex-direction: column;
+  }
+  @media (${device.tablet}) {
+    flex-direction: row;
+  }
+`
+
+const Brr = styled.div`
+  display: flex;
+  @media (${device.laptop}) {
+    flex-direction: column;
+  }
+  @media (${device.tablet}) {
+    flex-direction: row;
+  }
+`
+
+const APRBox = styled.div`
+  display: flex;
+  /* justify-content: center; */
+  @media (min-width: ${size.tablet}) {
+    padding-top: 25px;
+  }
+`
+
 const ManageCollapse = styled(TextButton)`
   @media (${device.mobileL}) {
       transform: scale(0.9) translateY(-30px);
@@ -389,6 +476,11 @@ const ManageCollapse = styled(TextButton)`
 const ToggleContainer = styled.div`
   @media (${device.tablet}) {
     transform: scale(0.9);
+    max-width: 90vw;
+  }
+  @media (${device.mobileL}) {
+    display: flex;
+    flex-direction: column;
   }
 `
 
@@ -417,9 +509,10 @@ const PositionContainer = styled.div`
 
 const Header = styled.div`
     display: grid;
-    grid-template-columns:repeat(3, 30%);
+    grid-template-columns:repeat(3, 33%);
     justify-content:center;
     align-content: center;
+    text-align: left;
     font-size: 20px;
     margin-top: 50px;
     @media (${device.tablet}) {
@@ -483,7 +576,7 @@ const PositionInfo = styled.div`
     display: grid;
     border: 1px solid white;
     grid-template-columns:repeat(3, 30%);
-    justify-content:center;
+    justify-content: center;
     align-content: center;
     background: rgba(13, 18, 39, .75);
     border-radius: 10px;

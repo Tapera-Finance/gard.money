@@ -22,21 +22,3 @@ export const device = {
   desktop: `(max-width: ${size.desktop})`
 }
 
-// export const Global = createGlobalStyle`
-//   * {
-//     margin: 0;
-//     padding: 0;
-//     box-sizing: border-box;
-//   }
-//   :root {
-//     font-size: ${px2vw(24)};
-
-//     @media (${device.tablet}) {
-//       font-size: ${px2vw(18)};
-//     }
-
-//     @media (${device.laptop}) {
-//       font-size: ${px2vw(16)}
-//     }
-//   }
-// `

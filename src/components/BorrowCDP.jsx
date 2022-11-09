@@ -14,6 +14,7 @@ import {
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import { mAlgosToAlgos } from "../pages/BorrowContent";
+import { device } from "../styles/global";
 
 export default function BorrowCDP({
   setCollateral,
@@ -110,7 +111,7 @@ export default function BorrowCDP({
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
   return (
-    <div>
+    <MoreContainer>
       {loading ? <LoadingOverlay text={loadingText} close={()=>{setLoading(false);}}/> : <></>}
       <Container>
         <SubContainer>
@@ -176,7 +177,7 @@ export default function BorrowCDP({
           />
         </SubContainer>
       </Container>
-    </div>
+    </MoreContainer>
   );
 }
 const Container = styled.div`
@@ -184,6 +185,12 @@ const Container = styled.div`
   justify-content: center;
   top: -40px;
 `;
+
+const MoreContainer = styled.div`
+  @media (${device.tablet}) {
+    max-width: 90vw;
+  }
+`
 
 const SubContainer = styled.div`
   position: relative;

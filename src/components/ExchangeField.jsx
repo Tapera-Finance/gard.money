@@ -112,12 +112,13 @@ const Container = styled.div`
   border: 1px solid white;
   @media (${device.tablet}) {
     border: 1px solid #7C52ff;
-    height: 9.8vh;
+    /* height: 9.8vh; */
     width: 90vw;
   }
   @media (min-width: ${size.tablet}) and (${device.laptop}) {
     width: 60vw;
   }
+  @media (${device.mobileM}) {}
 `;
 
 const Text = styled.text`
@@ -146,6 +147,12 @@ const DollarEffect = styled(Effect)`
   scale: 0.8;
   display: unset;
   flex-direction: initial;
+  @media (${device.mobileM}) {
+    margin: 0px 0px 0px 0px;
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.8);
+  }
 `;
 
 const InputContainer = styled.div`
@@ -157,6 +164,10 @@ const InputContainer = styled.div`
     flex-direction: row;
     justify-content: center;
     align-items: center;
+  }
+
+  @media (${device.mobileS}) {
+    flex-direction: column;
   }
 `;
 
@@ -185,6 +196,14 @@ const ExchangeInput = styled(InputField)`
     width: 16vw;
     font-size: small;
   }
+  @media (${device.mobileM}) {
+    margin: 0px 0px 0px 0px;
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.8);
+  }
+
+
 `;
 
 const SelectContainer = styled.div`

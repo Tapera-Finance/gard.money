@@ -501,7 +501,7 @@ const Container = styled.div`
   border: 1px solid white;
   border-radius: 10px;
   @media (${device.tablet}) {
-    width: 100%;
+    /* width: 100%; */
     ${(props) =>
     props.expert &&
     css`
