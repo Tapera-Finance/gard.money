@@ -11,18 +11,14 @@ import AuctionsContent from "../pages/AuctionsContent";
 import ActionsContent from "../pages/ActionsContent";
 import DaoContent from "../pages/DaoContent";
 import GovernContent from "../pages/GovernContent";
-import PrimaryButton from "./PrimaryButton";
-import helpIcon from "../assets/icons/help_icon.png";
-import { useForceUpdate, useWindowSize } from "../hooks";
-import { displayWallet } from "../wallets/wallets";
-
-import Modal from "./Modal";
 import AlertOverlay from "./AlertOverlay";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { hide } from "../redux/slices/alertSlice";
 import SwapDetails from "./actions/SwapDetails";
 import StakeDetails from "./actions/StakeDetails";
+import { size, device } from "../styles/global"
+import { px2vw } from "../utils"
 
 async function googleStuff() {
   const script = document.createElement("script");
@@ -41,24 +37,62 @@ async function googleStuff() {
   return 0;
 }
 
+function debounce(fn, ms) {
+  let timer
+  return _ => {
+    clearTimeout(timer)
+    timer = setTimeout(_ => {
+      timer = null
+      fn.apply(this, arguments)
+    }, ms)
+  }
+}
+
 /**
  * This holds our drawer navigation, the recurring top bar, and the main content
  */
 export default function Main(WrappedComponent, title) {
-  const [isOpen, setIsOpen] = useState(window.innerWidth > 900);
+  const [isOpen, setIsOpen] = useState(true);
   const [canAnimate, setCanAnimate] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [mainContent, setMainContent] = useState("Home");
-  const [walletAddress, setWalletAddress] = useState(displayWallet());
-  const forceUpdate = useForceUpdate();
+  const [dimmensions, setDimmensions] = useState({
+    width: undefined,
+    height: undefined
+  })
 
   useEffect(() => {
-    setIsOpen(window.innerWidth > 900);
+    // Handler to call on window resize
+    const debouncedHandleResize = debounce(function handleResize() {
+      // Set window width/height to state
+      setDimmensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }, 1000)
 
+    // Add event listener
+    window.addEventListener("resize", debouncedHandleResize);
+    // Call handler right away so state gets updated with initial window size
+    debouncedHandleResize();
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", debouncedHandleResize);
+  }, []);
+
+
+  useEffect(() => {
+    setIsOpen(window.innerWidth > size.tablet);
+    // setIsMobile(window.innerWidth < size.tablet)
     // Google Analytics
     googleStuff();
   }, []);
+
+  useEffect(() => {
+    if (dimmensions && dimmensions.width > parseInt(size.tablet)) {
+      setIsOpen(true);
+    }
+  }, [dimmensions])
 
   const dispatch = useDispatch();
   const alertData = useSelector((state) => state.alert);
@@ -67,7 +101,7 @@ export default function Main(WrappedComponent, title) {
   body.style.backgroundColor = "#172756";
 
   return (
-    <div style={{ display: "flex", flexDirection: "row" }}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
       {alertData.visible === true ? (
         <AlertOverlay
           text={alertData.text}
@@ -76,6 +110,7 @@ export default function Main(WrappedComponent, title) {
       ) : (
         <></>
       )}
+
       <Drawer
         selected={title}
         open={isOpen}
@@ -92,59 +127,42 @@ export default function Main(WrappedComponent, title) {
           }}
           style={{ background: "#172756" }}
         />
-        <div style={{ display: "flex", flexDirection: "row", width: "100%", }}>
-          <div
-            style={{
-              paddingLeft: "6.9444444444444vw",
-              paddingRight: "6.9444444444444vw",
-              paddingTop: 40,
-              flex: 1,
-            }}
-          >
-
+        <ContentContainer isOpen={isOpen}>
+          <Wrapper>
             <WrappedComponent />
-          </div>
-          <div
-            style={{
-              width: "6.9444444444444vw",
-              height: window.innerHeight - 96,
-              position: "fixed",
-              right: 0,
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-            }}
-          >
-          </div>
-        </div>
+          </Wrapper>
+        </ContentContainer>
       </MainContentDiv>
-      <Modal
-        title="Have any feedback on our web app?"
-        visible={modalVisible}
-        animate={modalCanAnimate}
-        close={() => setModalVisible(false)}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ContactUsText>
-            {"Please let us know via email at"}
-            <Link
-              href="mailto:hello@algogard.com"
-            >
-              {" "}
-              hello@algogard.com
-            </Link>
-          </ContactUsText>
-        </div>
-      </Modal>
     </div>
   );
 }
+
+const Wrapper = styled.div`
+  padding-left: 1.9444444444444vw;
+  padding-right: 1.9444444444444vw;
+  padding-top: 40px;
+  flex: 1;
+  @media (min-width: ${size.tablet}) {
+    padding-left: 6.9444444444444vw;
+    padding-right: 6.9444444444444vw;
+  }
+  @media (${device.mobileM}) {
+    padding-left: 0vw;
+    width: 100%;
+  }
+`
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  @media (${device.tablet}) {
+    margin-left: 0vw;
+  }
+  @media (min-width: ${size.tablet}) {
+    //
+  }
+`
 
 //animation to expand or retract the main content container, depending on if the drawer is open or closed
 const expandMainContentAnimation = keyframes`
@@ -154,18 +172,25 @@ const expandMainContentAnimation = keyframes`
 
 // main styled components
 const MainContentDiv = styled.div`
-  margin-left: ${`${window.innerWidth < 900 ? 0 : 20}vw`};
-  width: 100%;
+  width: 70%;
   animation-duration: 0.5s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
   color: white;
-  ${(props) => css`
-    animation-direction: ${!props.isOpen ? "normal" : "reverse"};
-    animation-name: ${props.canAnimate && window.innerWidth > 900
+  overflow-x: hidden;
+  /* ${(props) => css`
+  animation-direction: ${!props.isOpen ? "normal" : "reverse"};
+  animation-name: ${props.canAnimate && window.innerWidth > 900
       ? expandMainContentAnimation
       : ""};
-  `}
+  `} */
+  @media (${device.tablet}) {
+    margin-left: 0vw;
+    width: 100%;
+  }
+  @media (min-width: ${size.tablet}) {
+    margin-left: 23.75vw;
+  }
 `;
 const HelpButton = styled.div`
   cursor: pointer;

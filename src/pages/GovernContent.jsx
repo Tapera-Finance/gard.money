@@ -23,6 +23,7 @@ import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
 import { isFirefox } from "../utils";
+import { device, size } from "../styles/global";
 
 const axios = require("axios");
 
@@ -285,7 +286,7 @@ export default function Govern() {
     };
   });
   return ( !walletAddress ? navigate("/") :
-    <div>
+    <GovContainer>
       {loading ? (
         <LoadingOverlay
           text={loadingText}
@@ -336,12 +337,12 @@ export default function Govern() {
         </div>
       </Banner>
         */}
-      <div style={{marginBottom: 30}}>
+      <GovInfoContainer>
         <fieldset
           style={{
             borderRadius: 10,
             border: "1px solid white",
-            width:"70%",
+            // width:"70%",
             transform: "rotate(180deg)",
             background: "#0E1834",
             margin: "auto",
@@ -386,19 +387,8 @@ export default function Govern() {
 
           <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on Foundation Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-5")}/></legend>
         </fieldset>
-      </div>
-      <div
-        style={{
-          height: 70,
-          borderTopRightRadius: 10,
-          borderTopLeftRadius: 10,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          background: "#0E1834",
-          border: "1px solid white",
-          borderBottom: "none"
-        }}
+      </GovInfoContainer>
+      <PositionTableContainer
       >
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
@@ -411,8 +401,8 @@ export default function Govern() {
         <div style={{ marginRight: 20 }}>
           <PrimaryButton text="Commit All" blue={true} disabled={true}/>
         </div>
-      </div>
-      <Table data={cdps} />
+      </PositionTableContainer>
+      <CDPTable data={cdps} />
       <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} onClick={() => {
             navigate("/borrow");
           }}Enroll/>
@@ -522,9 +512,76 @@ export default function Govern() {
           </div>
         )}
       </Modal>
-    </div>
+    </GovContainer>
   );
 }
+
+const CDPTable = styled(Table)`
+  @media (${device.mobileL}) {
+    transform: scale(0.9);
+    margin-top: -9px;
+  }
+  @media (max-width: 391px) {
+    margin-top: -16px;
+    transform: scale(0.81) translateX(-2px) translateY(-6px);
+  }
+  @media (${device.mobileM}) {
+    margin-top: -16px;
+    transform: scale(0.71) translateX(-22px) translateY(-16px);
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.61) translateX(-48px) translateY(-16px);
+  }
+
+  @media (max-width: 245px) {
+    transform: scale(0.51) translateX(-68px) translateY(-16px);
+  }
+`
+
+const PositionTableContainer = styled.div`
+  height: 70;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0E1834;
+  border: 1px solid white;
+  border-bottom: none;
+  @media (${device.tablet}) {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  @media (${device.mobileL}) {
+    transform: scale(0.9);
+  }
+  @media (max-width: 391px) {
+    transform: scale(0.8)
+  }
+`
+
+const GovContainer = styled.div`
+
+`
+
+const GovInfoContainer = styled.div`
+  margin-bottom: 30px;
+  @media (${device.tablet}) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  @media (${device.mobileL}) {
+    transform: scale(0.9);
+
+  }
+  @media (max-width: 391px) {
+    transform: scale(0.8)
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.7);
+  }
+`
 
 
 const Link = styled.text`

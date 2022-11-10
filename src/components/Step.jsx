@@ -3,7 +3,6 @@ import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PrimaryButton from "./PrimaryButton";
 import { useSelector } from "react-redux";
-// import Help from "./Help";
 
 export default function Step({
   header,
@@ -68,19 +67,13 @@ export default function Step({
             display: "flex",
             flexDirection: "column",
             textAlign: "center",
-            alignItems: "left",
             justifyContent: "space-evenly",
-
+            alignItems: "center"
           }}
         >
-          <div style={{ display: "flex", textAlign: "center", width: "60vw", marginBottom: 0, marginTop: 4 }}>
+          <div style={{ display: "flex", textAlign: "center", marginBottom: 0, marginTop: 4 }}>
             <Link href={link} target="_blank">{linkText}</Link>
           </div>
-          {/* <text
-            style={{ fontWeight: "bolder", width: "40%", marginBottom: 12 }}
-            >
-            {subtitle}
-          </text> */}
             <text style={{width: "60vw", marginBottom: 18, marginTop: 6}}>{text}</text>
           <div style={{ display: "flex", justifyContent: "center", margin: "2px 0px 12px 0px" }}>
             <StepButton
@@ -91,7 +84,6 @@ export default function Step({
             />
             {secondGoTo !== "" && secondGoTo !== null ? <StepButton text={`Go to ${secondGoTo}`} blue={true} disabled={!walletAddress} onClick={() => navigate(`/${secondGoTo.toLowerCase()}`)} /> : <></>}
 
-            {/* <div style={{ marginLeft: "75%" }}></div> */}
           </div>
         </div>
       ) : (
@@ -124,8 +116,8 @@ const StepItem = styled.div`
   align-items: center;
   background: #0f1733;
   color: #019fff;
-  height: 80px;
-  width: 60vw;
+  /* height: 80px;
+  width: 60vw; */
   border-radius: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
@@ -134,14 +126,14 @@ const StepItem = styled.div`
     css`
       background: #019fff;
       color: #0f1733;
-      width: 60vw;
+
     `}
   ${(props) =>
     props.allOpen &&
     css`
       background: #019fff;
       color: #0f1733;
-      width: 60vw;
+
     `}
 `;
 
@@ -160,7 +152,7 @@ const StepButton = styled(PrimaryButton)`
 `;
 
 const ExpandedStep = styled.div`
-  width: 100%auto;
+  width: 100%;
 `;
 
 const Badge = ({ type }) => {

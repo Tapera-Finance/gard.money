@@ -15,6 +15,8 @@ import Holdings from "../components/Holdings";
 import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
+import { device } from "../styles/global";
+
 
 
 const tabs = {
@@ -78,7 +80,7 @@ export default function AccountContent() {
 
   if (!walletAddress) return <div></div>;
   return (
-    <div>
+    <AcctPgCont>
       <div
         style={{
           display: "flex",
@@ -147,12 +149,10 @@ export default function AccountContent() {
       </AccountContainer>
       <div
         style={{
-          maxWidth: window.innerWidth - 0.14 * window.innerWidth,
-          overflow: "auto",
-          marginBottom: 8
+          marginBottom: 8,
         }}
       >
-        <PageToggle
+        <AcctPageToggle
           selectedTab={setSelectedTab}
           tabs={{ one: "Holdings", two: "Transactions" }}
           style={{
@@ -161,11 +161,21 @@ export default function AccountContent() {
         />
         {tabs[selectedTab]}
       </div>
-    </div>
+    </AcctPgCont>
   );
 }
 
 // syled components for our wallet content
+
+const AcctPgCont = styled.div`
+  max-width: 90vw;
+`
+
+const AcctPageToggle = styled(PageToggle)`
+  @media (${device.tablet}) {
+    max-width: fit-content;
+  }
+`
 
 const AccountContainer = styled.div`
   background: rgba(13, 18, 39, 0.75);
@@ -174,6 +184,12 @@ const AccountContainer = styled.div`
   margin-top: 36px;
   margin-bottom: 56px;
   border-radius: 10px;
+  @media (${device.mobileL}) {
+    max-width: 90vw;
+  }
+  @media (${device.tablet}) {
+    max-width: 90vw;
+  }
 `;
 const AccountTitle = styled.text`
   font-weight: 500;

@@ -23,6 +23,7 @@ import { getCDPs } from "../transactions/cdp";
 import { CDPsToList } from "../components/Positions"
 import { checkStaked } from "../components/actions/StakeDetails";
 import { commitmentPeriodEnd } from "../globals";
+import { Global, device } from "../styles/global";
 
 const fetchTvl = async () => {
   try {
@@ -226,14 +227,397 @@ export default function HomeContent() {
   }, []);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-      }}
+    <HomeWrapper
+      expert={difficulty == "DeFi Expert" ? true : false}
     >
-      <div style={{display: "flex", flexDirection: "column"}}>
-      {/* 
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+
+        <Banner expert={difficulty == "DeFi Expert" ? true : false}>
+          <div
+            style={{
+              justifyContent: "center",
+              textAlign: "left",
+              alignItems: "center",
+              color: "#172756",
+            }}
+          >
+            <div style={{ fontSize: "10pt" }}>GARD Staking Rewards!</div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              textAlign: "center",
+              marginLeft: "0px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                textAlign: "left",
+                flexDirection: "column",
+              }}
+            >
+              <div style={{ color: "#172756", fontSize: "10pt" }}>
+                Earn protocol rewards boosted by the Algorand Foundation via
+                Aeneas grant!
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Link
+              onClick={() => {
+                walletAddress
+                  ? navigate("/stake")
+                  : dispatch(
+                      setAlert(
+                        "You cannot enter without first connecting a Wallet",
+                      ),
+                    );
+              }}
+            >
+              Stake
+            </Link>
+          </div>
+        </Banner>
+
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+          textAlign: "center",
+          marginTop: "18px",
+          marginBottom: "18px",
+          alignItems: "center",
+        }}
+      >
+        <ToggleBox>
+          <BinaryToggle
+            optionA="Help Me Out"
+            optionB="DeFi Expert"
+            selectedOption={setDifficulty}
+          />
+        </ToggleBox>
+        <Container expert={difficulty == "DeFi Expert" ? true : false}>
+          <Items>
+            {homeDetails.length && homeDetails.length > 0
+              ? homeDetails.map((d) => {
+                  return (
+                    <Item key={d.title}>
+                      <Effect
+                        title={d.title}
+                        val={d.val}
+                        hasToolTip={d.hasToolTip}
+                        rewards={d.rewards}
+                      ></Effect>
+                    </Item>
+                  );
+                })
+              : null}
+          </Items>
+        </Container>
+        <div>
+          {/* <Text
+            style={{
+              color: "#7c52ff",
+              textAlign: "center",
+              fontWeight: "bolder",
+            }}
+            // onClick={() => navigate("/analytics")}
+          >
+            {`See More Metrics ${">"}`}
+          </Text> */}
+        </div>
+      </div>
+      <div style={{ display: "inline-grid" }}>
+        {difficulty === "Help Me Out" ? (
+          <StepContainer>
+            <Text
+              style={{ color: "#80edff" }}
+              onClick={() => setAllOpen(!allOpen)}
+            >
+              {allOpen ? `Collapse` : `Expand`} All
+            </Text>
+
+            <ConnectStep>
+              <Text>
+                {walletAddress ? `  √` : ""} Step 1: Connect Your Wallet
+              </Text>
+              <div>
+                <WalletConnect style={{ alignSelf: "flex-start" }} />
+              </div>
+            </ConnectStep>
+
+            <Step
+              header="Step 2: Get Gard"
+              badges={[]}
+              checked={gardInWallet}
+              subtitle=""
+              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD go to the swap page. To borrow GARD go to the borrow page."
+              link="https://docs.algogard.com/how-to/get-gard"
+              linkText="How to get GARD"
+              goTo="Swap"
+              secondGoTo="Borrow"
+              allOpen={allOpen}
+            />
+            <Step
+              header="Step 3: Gain Rewards"
+              badges={[
+                {
+                  text: "Staking Rate",
+                  val: apy,
+                },
+                {
+                  text: "Governance Rate",
+                  val: apr,
+                },
+              ]}
+              checked={gaining}
+              subtitle=""
+              text="To gain additional rewards via the GARD Protocol a user may stake their GARD or participate in Algorand governance. Staking GARD entitles users to their share of revenues earned by the protocol in real time. Participating in Algorand Governace via the GARD Protocol entitles users to leverage their committed ALGOs to borrow GARD as well as their share of a 7M ALGO boost paid out quarterly by the Algorand Foundation."
+              link="https://gard.gitbook.io/gard-system-guide/how-to/participate-in-algorand-governance-via-gard-protocol"
+              linkText="What is needed to participate?"
+              goTo="Stake"
+              secondGoTo="Govern"
+              allOpen={allOpen}
+            />
+          </StepContainer>
+        ) : (
+          <div style={{display: "flex", flexDirection: "column"}}>
+            <Text>Quick Access</Text>
+            <AccessBox expert={difficulty == "DeFi Expert" ? true : false}>
+              {buttons.map((action) => {
+                return (
+                  <PrimaryButton
+                    disabled={!walletAddress}
+                    text={action}
+                    blue={true}
+                    onClick={() => navigate(`/${action.toLowerCase()}`)}
+                    key={Math.random()}
+                  />
+                );
+              })}
+            </AccessBox>
+          </div>
+        )}
+      </div>
+    </HomeWrapper>
+  );
+}
+
+const ToggleBox = styled.div`
+  margin: 8px 0px 8px 0px;
+  @media (${device.tablet}) {
+
+  }
+`
+
+const HomeWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  ${(props) =>
+    props.expert &&
+    css`
+      margin-right: 30px;
+    `
+  }
+`
+
+const AccessBox = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 100px;
+  align-items: center;
+  ${(props) =>
+    props.expert &&
+    css`
+      margin-right: 30px;
+    `
+  }
+  @media (${device.tablet}) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    row-gap: 10px;
+  }
+  @media (${device.mobileM}) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+`
+
+const Link = styled.text`
+  text-decoration: none;
+  font-weight: 500;
+  color: #172756;
+  margin-right: 12px;
+  &:hover {
+    color: #03a0ff;
+    cursor: pointer;
+  }
+`;
+
+const Banner = styled.div`
+  display: flex;
+  width: 90%;
+  flex-direction: row;
+  border-radius: 10px;
+  justify-content: space-between;
+  text-align: center;
+  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  padding: 8px 6px 10px 8px;
+  margin: 8px;
+  @media (${device.tablet}) {
+    width: 100%;
+    ${(props) =>
+    props.expert &&
+    css`
+      margin-left: 60px;
+      width: 100%;
+    `
+  }
+  }
+  ${(props) =>
+    props.expert &&
+    css`
+      margin-right: 30px;
+    `
+  }
+`
+
+
+const Container = styled.div`
+  background: #0E1834;
+  padding-top: 30px;
+  width: 90%;
+  padding-bottom: 30px;
+  border: 1px solid white;
+  border-radius: 10px;
+  @media (${device.tablet}) {
+    /* width: 100%; */
+    ${(props) =>
+    props.expert &&
+    css`
+      margin-left: 70px;
+    `
+  }
+  }
+  ${(props) =>
+    props.expert &&
+    css`
+      margin-right: 30px;
+    `
+  }
+`;
+
+const Items = styled.div`
+  display: grid;
+  align-items: flex-end;
+  grid-template-columns: repeat(4, 22%);
+  row-gap: 30px;
+  justify-content: center;
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 40%);
+  }
+  @media (max-width: 422px) {
+    grid-template-columns: repeat(1, 40%)
+  }
+`;
+
+const Item = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+// styled components
+const StepContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-bottom: 50px;
+`;
+
+const ConnectStep = styled.div`
+  padding: 0px 10px 0px 10px;
+  display: flex;
+  font-weight: 500;
+  font-size: large;
+  text-align: left;
+  align-items: center;
+  background: #0f1733;
+  color: #019fff;
+  border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  ${(props) =>
+    props.open &&
+    css`
+      background: #019fff;
+      color: #0f1733;
+    `}
+  ${(props) =>
+    props.allOpen &&
+    css`
+      background: #019fff;
+      color: #0f1733;
+      /* width: 60vw; */
+    `}
+    @media (max-width:663)
+    {
+      button {
+        font-size: smaller
+      }
+
+    }
+    @media (${device.mobileL}) {
+      //
+    }
+`;
+
+const Text = styled.text`
+  font-weight: 500px;
+  cursor: pointer;
+  margin: 0px 14px 0px 0px;
+  text-align: center;
+  align-self: center;
+`;
+
+const EnrollButton = styled(PrimaryButton)`
+  appearance: none;
+  border: none;
+  color: unset;
+  margin: 6px 0px 10px 80px;
+  padding: 0px 14px 0px 14px;
+  &:hover {
+    color: #019fff;
+  }
+`;
+
+
+/**
+ * unused banners
+ *
+ *
+ *
       <Banner
       >
         <div
@@ -277,49 +661,7 @@ export default function HomeContent() {
           }}>Enroll</Link>
         </div>
       </Banner>
-        */}
-      <Banner>
-      <div
-          style={{
-            justifyContent: "center",
-            textAlign: "left",
-            alignItems: "center",
-            color: "#172756",
-          }}
-        >
-          <div style={{ fontSize: "10pt",  }}>GARD Staking Rewards!</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
-          }}
-        >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
 
-          <div style={{ color: "#172756", fontSize: "10pt" }}>Earn protocol rewards boosted by the Algorand Foundation via Aeneas grant!</div>
-          </div>
-        </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <Link onClick={() => {
-            walletAddress ?
-            navigate("/stake") : dispatch(
-              setAlert(
-                "You cannot enter without first connecting a Wallet",
-              ),
-            );
-          }}>Stake</Link>
-        </div>
-      </Banner>
-      {/*
       <Banner>
       <div
           style={{
@@ -356,256 +698,4 @@ export default function HomeContent() {
           }}>Learn More</Link>
         </div>
       </Banner>
-        */}
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-          textAlign: "center",
-          marginTop: "18px",
-          marginBottom: "18px",
-        }}
-      >
-        <div style={{ margin: "8px 0px 8px 0px" }}>
-          <BinaryToggle
-            optionA="Help Me Out"
-            optionB="DeFi Expert"
-            selectedOption={setDifficulty}
-          />
-        </div>
-         <Container>
-            <Items>
-              {homeDetails.length && homeDetails.length > 0 ?
-              homeDetails.map((d) => {
-                  return (
-                      <Item key={d.title}>
-                        <Effect
-                          title={d.title}
-                          val={d.val}
-                          hasToolTip={d.hasToolTip} rewards={d.rewards}
-                        ></Effect>
-                      </Item>
-                    );
-                  })
-                : null}
-            </Items>
-          </Container>
-        <div>
-          {/* <Text
-            style={{
-              color: "#7c52ff",
-              textAlign: "center",
-              fontWeight: "bolder",
-            }}
-            // onClick={() => navigate("/analytics")}
-          >
-            {`See More Metrics ${">"}`}
-          </Text> */}
-        </div>
-      </div>
-      {difficulty === "Help Me Out" ? (
-        <div>
-          <StepContainer>
-            <Text
-              style={{ color: "#80edff" }}
-              onClick={() => setAllOpen(!allOpen)}
-            >
-              {allOpen ? `Collapse` : `Expand`} All
-            </Text>
-
-              <ConnectStep
-
-              >
-                <Text>
-                {walletAddress ? `  √` : ""} Step 1: Connect Your Wallet
-                </Text>
-                <div>
-                  <WalletConnect style={{ alignSelf: "flex-start" }} />
-                  </div>
-              </ConnectStep>
-
-
-            <Step
-              header="Step 2: Get Gard"
-              badges={[]}
-              checked={gardInWallet}
-              subtitle=""
-              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD go to the swap page. To borrow GARD go to the borrow page."
-              link="https://docs.algogard.com/how-to/get-gard"
-              linkText="How to get GARD"
-              goTo="Swap"
-              secondGoTo="Borrow"
-              allOpen={allOpen}
-            />
-            <Step
-              header="Step 3: Gain Rewards"
-              badges={[
-                {
-                  text : "Staking Rate",
-                  val : apy,
-                },
-                {
-                  text : "Governance Rate",
-                  val : apr,
-                }]}
-              checked={gaining}
-              subtitle=""
-              text="To gain additional rewards via the GARD Protocol a user may stake their GARD or participate in Algorand governance. Staking GARD entitles users to their share of revenues earned by the protocol in real time. Participating in Algorand Governace via the GARD Protocol entitles users to leverage their committed ALGOs to borrow GARD as well as their share of a 7M ALGO boost paid out quarterly by the Algorand Foundation."
-              link="https://gard.gitbook.io/gard-system-guide/how-to/participate-in-algorand-governance-via-gard-protocol"
-              linkText="What is needed to participate?"
-              goTo="Stake"
-              secondGoTo="Govern"
-              allOpen={allOpen}
-            />
-          </StepContainer>
-        </div>
-      ) : (
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 14
-          // width: "80%"
-        }}>
-          <Text>Quick Access</Text>
-          {buttons.map((action) => {
-            return (
-              <PrimaryButton disabled={!walletAddress} text={action} blue={true} onClick={() => navigate(`/${action.toLowerCase()}`)} key={Math.random()} />
-            )
-          })}
-          </div>
-      )}
-    </div>
-  );
-}
-
-const Link = styled.text`
-  text-decoration: none;
-  font-weight: 500;
-  color: #172756;
-  margin-right: 12px;
-  &:hover {
-    color: #03a0ff;
-    cursor: pointer;
-  }
-`;
-
-const Banner = styled.div`
-  display: flex;
-  flex-direction: row;
-  border-radius: 10px;
-  justify-content: space-between;
-  text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-`
-
-
-const Container = styled.div`
-  background: #0E1834;
-  padding-top: 30px;
-  padding-bottom: 30px;
-  border: 1px solid white;
-  border-radius: 10px;
-`;
-
-const Items = styled.div`
-  display: grid;
-  align-items: flex-end;
-  grid-template-columns: repeat(4, 22%);
-  row-gap: 30px;
-  justify-content: center;
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 40%);
-  }
-  @media (max-width: 422px) {
-    grid-template-columns: repeat(1, 40%)
-  }
-`;
-
-const Item = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-// styled components
-const StepContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center;
-  margin-bottom: 50px;
-`;
-
-const ConnectStep = styled.div`
-  display: flex;
-  font-weight: 500;
-  font-size: large;
-  text-align: left;
-  align-items: center;
-  background: #0f1733;
-  color: #019fff;
-  height: 80px;
-  width: 60vw;
-  border-radius: 10px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  ${(props) =>
-    props.open &&
-    css`
-      background: #019fff;
-      color: #0f1733;
-      width: 60vw;
-    `}
-  ${(props) =>
-    props.allOpen &&
-    css`
-      background: #019fff;
-      color: #0f1733;
-      width: 60vw;
-    `}
-    @media (max-width:663)
-    {
-      button {
-        font-size: smaller
-      }
-
-    }
-
-  /* display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  background: #0f1733;
-  color: #019fff;
-  font-weight: 500;
-  font-size: large;
-  /* height: 80px; */
-  /* width: 30vw; */
-  /* border-radius: 10px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
-*/
-`;
-
-const Text = styled.text`
-  font-weight: 500px;
-  cursor: pointer;
-  margin: 0px 14px 0px 0px;
-`;
-
-const EnrollButton = styled(PrimaryButton)`
-  appearance: none;
-  border: none;
-  color: unset;
-  margin: 6px 0px 10px 80px;
-  padding: 0px 14px 0px 14px;
-  &:hover {
-    color: #019fff;
-  }
-`;
+ */

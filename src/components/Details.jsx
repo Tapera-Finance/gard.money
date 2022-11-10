@@ -1,5 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
+import { device } from "../styles/global";
 import Effect from "./Effect";
 
 export default function Details({ className, details, governPage }) {
@@ -45,6 +46,12 @@ const Items = styled.div`
     props.governPage === true && css`
     column-gap: 2%;
     `}
+  @media (${device.tablet}) {
+    grid-template-columns: repeat(2, 44%);
+  }
+  @media (${device.mobileM}) {
+    grid-template-columns: repeat(1, 80%);
+  }
 `;
 
 const Item = styled.div`

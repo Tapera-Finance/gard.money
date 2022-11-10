@@ -4,6 +4,7 @@ import Select from "./Select";
 import InputField from "./InputField";
 import Effect from "./Effect";
 import chevronDown from "../assets/chevron_down.png";
+import { size, device } from "../styles/global"
 
 // entire container for currency select, input field, text for displaying vals
 
@@ -40,6 +41,8 @@ export default function ExchangeField({
                   callback={onOptionSelect}
                 />
               </SelectContainer>
+              <TextContainer>
+
               <Text>{`You have
               ${
                 balances[
@@ -48,6 +51,7 @@ export default function ExchangeField({
                     : ["assetB"]
                 ].amount
               } to offer`}</Text>
+              </TextContainer>
               <InputContainer>
                 <ExchangeInput
                   id={ids[1]}
@@ -71,6 +75,8 @@ export default function ExchangeField({
                   callback={onOptionSelect}
                 />
               </SelectContainer>
+              <TextContainer>
+
               <Text>
                 {`You have
               ${
@@ -79,6 +85,7 @@ export default function ExchangeField({
                 ].amount
               } already`}
               </Text>
+              </TextContainer>
               <InputContainer>
                 <ExchangeInput
                   id={ids[1]}
@@ -101,9 +108,17 @@ const Container = styled.div`
   background: #0f1733;
   justify-content: space-between;
   height: 100%;
-  /* width: max-content; */
   border-radius: 8px;
   border: 1px solid white;
+  @media (${device.tablet}) {
+    border: 1px solid #7C52ff;
+    /* height: 9.8vh; */
+    width: 90vw;
+  }
+  @media (min-width: ${size.tablet}) and (${device.laptop}) {
+    width: 60vw;
+  }
+  @media (${device.mobileM}) {}
 `;
 
 const Text = styled.text`
@@ -112,13 +127,32 @@ const Text = styled.text`
   padding-left: 10px;
   padding-bottom: 10px;
   text-align: center;
+  width: 80px;
+  @media (${device.tablet}) {
+    align-self: unset;
+    padding-bottom: unset;
+  }
 `;
+
+const TextContainer = styled.div`
+  display: flex;
+  align-items: flex-end;
+  @media (${device.tablet}) {
+    align-items: center;
+  }
+`
 
 const DollarEffect = styled(Effect)`
   color: #999696;
   scale: 0.8;
   display: unset;
   flex-direction: initial;
+  @media (${device.mobileM}) {
+    margin: 0px 0px 0px 0px;
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.8);
+  }
 `;
 
 const InputContainer = styled.div`
@@ -126,6 +160,15 @@ const InputContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  @media (${device.tablet}) {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @media (${device.mobileS}) {
+    flex-direction: column;
+  }
 `;
 
 const ExchangeInput = styled(InputField)`
@@ -149,6 +192,18 @@ const ExchangeInput = styled(InputField)`
     background: #e8e8e8;
     text-decoration: none;
   }
+  @media (${device.tablet}) {
+    width: 16vw;
+    font-size: small;
+  }
+  @media (${device.mobileM}) {
+    margin: 0px 0px 0px 0px;
+  }
+  @media (${device.mobileS}) {
+    transform: scale(0.8);
+  }
+
+
 `;
 
 const SelectContainer = styled.div`

@@ -18,6 +18,7 @@ import { getCDPs } from "../transactions/cdp";
 import { cdpGen } from "../transactions/contracts";
 import { useNavigate } from "react-router-dom";
 import { ids } from "../transactions/ids"
+import { size, device } from "../styles/global"
 
 const instantiateUser = async (address) => {
   let accountCDPs = getCDPs()[address];
@@ -176,8 +177,8 @@ export default function WalletConnect() {
         <></>
       )}
       <WalletConnectDiv>
-        <div>
-          <PrimaryButton
+        <BtnBox>
+          <WalletBarButton
             text={walletAddress || "Connect Wallet"}
             blue={true}
             onClick={() => {
@@ -190,10 +191,10 @@ export default function WalletConnect() {
               }
             }}
           />
-        </div>
+        </BtnBox>
         {walletAddress ? (
-          <div style={{ marginLeft: 12 }}>
-            <PrimaryButton
+          <BtnBox>
+            <WalletBarButton
               text="Disconnect Wallet"
               blue={true}
               onClick={() => {
@@ -201,7 +202,7 @@ export default function WalletConnect() {
                 dispatch(setWallet({ address: "" }));
               }}
             />
-          </div>
+          </BtnBox>
         ) : (
           <></>
         )}
@@ -222,17 +223,80 @@ export default function WalletConnect() {
   );
 }
 
+const WalletBarButton = styled(PrimaryButton)`
+  margin: 0px 4px 0px 4px;
+  @media (${device.mobileL}) {
+    width: 100%;
+    margin: 2px 0px 2px 0px;
+  }
+`
+
+const BtnBox = styled.div`
+  @media (${device.mobileL}) {
+    margin: 4px 0px 4px 0px;
+  }
+`
+
 const WalletConnectDiv = styled.div`
   height: 96px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  @media (${device.mobileL}) {
+    flex-direction: column;
+    margin: 2px 0px 2px 0px;
+    align-items: initial;
+  }
 `
 
 const StyledModal = styled(Modal)`
   background: #172756;
 `
+
+const WalletOption = styled.button`
+  width: ${window.innerWidth < 900 ? "80vw" : "327px"};
+  height: 70px;
+  background: transparent;
+  cursor: pointer;
+  border: 1px solid #e8e8e8;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px;
+  border-radius: 6px;
+`;
+const WalletOptionText = styled.text`
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+`;
+
+// styled components for wallet form
+const CancelButton = styled.button`
+  border: 0px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  height: "100%";
+  cursor: pointer;
+`;
+const CancelButtonText = styled.text`
+  font-weight: 500;
+  font-size: 16px;
+  color: white;
+`;
+
+const TermsContainer = styled.div`
+  height: ${window.innerWidth < 769 ? "100%" : "300px"};
+  overflow-y: scroll;
+`;
+const TermsText = styled.text`
+  text-overflow: clip;
+  height: 100%;
+`;
+
 
 /**
  * Renders each wallet option inside de modal
@@ -309,40 +373,6 @@ function WalletOptions({ onClick }) {
   );
 }
 
-const WalletOption = styled.button`
-  width: ${window.innerWidth < 900 ? "80vw" : "327px"};
-  height: 70px;
-  background: transparent;
-  cursor: pointer;
-  border: 1px solid #e8e8e8;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0px 20px;
-  border-radius: 6px;
-`;
-const WalletOptionText = styled.text`
-  font-weight: bold;
-  font-size: 20px;
-  color: white;
-`;
-
-// styled components for wallet form
-const CancelButton = styled.button`
-  border: 0px;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  height: "100%";
-  cursor: pointer;
-`;
-const CancelButtonText = styled.text`
-  font-weight: 500;
-  font-size: 16px;
-  color: white;
-`;
-
 function TermsOfService({ closeModal, accept }) {
   return (
     <div>
@@ -386,11 +416,4 @@ function TermsOfService({ closeModal, accept }) {
   );
 }
 
-const TermsContainer = styled.div`
-  height: ${window.innerWidth < 769 ? "100%" : "300px"};
-  overflow-y: scroll;
-`;
-const TermsText = styled.text`
-  text-overflow: clip;
-  height: 100%;
-`;
+

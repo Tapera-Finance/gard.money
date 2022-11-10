@@ -27,6 +27,7 @@ import { formatToDollars } from "../../utils";
 import { gardpool, swap } from "../../transactions/swap";
 import { titleToToolTip } from "../../utils";
 import { VERSION } from "../../globals";
+import { size, device } from "../../styles/global"
 
 const initEffectState = {
   primaryAssetPriceAfterSwap: 0.0,
@@ -403,7 +404,7 @@ export default function SwapDetails() {
 
   return (
     <div>
-        <div>
+        <SwapContainer>
           {loading ? <LoadingOverlay text={loadingText} /> : <></>}
             {!swapEnabled ? (<div style={{display: "flex", justifyContent: "center", textAlign: "center"}}><TestAlert>Swap only available on Main Net</TestAlert></div>)  : <></>}
           <ExchangeBar>
@@ -523,7 +524,7 @@ export default function SwapDetails() {
               </Details>
             </DetailsContainer>
           </div>
-        </div>
+        </SwapContainer>
 
       {/* : (
         <div
@@ -553,6 +554,12 @@ export default function SwapDetails() {
     </div>
   );
 }
+
+const SwapContainer = styled.div`
+  @media (min-width: ${size.tablet}) {
+    margin-left: 2vw;
+  }
+`
 
 const SlippageEffect = styled.div`
 align-self: center;
@@ -635,6 +642,9 @@ const DetailsContainer = styled.div`
   border: 1px solid white;
   margin-top: 10px;
   margin-bottom: 20vh;
+  @media (${device.tablet}) {
+    border: 1px solid #7C52ff;
+  }
 `;
 
 const Details = styled.div`
@@ -647,6 +657,9 @@ const Details = styled.div`
   margin: auto;
   justify-content: space-around;
   align-items: flex-start;
+  @media (${device.tablet}) {
+    align-items: end;
+  }
 `;
 
 const ExchangeBar = styled.div`
@@ -655,11 +668,17 @@ const ExchangeBar = styled.div`
   flex: 3;
   justify-content: space-between;
   margin: auto;
+  @media (${device.laptop}) {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 const ExchangeFields = styled(ExchangeField)`
   width: 40%;
   background: #0d1227;
+
 `;
 
 const SwapButton = styled.img`

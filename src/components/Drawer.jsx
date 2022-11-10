@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import styled, { css, keyframes } from "styled-components";
 import analyticsIcon from "../assets/icons/dashboard_icon.png";
 import borrowIcon from "../assets/icons/algo_governance_icon.png";
@@ -14,6 +14,7 @@ import logo from "../assets/new_gard_logo.png";
 import chevronDown from "../assets/chevron_down.png";
 import chevronUp from "../assets/chevron_up.png";
 import hamburguerIcon from "../assets/icons/hamburger_icon.png";
+import closeIcon from "../assets/icons/close_icon.png"
 import hamburguerPurpleIcon from "../assets/icons/hamburger-purple_icon.png";
 import { CONTENT_NAMES } from "../globals";
 import TwitterIcon from "../assets/icons/twitter_icon.png";
@@ -28,7 +29,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
+import { device, size } from "../styles/global";
+import { px2vw } from "../utils"
 
 /**
  * Used as our main navigation
@@ -42,6 +44,7 @@ import { useEffect } from "react";
 export default function Drawer({
   selected,
   open,
+  mobile,
   animate,
   toggleOpenStatus,
   allowAnimate,
@@ -52,9 +55,30 @@ export default function Drawer({
   const walletAddress = useSelector((state) => state.wallet.address);
 
 
+
   return (
-    <div>
-      {!open ? (
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      alignItems: "baseline"
+    }} >
+       {window.innerWidth < 900 ? <MobileDrawer>
+          <LogoButton
+            style={{
+              display: "flex",
+              marginTop: 13,
+              width: 50,
+              height: 20,
+              marginLeft: "03.9583333333333vw",
+            }}
+            onClick={() => {
+              if (window.innerWidth < 900) toggleOpenStatus();
+              navigate("/");
+            }}
+          >
+            <MobileNavLogo src={logo} alt="logo" />
+          </LogoButton>
         <HamburgerButton
           style={{}}
           onClick={() => {
@@ -62,11 +86,10 @@ export default function Drawer({
             allowAnimate();
           }}
         >
-          <HamburgerIcon alt="burger" src={hamburguerPurpleIcon} />
+          <HamburgerIcon alt="burger" src={hamburguerIcon} />
         </HamburgerButton>
-      ) : (
-        <></>
-      )}
+        </MobileDrawer> : <></>}
+
       <DrawerDiv id="drawer" open={open} animate={animate}>
         <div
           style={{
@@ -75,6 +98,7 @@ export default function Drawer({
             justifyContent: "space-between",
           }}
         >
+          <div style={{display: "flex", justifyContent: "space-evenly"}} >
           <LogoButton
             style={{
               display: "flex",
@@ -89,6 +113,17 @@ export default function Drawer({
           >
             <NavLogo src={logo} alt="logo" />
           </LogoButton>
+        <HamburgerButton
+          style={{}}
+          onClick={() => {
+            toggleOpenStatus();
+            allowAnimate();
+          }}
+          >
+            <HamburgerIcon alt="burger" src={!open ? hamburguerIcon : closeIcon} />
+          </HamburgerButton>
+
+          </div>
           <div
             style={{
               display: "flex",
@@ -99,16 +134,6 @@ export default function Drawer({
           >
             <ALGOPrice style={{ alignSelf: "center" }} />
           </div>
-          {window.innerWidth < 900 ? (
-            <HamburgerButton
-              style={{ position: "relative" }}
-              onClick={() => toggleOpenStatus()}
-            >
-              <HamburgerIcon alt="burger" src={hamburguerIcon} />
-            </HamburgerButton>
-          ) : (
-            <></>
-          )}
         </div>
         <div>
           {menuItems.map((v, i) => {
@@ -156,7 +181,7 @@ export default function Drawer({
                       } else if (["Actions"].includes(v.name) && !dev) {
                         dispatch(setAlert("This page is under construction!"));
                       }  else {
-                        if (window.innerWidth < 900) toggleOpenStatus();
+                        if (window.innerWidth < parseInt(size.tablet)) toggleOpenStatus();
                         navigate(v.route);
                       }
                     }}
@@ -301,29 +326,65 @@ export default function Drawer({
   );
 }
 
-// animation for closing and opening drawer
-const closeDrawerAnimation = keyframes`
-  0% {left: 0vw;}
-  100% {left: ${`${window.innerWidth < 900 ? -101 : -20}vw`}}
-`;
+const MobileDrawer = styled.div`
+  background: linear-gradient(80deg, #172756 0%, #000000 100%);
+  display: flex;
+  margin-bottom: 7vh;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100vw;
+  height: 7vh;
+  @media (min-width: ${size.tablet}) {
+    appearance: none;
+    visibility: hidden;
+  }
+
+`
 
 const DrawerDiv = styled.div`
   background: linear-gradient(80deg, #172756 0%, #000000 100%);
   height: 101vh;
-  width: ${`${window.innerWidth < 900 ? 101 : 20}vw`};
   z-index: 15;
-  left: ${`${window.innerWidth < 900 ? -101 : 0}vw`};
-  position: ${`${window.innerWidth < 900 ? "absolute" : "fixed"}`};
   overflow-y: auto;
-  ${(props) =>
-    props.animate &&
-    css`
-      animation-direction: ${!props.open ? "normal" : "reverse"};
-      animation-name: ${props.animate ? closeDrawerAnimation : ""};
-      animation-duration: 0.5s;
-      animation-iteration-count: 1;
-      animation-fill-mode: forwards;
-    `}
+
+  // if screen is smaller than tablet, hide drawer until opened at full width
+  @media (${device.tablet}) {
+    visibility: hidden;
+    position: absolute;
+    ${(props) =>
+      props.open &&
+      css`
+        visibility: visible;
+        width: 100vw;
+        overflow: scroll;
+        position: unset;
+        position: fixed;
+      `}
+    ${(props) =>
+      !props.open &&
+      css`
+        height: 101vh;
+        margin-left: 0vw;
+      `}
+  }
+  // if screen is larger than tablet, show drawer always
+  @media (min-width: ${size.tablet}) {
+    ${(props) =>
+      props.open &&
+      css`
+        visibility: visible;
+        height: 101vh;
+        position: fixed;
+      `}
+    ${(props) =>
+      !props.open &&
+      css`
+        visibility: visible;
+        height: 101vh;
+        position: fixed;
+      `}
+  }
+  // if screen is smaller than tablet, eliminate left margin
 `;
 const SocialMediaContainer = styled.div`
   width: 80%;
@@ -477,10 +538,13 @@ const HamburgerButton = styled.button`
   align-items: center;
   justify-content: center;
   border-width: 0px;
-  position: absolute;
+  /* position: absolute; */
 `;
 const HamburgerIcon = styled.img`
   height: 30px;
+  @media (min-width: ${size.tablet}) {
+    visibility: hidden;
+  }
 `;
 const NavButton = styled.button`
   border-width: 0;
@@ -509,6 +573,9 @@ const ButtonChevronIcon = styled.img`
 const NavLogo = styled.img`
   height: 50px;
 `;
+const MobileNavLogo = styled.img`
+  height: 25px;
+`
 
 // items for our drawer method
 const menuItems = [

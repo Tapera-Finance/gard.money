@@ -201,6 +201,7 @@ const TableGrid = styled.table`
   border-bottom-right-radius: 10px;
   border-top: none;
   background: #0f1733;
+  overflow-x: auto;
 `
 
 // styled components

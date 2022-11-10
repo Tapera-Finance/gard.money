@@ -7,15 +7,9 @@ import { getPrice } from "../transactions/cdp";
 import { getWallet, getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "./Positions";
 import { ids } from "../transactions/ids"
+import { device } from "../styles/global";
 
-const SubToggle = styled(PageToggle)`
-  float: right;
-  background: transparent;
-  margin-bottom: 6px;
-  text {
-    text-decoration: unset;
-  }
-`;
+
 
 const price = await getPrice();
 
@@ -94,19 +88,7 @@ export default function Holdings() {
     // one: <div>stake</div>,
     one: (
       <div style={{marginTop: 20}}>
-      <div
-        style={{
-          height: 70,
-          borderTopRightRadius: 10,
-          borderTopLeftRadius: 10,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          background: "#0E1834",
-          border: "1px solid white",
-          borderBottom: "none"
-        }}
-      >
+      <TableHeading>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title>Wallet {`(${formatToDollars(walletTotal.toString())} Total Value)`}</Title>
@@ -125,8 +107,8 @@ export default function Holdings() {
             }}
           />
         </div>
-      </div>
-          <Table
+      </TableHeading>
+          <HoldTable
           data={getAssets().map((x) => {
             let temp = x;
             temp.value = formatToDollars(x["value"]);
@@ -138,18 +120,7 @@ export default function Holdings() {
     ),
     two: (
       <div style={{marginTop: 20}}>
-      <div
-        style={{
-          height: 70,
-          borderTopRightRadius: 10,
-          borderTopLeftRadius: 10,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          background: "#0E1834",
-          border: "1px solid white",
-          borderBottom: "none"
-        }}
+      <TableHeading
       >
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
@@ -169,8 +140,8 @@ export default function Holdings() {
             }}
           />
         </div>
-      </div>
-      <Table
+      </TableHeading>
+      <BorrowTable
         data={cdpData}
         columns={borrowColumns}
       />
@@ -178,7 +149,7 @@ export default function Holdings() {
     ),
   };
 
-  
+
   useEffect(async () => {
     let price = await getPrice();
     setPrice(price);
@@ -211,7 +182,7 @@ const CountContainer = styled.div`
   background: #172756;
   border-radius: 16px;
   padding: 2px 8px;
-  height: 20px;
+  /* height: 20px; */
 `;
 
 const CountText = styled.text`
@@ -219,3 +190,59 @@ const CountText = styled.text`
   font-size: 12px;
   color: white;
 `;
+
+const SubToggle = styled(PageToggle)`
+  float: right;
+  background: transparent;
+  margin-bottom: 6px;
+  text {
+    text-decoration: unset;
+  }
+  @media (${device.tablet}) {
+    flex-direction: column;
+    transform: scale(0.9);
+  }
+  @media (${device.mobileL}) {
+    flex-direction: column;
+    transform: scale(0.8);
+
+  }
+`;
+
+const HoldTable = styled(Table)`
+  @media (${device.tablet}) {
+    transform: scale(0.9);
+    margin-top: -18px;
+  }
+  @media (${device.mobileL}) {
+    transform: scale(0.9), translateX(-30px);
+    margin-top: -18px;
+
+  }
+`
+
+const BorrowTable = styled(Table)`
+  @media (${device.tablet}) {
+    transform: scale(0.9);
+    margin-top: -18px;
+  }
+  @media (${device.mobileL}) {
+    transform: scale(0.9), translateX(-30px);
+    margin-top: -18px;
+    overflow-x: auto;
+  }
+`
+
+const TableHeading = styled.div`
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0E1834;
+  border: 1px solid white;
+  border-bottom: none;
+  @media (${device.tablet}) {
+    transform: scale(0.9);
+  }
+`

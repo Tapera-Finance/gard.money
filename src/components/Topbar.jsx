@@ -4,6 +4,7 @@ import syncIcon from "../assets/icons/sync_icon.png";
 import syncIconWhite from "../assets/icons/sync_icon_white.png";
 import AccountCard from "./AccountCard";
 import WalletConnect from "./WalletConnect";
+import {size, device} from "../styles/global";
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -12,24 +13,15 @@ import WalletConnect from "./WalletConnect";
 
 export default function Topbar({ contentName, setMainContent }) {
   return (
-    <div >
-      <TopBar
-        style={{
-          backgroundColor: "#172756",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingLeft: 36,
-          paddingRight: window.innerWidth * 0.077,
-        }}
-      >
+    <div style={{display: "flex"}}>
+      <TopBar>
         <div
           style={{
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
             height: "100%",
+            justifyContent: "flex-end"
           }}
         >
           <div style={{ marginRight: 9 }}>
@@ -43,8 +35,9 @@ export default function Topbar({ contentName, setMainContent }) {
           </SimplePressable>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ paddingRight: 20 }}></div>
+          <div>
           <AccountCard />
+          </div>
         </div>
       </TopBar>
     </div>
@@ -52,13 +45,37 @@ export default function Topbar({ contentName, setMainContent }) {
 }
 
 // styled components for topbar
+
+
+
 const TopBar = styled.div`
   height: 96px;
-  background: #f9fafb;
+  background: #172756;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 36px;
+  padding-right: ${window.innerWidth * 0.077}px;
+  @media (min-width: ${size.tablet}) {
+    width: 100%;
+    margin-left: 8.88vw;
+  }
+  @media (${device.tablet}) {
+    width: 100%;
+  }
+  @media (${device.mobileL}) {
+    flex-direction: column;
+    align-items: first-baseline;
+    margin-left: 25%;
+  }
 `;
 const TopBarText = styled.text`
   font-weight: 500;
   font-size: 20px;
+  @media (${device.tablet}) {
+    margin: 4px 0px 12px 0px;
+  }
 `;
 const SimplePressable = styled.div`
   cursor: pointer;

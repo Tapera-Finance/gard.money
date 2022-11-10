@@ -61,3 +61,5 @@ export function titleToToolTip(str) {
 export function isFirefox() {
   return navigator.userAgent.includes("Firefox")
 }
+
+export const px2vw = (size, width = 1440) => `${(size / width) * 100}vw`;
