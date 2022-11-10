@@ -32,6 +32,17 @@
     padding: 20px;
     row-gap: 6px;
   }
+  .m-positions_row_1 {
+    color: #7C52FF;
+  }
+
+  .m-positions_row_2 {
+    color: #FF00FF;
+  }
+
+  .m-positions_row_3 {
+    color: #019FFF;
+  }
 
 }
 
@@ -40,17 +51,7 @@
   margin: 0px 4px 0px 4px;
 }
 
-.m-positions_row_1 {
-  color: #7C52FF;
-}
 
-.m-positions_row_2 {
-  color: #FF00FF;
-}
-
-.m-positions_row_3 {
-  color: #019FFF;
-}
 
 @media (min-width: 768px) {
   .m-positions_row_1 {
