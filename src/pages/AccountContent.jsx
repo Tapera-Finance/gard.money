@@ -80,7 +80,7 @@ export default function AccountContent() {
 
   if (!walletAddress) return <div></div>;
   return (
-    <div>
+    <AcctPgCont>
       <div
         style={{
           display: "flex",
@@ -149,9 +149,7 @@ export default function AccountContent() {
       </AccountContainer>
       <div
         style={{
-          // overflowX: "hidden",
           marginBottom: 8,
-          width: `${selectedTab === "one" ? "" : "90vw"}`
         }}
       >
         <AcctPageToggle
@@ -163,11 +161,15 @@ export default function AccountContent() {
         />
         {tabs[selectedTab]}
       </div>
-    </div>
+    </AcctPgCont>
   );
 }
 
 // syled components for our wallet content
+
+const AcctPgCont = styled.div`
+  max-width: 90vw;
+`
 
 const AcctPageToggle = styled(PageToggle)`
   @media (${device.tablet}) {
