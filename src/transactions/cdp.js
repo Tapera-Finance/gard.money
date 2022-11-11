@@ -216,7 +216,7 @@ sessionStorage.setItem = function (key, value) {
   originalSetItem.apply(this, arguments);
 };
 
-function makeUpdateInterestTxn(userInfo, params) {
+export function makeUpdateInterestTxn(userInfo, params) {
   return algosdk.makeApplicationCallTxnFromObject({
     from: userInfo.address,
     appIndex: ids.app.sgard_gard,
@@ -1238,8 +1238,8 @@ export async function getAllCDPs() {
     cdp.sgard_debt = getCDPVal(cdp, 'SGARD_DEBT', true)
     cdp.gard_owed = (await sgardToGard(cdp.sgard_debt)) / 1000000
     cdp.ratio = calcRatio(cdp.collateralAmount, cdp.gard_owed, cdp.collateralID)
-    cdp.owner = getCDPVal(cdp, 'OWNER', false)
-    cdp.creator = getCDPVal(cdp, 'CREATOR', false)
+    cdp.owner = algosdk.encodeAddress(Buffer.from(getCDPVal(cdp, 'OWNER', false), "base64"))
+    cdp.creator = algosdk.encodeAddress(Buffer.from(getCDPVal(cdp, 'CREATOR', false), "base64"))
     cdp.id = getCDPVal(cdp, 'account_id', true)
     cdp.activeAuction = getCDPVal(cdp, 'UNIX_START', true) % 2 == 1
   }

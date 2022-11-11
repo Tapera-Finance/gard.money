@@ -9,21 +9,63 @@ import {
   signGroup,
 } from "../wallets/wallets";
 import { validatorAddress, cdpGen } from "./contracts";
+import { makeUpdateInterestTxn } from "./cdp";
 import algosdk from "algosdk";
 import {
   updateLiquidationFirestore,
 } from "../components/Firebase";
 
-// TODO: Start auction
+
+const enc = new TextEncoder();
+
 
 export async function start_auction(cdp) {
-
+  const infoPromise = accountInfo();
+  const paramsPromise = getParams(2000);
+  const info = await infoPromise;
+  cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralType);
+  let params = await paramsPromise;
+  const dummyTxn = makeUpdateInterestTxn(info, params)
+  params.fee = 0
+  let txn = algosdk.makeApplicationCallTxnFromObject({
+    from: cdp.contract.address,
+    appIndex: ids.app.validator,
+    onComplete: 0,
+    appArgs: [enc.encode("Auction")],
+    accounts: [cdp.contract.address],
+    foreignApps: [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest],
+    foreignAssets: [ids.asa.gard],
+    suggestedParams: params,
+  });
+  let txns = [dummyTxn, txn]
+  algosdk.assignGroupID(txns);
+  const signTxnsPromise = signGroup(info, txns);
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+  let lsig = algosdk.makeLogicSig(cdp.contract.logic, [algosdk.encodeUint64(3)]);
+  const stxn1 = algosdk.signLogicSigTransactionObject(txn, lsig);
+  const user_signed = await signTxnsPromise;
+  setLoadingStage("Starting an auction...");
+  console.log(stxn1)
+  console.log(user_signed)
+  let stxns = [
+    user_signed[0].blob,
+    stxn1.blob,
+  ];
+  let response = await sendTxn(
+    stxns,
+    `Successfully started the auction on ${cdp.owner}'s CDP.`,
+    true,
+  );
+  setLoadingStage(null);
+  return response;
+  // TODO: ASA version
 }
 
 export async function liquidate(cdp) {
   
 }
 
+/*
 export async function liquidate(
   account_id,
   owner_address,
@@ -124,3 +166,4 @@ export async function liquidate(
   setLoadingStage(null);
   return response;
 }
+*/

@@ -17,7 +17,7 @@ import {
 } from "../prices/prices";
 import { accountInfo } from "../wallets/wallets";
 import { ids } from "../transactions/ids";
-import { liquidate } from "../transactions/liquidation";
+import { start_auction, liquidate } from "../transactions/liquidation";
 import { getAllCDPs } from "../transactions/cdp";
 import { setAlert } from "../redux/slices/alertSlice";
 
@@ -44,6 +44,7 @@ export default function AuctionsContent() {
   const [modalVisible, setModalVisible] = useState(false);
   const [transInfo, setTransInfo] = useState([]);
   const [transCDP, setTransCDP] = useState(null);
+  const [transType, setTransType] = useState(null);
   const [canAnimate, setCanAnimate] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ export default function AuctionsContent() {
       collateralType: value.collateralType,
       costInGard: (value.debt + value.premium).toFixed(2),
       marketDiscount: value.marketDiscount + "%",
-      action: (
+      action: value.cdp.activeAuction ? (
         <PrimaryButton
           text={"Purchase"}
           onClick={() => {
@@ -105,7 +106,32 @@ export default function AuctionsContent() {
                 value: value.marketDiscount + "%",
               },
             ]);
-            setTransId(value.cdp);
+            setTransCDP(value.cdp);
+            setTransType("liquidate");
+            setCanAnimate(true);
+            setModalVisible(true);
+          }}
+        />
+      ) : (
+        <PrimaryButton
+          text={"Start auction"}
+          onClick={() => {
+            setTransInfo([
+              {
+                title: value.collateralType + " for Purchase",
+                value: value.collateralAvailable  / 1000000,
+              },
+              {
+                title: "Cost in Gard",
+                value: (value.debt + value.premium).toFixed(3),
+              },
+              {
+                title: "Market Discount",
+                value: value.marketDiscount + "%",
+              },
+            ]);
+            setTransCDP(value.cdp);
+            setTransType("auction");
             setCanAnimate(true);
             setModalVisible(true);
           }}
@@ -158,11 +184,12 @@ export default function AuctionsContent() {
               setModalVisible(false);
               setLoading(true);
               try {
-                let res = await liquidate(transCDP);
+                let res = transType == "liquidate" ? await liquidate(transCDP) : await start_auction(transCDP);
                 if (res.alert) {
                   dispatch(setAlert(res.text));
                 }
               } catch (e) {
+                console.log(e)
                 alert("Liquidation Failed.");
               }
               setCanAnimate(false);
