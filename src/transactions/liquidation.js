@@ -22,9 +22,9 @@ const enc = new TextEncoder();
 export async function start_auction(cdp) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
-  const info = await infoPromise;
   cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralType);
   let params = await paramsPromise;
+  const info = await infoPromise;
   const dummyTxn = makeUpdateInterestTxn(info, params)
   params.fee = 0
   let txn = algosdk.makeApplicationCallTxnFromObject({
@@ -62,7 +62,66 @@ export async function start_auction(cdp) {
 }
 
 export async function liquidate(cdp) {
-  
+  const infoPromise = accountInfo();
+  const paramsPromise = getParams(6000);
+  cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralType);
+  let params = await paramsPromise;
+  const info = await infoPromise;
+  let txn0 = makeUpdateInterestTxn(info, params)
+  params.fee = 0
+  // txn 1 application call
+  let txn1 = algosdk.makeApplicationCallTxnFromObject({
+    from: cdp.address,
+    appIndex: ids.app.validator,
+    onComplete: 2,
+    appArgs: [enc.encode("BID")],
+    foreignAssets: [ids.asa.gard],
+    accounts: [cdp.address, cdp.creator, "J5SPGAPMHBL6FCUBYQ2AETO76BBF4YEFZJQ6LALPGIIJVIQ4RKO5NVDUGU"], // XXX: IDK what this last address is... 
+    foreignApps: [ids.app.oracle[0], ids.app.sgard_gard, ids.app.gard_staking],
+    suggestedParams: params,
+  });
+  // txn 1 debt and fee repayment
+  console.log(1000000 * cdp.gard_owed * 1.2)
+  let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(ids.app.validator),
+    amount: parseInt(1000000 * cdp.gard_owed * 1.15 + 1), // TODO: More optimal GARD amount needed (it's refunded tho)
+    suggestedParams: params,
+    assetIndex: ids.asa.gard,
+  });
+  // txn 2 Receive CDP asset
+  let txn3 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: cdp.address,
+    to: info.address,
+    closeRemainderTo: info.address,
+    amount: 0,
+    suggestedParams: params,
+  });
+  let txns = [txn0, txn1, txn2, txn3];
+  algosdk.assignGroupID(txns);
+
+  const signTxnsPromise = signGroup(info, txns);
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+  let lsig = algosdk.makeLogicSig(cdp.contract.logic, [algosdk.encodeUint64(1)]);
+  const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
+  const stxn3 = algosdk.signLogicSigTransactionObject(txn3, lsig);
+  const user_signed = await signTxnsPromise;
+  setLoadingStage("Liquidating CDP...");
+  let stxns = [
+    user_signed[0].blob,
+    stxn1.blob,
+    user_signed[2].blob,
+    stxn3.blob,
+  ];
+  let response = await sendTxn(
+    stxns,
+    `Successfully liquidated ${cdp.owner}'s CDP.`,
+    true,
+  );
+  // updateLiquidationFirestore(cdp.owner, cdp.id);
+  setLoadingStage(null);
+  return response;
+  // TODO: ASA version
 }
 
 /*

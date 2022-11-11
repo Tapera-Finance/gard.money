@@ -29,7 +29,7 @@ let cdp_data = await cdp_data_promise;
 async function loadDefaulted() {
   const allCDPs = await getAllCDPs();
   console.log(allCDPs)
-  return allCDPs.filter(cdp => cdp.ratio <= 115)
+  return allCDPs.filter(cdp => cdp.ratio <= 115 || cdp.activeAuction)
 }
 
 /**
