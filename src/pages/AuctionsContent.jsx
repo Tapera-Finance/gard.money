@@ -43,10 +43,7 @@ export default function AuctionsContent() {
   const [loadingText, setLoadingText] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [transInfo, setTransInfo] = useState([]);
-  const [transPremium, setTransPremium] = useState([]);
-  const [transId, setTransId] = useState([]);
-  const [transOwner, setTransOwner] = useState([]);
-  const [transDebt, setTransDebt] = useState([]);
+  const [transCDP, setTransCDP] = useState(null);
   const [canAnimate, setCanAnimate] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -77,7 +74,7 @@ export default function AuctionsContent() {
       ).toFixed(1),*/
       owner: cdp.owner,
       id: cdp.id,
-      collateralType: cdp.collateralID == 0 ? "algo": "galgo",
+      collateralType: cdp.collateralID == 0 ? "ALGO": "galgo",
       cdp: cdp
     };
   });
@@ -96,8 +93,8 @@ export default function AuctionsContent() {
           onClick={() => {
             setTransInfo([
               {
-                title: "ALGO for Purchase",
-                value: value.collateralAvailable,
+                title: value.collateralType + " for Purchase",
+                value: value.collateralAvailable  / 1000000,
               },
               {
                 title: "Cost in Gard",
@@ -108,10 +105,7 @@ export default function AuctionsContent() {
                 value: value.marketDiscount + "%",
               },
             ]);
-            setTransId(value.id);
-            setTransOwner(value.owner);
-            setTransDebt(value.debt);
-            setTransPremium(value.premium);
+            setTransId(value.cdp);
             setCanAnimate(true);
             setModalVisible(true);
           }}
@@ -164,12 +158,7 @@ export default function AuctionsContent() {
               setModalVisible(false);
               setLoading(true);
               try {
-                let res = await liquidate(
-                  transId,
-                  transOwner,
-                  parseInt(transDebt * 1000000),
-                  parseInt(transPremium * 1000000),
-                );
+                let res = await liquidate(transCDP);
                 if (res.alert) {
                   dispatch(setAlert(res.text));
                 }

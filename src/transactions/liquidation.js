@@ -16,6 +16,14 @@ import {
 
 // TODO: Start auction
 
+export async function start_auction(cdp) {
+
+}
+
+export async function liquidate(cdp) {
+  
+}
+
 export async function liquidate(
   account_id,
   owner_address,
