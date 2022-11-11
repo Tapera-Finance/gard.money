@@ -14,6 +14,8 @@ import {
   updateLiquidationFirestore,
 } from "../components/Firebase";
 
+// TODO: Start auction
+
 export async function liquidate(
   account_id,
   owner_address,

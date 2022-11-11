@@ -38,11 +38,15 @@ var activeWalletInfo;
 
 // Sets up algosdk client
 let _nodeServer = "https://testnet-algorand.api.purestake.io/ps2";
+let _indexerServer = "https://testnet-algorand.api.purestake.io/idx2";
 if (!testnet) {
   _nodeServer = "https://mainnet-algorand.api.purestake.io/ps2";
+  _indexerServer = "https://mainnet-algorand.api.purestake.io/idx2";
 }
 const nodeServer = _nodeServer;
+const indexerServer = _indexerServer
 export const algodClient = new algosdk.Algodv2(psToken, nodeServer, "");
+export const indexerClient = new algosdk.Indexer(psToken, indexerServer, "");
 
 export async function accountInfo(address = null) {
   // XXX: Assumes the wallet is set

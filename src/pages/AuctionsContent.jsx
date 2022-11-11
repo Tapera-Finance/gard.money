@@ -18,6 +18,7 @@ import {
 import { accountInfo } from "../wallets/wallets";
 import { ids } from "../transactions/ids";
 import { liquidate } from "../transactions/liquidation";
+import { getAllCDPs } from "../transactions/cdp";
 import { setAlert } from "../redux/slices/alertSlice";
 
 let chainDataResponse;
@@ -26,73 +27,9 @@ let curr_price = await getCurrentAlgoUsd();
 let cdp_data = await cdp_data_promise;
 
 async function loadDefaulted() {
-  const chainDataPromise = getChainData();
-  const timePromise = Date.now() / 1000;
-  chainDataResponse = await chainDataPromise;
-  let curr_time = await timePromise;
-  let result = [];
-  const EncodedDebt = "R0FSRF9ERUJU";
-  const EncodedTime = "VU5JWF9TVEFSVA==";
-  const purchasedCDP = {
-    amount: 0,
-    cost: 0,
-    premium: 0,
-  };
-  let auction_start;
-  let num_defaulted = chainDataResponse["defaulted-cdps"].length;
-  let info_array = [];
-  let max_results = 100;
-  let count = 0;
-  for (let i = 0; i < num_defaulted; i++) {
-    let debt = 0;
-    if (i % 20 == 0) {
-      for (let j = i; j < Math.min(num_defaulted, i + 20); j++) {
-        info_array.push(accountInfo(chainDataResponse["defaulted-cdps"][j][0]));
-      }
-    }
-    let cdpinfo = await info_array[i];
-    if (!cdpinfo.hasOwnProperty("apps-local-state") || cdpinfo.amount == 0) {
-      result.push(purchasedCDP);
-      continue;
-    }
-    for (let k = 0; k < cdpinfo["apps-local-state"].length; k++) {
-      if (cdpinfo["apps-local-state"][k].id == ids.app.validator) {
-        const validatorInfo = cdpinfo["apps-local-state"][k];
-        if (validatorInfo.hasOwnProperty("key-value")) {
-          // This if statement checks for borked CDPs (first tx = good, second = bad)
-
-          for (let n = 0; n < validatorInfo["key-value"].length; n++) {
-            if (validatorInfo["key-value"][n]["key"] == EncodedDebt) {
-              debt = validatorInfo["key-value"][n]["value"]["uint"];
-            }
-            if (validatorInfo["key-value"][n]["key"] == EncodedTime) {
-              auction_start = validatorInfo["key-value"][n]["value"]["uint"];
-            }
-          }
-        }
-      }
-    }
-    if (debt == 0) {
-      result.push(purchasedCDP);
-      continue;
-    }
-    result.push({
-      amount: cdpinfo.amount / 1000000,
-      cost: debt / 1000000,
-      premium: Math.max(
-        (Math.floor((debt * 23) / 20) -
-          Math.floor((debt * (curr_time - auction_start)) / 24000) -
-          debt) /
-          1000000,
-        0,
-      ),
-    });
-    count += 1;
-    if (count == max_results) {
-      break;
-    }
-  }
-  return result;
+  const allCDPs = await getAllCDPs();
+  console.log(allCDPs)
+  return allCDPs.filter(cdp => cdp.ratio <= 115)
 }
 
 /**
@@ -127,60 +64,38 @@ export default function AuctionsContent() {
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
-  let addresses = chainDataResponse["defaulted-cdps"];
-  let defaulted = addresses.map((value, idx) => {
-    if (cdp_data[idx] === null || cdp_data[idx] === undefined) {
-      return {
-        algoAvailable: 0,
-        premium: 0,
-        debt: 0,
-        marketDiscount: 0,
-        purchased: true,
-        owner: value[1],
-        id: value[2],
-      };
-    }
+  let defaulted = cdp_data.map((cdp) => {
     return {
-      algoAvailable: cdp_data[idx].amount,
-      premium: cdp_data[idx].premium,
-      debt: cdp_data[idx].cost,
-      marketDiscount: (
+      collateralAvailable: cdp.collateralAmount,
+      premium: 0, // TODO: get this
+      debt: cdp.gard_owed,
+      marketDiscount: 0, /* TODO: Fix (
         100 *
         (1 -
           (cdp_data[idx].cost + cdp_data[idx].premium) /
             (cdp_data[idx].amount * curr_price))
-      ).toFixed(1),
-      purchased: !(cdp_data[idx].cost > 0),
-      owner: value[1],
-      id: value[2],
+      ).toFixed(1),*/
+      owner: cdp.owner,
+      id: cdp.id,
+      // TODO: Add collateral type
     };
   });
-  let open_defaulted = [];
-  for (let i = 0; i < defaulted.length; i++) {
-    if (defaulted[i].algoAvailable != 0) {
-      open_defaulted.push(defaulted[i]);
-    }
+  if (defaulted.length == 0) {
+    defaulted = dummyLiveAuctions;
   }
-  if (open_defaulted.length == 0) {
-    open_defaulted = dummyLiveAuctions;
-  }
-  let liveAuctions = open_defaulted.map((value, index) => {
+  let liveAuctions = defaulted.map((value, index) => {
     return {
-      algoAvailable: value.algoAvailable,
+      collateralAvailable: value.collateralAvailable / 1000000,
       costInGard: (value.debt + value.premium).toFixed(2),
       marketDiscount: value.marketDiscount + "%",
-      action: value.purchased ? (
-        <div style={{ paddingLeft: 18 }}>
-          <ButtonAlternateText>{"Purchased"}</ButtonAlternateText>
-        </div>
-      ) : (
+      action: (
         <PrimaryButton
           text={"Purchase"}
           onClick={() => {
             setTransInfo([
               {
                 title: "ALGO for Purchase",
-                value: value.algoAvailable,
+                value: value.collateralAvailable,
               },
               {
                 title: "Cost in Gard",
@@ -203,7 +118,7 @@ export default function AuctionsContent() {
     };
   });
   const tabs = {
-    one: <LiveAuctions OPTIONS={OPTIONS} open_defaulted={open_defaulted} selected={selected} liveAuctions={liveAuctions} dummyBids={dummyBids} dummyMarketHistory={dummyMarketHistory} dummyLiveAuctions={dummyLiveAuctions} />
+    one: <LiveAuctions OPTIONS={OPTIONS} open_defaulted={defaulted} selected={selected} liveAuctions={liveAuctions} dummyBids={dummyBids} dummyMarketHistory={dummyMarketHistory} dummyLiveAuctions={dummyLiveAuctions} />
   }
   return (
     <div>
@@ -417,11 +332,10 @@ const CancelButtonText = styled.text`
 // dummy info for our 3 tables
 const dummyLiveAuctions = [
   {
-    algoAvailable: "N/A",
+    collateralAvailable: "N/A",
     debt: 0,
     premium: 0,
     marketDiscount: "x",
-    purchased: true,
   },
 ];
 
