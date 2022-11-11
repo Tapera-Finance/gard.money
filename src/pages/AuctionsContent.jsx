@@ -77,7 +77,8 @@ export default function AuctionsContent() {
       ).toFixed(1),*/
       owner: cdp.owner,
       id: cdp.id,
-      // TODO: Add collateral type
+      collateralType: cdp.collateralID == 0 ? "algo": "galgo",
+      cdp: cdp
     };
   });
   if (defaulted.length == 0) {
@@ -86,6 +87,7 @@ export default function AuctionsContent() {
   let liveAuctions = defaulted.map((value, index) => {
     return {
       collateralAvailable: value.collateralAvailable / 1000000,
+      collateralType: value.collateralType,
       costInGard: (value.debt + value.premium).toFixed(2),
       marketDiscount: value.marketDiscount + "%",
       action: (
