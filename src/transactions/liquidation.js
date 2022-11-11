@@ -67,6 +67,8 @@ export async function liquidate(cdp) {
   cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralType);
   let params = await paramsPromise;
   const info = await infoPromise;
+  let txnX = makeUpdateInterestTxn(info, params);
+  params.fee = 0
   let txn0 = makeUpdateInterestTxn(info, params)
   params.fee = 0
   // txn 1 application call
@@ -97,7 +99,7 @@ export async function liquidate(cdp) {
     amount: 0,
     suggestedParams: params,
   });
-  let txns = [txn0, txn1, txn2, txn3];
+  let txns = [txnX, txn0, txn1, txn2, txn3];
   algosdk.assignGroupID(txns);
 
   const signTxnsPromise = signGroup(info, txns);
@@ -109,8 +111,9 @@ export async function liquidate(cdp) {
   setLoadingStage("Liquidating CDP...");
   let stxns = [
     user_signed[0].blob,
+    user_signed[1].blob,
     stxn1.blob,
-    user_signed[2].blob,
+    user_signed[3].blob,
     stxn3.blob,
   ];
   let response = await sendTxn(
