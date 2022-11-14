@@ -18,7 +18,7 @@ import {
 import { accountInfo } from "../wallets/wallets";
 import { ids } from "../transactions/ids";
 import { start_auction, liquidate } from "../transactions/liquidation";
-import { getAllCDPs, getPrice } from "../transactions/cdp";
+import { getAllCDPs } from "../transactions/cdp";
 import { setAlert } from "../redux/slices/alertSlice";
 
 let chainDataResponse;
@@ -63,13 +63,12 @@ export default function AuctionsContent() {
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
   let defaulted = cdp_data.map((cdp) => {
-    let curr_premium = cdp.premium
     return {
       collateralAvailable: cdp.collateralAmount,
-      premium: curr_premium,
+      premium: cdp.premium,
       debt: cdp.gard_owed,
-      marketDiscount: cdp.activeAuction ? (curr_price*cdp.collateralAmount - (cdp.gard_owed*1e6 + curr_premium))/(curr_price*cdp.collateralAmount) : 
-      (curr_price*cdp.collateralAmount - (cdp.gard_owed*1e6 + 0))/(curr_price*cdp.collateralAmount),
+      marketDiscount: cdp.activeAuction ? (curr_price*cdp.collateralAmount - (cdp.gard_owed*1e6 + cdp.premium))/(curr_price*cdp.collateralAmount) : 
+      (curr_price*cdp.collateralAmount - (cdp.gard_owed*1e6))/(curr_price*cdp.collateralAmount),
       owner: cdp.owner,
       id: cdp.id,
       collateralType: cdp.collateralID == 0 ? "ALGO": "galgo",
