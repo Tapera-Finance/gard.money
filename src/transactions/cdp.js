@@ -1224,6 +1224,8 @@ export async function getAllCDPs() {
     .do()).accounts
   const withState = optedIn.filter(account => "apps-local-state" in account)
   const rightApp = withState.filter(account => account['apps-local-state'][0].id == ids.app.validator)
+  const unixtime = Math.floor(Date.now() / 1000)
+  console.log(unixtime)
   let withDebt = rightApp.filter(account => {
     return getCDPVal(account, 'SGARD_DEBT', true) > 0
   })
@@ -1242,7 +1244,7 @@ export async function getAllCDPs() {
     cdp.creator = algosdk.encodeAddress(Buffer.from(getCDPVal(cdp, 'CREATOR', false), "base64"))
     cdp.id = getCDPVal(cdp, 'account_id', true)
     cdp.activeAuction = getCDPVal(cdp, 'UNIX_START', true) % 2 == 1
-    cdp.premium = cdp.activeAuction ? 0 /* TODO */ : 0
+    cdp.premium = cdp.activeAuction ? Math.max(0, (Math.floor((23*cdp.gard_owed*1e6)/20) - Math.floor(cdp.gard_owed*1e6*(unixtime - getCDPVal(cdp, 'UNIX_START', true))/2400))/1e6 - 1): 0
   }
   withDebt.sort((a, b) => a.ratio - b.ratio)
   return withDebt
