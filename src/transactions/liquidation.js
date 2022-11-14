@@ -1,4 +1,4 @@
-import { setLoadingStage, getMicroGardBalance } from "./lib";
+import { setLoadingStage, getMicroGardBalance, getGardBalance } from "./lib";
 import { ids } from "./ids";
 import {
   accountInfo,
@@ -74,6 +74,13 @@ export async function liquidate(cdp) {
   cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralType);
   let params = await paramsPromise;
   const info = await infoPromise;
+  if ( getGardBalance(info) < cdp.gard_owed + cdp.premium)
+  return {
+    alert: true,
+    text: "You have insufficient GARD to complete the transaction. You need " + 
+    (cdp.gard_owed + cdp.premium + 0.001).toFixed(3) + " GARD."
+  };
+
   let txnX = makeUpdateInterestTxn(info, params);
   params.fee = 0
   let txn0 = makeUpdateInterestTxn(info, params)
@@ -85,16 +92,15 @@ export async function liquidate(cdp) {
     onComplete: 2,
     appArgs: [enc.encode("BID")],
     foreignAssets: [ids.asa.gard],
-    accounts: [cdp.address, cdp.creator, "J5SPGAPMHBL6FCUBYQ2AETO76BBF4YEFZJQ6LALPGIIJVIQ4RKO5NVDUGU"], // XXX: IDK what this last address is... 
+    accounts: [cdp.address, cdp.creator, "J5SPGAPMHBL6FCUBYQ2AETO76BBF4YEFZJQ6LALPGIIJVIQ4RKO5NVDUGU"], // last address is the revenue splitter excess paid goes there
     foreignApps: [ids.app.oracle[0], ids.app.sgard_gard, ids.app.gard_staking],
     suggestedParams: params,
   });
   // txn 1 debt and fee repayment
-  console.log(1000000 * cdp.gard_owed * 1.2)
   let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: algosdk.getApplicationAddress(ids.app.validator),
-    amount: parseInt(1000000 * cdp.gard_owed * 1.15 + 1), // TODO: More optimal GARD amount needed (it's refunded tho)
+    amount: parseInt(1000000 * (cdp.gard_owed + cdp.premium) + 1000), 
     suggestedParams: params,
     assetIndex: ids.asa.gard,
   });

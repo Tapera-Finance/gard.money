@@ -1225,7 +1225,6 @@ export async function getAllCDPs() {
   const withState = optedIn.filter(account => "apps-local-state" in account)
   const rightApp = withState.filter(account => account['apps-local-state'][0].id == ids.app.validator)
   const unixtime = Math.floor(Date.now() / 1000)
-  console.log(unixtime)
   let withDebt = rightApp.filter(account => {
     return getCDPVal(account, 'SGARD_DEBT', true) > 0
   })
