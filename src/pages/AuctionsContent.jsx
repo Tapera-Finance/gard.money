@@ -65,14 +65,10 @@ export default function AuctionsContent() {
   let defaulted = cdp_data.map((cdp) => {
     return {
       collateralAvailable: cdp.collateralAmount,
-      premium: 0, // TODO: get this
+      premium: cdp.premium,
       debt: cdp.gard_owed,
-      marketDiscount: 0, /* TODO: Fix (
-        100 *
-        (1 -
-          (cdp_data[idx].cost + cdp_data[idx].premium) /
-            (cdp_data[idx].amount * curr_price))
-      ).toFixed(1),*/
+      marketDiscount: cdp.activeAuction ? (curr_price*cdp.collateralAmount - (cdp.gard_owed*1e6 + cdp.premium))/(curr_price*cdp.collateralAmount) : 
+      (curr_price*cdp.collateralAmount - (cdp.gard_owed*1e6))/(curr_price*cdp.collateralAmount),
       owner: cdp.owner,
       id: cdp.id,
       collateralType: cdp.collateralID == 0 ? "ALGO": "galgo",
@@ -87,7 +83,7 @@ export default function AuctionsContent() {
       collateralAvailable: value.collateralAvailable / 1000000,
       collateralType: value.collateralType,
       costInGard: (value.debt + value.premium).toFixed(2),
-      marketDiscount: value.marketDiscount + "%",
+      marketDiscount: (100*value.marketDiscount).toFixed(2) + "%",
       action: value.cdp.activeAuction ? (
         <PrimaryButton
           text={"Purchase"}
@@ -102,8 +98,8 @@ export default function AuctionsContent() {
                 value: (value.debt + value.premium).toFixed(3),
               },
               {
-                title: "Market Discount",
-                value: value.marketDiscount + "%",
+                title: "Maximum Market Discount",
+                value: (100*value.marketDiscount).toFixed(2) + "%",
               },
             ]);
             setTransCDP(value.cdp);
@@ -126,8 +122,8 @@ export default function AuctionsContent() {
                 value: (value.debt + value.premium).toFixed(3),
               },
               {
-                title: "Market Discount",
-                value: value.marketDiscount + "%",
+                title: "Current Market Discount",
+                value: (100*value.marketDiscount).toFixed(2) + "%",
               },
             ]);
             setTransCDP(value.cdp);
