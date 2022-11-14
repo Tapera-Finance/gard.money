@@ -85,16 +85,15 @@ export async function liquidate(cdp) {
     onComplete: 2,
     appArgs: [enc.encode("BID")],
     foreignAssets: [ids.asa.gard],
-    accounts: [cdp.address, cdp.creator, "J5SPGAPMHBL6FCUBYQ2AETO76BBF4YEFZJQ6LALPGIIJVIQ4RKO5NVDUGU"], // XXX: IDK what this last address is... 
+    accounts: [cdp.address, cdp.creator, "J5SPGAPMHBL6FCUBYQ2AETO76BBF4YEFZJQ6LALPGIIJVIQ4RKO5NVDUGU"], // last address is the revenue splitter excess paid goes there
     foreignApps: [ids.app.oracle[0], ids.app.sgard_gard, ids.app.gard_staking],
     suggestedParams: params,
   });
   // txn 1 debt and fee repayment
-  console.log(1000000 * cdp.gard_owed * 1.2)
   let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: algosdk.getApplicationAddress(ids.app.validator),
-    amount: parseInt(1000000 * (cdp.gard_owed + cdp.premium) + 1000), // TODO: More optimal GARD amount needed (it's refunded tho)
+    amount: parseInt(1000000 * (cdp.gard_owed + cdp.premium) + 1000), 
     suggestedParams: params,
     assetIndex: ids.asa.gard,
   });
