@@ -22,26 +22,34 @@ const enc = new TextEncoder();
 export async function start_auction(cdp) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
-  cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralType);
+  cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralID);
   let params = await paramsPromise;
   const info = await infoPromise;
   const dummyTxn = makeUpdateInterestTxn(info, params)
   params.fee = 0
+  let foreignApps = [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest]
+  let foreignAssets = [ids.asa.gard]
+  let lsigNum = 3
+  if (cdp.collateralID != 0) {
+    foreignApps.push(ids.app.oracle[cdp.collateralID]);
+    foreignAssets.push(cdp.collateralID)
+    lsigNum = 2
+  }
   let txn = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.contract.address,
     appIndex: ids.app.validator,
     onComplete: 0,
     appArgs: [enc.encode("Auction")],
     accounts: [cdp.contract.address],
-    foreignApps: [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest],
-    foreignAssets: [ids.asa.gard],
+    foreignApps: foreignApps,
+    foreignAssets: foreignAssets,
     suggestedParams: params,
   });
   let txns = [dummyTxn, txn]
   algosdk.assignGroupID(txns);
   const signTxnsPromise = signGroup(info, txns);
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
-  let lsig = algosdk.makeLogicSig(cdp.contract.logic, [algosdk.encodeUint64(3)]);
+  let lsig = algosdk.makeLogicSig(cdp.contract.logic, [algosdk.encodeUint64(lsigNum)]);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn, lsig);
   const user_signed = await signTxnsPromise;
   setLoadingStage("Starting an auction...");
