@@ -1,4 +1,4 @@
-import { setLoadingStage, getMicroGardBalance } from "./lib";
+import { setLoadingStage, getMicroGardBalance, getGardBalance } from "./lib";
 import { ids } from "./ids";
 import {
   accountInfo,
@@ -67,6 +67,13 @@ export async function liquidate(cdp) {
   cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralType);
   let params = await paramsPromise;
   const info = await infoPromise;
+  if ( getGardBalance(info) < cdp.gard_owed + cdp.premium)
+  return {
+    alert: true,
+    text: "You have insufficient GARD to complete the transaction. You need " + 
+    (cdp.gard_owed + cdp.premium + 0.001).toFixed(3) + " GARD."
+  };
+
   let txnX = makeUpdateInterestTxn(info, params);
   params.fee = 0
   let txn0 = makeUpdateInterestTxn(info, params)
@@ -87,7 +94,7 @@ export async function liquidate(cdp) {
   let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: algosdk.getApplicationAddress(ids.app.validator),
-    amount: parseInt(1000000 * cdp.gard_owed * 1.15 + 1), // TODO: More optimal GARD amount needed (it's refunded tho)
+    amount: parseInt(1000000 * (cdp.gard_owed + cdp.premium) + 1000), // TODO: More optimal GARD amount needed (it's refunded tho)
     suggestedParams: params,
     assetIndex: ids.asa.gard,
   });
