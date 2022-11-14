@@ -66,7 +66,6 @@ export async function start_auction(cdp) {
   );
   setLoadingStage(null);
   return response;
-  // TODO: ASA version
 }
 
 export async function liquidate(cdp) {
