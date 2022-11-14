@@ -18,7 +18,7 @@ import {
 import { accountInfo } from "../wallets/wallets";
 import { ids } from "../transactions/ids";
 import { start_auction, liquidate } from "../transactions/liquidation";
-import { getAllCDPs } from "../transactions/cdp";
+import { getAllCDPs, getPrice } from "../transactions/cdp";
 import { setAlert } from "../redux/slices/alertSlice";
 
 let chainDataResponse;
@@ -63,16 +63,13 @@ export default function AuctionsContent() {
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
   let defaulted = cdp_data.map((cdp) => {
+    let curr_premium = cdp.premium
     return {
       collateralAvailable: cdp.collateralAmount,
-      premium: 0, // TODO: get this
+      premium: curr_premium,
       debt: cdp.gard_owed,
-      marketDiscount: 0, /* TODO: Fix (
-        100 *
-        (1 -
-          (cdp_data[idx].cost + cdp_data[idx].premium) /
-            (cdp_data[idx].amount * curr_price))
-      ).toFixed(1),*/
+      marketDiscount: cdp.activeAuction ? (curr_price*cdp.collateralAmount - (cdp.gard_owed*1e6 + curr_premium))/(curr_price*cdp.collateralAmount) : 
+      (curr_price*cdp.collateralAmount - (cdp.gard_owed*1e6 + 0))/(curr_price*cdp.collateralAmount),
       owner: cdp.owner,
       id: cdp.id,
       collateralType: cdp.collateralID == 0 ? "ALGO": "galgo",
@@ -87,7 +84,7 @@ export default function AuctionsContent() {
       collateralAvailable: value.collateralAvailable / 1000000,
       collateralType: value.collateralType,
       costInGard: (value.debt + value.premium).toFixed(2),
-      marketDiscount: value.marketDiscount + "%",
+      marketDiscount: (100*value.marketDiscount).toFixed(2) + "%",
       action: value.cdp.activeAuction ? (
         <PrimaryButton
           text={"Purchase"}
@@ -102,8 +99,8 @@ export default function AuctionsContent() {
                 value: (value.debt + value.premium).toFixed(3),
               },
               {
-                title: "Market Discount",
-                value: value.marketDiscount + "%",
+                title: "Maximum Market Discount",
+                value: (100*value.marketDiscount).toFixed(2) + "%",
               },
             ]);
             setTransCDP(value.cdp);
@@ -126,8 +123,8 @@ export default function AuctionsContent() {
                 value: (value.debt + value.premium).toFixed(3),
               },
               {
-                title: "Market Discount",
-                value: value.marketDiscount + "%",
+                title: "Current Market Discount",
+                value: (100*value.marketDiscount).toFixed(2) + "%",
               },
             ]);
             setTransCDP(value.cdp);
