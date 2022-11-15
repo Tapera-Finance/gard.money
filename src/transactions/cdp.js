@@ -8,6 +8,7 @@ import {
   sendTxn,
   getWallet,
   signGroup,
+  indexerClient,
 } from "../wallets/wallets";
 import {
   updateCommitmentFirestore,
@@ -215,7 +216,7 @@ sessionStorage.setItem = function (key, value) {
   originalSetItem.apply(this, arguments);
 };
 
-function makeUpdateInterestTxn(userInfo, params) {
+export function makeUpdateInterestTxn(userInfo, params) {
   return algosdk.makeApplicationCallTxnFromObject({
     from: userInfo.address,
     appIndex: ids.app.sgard_gard,
@@ -809,6 +810,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
 
 let conversionRate
 let conversionRateUpdated = 0
+sgardToGard(0)
 
 async function sgardToGard(amt, force_update = false) {
   if ((Date.now() - conversionRateUpdated) / 6000 > 1 || force_update) {
@@ -837,7 +839,6 @@ export async function repayCDP(accountID, repayGARD, asaID) {
   let params = await paramsPromise;
   
   let microRepayGARD = microGARD(repayGARD)
-  console.log(microRepayGARD)
   
   let gard_debt = await totalDebt(cdpInfo);
   if (gard_debt - microRepayGARD < 1000000) {
@@ -1201,3 +1202,51 @@ export async function voteCDP(account_id, option1, option2) {
   return response;
 }
 
+function getCDPVal(cdp, key, isInt) {
+  for (const kv of cdp['apps-local-state'][0]['key-value']) {
+    if (kv.key == btoa(key)) {
+      if (isInt) {
+        return kv.value.uint
+      } else {
+        return kv.value.bytes
+      }
+    }
+  }
+  return -1
+}
+
+export async function getAllCDPs() {
+  // TODO: Do the pages thing in case it's more than 1000
+  const optedIn = (await indexerClient
+    .searchAccounts()
+    .limit(1000)
+    .applicationID(ids.app.validator)
+    .do()).accounts
+  const withState = optedIn.filter(account => "apps-local-state" in account)
+  const rightApp = withState.filter(account => account['apps-local-state'][0].id == ids.app.validator)
+  const unixtime = Math.floor(Date.now() / 1000)
+  let withDebt = rightApp.filter(account => {
+    return getCDPVal(account, 'SGARD_DEBT', true) > 0
+  })
+  for (let cdp of withDebt) {
+    if (cdp['total-assets-opted-in'] > 0) {
+      cdp.collateralID = cdp['assets'][0]['asset-id']
+      cdp.collateralAmount = cdp['assets'][0]['amount']
+    } else {
+      cdp.collateralID = 0
+      cdp.collateralAmount = cdp.amount
+    }
+    cdp.sgard_debt = getCDPVal(cdp, 'SGARD_DEBT', true)
+    cdp.gard_owed = (await sgardToGard(cdp.sgard_debt)) / 1000000
+    cdp.ratio = calcRatio(cdp.collateralAmount, cdp.gard_owed, cdp.collateralID)
+    cdp.owner = algosdk.encodeAddress(Buffer.from(getCDPVal(cdp, 'OWNER', false), "base64"))
+    cdp.creator = algosdk.encodeAddress(Buffer.from(getCDPVal(cdp, 'CREATOR', false), "base64"))
+    cdp.id = getCDPVal(cdp, 'account_id', true)
+    cdp.activeAuction = getCDPVal(cdp, 'UNIX_START', true) % 2 == 1
+    cdp.premium = cdp.activeAuction ? Math.max(0, (Math.floor((23*cdp.gard_owed*1e6)/20) - Math.floor(cdp.gard_owed*1e6*(unixtime - getCDPVal(cdp, 'UNIX_START', true))/2400))/1e6 - 1): 0
+  }
+  withDebt.sort((a, b) => a.ratio - b.ratio)
+  return withDebt
+}
+
+// async function getAll
