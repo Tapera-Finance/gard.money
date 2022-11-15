@@ -20,6 +20,7 @@ const enc = new TextEncoder();
 
 
 export async function start_auction(cdp) {
+  setLoadingStage("Starting an auction...");
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
   cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralID);
@@ -47,12 +48,11 @@ export async function start_auction(cdp) {
   });
   let txns = [dummyTxn, txn]
   algosdk.assignGroupID(txns);
-  const signTxnsPromise = signGroup(info, txns);
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
+  const signTxnsPromise = signGroup(info, txns);
   let lsig = algosdk.makeLogicSig(cdp.contract.logic, [algosdk.encodeUint64(lsigNum)]);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn, lsig);
   const user_signed = await signTxnsPromise;
-  setLoadingStage("Starting an auction...");
   console.log(stxn1)
   console.log(user_signed)
   let stxns = [

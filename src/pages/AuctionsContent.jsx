@@ -82,7 +82,7 @@ export default function AuctionsContent() {
       collateralAvailable: value.collateralAvailable / 1000000,
       collateralType: value.collateralType,
       costInGard: (value.debt + value.premium).toFixed(2),
-      marketDiscount: (100*value.marketDiscount).toFixed(2) + "%",
+      marketDiscount: value.cdp.activeAuction ? (100*value.marketDiscount).toFixed(2) + "%" : "Max " + (100*value.marketDiscount).toFixed(2) + "%",
       action: value.cdp.activeAuction ? (
         <PrimaryButton
           text={"Purchase"}
@@ -97,7 +97,7 @@ export default function AuctionsContent() {
                 value: (value.debt + value.premium).toFixed(3),
               },
               {
-                title: "Maximum Market Discount",
+                title: "Current Market Discount",
                 value: (100*value.marketDiscount).toFixed(2) + "%",
               },
             ]);
@@ -121,7 +121,7 @@ export default function AuctionsContent() {
                 value: (value.debt + value.premium).toFixed(3),
               },
               {
-                title: "Current Market Discount",
+                title: "Maximum Market Discount",
                 value: (100*value.marketDiscount).toFixed(2) + "%",
               },
             ]);
@@ -139,7 +139,7 @@ export default function AuctionsContent() {
   }
   return (
     <div>
-      {loading ? <LoadingOverlay text={"Liquidating a CDP..."} /> : <></>}
+      {loading ? <LoadingOverlay text={loadingText} close={setLoading(false)} /> : <></>}
       <div style={{marginBottom: 20}}>
 
       <PageToggle selectedTab={setSelectedTab} tabs={{one: "Live Auctions"}} />

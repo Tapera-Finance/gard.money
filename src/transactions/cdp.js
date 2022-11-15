@@ -1243,7 +1243,10 @@ export async function getAllCDPs() {
     cdp.creator = algosdk.encodeAddress(Buffer.from(getCDPVal(cdp, 'CREATOR', false), "base64"))
     cdp.id = getCDPVal(cdp, 'account_id', true)
     cdp.activeAuction = getCDPVal(cdp, 'UNIX_START', true) % 2 == 1
-    cdp.premium = cdp.activeAuction ? Math.max(0, (Math.floor((23*cdp.gard_owed*1e6)/20) - Math.floor(cdp.gard_owed*1e6*(unixtime - getCDPVal(cdp, 'UNIX_START', true))/2400))/1e6 - 1): 0
+    cdp.premium = cdp.activeAuction ? Math.max(0, (Math.floor((23*cdp.gard_owed*1e6)/20) - Math.floor(cdp.gard_owed*1e6*(unixtime - getCDPVal(cdp, 'UNIX_START', true))/2400))/1e6 - cdp.gard_owed): 0
+    if (cdp.activeAuction){
+      console.log(cdp.premium)
+    }
   }
   withDebt.sort((a, b) => a.ratio - b.ratio)
   return withDebt
