@@ -74,9 +74,6 @@ export default function AuctionsContent() {
       cdp: cdp
     };
   });
-  if (defaulted.length == 0) {
-    defaulted = dummyLiveAuctions;
-  }
   let liveAuctions = defaulted.map((value, index) => {
     return {
       collateralAvailable: value.collateralAvailable / 1000000,
@@ -134,6 +131,9 @@ export default function AuctionsContent() {
       ),
     };
   });
+  if (defaulted.length == 0) {
+    liveAuctions = dummyLiveAuctions;
+  }
   const tabs = {
     one: <LiveAuctions OPTIONS={OPTIONS} open_defaulted={defaulted} selected={selected} liveAuctions={liveAuctions} dummyBids={dummyBids} dummyMarketHistory={dummyMarketHistory} dummyLiveAuctions={dummyLiveAuctions} />
   }
