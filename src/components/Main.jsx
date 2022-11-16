@@ -18,7 +18,7 @@ import { hide } from "../redux/slices/alertSlice";
 import SwapDetails from "./actions/SwapDetails";
 import StakeDetails from "./actions/StakeDetails";
 import { size, device } from "../styles/global"
-import { px2vw } from "../utils"
+import { isMobile } from "../utils"
 
 async function googleStuff() {
   const script = document.createElement("script");
@@ -53,6 +53,7 @@ function debounce(fn, ms) {
  */
 export default function Main(WrappedComponent, title) {
   const [isOpen, setIsOpen] = useState(true);
+  const [mobile, setMobile] = useState(isMobile())
   const [canAnimate, setCanAnimate] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
@@ -61,6 +62,11 @@ export default function Main(WrappedComponent, title) {
     width: undefined,
     height: undefined
   })
+
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
+
 
   useEffect(() => {
     // Handler to call on window resize
@@ -111,14 +117,14 @@ export default function Main(WrappedComponent, title) {
         <></>
       )}
 
-      <Drawer
+      <ContainedDrawer
         selected={title}
-        open={isOpen}
+        // open={isOpen}
         animate={canAnimate}
-        toggleOpenStatus={() => setIsOpen(!isOpen)}
+        // toggleOpenStatus={() => setIsOpen(!isOpen)}
         allowAnimate={() => setCanAnimate(true)}
       />
-      <MainContentDiv canAnimate={canAnimate} isOpen={isOpen}>
+      <MainContentDiv mobile={mobile} canAnimate={canAnimate} isOpen={isOpen}>
         <Topbar
           contentName={title}
           setMainContent={(content) => {
@@ -137,9 +143,22 @@ export default function Main(WrappedComponent, title) {
   );
 }
 
+const ContainedDrawer = styled(Drawer)`
+  /* ${(props) => props.open &&
+      css`
+        visibility: hidden;
+      `
+    }
+    ${(props) => !props.open &&
+      css`
+        visibility: visible;
+      `
+    } */
+`
+
 const Wrapper = styled.div`
-  padding-left: 1.9444444444444vw;
-  padding-right: 1.9444444444444vw;
+  /* padding-left: 1.9444444444444vw;
+  padding-right: 1.9444444444444vw; */
   padding-top: 40px;
   flex: 1;
   @media (min-width: ${size.tablet}) {
@@ -172,18 +191,25 @@ const expandMainContentAnimation = keyframes`
 
 // main styled components
 const MainContentDiv = styled.div`
-  width: 70%;
+  width: ${`${parseInt(window.availWidth) - 64}px`};
   animation-duration: 0.5s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
   color: white;
-  overflow-x: hidden;
+  overflow-x: scroll;
   /* ${(props) => css`
   animation-direction: ${!props.isOpen ? "normal" : "reverse"};
   animation-name: ${props.canAnimate && window.innerWidth > 900
       ? expandMainContentAnimation
       : ""};
   `} */
+    ${(props) =>
+      props.mobile &&
+        css`
+          width: 100%;
+
+        `
+      }
   @media (${device.tablet}) {
     margin-left: 0vw;
     width: 100%;

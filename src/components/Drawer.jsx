@@ -30,7 +30,20 @@ import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { useSelector } from "react-redux";
 import { device, size } from "../styles/global";
-import { px2vw } from "../utils"
+import { px2vw, isMobile } from "../utils"
+
+
+
+function debounce(fn, ms) {
+  let timer
+  return _ => {
+    clearTimeout(timer)
+    timer = setTimeout(_ => {
+      timer = null
+      fn.apply(this, arguments)
+    }, ms)
+  }
+}
 
 /**
  * Used as our main navigation
@@ -43,27 +56,68 @@ import { px2vw } from "../utils"
  */
 export default function Drawer({
   selected,
-  open,
-  mobile,
   animate,
   toggleOpenStatus,
   allowAnimate,
+  className
 }) {
   const [dev, setDev] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
+  const [mobile, setMobile] = useState(isMobile())
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
+  const [dimmensions, setDimmensions] = useState({
+    width: undefined,
+    height: undefined
+  })
+
+  const toggleOpen = () => {
+    setIsOpen(!isOpen)
+  }
+
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
+
+  useEffect(() => {
+    // Handler to call on window resize
+    const debouncedHandleResize = debounce(function handleResize() {
+      // Set window width/height to state
+      setDimmensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }, 1000)
+
+    // Add event listener
+    window.addEventListener("resize", debouncedHandleResize);
+    // Call handler right away so state gets updated with initial window size
+    debouncedHandleResize();
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", debouncedHandleResize);
+  }, []);
 
 
+  useEffect(() => {
+    setIsOpen(window.innerWidth > size.tablet);
+  }, []);
+
+  useEffect(() => {
+    if (dimmensions && dimmensions.width > parseInt(size.tablet)) {
+      setIsOpen(true);
+    }
+  }, [dimmensions])
 
   return (
-    <div style={{
+    <div className={className} style={{
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
-      alignItems: "baseline"
+      alignItems: "baseline",
+      height: `${isOpen ? "" : "9vh"}`
     }} >
-       {window.innerWidth < 900 ? <MobileDrawer>
+       {window.innerWidth < 900 ? <MobileDrawer open={isOpen}>
           <LogoButton
             style={{
               display: "flex",
@@ -73,7 +127,6 @@ export default function Drawer({
               marginLeft: "03.9583333333333vw",
             }}
             onClick={() => {
-              if (window.innerWidth < 900) toggleOpenStatus();
               navigate("/");
             }}
           >
@@ -82,7 +135,7 @@ export default function Drawer({
         <HamburgerButton
           style={{}}
           onClick={() => {
-            toggleOpenStatus();
+            toggleOpen();
             allowAnimate();
           }}
         >
@@ -90,7 +143,7 @@ export default function Drawer({
         </HamburgerButton>
         </MobileDrawer> : <></>}
 
-      <DrawerDiv id="drawer" open={open} animate={animate}>
+      <DrawerDiv id="drawer" isMobile={mobile} open={isOpen} animate={animate}>
         <div
           style={{
             display: "flex",
@@ -98,22 +151,23 @@ export default function Drawer({
             justifyContent: "space-between",
           }}
         >
-          <div style={{display: "flex", justifyContent: "space-evenly"}} >
+          <div style={{display: "flex", justifyContent: "space-evenly", height: `${mobile && isOpen ? 0 : ""}`}} >
           <LogoButton
             style={{
               display: "flex",
               marginTop: 48,
               marginLeft: "03.9583333333333vw",
               marginBottom: 38,
+              visibility: `${mobile ? "hidden" : "visible"}`
             }}
             onClick={() => {
-              if (window.innerWidth < 900) toggleOpenStatus();
+              if (window.innerWidth < 900) toggleOpen();
               navigate("/");
             }}
           >
             <NavLogo src={logo} alt="logo" />
           </LogoButton>
-        <HamburgerButton
+        {/* <HamburgerButton
           style={{}}
           onClick={() => {
             toggleOpenStatus();
@@ -121,7 +175,7 @@ export default function Drawer({
           }}
           >
             <HamburgerIcon alt="burger" src={!open ? hamburguerIcon : closeIcon} />
-          </HamburgerButton>
+          </HamburgerButton> */}
 
           </div>
           <div
@@ -181,7 +235,7 @@ export default function Drawer({
                       } else if (["Actions"].includes(v.name) && !dev) {
                         dispatch(setAlert("This page is under construction!"));
                       }  else {
-                        if (window.innerWidth < parseInt(size.tablet)) toggleOpenStatus();
+                        if (window.innerWidth < parseInt(size.tablet)) toggleOpen();
                         navigate(v.route);
                       }
                     }}
@@ -329,7 +383,6 @@ export default function Drawer({
 const MobileDrawer = styled.div`
   background: linear-gradient(80deg, #172756 0%, #000000 100%);
   display: flex;
-  margin-bottom: 7vh;
   justify-content: space-between;
   align-items: baseline;
   width: 100vw;
@@ -339,6 +392,16 @@ const MobileDrawer = styled.div`
     visibility: hidden;
   }
 
+  ${(props) => props.open &&
+      css`
+         margin-bottom: 0vh;
+      `
+    }
+    ${(props) => !props.open &&
+      css`
+         margin-bottom: 7vh;
+      `
+    }
 `
 
 const DrawerDiv = styled.div`
@@ -346,6 +409,28 @@ const DrawerDiv = styled.div`
   height: 101vh;
   z-index: 15;
   overflow-y: auto;
+  width: ${`${isMobile() ? `100%` : `unset`}`};
+
+  ${(props) =>
+    props.mobile &&
+    css`
+      visibility: hidden;
+      width: 100vw;
+      overflow: scroll;
+      position: unset;
+      position: fixed;
+    `}
+
+  ${(props) =>
+    props.open &&
+    css`
+      visibility: visible;
+    `}
+  ${(props) =>
+    !props.open &&
+    css`
+      visibility: hidden;
+    `}
 
   // if screen is smaller than tablet, hide drawer until opened at full width
   @media (${device.tablet}) {
