@@ -1,5 +1,6 @@
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Referral from "./Referral";
 import GovernContent from "../pages/GovernContent";
 import AuctionsContent from "../pages/AuctionsContent";
 import DaoContent from "../pages/DaoContent";
@@ -15,6 +16,7 @@ import StakeDetails from "./actions/StakeDetails";
 export default function AppRoutes() {
   return (
     <BrowserRouter>
+      <Referral></Referral>
       <Routes>
         <Route path="/" element={Main(HomeContent, "Home")} />
         <Route path="/account" element={Main(AccountContent, "Wallet")} />
