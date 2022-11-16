@@ -915,7 +915,7 @@ export async function closeCDP(accountID, asaID) {
   let cdp = cdpGen(info.address, accountID, asaID);
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
-  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5 * cdpInterest)/365/24/60)) + 3000
+  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5000 * cdpInterest)/365/24/60)) + 3000 // Adds a safe amount of extra repay to ensure the txn goes through (5000 mins of interest) and 3000 microalgo
   
   let gard_bal = getMicroGardBalance(info);
   if (gard_bal == null || gard_bal < microRepayGARD) {
