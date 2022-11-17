@@ -1,10 +1,11 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState, useEffect } from "react";
+import styled, { css } from "styled-components";
 import syncIcon from "../assets/icons/sync_icon.png";
 import syncIconWhite from "../assets/icons/sync_icon_white.png";
 import AccountCard from "./AccountCard";
 import WalletConnect from "./WalletConnect";
 import {size, device} from "../styles/global";
+import { isMobile } from "../utils";
 /**
  * Bar on top of our main content
  * @prop {string} contentName - name of current content, used as title on the top bar
@@ -12,9 +13,15 @@ import {size, device} from "../styles/global";
  */
 
 export default function Topbar({ contentName, setMainContent }) {
+  const [mobile, setMobile] = useState(isMobile());
+
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
+
   return (
-    <div style={{display: "flex"}}>
-      <TopBar>
+    <div style={{display: "flex", justifyContent: `${mobile ? "center" : ""}`}}>
+      <TopBar mobile={mobile}>
         <div
           style={{
             display: "flex",
@@ -57,6 +64,11 @@ const TopBar = styled.div`
   justify-content: space-between;
   padding-left: 36px;
   padding-right: ${window.innerWidth * 0.077}px;
+
+  ${(props) => props.mobile && css`
+    flex-direction: column;
+  `}
+
   @media (min-width: ${size.tablet}) {
     width: 100%;
     margin-left: 8.88vw;

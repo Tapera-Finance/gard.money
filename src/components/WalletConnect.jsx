@@ -1,5 +1,5 @@
 import React, { useState, useReducer, useEffect } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import Modal from "./Modal";
 import PrimaryButton from "./PrimaryButton";
 import { displayWallet, disconnectWallet, getWallet } from "../wallets/wallets";
@@ -19,6 +19,7 @@ import { cdpGen } from "../transactions/contracts";
 import { useNavigate } from "react-router-dom";
 import { ids } from "../transactions/ids"
 import { size, device } from "../styles/global"
+import { isMobile } from "../utils";
 
 const instantiateUser = async (address) => {
   let accountCDPs = getCDPs()[address];
@@ -54,6 +55,12 @@ export default function WalletConnect() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const walletAddress = useSelector((state) => state.wallet.address);
+  const [mobile, setMobile] = useState(isMobile());
+
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
+
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
       if (action === "options")
@@ -176,7 +183,7 @@ export default function WalletConnect() {
       ) : (
         <></>
       )}
-      <WalletConnectDiv>
+      <WalletConnectDiv mobile={mobile}>
         <BtnBox>
           <WalletBarButton
             text={walletAddress || "Connect Wallet"}
@@ -232,6 +239,8 @@ const WalletBarButton = styled(PrimaryButton)`
 `
 
 const BtnBox = styled.div`
+    margin: 4px 0px 4px 0px;
+
   @media (${device.mobileL}) {
     margin: 4px 0px 4px 0px;
   }
@@ -243,6 +252,11 @@ const WalletConnectDiv = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
+
+  ${(props) => props.mobile && css`
+    flex-direction: column;
+  `}
+
   @media (${device.mobileL}) {
     flex-direction: column;
     margin: 2px 0px 2px 0px;
