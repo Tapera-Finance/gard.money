@@ -63,3 +63,5 @@ export function isFirefox() {
 }
 
 export const px2vw = (size, width = 1440) => `${(size / width) * 100}vw`;
+
+export const isMobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

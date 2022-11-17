@@ -23,7 +23,8 @@ import { getCDPs } from "../transactions/cdp";
 import { CDPsToList } from "../components/Positions"
 import { checkStaked } from "../components/actions/StakeDetails";
 import { commitmentPeriodEnd } from "../globals";
-import { Global, device } from "../styles/global";
+import { device } from "../styles/global";
+import { isMobile } from "../utils"
 
 const fetchTvl = async () => {
   try {
@@ -126,6 +127,7 @@ export default function HomeContent() {
   const walletAddress = useSelector((state) => state.wallet.address);
 
   useEffect(async () => {
+    console.log("isMobile ?", isMobile());
     const chainDataResponse = await getChainData();
     setChainData(chainDataResponse);
   }, []);
