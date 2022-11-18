@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { microalgosToAlgos } from "algosdk";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { getCDPs, getPrice, calcRatio, closeCDP } from "../transactions/cdp";
 import { getWalletInfo, handleTxError } from "../wallets/wallets";
 import { Slider, ThemeProvider } from "@mui/material";
@@ -18,6 +18,7 @@ import LoadingOverlay from "./LoadingOverlay";
 import { ids } from "../transactions/ids";
 import { device, size } from "../styles/global";
 import "../styles/mobile.css";
+import { isMobile } from "../utils"
 
 const axios = require("axios");
 
@@ -137,6 +138,8 @@ function recalcDetails() {
 
 
 export default function Positions({cdp, maxGARD, maxSupply}) {
+  const [mobile, setMobile] = useState(isMobile());
+
     const dispatch = useDispatch();
     const {theme} = useContext(ThemeContext);
     const [price, setPrice] = useState(0)
@@ -216,6 +219,10 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
           },
     ];
 
+    useEffect(() => {
+      setMobile(isMobile())
+    }, [])
+
   useEffect(async () => {
     setAPR(await getAlgoGovAPR());
   }, []);
@@ -276,11 +283,11 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
         {loadedCDPs.length && loadedCDPs.length > 0
           ? loadedCDPs.map((cdp, idx) => {
               return (
-                <Position key={cdp.id.toString() + idx.toString()}>
-                  <PositionInfo>
-                    <PositionSupplyBorrow className="m_positions_item m-positions_box_1">
+                <Position mobile={mobile} key={cdp.id.toString() + idx.toString()}>
+                  <PositionInfo mobile={mobile}>
+                    <PositionSupplyBorrow mobile={mobile} className="m_positions_item m-positions_box_1">
                       <b className="m-positions_row_1">Your Position</b>
-                      <Sply>
+                      <Sply mobile={mobile} >
                         Supplied:
                         <div style={{ display: "flex" }}>
                           <div className="currency_flow">
@@ -289,7 +296,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           {typeCDP[cdp.collateralType]}
                         </div>
                       </Sply>
-                      <Brr>
+                      <Brr mobile={mobile}>
                         Borrowed:
                         <div style={{ display: "flex" }}>
                           <div className="currency_flow">
@@ -393,7 +400,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                     }
                   />
                   {cdp.id + cdp.asaID === currentCDP ? (
-                    <ToggleContainer>
+                    <ToggleContainer mobile={mobile}>
                       <PageToggle selectedTab={setSelectedTab} tabs={tabs} />
                       {selectedTab === "one" ? (
                         <BorrowMore
@@ -506,6 +513,9 @@ const Sply = styled.div`
   @media (${device.tablet}) {
     flex-direction: row;
   }
+  ${(props) => props.mobile && css`
+    flex-direction: row;
+  `}
 `;
 
 const Brr = styled.div`
@@ -516,6 +526,10 @@ const Brr = styled.div`
   @media (${device.tablet}) {
     flex-direction: row;
   }
+  ${(props) => props.mobile && css`
+  flex-direction: row;
+
+  `}
 `;
 
 const APRBox = styled.div`
@@ -542,6 +556,11 @@ const ToggleContainer = styled.div`
     transform: scale(0.9);
     max-width: 90vw;
   }
+  ${(props) => props.mobile && css`
+  transform: scale(0.9);
+    max-width: 90vw;
+
+  `}
   @media (${device.mobileL}) {
     display: flex;
     flex-direction: column;
@@ -557,6 +576,11 @@ const PositionSupplyBorrow = styled.div`
   @media (min-width: ${size.tablet}) {
     row-gap: 20;
   }
+  ${(props) => !props.mobile && css`
+      row-gap: 20px;
+
+
+  `}
 
   @media (${device.tablet}) {
     row-gap: 6px;
@@ -564,6 +588,13 @@ const PositionSupplyBorrow = styled.div`
     border-radius: 10px;
     padding: 20px;
   }
+  ${(props) => props.mobile && css`
+  row-gap: 6px;
+    margin: 6px 0px 6px 0px;
+    border-radius: 10px;
+    padding: 20px;
+
+  `}
 `;
 
 const PositionContainer = styled.div`
@@ -582,6 +613,16 @@ const Header = styled.div`
   text-align: left;
   font-size: 20px;
   margin-top: 50px;
+  ${(props) => props.mobile && css`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-items: flex-start;
+    border: 1px solid white;
+    width: 400px;
+    border-radius: 10px;
+    padding: 8px;
+  `}
   @media (${device.tablet}) {
     display: flex;
     flex-direction: column;
@@ -636,6 +677,11 @@ const Position = styled.div`
     flex-direction: column;
     align-items: center;
   }
+  ${(props) => props.mobile && css`
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+  `}
 `;
 const PositionInfo = styled.div`
   display: grid;
@@ -654,7 +700,13 @@ const PositionInfo = styled.div`
     padding: 4px 10px 4px 10px;
     max-width: 432px;
   }
-
+  ${(props) => props.mobile && css`
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 10px 4px 10px;
+    max-width: 432px;
+  `}
   @media (${device.mobileM}) {
     transform: scale(0.9);
   }
