@@ -28,6 +28,7 @@ import { getAlgoGovAPR } from "../components/Positions";
 import Select from "../components/Select";
 import { ids } from "../transactions/ids"
 import { size, device } from "../styles/global"
+import { isMobile } from "../utils";
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
@@ -74,6 +75,7 @@ export function getCollateral() {
 }
 
 export default function BorrowContent() {
+  const [mobile, setMobile] = useState(isMobile());
   const walletAddress = useSelector(state => state.wallet.address);
   const [modalVisible, setModalVisible] = useState(false);
   const [canAnimate, setCanAnimate] = useState(false);
@@ -124,6 +126,10 @@ export default function BorrowContent() {
       setCreatePositionShown(true);
     }
   }, []);
+
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
 
   useEffect(() => {
     collateralType === "gALGO" ? setIsGAlgo(true) : setIsGAlgo(false)
@@ -442,7 +448,7 @@ export default function BorrowContent() {
         */}
       {createPositionShown ? (
         <div>
-          <Container>
+          <Container mobile={mobile}>
             <SubContainer>
               <Background>
                 <Title>
@@ -700,6 +706,9 @@ const Container = styled.div`
   @media (${device.tablet}) {
     grid-template-columns: 1fr;
   }
+  ${(props) => props.mobile && css`
+    grid-template-columns: 1fr;
+  `}
 `;
 
 const SubContainer = styled.div`

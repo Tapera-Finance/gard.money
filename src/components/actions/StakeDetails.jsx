@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../redux/slices/alertSlice";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
 import { ids } from "../../transactions/ids";
@@ -21,6 +21,7 @@ import { formatToDollars } from "../../utils";
 import { stake, unstake, getStakingAPY, getAccruedRewards } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
 import { size, device } from "../../styles/global"
+import { isMobile } from "../../utils"
 
 // asset types: 0 === GARD, 1 === ALGO
 
@@ -51,11 +52,11 @@ const mobileView = () => {
 }
 
 export default function StakeDetails() {
+  const [mobile, setMobile] = useState(isMobile());
   const walletAddress = useSelector((state) => state.wallet.address);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(mobileView());
   const [assetType, setAssetType] = useState(0);
   const [stakeAmount, setStakeAmount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
@@ -129,146 +130,208 @@ export default function StakeDetails() {
     if (!walletAddress) navigate("/");
   }, [walletAddress]);
 
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
+
 
   return (
     <div>
-      {loading ? (<LoadingOverlay text={loadingText} close={()=>{setLoading(false);}} />) : <></>}
-      <div style={{display: "flex", flexDirection: "column", alignItems: "center"}} >
-      <Banner>
-      <div
-          style={{
-            justifyContent: "center",
-            textAlign: "left",
-            alignItems: "center",
-            color: "#172756",
+      {loading ? (
+        <LoadingOverlay
+          text={loadingText}
+          close={() => {
+            setLoading(false);
           }}
-        >
-          <div style={{ fontSize: "12pt",  }}>GARD Staking Rewards!</div>
-        </div>
+        />
+      ) : (
+        <></>
+      )}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Banner>
+          <div
+            style={{
+              justifyContent: "center",
+              textAlign: "left",
+              alignItems: "center",
+              color: "#172756",
+            }}
+          >
+            <div style={{ fontSize: "12pt" }}>GARD Staking Rewards!</div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              textAlign: "center",
+              marginLeft: "0px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                textAlign: "left",
+                flexDirection: "column",
+              }}
+            >
+              <div style={{ color: "#172756", fontSize: "10pt" }}>
+                5k - 10k GARD being paid out WEEKLY for users staking GARD on V2
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Link>Stake GARD to Earn Rewards</Link>
+          </div>
+        </Banner>
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
             justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
           }}
-        >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
+        ></div>
+        <Container style={{ maxWidth: `${mobile ? "90%" : ""}` }}>
+          <FirstRow>{"Staking Pool (Auto-Compounding)"}</FirstRow>
+          <SecondThirdCondensed mobile={mobile}>
+            <SecondRow mobile={mobile}>
+              <Heading>TVL</Heading>
+              <Heading>Type</Heading>
+              <Heading>Duration</Heading>
+              <Heading>APR</Heading>
+              {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
+              <StakeHeading>Stake Amount</StakeHeading>
+            </SecondRow>
+            <ThirdRow mobile={mobile}>
+              <Heading>{`$${NL_TVL}`}</Heading>
+              <TypeCont>
+                <Img src={gardLogo}></Img>
+                <Arrow src={arrowIcon}></Arrow>
+                <GardImg src={gardLogo}></GardImg>
+                <AssetOptions
+                  open={optionsOpen}
+                  setAsset={setAssetType}
+                  setOpen={setOptionsOpen}
+                />
+              </TypeCont>
+              <Heading>No-Lock</Heading>
+              <Heading>{`${NLAPY.toFixed(3)}%`}</Heading>
+              {mobile || (window.innerWidth < 760) ? (
+                <></>
+              ) : (
+                <StakeBox>
+                  <StakeInput
+                    id="stake-amt"
+                    placeholder="Enter Amount"
+                    min="0.0"
+                    step=".01"
+                    type="number"
+                    value={stakeAmount}
+                    callback={handleInput}
+                  />
+                  <EffectContainer>
+                    <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
+                    <Result>{formatToDollars(balance)}</Result>
+                  </EffectContainer>
+                </StakeBox>
+              )}
+            </ThirdRow>
+          </SecondThirdCondensed>
 
-          <div style={{ color: "#172756", fontSize: "10pt" }}>5k - 10k GARD being paid out WEEKLY for users staking GARD on V2</div>
-          </div>
-        </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <Link>Stake GARD to Earn Rewards</Link>
-        </div>
-      </Banner>
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-
-      </div>
-      <Container>
-        <FirstRow>{"Staking Pool (Auto-Compounding)"}</FirstRow>
-        <SecondThirdCondensed>
-
-        <SecondRow>
-          <Heading>TVL</Heading>
-          <Heading>Type</Heading>
-          <Heading>Duration</Heading>
-          <Heading>APR</Heading>
-          {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
-          <StakeHeading>Stake Amount</StakeHeading>
-
-        </SecondRow>
-        <ThirdRow>
-          <Heading>{`$${NL_TVL}`}</Heading>
-          <TypeCont>
-            <Img src={gardLogo}></Img>
-            <Arrow src={arrowIcon}></Arrow>
-            <GardImg src={gardLogo}></GardImg>
-            <AssetOptions
-              open={optionsOpen}
-              setAsset={setAssetType}
-              setOpen={setOptionsOpen}
-            />
-          </TypeCont>
-          <Heading>No-Lock</Heading>
-          <Heading>{`${(NLAPY).toFixed(3)}%`}</Heading>
-          <StakeBox>
-            <StakeInput
-              id="stake-amt"
-              placeholder="Enter Amount"
-              min="0.0"
-              step=".01"
-              type="number"
-              value={stakeAmount}
-              callback={handleInput}
-            />
-            <EffectContainer>
-              <MaxBtn onClick={handleMaxStake}>
-                +MAX
-              </MaxBtn>
-              <Result>{formatToDollars(balance)}</Result>
-            </EffectContainer>
-          </StakeBox>
-
-        </ThirdRow>
-        </SecondThirdCondensed>
-        <MobileGrid>
-
-        <MobileStakeBox>
-          <MobileHeader>Stake Amount:</MobileHeader>
-          <MobileStakeContainer><MobileStakeInput
-              id="stake-amt"
-              placeholder="Enter Amount"
-              min="0.0"
-              step=".01"
-              type="number"
-              value={stakeAmount}
-              callback={handleInput}
-            />
-            </MobileStakeContainer>
-        </MobileStakeBox>
+          {/* <MobileGrid>
+            <MobileStakeBox mobile={mobile}>
+              <MobileHeader>Stake Amount:</MobileHeader>
+              <MobileStakeContainer>
+                <MobileStakeInput
+                  id="stake-amt"
+                  placeholder="Enter Amount"
+                  min="0.0"
+                  step=".01"
+                  type="number"
+                  value={stakeAmount}
+                  callback={handleInput}
+                />
+              </MobileStakeContainer>
+            </MobileStakeBox>
             <MobileEffectContainer>
-              <MaxBtn onClick={handleMaxStake}>
-                +MAX
-              </MaxBtn>
+              <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
               <Result>{formatToDollars(balance)}</Result>
             </MobileEffectContainer>
-        </MobileGrid>
-        <MobileActionBar>
-        <MobileStakeBtn text="Stake" blue={true} onClick={handleStake} />
-        <MobileUnstakeBtn text="Unstake" blue={true} onClick={handleUnstake} />
-        </MobileActionBar>
-        <FourthRow>
-          <Effect title="Your Stake" val={`${((noLock/1000000)+parseFloat(accrued)).toFixed(3)} GARD`} hasToolTip={true} />
-          <Effect
-            title="Est. Rewards / Day"
-            val={`${(NLAPY / 100 * (noLock/1000000+parseFloat(accrued)) / 365).toFixed(3)} GARD`}
-            hasToolTip={true}
-          />
-          <Effect
-            title="New Rewards"
-            val={`${parseFloat(accrued).toFixed(4)}`}
-            hasToolTip={true}
-          />
-          <div style={{display: "flex", flexDirection: "row", alignSelf: "baseline"}}>
-
-          <StakeBtn text="Stake" blue={true} onClick={handleStake} />
-          <UnstakeBtn text="Unstake" blue={true} onClick={handleUnstake} />
-          </div>
-        </FourthRow>
-      </Container>
-    </div>
+          </MobileGrid>
+          <MobileActionBar>
+            <MobileStakeBtn text="Stake" blue={true} onClick={handleStake} />
+            <MobileUnstakeBtn
+              text="Unstake"
+              blue={true}
+              onClick={handleUnstake}
+            />
+          </MobileActionBar> */}
+          <FourthRow mobile={mobile}>
+            <Effect
+              title="Your Stake"
+              val={`${(noLock / 1000000 + parseFloat(accrued)).toFixed(
+                3,
+              )} GARD`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="Est. Rewards / Day"
+              val={`${(
+                ((NLAPY / 100) * (noLock / 1000000 + parseFloat(accrued))) /
+                365
+              ).toFixed(3)} GARD`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="New Rewards"
+              val={`${parseFloat(accrued).toFixed(4)}`}
+              hasToolTip={true}
+            />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: `${mobile ? "column" : "row"}`,
+                margin: 10,
+                alignSelf: `${mobile || (window.innerWidth < 760)? "unset" : "baseline"}`,
+              }}
+            >
+              <StakeBtn text="Stake" blue={true} onClick={handleStake} />
+              <UnstakeBtn text="Unstake" blue={true} onClick={handleUnstake} />
+              {mobile || (window.innerWidth < 760) ? (
+                <StakeBox style={{flexDirection: `${mobile ? "column" : "row"}`}}>
+                <StakeInput
+                  mobile={mobile}
+                  id="stake-amt"
+                  placeholder="Enter Amount"
+                  min="0.0"
+                  step=".01"
+                  type="number"
+                  value={stakeAmount}
+                  callback={handleInput}
+                />
+                <EffectContainer>
+                  <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
+                  <Result>{formatToDollars(balance)}</Result>
+                </EffectContainer>
+              </StakeBox>
+              ) : (
+                <></>
+              )}
+            </div>
+          </FourthRow>
+        </Container>
+      </div>
     </div>
   );
 }
@@ -323,6 +386,14 @@ const MobileStakeBox = styled.div`
     justify-content: center;
     align-items: center;
   }
+  /* ${(props) => props.mobile && css`
+    visibility: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  `} */
+
 `
 const MobileHeader = styled.div`
     visibility: hidden;
@@ -400,12 +471,12 @@ height: 0px;
 
 const StakeBtn = styled(PrimaryButton)`
   @media (${device.tablet}) {
-    visibility: hidden;
+    /* visibility: hidden; */
   }
 `
 const UnstakeBtn = styled(PrimaryButton)`
   @media (${device.tablet}) {
-    visibility: hidden;
+    /* visibility: hidden; */
   }
 `
 
@@ -440,7 +511,6 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   height: 20%;
-  width: 100%;
   border: 1px solid white;
   background: #0e1834;
   border-radius: 10px;
@@ -472,6 +542,10 @@ const SecondRow = styled.div`
     flex-direction: column;
     width: 40%;
   }
+  ${(props) => props.mobile && css`
+    /* display: flex; */
+    grid-template-columns: unset;
+  `}
 `;
 const ThirdRow = styled.div`
   display: grid;
@@ -485,6 +559,11 @@ const ThirdRow = styled.div`
     margin-top: 0px;
     margin-bottom: 18px;
   }
+  ${(props) => props.mobile && css`
+    display: flex;
+    flex-direction: column;
+    height: 21.052vh;
+  `}
 `;
 
 const SecondThirdCondensed = styled.div`
@@ -492,6 +571,11 @@ const SecondThirdCondensed = styled.div`
     display: flex;
     flex-direction: row;
   }
+  ${(props) => props.mobile && css`
+    display: grid;
+    grid-template-columns: repeat(2, 49%);
+  `}
+
 `
 
 const TypeCont = styled.div`
@@ -514,7 +598,7 @@ const StakeBox = styled.div`
   align-items: center;
   @media (${device.tablet}) {
     flex-direction: column;
-    visibility: hidden;
+    /* visibility: hidden; */
     height: 0px;
   }
 `;
@@ -527,6 +611,10 @@ const FourthRow = styled.div`
     display: flex;
     flex-direction: column;
   }
+  ${(props) => props.mobile && css`
+    display: flex;
+    flex-direction: column-reverse;
+  `}
 `
 
 const Img = styled.img`
@@ -554,15 +642,19 @@ const Arrow = styled.img`
 const Heading = styled.text`
   font-weight: 500;
   margin: 4px;
+  width: max-content;
 `;
 const StakeHeading = styled.text`
   @media (${device.tablet}) {
-    visibility: hidden;
+    /* visibility: hidden; */
   }
 `
 
+const globalMobile = isMobile();
+
 const StakeInput = styled(InputField)`
-  width: 12vw;
+
+  width: ${`${globalMobile? "52vw" : "12vw"};`};
   height: 6vh;
   border: 1px transparent;
   text-decoration-color: #7c52ff;
@@ -580,7 +672,7 @@ const StakeInput = styled(InputField)`
     appearance: none;
   }
   @media (${device.tablet}) {
-    visibility: hidden;
+    /* visibility: hidden; */
   }
 `;
 

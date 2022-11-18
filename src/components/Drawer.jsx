@@ -64,6 +64,7 @@ export default function Drawer({
   const [dev, setDev] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
   const [mobile, setMobile] = useState(isMobile())
+  const [closeVisible, setCloseVisible] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
@@ -72,9 +73,23 @@ export default function Drawer({
     height: undefined
   })
 
-  const toggleOpen = () => {
+  const toggleOpen = (close = false) => {
+    if (close) {
+      setIsOpen(false);
+    }
     setIsOpen(!isOpen)
   }
+
+  const closeDrawer = () => {
+    toggleOpen(true);
+  }
+
+  useEffect(() => {
+    if (mobile && isOpen) {
+      setCloseVisible(true);
+    }
+  }, [isOpen])
+
 
   useEffect(() => {
     setMobile(isMobile())
@@ -158,7 +173,7 @@ export default function Drawer({
               marginTop: 48,
               marginLeft: "03.9583333333333vw",
               marginBottom: 38,
-              visibility: `${mobile ? "hidden" : "visible"}`
+              visibility: `${mobile || !isOpen ? "hidden" : "visible"}`
             }}
             onClick={() => {
               if (window.innerWidth < 900) toggleOpen();
@@ -167,15 +182,14 @@ export default function Drawer({
           >
             <NavLogo src={logo} alt="logo" />
           </LogoButton>
-        {/* <HamburgerButton
-          style={{}}
+        <CloseButton
+          style={{visibility: `${mobile && isOpen ? "visible" : "unset"};`}}
           onClick={() => {
-            toggleOpenStatus();
-            allowAnimate();
+            closeDrawer();
           }}
           >
-            <HamburgerIcon alt="burger" src={!open ? hamburguerIcon : closeIcon} />
-          </HamburgerButton> */}
+            <CloseIcon alt="close" src={closeIcon} />
+          </CloseButton>
 
           </div>
           <div
@@ -614,6 +628,26 @@ const HideNavButton = styled.button`
     background-color: #019fff;
   }
 `;
+const CloseButton = styled.button`
+  position: fixed;
+  right: 8px;
+  background-color: transparent;
+  width: 20px;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 0px;
+  transform: scale(0.8);
+
+  /* position: absolute; */
+`;
+const CloseIcon = styled.img`
+  height: 30px;
+  @media (min-width: ${size.tablet}) {
+    visibility: hidden;
+  }
+`;
 const HamburgerButton = styled.button`
   background-color: transparent;
   height: 40px;
@@ -623,7 +657,7 @@ const HamburgerButton = styled.button`
   align-items: center;
   justify-content: center;
   border-width: 0px;
-  /* position: absolute; */
+
 `;
 const HamburgerIcon = styled.img`
   height: 30px;

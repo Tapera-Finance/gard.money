@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setAlert } from "../../redux/slices/alertSlice";
 import * as tips from "../../assets/tooltiptext";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import ExchangeField from "../ExchangeField";
 import ToolTip from "../ToolTip";
 import Effect from "../Effect";
@@ -28,6 +28,7 @@ import { gardpool, swap } from "../../transactions/swap";
 import { titleToToolTip } from "../../utils";
 import { VERSION } from "../../globals";
 import { size, device } from "../../styles/global"
+import { isMobile } from "../../utils";
 
 const initEffectState = {
   primaryAssetPriceAfterSwap: 0.0,
@@ -43,6 +44,7 @@ console.log("enabled?", swapEnabled)
 
 
 export default function SwapDetails() {
+  const [mobile, setMobile] = useState(isMobile());
   const walletAddress = useSelector(state => state.wallet.address);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
@@ -282,6 +284,10 @@ export default function SwapDetails() {
   }
 
   useEffect(() => {
+    setMobile(isMobile())
+  }, [])
+
+  useEffect(() => {
     if (leftInputAmt === "") {
       setLeftDollars(0.00)
     }
@@ -407,7 +413,7 @@ export default function SwapDetails() {
         <SwapContainer>
           {loading ? <LoadingOverlay text={loadingText} /> : <></>}
             {!swapEnabled ? (<div style={{display: "flex", justifyContent: "center", textAlign: "center"}}><TestAlert>Swap only available on Main Net</TestAlert></div>)  : <></>}
-          <ExchangeBar>
+          <ExchangeBar mobile={mobile}>
             <ExchangeFields
               ids={["left-select", "left-input"]}
               type={left}
@@ -673,11 +679,17 @@ const ExchangeBar = styled.div`
     justify-content: center;
     align-items: center;
   }
+  ${(props) => props.mobile && css`
+    flex-direction: column;
+  `}
 `;
 
 const ExchangeFields = styled(ExchangeField)`
   width: 40%;
   background: #0d1227;
+  ${(props) => props.mobile && css`
+    flex-direction: column;
+  `}
 
 `;
 
