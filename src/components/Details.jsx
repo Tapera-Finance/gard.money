@@ -3,12 +3,13 @@ import styled, { css } from "styled-components";
 import { device } from "../styles/global";
 import Effect from "./Effect";
 
-export default function Details({ className, details, governPage }) {
+export default function Details({ mobile, className, details, governPage }) {
   return (
     <Container
       className={className}
     >
       <Items
+      mobile={mobile}
       governPage={governPage}
       >
         {details.length && details.length > 0 ?
@@ -52,6 +53,9 @@ const Items = styled.div`
   @media (${device.mobileM}) {
     grid-template-columns: repeat(1, 80%);
   }
+  ${(props) => props.mobile && css`
+  grid-template-columns: repeat(1, 80%);
+  `}
 `;
 
 const Item = styled.div`

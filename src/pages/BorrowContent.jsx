@@ -607,7 +607,7 @@ export default function BorrowContent() {
               setLoading(false);
             }}
           />
-          <Details className={"borrow"} details={details} />
+          <Details mobile={mobile} className={"borrow"} details={details} />
         </div>
       ) : (
         <></>
