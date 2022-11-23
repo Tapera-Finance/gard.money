@@ -425,6 +425,11 @@ const DrawerDiv = styled.div`
   overflow-y: auto;
   width: ${`${isMobile() ? `100%` : `unset`}`};
 
+  /* ${(props) => props.mobile && props.open && css`
+    position: fixed;
+    overflow-y: hidden;
+  `} */
+
   ${(props) =>
     props.mobile &&
     css`
@@ -438,6 +443,7 @@ const DrawerDiv = styled.div`
   ${(props) =>
     props.open &&
     css`
+      position: ${`${isMobile() ? `fixed` : `inherit`}`};
       visibility: visible;
     `}
   ${(props) =>
