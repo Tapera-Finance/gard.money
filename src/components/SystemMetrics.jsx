@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import graph from "../assets/graph.png";
 import Chart from "./Chart";
-import { ids } from "../transactions/ids"; 
+import { ids } from "../transactions/ids";
 import TransactionHistory from "./TransactionHistory";
 import PrimaryButton from "./PrimaryButton";
 import { getCurrentAlgoUsd, getChainData } from "../prices/prices";
@@ -15,6 +15,7 @@ import Effect from "../components/Effect";
 import PageToggle from "./PageToggle";
 import { getAppField } from "../transactions/lib";
 import { getBorrowed } from "../pages/HomeContent";
+import { isMobile } from "../utils";
 
 const fetchTvl = async () => {
   try {
@@ -118,6 +119,15 @@ const Item = styled.div`
     flex-direction: column;
     font-size: 15px;
 `
+const GraphContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 100px;
+  ${(props) => props.mobile && css`
+    justify-content: center;
+  `}
+`
 
 /**
  * This renders all the given graph items in a single row
@@ -126,20 +136,13 @@ const Item = styled.div`
  */
 function GraphRow({ items }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 100,
-      }}
-    >
+    <GraphContainer mobile={isMobile()}>
       {items.map((value, index) => {
         return (
           <Graph key={index} title={value.title} subtitle={value.subtitle} />
         );
       })}
-    </div>
+    </GraphContainer>
   );
 }
 
@@ -312,14 +315,14 @@ function Graph({ title }) {
 
   return (
     <div>
-      <div style={{ marginLeft: 18 }}>
+      <Header mobile={isMobile()}>
         <div style={{ marginBottom: 8 }}>
           <Title>{title}</Title>
         </div>
         <div style={{ marginBottom: 23 }}>
           <Subtitle>{subtitle}</Subtitle>
         </div>
-      </div>
+        </Header>
       <div style={{ color: "black" }}>
         <Chart
           size={
@@ -330,18 +333,30 @@ function Graph({ title }) {
           data={data}
         />
       </div>
-      <div style={{ marginLeft: 18 }}>
+      <BtnSet mobile={isMobile()}>
         <RadioButtonSet
           titles={["24H", "7D", "30D"]}
           selected={selected}
           callback={(selected) => setSelected(selected)}
         />
-      </div>
+      </BtnSet>
     </div>
   );
 }
 
 // styled components
+const Header = styled.div`
+  ${(props) => !props.mobile && css`
+    margin-left: 18px;
+  `}
+`
+
+const BtnSet = styled.div`
+  ${(props) => !props.mobile && css`
+      margin-left: 18px;
+    `}
+`
+
 const Title = styled.text`
   font-weight: bold;
   font-size: 20px;
