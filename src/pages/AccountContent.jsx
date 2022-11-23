@@ -168,7 +168,7 @@ export default function AccountContent() {
 // syled components for our wallet content
 
 const AcctPgCont = styled.div`
-  max-width: 90vw;
+  /* max-width: 90vw; */
 `
 
 const AcctPageToggle = styled(PageToggle)`

@@ -8,6 +8,7 @@ import { getWallet, getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "./Positions";
 import { ids } from "../transactions/ids"
 import { device } from "../styles/global";
+import { isMobile } from "../utils";
 
 
 
@@ -182,6 +183,8 @@ const CountContainer = styled.div`
   background: #172756;
   border-radius: 16px;
   padding: 2px 8px;
+  height: ${`${isMobile() ? "min-content" : "unset"}`};
+  align-self: ${`${isMobile() ? "center" : "unset"}`};
   /* height: 20px; */
 `;
 

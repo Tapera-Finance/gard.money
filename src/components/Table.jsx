@@ -5,6 +5,7 @@ import { camelToWords } from "../utils";
 import PrimaryButton from "./PrimaryButton";
 import chevron from "../assets/icons/tablePag_icon.png";
 import "../styles/table.css"
+import { isMobile } from "../utils";
 
 /**
  * This renders a table with the given data
@@ -219,6 +220,7 @@ const CountContainer = styled.div`
   background: #ffffff;
   border-radius: 16px;
   padding: 2px 8px;
+
 `;
 
 const CountText = styled.text`
