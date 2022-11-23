@@ -110,6 +110,8 @@ const buttons = [
  * Content found on home
  */
 export default function HomeContent() {
+  const [mobile, setMobile] = useState(isMobile());
+
   const [tvl, setTvl] = useState("...");
   const [apy, setApy] = useState("...");
   const [borrowed, setBorrowed] = useState("...");
@@ -205,6 +207,10 @@ export default function HomeContent() {
       hasToolTip: true,
     },
   ];
+
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
 
   useEffect(async () => {
     let res = await fetchTvl();
@@ -316,7 +322,7 @@ export default function HomeContent() {
             selectedOption={setDifficulty}
           />
         </ToggleBox>
-        <Container expert={difficulty == "DeFi Expert" ? true : false}>
+        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
           <Items>
             {homeDetails.length && homeDetails.length > 0
               ? homeDetails.map((d) => {
@@ -433,10 +439,12 @@ const ToggleBox = styled.div`
 const HomeWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  /* width: 94%; */
+  /* align-items: flex-start; */
   ${(props) =>
     props.expert &&
     css`
-      margin-right: 30px;
+      /* margin-right: 30px; */
     `
   }
 `
@@ -450,7 +458,7 @@ const AccessBox = styled.div`
   ${(props) =>
     props.expert &&
     css`
-      margin-right: 30px;
+      /* margin-right: 30px; */
     `
   }
   @media (${device.tablet}) {
@@ -479,7 +487,7 @@ const Link = styled.text`
 
 const Banner = styled.div`
   display: flex;
-  width: 90%;
+  /* width: 90%; */
   flex-direction: row;
   border-radius: 10px;
   justify-content: space-between;
@@ -492,15 +500,15 @@ const Banner = styled.div`
     ${(props) =>
     props.expert &&
     css`
-      margin-left: 60px;
-      width: 100%;
+      /* margin-left: 60px; */
+      /* width: 100%; */
     `
   }
   }
   ${(props) =>
     props.expert &&
     css`
-      margin-right: 30px;
+      /* margin-right: 30px; */
     `
   }
 `
@@ -509,10 +517,15 @@ const Banner = styled.div`
 const Container = styled.div`
   background: #0E1834;
   padding-top: 30px;
-  width: 90%;
+  /* width: 90%; */
   padding-bottom: 30px;
   border: 1px solid white;
   border-radius: 10px;
+
+  ${(props) => props.mobile && css`
+    width: 90%;
+  `}
+
   @media (${device.tablet}) {
     /* width: 100%; */
     ${(props) =>
@@ -525,7 +538,7 @@ const Container = styled.div`
   ${(props) =>
     props.expert &&
     css`
-      margin-right: 30px;
+      /* margin-right: 30px; */
     `
   }
 `;
@@ -552,6 +565,7 @@ const Item = styled.div`
 // styled components
 const StepContainer = styled.div`
   display: flex;
+  /* width: 90%; */
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;

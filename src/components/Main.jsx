@@ -221,8 +221,10 @@ const MainContentDiv = styled.div`
     max-width: 100%;
     overflow: hidden;
   }
+
   @media (min-width: ${size.tablet}) {
-    margin-left: 23.75vw;
+    margin-left: 16.75vw;
+    /* margin-right: 7vw; */
   }
 `;
 const HelpButton = styled.div`

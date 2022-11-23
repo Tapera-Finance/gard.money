@@ -261,35 +261,16 @@ export default function Drawer({
                       <ButtonText>{v.name}</ButtonText>
                     </div>
                   </NavButton>
-                ) : (
-                  <DropdownNavButton
-                    name={v.name}
-                    icon={v.icon}
-                    subOptions={v.subOptions}
-                  />
+                ) : (<></>
+                  // <DropdownNavButton
+                  //   name={v.name}
+                  //   icon={v.icon}
+                  //   subOptions={v.subOptions}
+                  // />
                 )}
               </div>
             );
           })}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          <HideNavButton
-            onClick={() => {
-              allowAnimate();
-              toggleOpenStatus();
-            }}
-          >
-            <img
-              src={chevronDown}
-              alt="chev-down"
-              style={{ transform: "rotate(90deg)" }}
-            />
-          </HideNavButton>
         </div>
         <div style={{
           top: "85vh", left: 0, right: 0
@@ -425,6 +406,11 @@ const DrawerDiv = styled.div`
   overflow-y: auto;
   width: ${`${isMobile() ? `100%` : `unset`}`};
 
+  /* ${(props) => props.mobile && props.open && css`
+    position: fixed;
+    overflow-y: hidden;
+  `} */
+
   ${(props) =>
     props.mobile &&
     css`
@@ -438,6 +424,7 @@ const DrawerDiv = styled.div`
   ${(props) =>
     props.open &&
     css`
+      position: ${`${isMobile() ? `fixed` : `inherit`}`};
       visibility: visible;
     `}
   ${(props) =>
