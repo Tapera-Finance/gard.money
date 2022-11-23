@@ -74,7 +74,9 @@ export default function Step({
           <div style={{ display: "flex", textAlign: "center", marginBottom: 0, marginTop: 4 }}>
             <Link href={link} target="_blank">{linkText}</Link>
           </div>
-            <text style={{width: "60vw", marginBottom: 18, marginTop: 6}}>{text}</text>
+            <text style={{
+              // width: "80vw",
+              marginBottom: 18, marginTop: 6}}>{text}</text>
           <div style={{ display: "flex", justifyContent: "center", margin: "2px 0px 12px 0px" }}>
             <StepButton
               text={`Go to ${goTo}`}
@@ -116,11 +118,12 @@ const StepItem = styled.div`
   align-items: center;
   background: #0f1733;
   color: #019fff;
-  /* height: 80px;
-  width: 60vw; */
+  height: 96px;
+  /* width: 60vw; */
   border-radius: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
+  padding: 0px 10px 0px 10px;
   ${(props) =>
     props.open &&
     css`
