@@ -5,6 +5,7 @@ import InputField from "./InputField";
 import Effect from "./Effect";
 import chevronDown from "../assets/chevron_down.png";
 import { size, device } from "../styles/global"
+import { isMobile } from "../utils";
 
 // entire container for currency select, input field, text for displaying vals
 
@@ -172,7 +173,7 @@ const InputContainer = styled.div`
 `;
 
 const ExchangeInput = styled(InputField)`
-  width: 8vw;
+  width: ${`${isMobile() ? "28vw" : "8vw"}`};
   height: 4vh;
   border: 1px transparent;
   text-decoration-color: #6430ff;

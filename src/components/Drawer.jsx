@@ -261,35 +261,16 @@ export default function Drawer({
                       <ButtonText>{v.name}</ButtonText>
                     </div>
                   </NavButton>
-                ) : (
-                  <DropdownNavButton
-                    name={v.name}
-                    icon={v.icon}
-                    subOptions={v.subOptions}
-                  />
+                ) : (<></>
+                  // <DropdownNavButton
+                  //   name={v.name}
+                  //   icon={v.icon}
+                  //   subOptions={v.subOptions}
+                  // />
                 )}
               </div>
             );
           })}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          <HideNavButton
-            onClick={() => {
-              allowAnimate();
-              toggleOpenStatus();
-            }}
-          >
-            <img
-              src={chevronDown}
-              alt="chev-down"
-              style={{ transform: "rotate(90deg)" }}
-            />
-          </HideNavButton>
         </div>
         <div style={{
           top: "85vh", left: 0, right: 0
