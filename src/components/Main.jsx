@@ -96,7 +96,7 @@ export default function Main(WrappedComponent, title) {
 
   useEffect(() => {
     if (dimmensions && dimmensions.width > parseInt(size.tablet)) {
-      setIsOpen(true);
+      // setIsOpen(true);
     }
   }, [dimmensions])
 
@@ -223,8 +223,9 @@ const MainContentDiv = styled.div`
   }
 
   @media (min-width: ${size.tablet}) {
-    margin-left: 16.75vw;
-    /* margin-right: 7vw; */
+    ${(props) => !props.mobile && css`
+      margin-left: 16.75vw;
+    `}
   }
 `;
 const HelpButton = styled.div`
