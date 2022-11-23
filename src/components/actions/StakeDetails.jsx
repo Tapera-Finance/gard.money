@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../redux/slices/alertSlice";
-import styled, {css} from "styled-components";
+import styled, { css } from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
 import { ids } from "../../transactions/ids";
@@ -211,7 +211,7 @@ export default function StakeDetails() {
               <Heading>Duration</Heading>
               <Heading>APR</Heading>
               {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
-              <StakeHeading>Stake Amount</StakeHeading>
+              <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
             <ThirdRow mobile={mobile}>
               <Heading>{`$${NL_TVL}`}</Heading>
@@ -231,6 +231,7 @@ export default function StakeDetails() {
                 <></>
               ) : (
                 <StakeBox>
+
                   <StakeInput
                     id="stake-amt"
                     placeholder="Enter Amount"
@@ -306,10 +307,11 @@ export default function StakeDetails() {
                 alignSelf: `${mobile || (window.innerWidth < 760)? "unset" : "baseline"}`,
               }}
             >
-              <StakeBtn text="Stake" blue={true} onClick={handleStake} />
-              <UnstakeBtn text="Unstake" blue={true} onClick={handleUnstake} />
+              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={handleStake} />
+              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={handleUnstake} />
               {mobile || (window.innerWidth < 760) ? (
                 <StakeBox style={{flexDirection: `${mobile ? "column" : "row"}`}}>
+                  {isMobile ? (<StakeHeading mobile={mobile}>Stake Amount</StakeHeading>) : (<></>)}
                 <StakeInput
                   mobile={mobile}
                   id="stake-amt"
@@ -470,11 +472,17 @@ height: 0px;
 // Styled Components
 
 const StakeBtn = styled(PrimaryButton)`
+  ${(props) => props.mobile && css`
+    margin: 4px;
+  `}
   @media (${device.tablet}) {
     /* visibility: hidden; */
   }
 `
 const UnstakeBtn = styled(PrimaryButton)`
+${(props) => props.mobile && css`
+    margin: 4px;
+  `}
   @media (${device.tablet}) {
     /* visibility: hidden; */
   }
@@ -534,7 +542,7 @@ const SecondRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   justify-content: center;
-  background: #172756;
+  /* background: #172756; */
   height: 18%;
   padding: 22px;
   @media (${device.tablet}) {
@@ -551,7 +559,7 @@ const ThirdRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   justify-content: center;
-  margin: 22px 22px 4px 22px;
+  margin: 2px 22px 4px 22px;
   @media (${device.tablet}) {
     display: flex;
     flex-direction: column;
@@ -572,8 +580,8 @@ const SecondThirdCondensed = styled.div`
     flex-direction: row;
   }
   ${(props) => props.mobile && css`
-    display: grid;
-    grid-template-columns: repeat(2, 49%);
+    display: flex;
+    /* grid-template-columns: repeat(2, 49%); */
   `}
 
 `
@@ -645,6 +653,10 @@ const Heading = styled.text`
   width: max-content;
 `;
 const StakeHeading = styled.text`
+${(props) => props.mobile && css`
+    margin-top: 18px;
+    font-weight: 600px;
+  `}
   @media (${device.tablet}) {
     /* visibility: hidden; */
   }
