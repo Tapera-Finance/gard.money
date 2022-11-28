@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import algosdk from "algosdk";
 import styled, {css} from "styled-components";
 import Details from "../components/Details";
 import { ids } from "../transactions/ids";
@@ -37,6 +38,15 @@ const fetchTvl = async () => {
   }
 };
 
+function getStateUint(state, key, byte_switch = 0) {
+  const val = state.find((entry) => {
+    if (entry.key === key) {
+      return entry;
+    }
+  })
+  return byte_switch ? val.value.bytes : val.value.uint
+}
+
 export async function getBorrowed() {
   const v2GardPriceValidatorId = 890603991
   const sgardGardId = 890603920
@@ -46,14 +56,6 @@ export async function getBorrowed() {
       timeout: 300000,
     })
     return (await axiosObj.get(`/v2/applications/${appId}`)).data
-  }
-  function getStateUint(state, key) {
-    const val = state.find((entry) => {
-      if (entry.key === key) {
-        return entry;
-      }
-    })
-    return val.value.uint
   }
   async function getAppState(appId) {
     const res = await lookupApplications(appId);
@@ -84,7 +86,15 @@ async function getTotalUsers() {
         nexttoken,
       });
       for (const account of response['accounts']) {
-        users.add(account);
+        if (i){
+          users.add(account.address);
+        }
+        else {
+          if(account['apps-local-state']){
+          let cdp_state = account['apps-local-state'][0]['key-value']
+          users.add(algosdk.encodeAddress(Buffer.from(getStateUint(cdp_state, btoa("OWNER"), 1), "base64")))
+          }
+        }
       }
       nexttoken = response['next-token']
     } while (nexttoken != null);
