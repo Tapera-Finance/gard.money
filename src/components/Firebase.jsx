@@ -51,6 +51,8 @@ export async function addReferrerToFirestore(walletID){
       referred: referrer,
       timestamp: Date.now()
     }
+    const querySnapshot = await getDoc(query(walletRef))
+    if (querySnapshot["_document"] != null) return;
     await setDoc(walletRef, info);
   } catch (e) {
     console.error("Error adding document: ", e);
