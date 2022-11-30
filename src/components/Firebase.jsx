@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { cdpGen } from "../transactions/contracts";
 import { getWalletInfo } from "../wallets/wallets";
+import { referrer } from "../globals";
 var configkey = null;
 
 const module = await import("../wallets/keys.js");
@@ -37,6 +38,22 @@ export async function addUserToFireStore(user, walletID) {
   try {
     const walletRef = doc(db, "users", walletID);
     await setDoc(walletRef, user);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+
+export async function addReferrerToFirestore(walletID){
+  if (referrer == null) return
+  try {
+    const walletRef = doc(db, "referrers", walletID);
+    const info = {
+      referred: referrer,
+      timestamp: Date.now()
+    }
+    const querySnapshot = await getDoc(query(walletRef))
+    if (querySnapshot["_document"] != null) return;
+    await setDoc(walletRef, info);
   } catch (e) {
     console.error("Error adding document: ", e);
   }

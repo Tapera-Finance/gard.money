@@ -17,6 +17,12 @@ export const AUCTIONS_CONTENT_NAMES = {
   MARKET_HISTORY: "Market History",
 };
 
+export function setReferrer(arg){
+  referrer = arg;
+}
+
+export var referrer = null;
+
 export const commitmentPeriodEnd = 1666368000000;
 
 export const VERSION = "MAINNET";

@@ -13,7 +13,7 @@ import LoadingOverlay from "./LoadingOverlay";
 import { useDispatch, useSelector } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { setWallet } from "../redux/slices/walletSlice";
-import { userInDB, addUserToFireStore, userInTotals, addUserToTotals } from "../components/Firebase";
+import { userInDB, addUserToFireStore, addReferrerToFirestore, userInTotals, addUserToTotals } from "../components/Firebase";
 import { getCDPs } from "../transactions/cdp";
 import { cdpGen } from "../transactions/contracts";
 import { useNavigate } from "react-router-dom";
@@ -131,6 +131,7 @@ export default function WalletConnect() {
                     console.log("error connecting wallet: ", e);
                   }
                   setModalCanAnimate(false);
+                  await addReferrerToFirestore(getWallet().address)
                   setLoading(false);
                 }
               }}
