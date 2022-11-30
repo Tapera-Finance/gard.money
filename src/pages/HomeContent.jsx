@@ -250,6 +250,7 @@ export default function HomeContent() {
         <Banner expert={difficulty == "DeFi Expert" ? true : false}>
           <div
             style={{
+              display: "flex",
               justifyContent: "center",
               textAlign: "left",
               alignItems: "center",
@@ -297,9 +298,9 @@ export default function HomeContent() {
                       ),
                     );
               }}
-            >
-              Stake
-            </Link>
+            
+              text="Stake"
+            />
           </div>
         </Banner>
 
@@ -474,21 +475,21 @@ const AccessBox = styled.div`
   }
 `
 
-const Link = styled.text`
+const Link = styled(PrimaryButton)`
   text-decoration: none;
   font-weight: 500;
   color: #172756;
   margin-right: 12px;
   &:hover {
-    color: #03a0ff;
-    cursor: pointer;
+    background-color: #455278
   }
 `;
 
 const Banner = styled.div`
   display: flex;
-  /* width: 90%; */
+  width: 90%; 
   flex-direction: row;
+  border: 1px white solid;
   border-radius: 10px;
   justify-content: space-between;
   text-align: center;
