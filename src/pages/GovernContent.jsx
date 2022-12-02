@@ -138,6 +138,7 @@ export default function Govern() {
   const [loadingText, setLoadingText] = useState(null);
   const [voteTableDisabled, setVoteTable] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modal2Visible, setModal2Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [toWallet, setToWallet] = useState(true);
   const [commitDisabled, setCommitDisabled] = useState(false);
@@ -403,9 +404,26 @@ export default function Govern() {
         </div>
       </PositionTableContainer>
       <CDPTable data={cdps} />
+      <div style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            textAlign: "center",
+            padding: "20px 20px 0px",
+            margin: "auto",
+        }}>
       <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} onClick={() => {
             navigate("/borrow");
-          }}Enroll/>
+          }}/>
+      <PrimaryButton text="View Vote Proposals" blue={true} underTable={true} onClick={async () => {
+            setModalCanAnimate(true)
+            setModal2Visible(true)
+            console.log(Date.now());
+            await new Promise((r) => setTimeout(r, 8000));
+            setModal2Visible(false)
+            setModalCanAnimate(false)
+          }} disabled={false && (Date.now() < 1670256000000 || Date.now() > 1671465600000)}/>
+          </div>
       {voteTableDisabled ? <></>:
       <div>
         <div
@@ -512,6 +530,137 @@ export default function Govern() {
           </div>
         )}
       </Modal>
+      <Modal
+        title={"Cast Your Votes"}
+        subtitle={
+            <div>
+              <text>Place your vote below for </text>
+              <Link
+                href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+              >
+                Governance Period #5 Voting Session #1
+              </Link>
+              <text>.</text>
+            </div>
+        }
+        close={() => setModal2Visible(false)}
+        animate={modalCanAnimate}
+        visible={modalVisible}
+      >
+      <div>
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #1:
+                    </Link>{" "}
+                    Designating 7M ALGOs from the Q4 2022 governance rewards to
+                    DeFi governors
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={measure1Vote}
+                    onChange={handleChangeMeasure1}
+                  >
+                    <option>
+                      "Allocate 7M ALGOs from the rewards pool of Q4 2022 to
+                      DeFi governors"
+                    </option>
+                    <option>
+                      "Keep the status quo and distribute the entire pool of
+                      70.5M ALGOs among all governors"
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                      href="https://www.algorand.foundation/community-governance-period4-voting-measures"
+                      subtitle={true}
+                    >
+                      Measure #2:
+                    </Link>{" "}
+                    Allow DEX Liquidity Providers that contribute ALGOs in pools
+                    to participate in governance for Q4 2022
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={measure2Vote}
+                    onChange={handleChangeMeasure2}
+                  >
+                    <option>
+                      "Enable committing Algo LP tokens to governance"
+                    </option>
+                    <option>
+                      "Keep the status quo without including DEX LP tokens"
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <PrimaryButton
+                text="Confirm Vote"
+                onClick={async () => {
+                  setModalCanAnimate(true);
+                  setModal2Visible(false);
+                  setLoading(true);
+                  try {
+                    const res = await voteCDP(
+                      selectedAccount,
+                      measure1Vote ==
+                        "Allocate 7M ALGOs from the rewards pool of Q4 2022 to DeFi governors"
+                        ? "a"
+                        : "b",
+                      measure2Vote ==
+                        "Enable committing Algo LP tokens to governance"
+                        ? "a"
+                        : "b",
+                    );
+                    if (res.alert) {
+                      dispatch(setAlert(res.text));
+                    }
+                  } catch (e) {
+                    handleTxError(e, "Error sending vote");
+                  }
+                  setModalCanAnimate(false);
+                  setLoading(false);
+                }}
+              />
+              <CancelButton style={{ marginLeft: 30 }}>
+                <CancelButtonText>
+                  Cancel
+                </CancelButtonText>
+              </CancelButton>
+            </div>
+          </div>
+        </Modal>
     </GovContainer>
   );
 }
@@ -634,7 +783,13 @@ const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
 `;
-
+const Select = styled.select`
+  width: 24.3055555555556vw;
+  height: 44px;
+  border: 1px solid #dce1e6;
+  padding-left: 12px;
+  box-sizing: border-box;
+`;
 const CountContainer = styled.div`
   background: #172756;
   border-radius: 16px;
