@@ -126,7 +126,7 @@ export default function Drawer({
       flexDirection: "column",
       justifyContent: "space-between",
       alignItems: "baseline",
-      height: `${mobile ? "9vh" : 0}`
+      height: `${!mobile ? 0 : isOpen ? "" : "9vh"}`
     }} >
        {window.innerWidth < 900 ? <MobileDrawer mobile={mobile} open={isOpen}>
           <LogoButton
