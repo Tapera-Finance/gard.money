@@ -499,7 +499,8 @@ const Banner = styled.div`
   display: flex;
   width: 100%; 
   flex-direction: row;
-  border: 1px white solid;
+  border: 1px solid white;
+  align-content: center;
   border-radius: 10px;
   justify-content: space-between;
   text-align: center;
