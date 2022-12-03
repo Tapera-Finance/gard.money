@@ -15,6 +15,7 @@ export default function Step({
   link,
   linkText,
   allOpen,
+  mobile,
 }) {
   const walletAddress = useSelector(state => state.wallet.address)
   const [open, setOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function Step({
 
   return (
     <ExpandedStep open={open}>
-      <StepItem onClick={handleOpen} open={open}>
+      <StepItem onClick={handleOpen} open={open} mobile={mobile}>
         <div style={{ marginLeft: 8 }}>{checked ? " √" : ""}{header}</div>
         <div
           style={{
@@ -117,13 +118,14 @@ const StepItem = styled.div`
   text-align: left;
   align-items: center;
   background: #0f1733;
+  border: 1px solid #019fff;
   color: #019fff;
   height: 96px;
   /* width: 60vw; */
   border-radius: 10px;
+  margin: auto;
   margin-top: 20px;
   margin-bottom: 20px;
-  padding: 0px 10px 0px 10px;
   ${(props) =>
     props.open &&
     css`
@@ -138,6 +140,10 @@ const StepItem = styled.div`
       color: #0f1733;
 
     `}
+    ${(props) => props.mobile && css`
+    width: 90%;
+  `}
+  
 `;
 
 const StepButton = styled(PrimaryButton)`
