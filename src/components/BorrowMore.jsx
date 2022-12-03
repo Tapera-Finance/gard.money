@@ -51,10 +51,10 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
       },
     ]
     return <div>
-        <div style={{marginTop: 30}}>
+        <div style={{marginTop: 20}}>
             <BorrowCDP  minted={minted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} maxMint={maxMint} apr={apr} manageUpdate={manageUpdate} setUtilization={setUtilization}/>
         </div>
-        <div style={{position:"relative", top:-65}}>
+        <div style={{position:"relative", top:-57}}>
             <Details details={borrowDetails}/>
         </div>
     </div>

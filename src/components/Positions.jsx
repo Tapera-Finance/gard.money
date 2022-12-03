@@ -438,6 +438,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           price={price}
                           setCurrentCDP={setCurrentCDP}
                           details={details}
+                          mobile={mobile}
                         />
                       ) : (
                         // : selectedTab === "three" ?
@@ -507,6 +508,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
 
 const Sply = styled.div`
   display: flex;
+  margin-bottom: 20px;
   @media (${device.laptop}) {
     flex-direction: column;
   }
@@ -535,7 +537,7 @@ const Brr = styled.div`
 const APRBox = styled.div`
   display: flex;
   @media (min-width: ${size.tablet}) {
-    padding-top: 25px;
+    padding-top: 10px;
   }
 `;
 
@@ -574,10 +576,8 @@ const PositionSupplyBorrow = styled.div`
   display: flex;
   flex-direction: column;
   @media (min-width: ${size.tablet}) {
-    row-gap: 20;
   }
   ${(props) => !props.mobile && css`
-      row-gap: 20px;
 
 
   `}
@@ -601,6 +601,7 @@ const PositionContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 10px;
   /* flex: 1 1 0px; */
   width: auto;
 `;
