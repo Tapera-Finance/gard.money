@@ -652,9 +652,12 @@ const V1Link = styled.text`
 
 const Banner = styled.div`
   display: flex;
+  width: 100%;
+  border: 1px solid white;
   flex-direction: row;
   border-radius: 10px;
   justify-content: space-between;
+  align-content: center;
   text-align: center;
   background: linear-gradient(to right, #80deff 65%, #ffffff);
   padding: 8px 6px 10px 8px;
