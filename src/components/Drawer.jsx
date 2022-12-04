@@ -126,7 +126,7 @@ export default function Drawer({
       flexDirection: "column",
       justifyContent: "space-between",
       alignItems: "baseline",
-      height: `${isOpen ? "" : "9vh"}`
+      height: `${!mobile ? 0 : isOpen ? "" : "9vh"}`
     }} >
        {window.innerWidth < 900 ? <MobileDrawer mobile={mobile} open={isOpen}>
           <LogoButton
@@ -166,10 +166,9 @@ export default function Drawer({
           <LogoButton
             style={{
               display: "flex",
+              margin: "auto",
               marginTop: 48,
-              marginLeft: "03.9583333333333vw",
-              marginBottom: 38,
-              visibility: `${mobile || !isOpen ? "hidden" : "visible"}`
+              visibility: `${(mobile && isOpen) ? "hidden" : "visible"}`
             }}
             onClick={() => {
               if (window.innerWidth < 900) toggleOpen();

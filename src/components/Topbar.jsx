@@ -63,7 +63,7 @@ const TopBar = styled.div`
   align-items: center;
   justify-content: space-between;
   padding-left: 36px;
-  padding-right: ${window.innerWidth * 0.077}px;
+  padding-right: ${window.innerWidth * 0.057}px;
 
   ${(props) => props.mobile && css`
     flex-direction: column;
@@ -71,7 +71,7 @@ const TopBar = styled.div`
 
   @media (min-width: ${size.tablet}) {
     width: 100%;
-    margin-left: 8.88vw;
+    margin-left: 2.88vw;
   }
   @media (${device.tablet}) {
     width: 100%;
