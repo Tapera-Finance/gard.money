@@ -24,6 +24,7 @@ import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
 import { isFirefox } from "../utils";
 import { device, size } from "../styles/global";
+import { voteCDP } from "../transactions/cdp";
 
 const axios = require("axios");
 
@@ -127,6 +128,7 @@ export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address)
   const [commitment, setCommitment] = useState(undefined);
   const [maxBal, setMaxBal] = useState("");
+  const [votes, setVotes] = useState(["a", "a", "a", "a", "a"])
   const [selectedAccount, setSelectedAccount] = useState("");
   const [refresh, setRefresh] = useState(0);
   const [commitDict, setCommitDict] = useState({})
@@ -418,9 +420,6 @@ export default function Govern() {
       <PrimaryButton text="View Vote Proposals" blue={true} underTable={true} onClick={async () => {
             setModalCanAnimate(true)
             setModal2Visible(true)
-            console.log(Date.now());
-            await new Promise((r) => setTimeout(r, 8000));
-            setModal2Visible(false)
             setModalCanAnimate(false)
           }} disabled={false && (Date.now() < 1670256000000 || Date.now() > 1671465600000)}/>
           </div>
@@ -536,16 +535,18 @@ export default function Govern() {
             <div>
               <text>Place your vote below for </text>
               <Link
+              onClick={() => {
+                window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+              }}
                 href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
               >
                 Governance Period #5 Voting Session #1
               </Link>
-              <text>.</text>
             </div>
         }
         close={() => setModal2Visible(false)}
         animate={modalCanAnimate}
-        visible={modalVisible}
+        visible={modal2Visible}
       >
       <div>
             <div style={{ marginBottom: 32 }}>
@@ -553,13 +554,15 @@ export default function Govern() {
                 <div style={{ marginBottom: 8 }}>
                   <h3>
                     <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
                       href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
                       subtitle={true}
                     >
                       Measure #1:
-                    </Link>{" "}
-                    Designating 7M ALGOs from the Q4 2022 governance rewards to
-                    DeFi governors
+                    </Link>
+                    Allocating up to 15MM Algos to DeFi for the Next Governance Period
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -568,16 +571,18 @@ export default function Govern() {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    value={measure1Vote}
-                    onChange={handleChangeMeasure1}
+                    value={votes[0]}
+                    onChange={() => {
+                      var old = votes
+                      old[0] = votes[0] == "a" ? "b" : "a"
+                      setVotes(old)
+                    }}
                   >
                     <option>
-                      "Allocate 7M ALGOs from the rewards pool of Q4 2022 to
-                      DeFi governors"
+                      "Allocate 15 MM Algos to DeFi for Q1/2023"
                     </option>
                     <option>
-                      "Keep the status quo and distribute the entire pool of
-                      70.5M ALGOs among all governors"
+                      "Allocate 10 MM Algos to DeFi for Q1/2023"
                     </option>
                   </Select>
                 </div>
@@ -591,13 +596,15 @@ export default function Govern() {
                 <div style={{ marginBottom: 8 }}>
                   <h3>
                     <Link
-                      href="https://www.algorand.foundation/community-governance-period4-voting-measures"
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
                       subtitle={true}
                     >
                       Measure #2:
-                    </Link>{" "}
-                    Allow DEX Liquidity Providers that contribute ALGOs in pools
-                    to participate in governance for Q4 2022
+                    </Link>
+                    Approving of up to 2MM Algos for a Community Funding pilot program via the xGov process
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -606,14 +613,144 @@ export default function Govern() {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    value={measure2Vote}
-                    onChange={handleChangeMeasure2}
+                    value={votes[1]}
+                    onChange={() => {
+                      var old = votes
+                      old[1] = votes[1] == "a" ? "b" : "a"
+                      setVotes(old)
+                    }}
                   >
                     <option>
-                      "Enable committing Algo LP tokens to governance"
+                      "Yes"
                     </option>
                     <option>
-                      "Keep the status quo without including DEX LP tokens"
+                      "No"
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #3:
+                    </Link>
+                    Allocating up to 2MM Algos for a Community Funding pilot program via the xGov process
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={votes[2]}
+                    onChange={() => {
+                      var old = votes
+                      old[2] = votes[2] == "a" ? "b" : "a"
+                      setVotes(old)
+                    }}
+                  >
+                    <option>
+                      "Allocate 2MM Algos to xGov Community Grant"
+                    </option>
+                    <option>
+                      "Allocate 1MM Algos to xGov Community Grants"
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #4:
+                    </Link>
+                    Approving of up to 600K Algos to seed a Community curated NFT Collection
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={votes[1]}
+                    onChange={() => {
+                      var old = votes
+                      old[3] = votes[3] == "a" ? "b" : "a"
+                      setVotes(old)
+                    }}
+                  >
+                    <option>
+                      "Yes"
+                    </option>
+                    <option>
+                      "No"
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #5:
+                    </Link>
+                    Allocating up to 600K Algos to seed a Community curated NFT Collection
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={votes[4]}
+                    onChange={() => {
+                      var old = votes
+                      old[4] = votes[4] == "a" ? "b" : "a"
+                      setVotes(old)
+                    }}
+                  >
+                    <option>
+                    "Allocate 600K Algos to seed the establishment of a Community-curated NFT collection"
+                    </option>
+                    <option>
+                      "Allocate 300K Algos to seed the establishment of a Community-curated NFT collection"
                     </option>
                   </Select>
                 </div>
@@ -634,14 +771,7 @@ export default function Govern() {
                   try {
                     const res = await voteCDP(
                       selectedAccount,
-                      measure1Vote ==
-                        "Allocate 7M ALGOs from the rewards pool of Q4 2022 to DeFi governors"
-                        ? "a"
-                        : "b",
-                      measure2Vote ==
-                        "Enable committing Algo LP tokens to governance"
-                        ? "a"
-                        : "b",
+                      votes
                     );
                     if (res.alert) {
                       dispatch(setAlert(res.text));
@@ -652,8 +782,9 @@ export default function Govern() {
                   setModalCanAnimate(false);
                   setLoading(false);
                 }}
+                blue={true}
               />
-              <CancelButton style={{ marginLeft: 30 }}>
+              <CancelButton style={{ marginLeft: 30 }} onClick={() => setModal2Visible(false)} >
                 <CancelButtonText>
                   Cancel
                 </CancelButtonText>
@@ -736,10 +867,10 @@ const GovInfoContainer = styled.div`
 const Link = styled.text`
   text-decoration: none;
   font-weight: 500;
-  color: #172756;
+  color: #03a0ff;
   margin-right: 12px;
   &:hover {
-    color: #03a0ff;
+    color: #03ffff;
     cursor: pointer;
   }
 `;
