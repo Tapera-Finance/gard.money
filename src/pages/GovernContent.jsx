@@ -24,7 +24,7 @@ import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
 import { isFirefox } from "../utils";
 import { device, size } from "../styles/global";
-import { voteCDP } from "../transactions/cdp";
+import { voteCDPs } from "../transactions/cdp";
 
 const axios = require("axios");
 
@@ -128,7 +128,11 @@ export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address)
   const [commitment, setCommitment] = useState(undefined);
   const [maxBal, setMaxBal] = useState("");
-  const [votes, setVotes] = useState(["a", "a", "a", "a", "a"])
+  const [vote0, setVote0] = useState("Allocate 15 MM Algos to DeFi for Q1/2023")
+  const [vote1, setVote1] = useState("Yes")
+  const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants")
+  const [vote3, setVote3] = useState("Yes")
+  const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection")
   const [selectedAccount, setSelectedAccount] = useState("");
   const [refresh, setRefresh] = useState(0);
   const [commitDict, setCommitDict] = useState({})
@@ -148,6 +152,27 @@ export default function Govern() {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
+
+  const voteMap = [{
+    "Allocate 15 MM Algos to DeFi for Q1/2023": "a",
+    "Allocate 10 MM Algos to DeFi for Q1/2023": "b",
+  },
+  {
+    "Yes": "a",
+    "No": "b",
+  },
+  {
+    "Allocate 2MM Algos to xGov Community Grants": "a",
+    "Allocate 1MM Algos to xGov Community Grants": "b",
+  },
+  {   
+    "Yes": "a",
+    "No": "b",
+  },
+  {
+    "Allocate 600K Algos to seed the establishment of a Community-curated NFT collection": "a",
+    "Allocate 300K Algos to seed the establishment of a Community-curated NFT collection": "b",
+  }]
 
   useEffect(() => {
     if (!getWallet()) return navigate("/");
@@ -182,7 +207,6 @@ export default function Govern() {
     const govInfo = await getGovernanceInfo();
     setAPR(await getAlgoGovAPR());
     setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
-    console.log("2", govInfo[1]);
   }, []);
 
   useEffect(async () => {
@@ -421,7 +445,7 @@ export default function Govern() {
             setModalCanAnimate(true)
             setModal2Visible(true)
             setModalCanAnimate(false)
-          }} disabled={false && (Date.now() < 1670256000000 || Date.now() > 1671465600000)}/>
+          }} disabled={false && (Date.now() < 1670256000000 || Date.now() > 1671465600000) || adjusted == dummyCdps}/>
           </div>
       {voteTableDisabled ? <></>:
       <div>
@@ -571,18 +595,16 @@ export default function Govern() {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    value={votes[0]}
-                    onChange={() => {
-                      var old = votes
-                      old[0] = votes[0] == "a" ? "b" : "a"
-                      setVotes(old)
+                    value={vote0}
+                    onChange={(e) => {
+                      setVote0(e.target.value)
                     }}
                   >
                     <option>
-                      "Allocate 15 MM Algos to DeFi for Q1/2023"
+                      Allocate 15 MM Algos to DeFi for Q1/2023
                     </option>
                     <option>
-                      "Allocate 10 MM Algos to DeFi for Q1/2023"
+                      Allocate 10 MM Algos to DeFi for Q1/2023
                     </option>
                   </Select>
                 </div>
@@ -613,18 +635,16 @@ export default function Govern() {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    value={votes[1]}
-                    onChange={() => {
-                      var old = votes
-                      old[1] = votes[1] == "a" ? "b" : "a"
-                      setVotes(old)
+                    value={vote1}
+                    onChange={(e) => {
+                      setVote1(e.target.value)
                     }}
                   >
                     <option>
-                      "Yes"
+                      Yes
                     </option>
                     <option>
-                      "No"
+                      No
                     </option>
                   </Select>
                 </div>
@@ -655,18 +675,16 @@ export default function Govern() {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    value={votes[2]}
-                    onChange={() => {
-                      var old = votes
-                      old[2] = votes[2] == "a" ? "b" : "a"
-                      setVotes(old)
+                    value={vote2}
+                    onChange={(e) => {
+                      setVote2(e.target.value)
                     }}
                   >
                     <option>
-                      "Allocate 2MM Algos to xGov Community Grant"
+                      Allocate 2MM Algos to xGov Community Grants
                     </option>
                     <option>
-                      "Allocate 1MM Algos to xGov Community Grants"
+                      Allocate 1MM Algos to xGov Community Grants
                     </option>
                   </Select>
                 </div>
@@ -697,18 +715,16 @@ export default function Govern() {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    value={votes[1]}
-                    onChange={() => {
-                      var old = votes
-                      old[3] = votes[3] == "a" ? "b" : "a"
-                      setVotes(old)
+                    value={vote3}
+                    onChange={(e) => {
+                      setVote3(e.target.value)
                     }}
                   >
                     <option>
-                      "Yes"
+                      Yes
                     </option>
                     <option>
-                      "No"
+                      No
                     </option>
                   </Select>
                 </div>
@@ -739,18 +755,16 @@ export default function Govern() {
                 </div>
                 <div style={{ marginBottom: 8 }}>
                   <Select
-                    value={votes[4]}
-                    onChange={() => {
-                      var old = votes
-                      old[4] = votes[4] == "a" ? "b" : "a"
-                      setVotes(old)
+                    value={vote4}
+                    onChange={(e) => {
+                      setVote4(e.target.value)
                     }}
                   >
                     <option>
-                    "Allocate 600K Algos to seed the establishment of a Community-curated NFT collection"
+                    Allocate 600K Algos to seed the establishment of a Community-curated NFT collection
                     </option>
                     <option>
-                      "Allocate 300K Algos to seed the establishment of a Community-curated NFT collection"
+                      Allocate 300K Algos to seed the establishment of a Community-curated NFT collection
                     </option>
                   </Select>
                 </div>
@@ -769,8 +783,13 @@ export default function Govern() {
                   setModal2Visible(false);
                   setLoading(true);
                   try {
-                    const res = await voteCDP(
-                      selectedAccount,
+                    let votes = []
+                    const votearray = [vote0, vote1, vote2, vote3, vote4]
+                    for (let i = 0; i < 5; i++){
+                      votes.push(voteMap[i][votearray[i]])
+                    }
+                    const res = await voteCDPs(
+                      loadedCDPs.filter(value => !value.asaID),
                       votes
                     );
                     if (res.alert) {
