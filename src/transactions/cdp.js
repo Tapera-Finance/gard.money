@@ -1147,6 +1147,7 @@ export async function commitCDP(account_id, amount, toWallet) {
 }
 
 export async function voteCDPs(cdpArray, voteArray) {
+  console.log(cdpArray)
   // Setting up promises
   setLoadingStage("Loading...");
   const infoPromise = accountInfo();
@@ -1195,7 +1196,7 @@ export async function voteCDPs(cdpArray, voteArray) {
       lsigs.push(algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]));
     }
     algosdk.assignGroupID(txns);
-    
+    console.log(group_size)
     const signedGroupPromise = signGroup(info, txns);
     let s_lsig = []
     for (let j = 0; j < group_size; j++){
@@ -1209,7 +1210,6 @@ export async function voteCDPs(cdpArray, voteArray) {
       stxns.push(signedGroup[2*k].blob)
       stxns.push(s_lsig[k].blob)
     }
-    console.log(stxns)
     response = await sendTxn(
       stxns,
       "Successfully voted for options " +

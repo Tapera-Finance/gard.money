@@ -445,7 +445,7 @@ export default function Govern() {
             setModalCanAnimate(true)
             setModal2Visible(true)
             setModalCanAnimate(false)
-          }} disabled={false && (Date.now() < 1670256000000 || Date.now() > 1671465600000) || adjusted == dummyCdps}/>
+          }} disabled={(Date.now() < 1670256000000 || Date.now() > 1671465600000) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps}/>
           </div>
       {voteTableDisabled ? <></>:
       <div>
