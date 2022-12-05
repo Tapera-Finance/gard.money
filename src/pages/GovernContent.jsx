@@ -24,6 +24,7 @@ import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
 import { isFirefox } from "../utils";
 import { device, size } from "../styles/global";
+import { voteCDPs } from "../transactions/cdp";
 
 const axios = require("axios");
 
@@ -127,6 +128,11 @@ export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address)
   const [commitment, setCommitment] = useState(undefined);
   const [maxBal, setMaxBal] = useState("");
+  const [vote0, setVote0] = useState("Allocate 15 MM Algos to DeFi for Q1/2023")
+  const [vote1, setVote1] = useState("Yes")
+  const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants")
+  const [vote3, setVote3] = useState("Yes")
+  const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection")
   const [selectedAccount, setSelectedAccount] = useState("");
   const [refresh, setRefresh] = useState(0);
   const [commitDict, setCommitDict] = useState({})
@@ -138,6 +144,7 @@ export default function Govern() {
   const [loadingText, setLoadingText] = useState(null);
   const [voteTableDisabled, setVoteTable] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modal2Visible, setModal2Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [toWallet, setToWallet] = useState(true);
   const [commitDisabled, setCommitDisabled] = useState(false);
@@ -145,6 +152,27 @@ export default function Govern() {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
+
+  const voteMap = [{
+    "Allocate 15 MM Algos to DeFi for Q1/2023": "a",
+    "Allocate 10 MM Algos to DeFi for Q1/2023": "b",
+  },
+  {
+    "Yes": "a",
+    "No": "b",
+  },
+  {
+    "Allocate 2MM Algos to xGov Community Grants": "a",
+    "Allocate 1MM Algos to xGov Community Grants": "b",
+  },
+  {   
+    "Yes": "a",
+    "No": "b",
+  },
+  {
+    "Allocate 600K Algos to seed the establishment of a Community-curated NFT collection": "a",
+    "Allocate 300K Algos to seed the establishment of a Community-curated NFT collection": "b",
+  }]
 
   useEffect(() => {
     if (!getWallet()) return navigate("/");
@@ -179,7 +207,6 @@ export default function Govern() {
     const govInfo = await getGovernanceInfo();
     setAPR(await getAlgoGovAPR());
     setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
-    console.log("2", govInfo[1]);
   }, []);
 
   useEffect(async () => {
@@ -403,9 +430,23 @@ export default function Govern() {
         </div>
       </PositionTableContainer>
       <CDPTable data={cdps} />
+      <div style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            textAlign: "center",
+            padding: "20px 20px 0px",
+            margin: "auto",
+        }}>
       <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} onClick={() => {
             navigate("/borrow");
-          }}Enroll/>
+          }}/>
+      <PrimaryButton text="View Vote Proposals" blue={true} underTable={true} onClick={async () => {
+            setModalCanAnimate(true)
+            setModal2Visible(true)
+            setModalCanAnimate(false)
+          }} disabled={false && (Date.now() < 1670256000000 || Date.now() > 1671465600000) || adjusted == dummyCdps}/>
+          </div>
       {voteTableDisabled ? <></>:
       <div>
         <div
@@ -512,6 +553,264 @@ export default function Govern() {
           </div>
         )}
       </Modal>
+      <Modal
+        title={"Cast Your Votes"}
+        subtitle={
+            <div>
+              <text>Place your vote below for </text>
+              <Link
+              onClick={() => {
+                window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+              }}
+                href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+              >
+                Governance Period #5 Voting Session #1
+              </Link>
+            </div>
+        }
+        close={() => setModal2Visible(false)}
+        animate={modalCanAnimate}
+        visible={modal2Visible}
+      >
+      <div>
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #1:
+                    </Link>
+                    Allocating up to 15MM Algos to DeFi for the Next Governance Period
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={vote0}
+                    onChange={(e) => {
+                      setVote0(e.target.value)
+                    }}
+                  >
+                    <option>
+                      Allocate 15 MM Algos to DeFi for Q1/2023
+                    </option>
+                    <option>
+                      Allocate 10 MM Algos to DeFi for Q1/2023
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #2:
+                    </Link>
+                    Approving of up to 2MM Algos for a Community Funding pilot program via the xGov process
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={vote1}
+                    onChange={(e) => {
+                      setVote1(e.target.value)
+                    }}
+                  >
+                    <option>
+                      Yes
+                    </option>
+                    <option>
+                      No
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #3:
+                    </Link>
+                    Allocating up to 2MM Algos for a Community Funding pilot program via the xGov process
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={vote2}
+                    onChange={(e) => {
+                      setVote2(e.target.value)
+                    }}
+                  >
+                    <option>
+                      Allocate 2MM Algos to xGov Community Grants
+                    </option>
+                    <option>
+                      Allocate 1MM Algos to xGov Community Grants
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #4:
+                    </Link>
+                    Approving of up to 600K Algos to seed a Community curated NFT Collection
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={vote3}
+                    onChange={(e) => {
+                      setVote3(e.target.value)
+                    }}
+                  >
+                    <option>
+                      Yes
+                    </option>
+                    <option>
+                      No
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #5:
+                    </Link>
+                    Allocating up to 600K Algos to seed a Community curated NFT Collection
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={vote4}
+                    onChange={(e) => {
+                      setVote4(e.target.value)
+                    }}
+                  >
+                    <option>
+                    Allocate 600K Algos to seed the establishment of a Community-curated NFT collection
+                    </option>
+                    <option>
+                      Allocate 300K Algos to seed the establishment of a Community-curated NFT collection
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <PrimaryButton
+                text="Confirm Vote"
+                onClick={async () => {
+                  setModalCanAnimate(true);
+                  setModal2Visible(false);
+                  setLoading(true);
+                  try {
+                    let votes = []
+                    const votearray = [vote0, vote1, vote2, vote3, vote4]
+                    for (let i = 0; i < 5; i++){
+                      votes.push(voteMap[i][votearray[i]])
+                    }
+                    const res = await voteCDPs(
+                      loadedCDPs.filter(value => !value.asaID),
+                      votes
+                    );
+                    if (res.alert) {
+                      dispatch(setAlert(res.text));
+                    }
+                  } catch (e) {
+                    handleTxError(e, "Error sending vote");
+                  }
+                  setModalCanAnimate(false);
+                  setLoading(false);
+                }}
+                blue={true}
+              />
+              <CancelButton style={{ marginLeft: 30 }} onClick={() => setModal2Visible(false)} >
+                <CancelButtonText>
+                  Cancel
+                </CancelButtonText>
+              </CancelButton>
+            </div>
+          </div>
+        </Modal>
     </GovContainer>
   );
 }
@@ -587,10 +886,10 @@ const GovInfoContainer = styled.div`
 const Link = styled.text`
   text-decoration: none;
   font-weight: 500;
-  color: #172756;
+  color: #03a0ff;
   margin-right: 12px;
   &:hover {
-    color: #03a0ff;
+    color: #03ffff;
     cursor: pointer;
   }
 `;
@@ -634,7 +933,13 @@ const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
 `;
-
+const Select = styled.select`
+  width: 24.3055555555556vw;
+  height: 44px;
+  border: 1px solid #dce1e6;
+  padding-left: 12px;
+  box-sizing: border-box;
+`;
 const CountContainer = styled.div`
   background: #172756;
   border-radius: 16px;
