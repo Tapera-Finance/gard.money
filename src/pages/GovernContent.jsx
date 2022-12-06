@@ -244,7 +244,8 @@ export default function Govern() {
       if (isFirefox()) {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
-          committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-5/governors">See external site</a>
+          committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-5/governors">See external site</a>,
+          id: value.id
         }
       } else {
         return {
