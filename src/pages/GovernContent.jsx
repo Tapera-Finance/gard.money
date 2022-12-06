@@ -210,8 +210,8 @@ export default function Govern() {
   }, []);
 
   useEffect(async () => {
-    setCommitment(await loadFireStoreCDPs());
     setVaulted((await getAlgoGovernanceAccountBals()/1000000).toFixed(2) + `M Algo`);
+    setCommitment(await loadFireStoreCDPs());
   }, [refresh]);
 
 
