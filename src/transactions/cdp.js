@@ -1146,20 +1146,82 @@ export async function commitCDP(account_id, amount, toWallet) {
   return response;
 }
 
-export async function voteCDP(account_id, option1, option2) {
+export async function voteCDPs(cdpArray, voteArray) {
+  console.log(cdpArray)
   // Setting up promises
   setLoadingStage("Loading...");
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
-  const stringVal = "af/gov1:j[6,\"" + option1 + "\",\"" + option2 + "\"]";
-
+  const stringVal = "af/gov1:j[8,\"" + voteArray[0] + "\",\"" + voteArray[1] + "\",\"" + voteArray[2]  + "\",\"" + voteArray[3] + "\",\"" + voteArray[4] + "\"]";
+  
   const note = enc.encode(stringVal);
 
   const info = await infoPromise;
+  const params = await paramsPromise;
 
-  let cdp = cdpGen(info.address, account_id, 0);
+  let loops = cdpArray.length
+  let offset = 0
+  let response = {alert: false, text: ""}
 
+  while (loops - offset > 0){
+    setLoadingStage("Loading...");
+    let txns = []
+    let lsigs = []
+    let group_size = Math.min(loops - offset, 8)
+    for (let i = 0; i < group_size; i++){
+      let account_id = parseInt(cdpArray[offset + i].id)
+      let cdp = cdpGen(info.address, account_id, 0);
+      params.fee = 2000
+      let txn1 = algosdk.makeApplicationCallTxnFromObject({
+        from: info.address,
+        appIndex: ids.app.validator,
+        onComplete: 0,
+        appArgs: [enc.encode("OwnerCheck"), algosdk.encodeUint64(account_id)],
+        accounts: [cdp.address],
+        foreignApps: [],
+        foreignAssets: [],
+        suggestedParams: params,
+      });
+      params.fee = 0;
+      let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+        from: cdp.address,
+        to: "7K5TT4US7M3FM7L3XBJXSXLJGF2WCXPBV2YZJJO2FH46VCZOS3ICJ7E4QU",
+        amount: 0,
+        note: note,
+        suggestedParams: params,
+      });
+      txns.push(txn1);
+      txns.push(txn2);
+      lsigs.push(algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]));
+    }
+    algosdk.assignGroupID(txns);
+    console.log(group_size)
+    const signedGroupPromise = signGroup(info, txns);
+    let s_lsig = []
+    for (let j = 0; j < group_size; j++){
+      s_lsig.push(algosdk.signLogicSigTransactionObject(txns[(2*j)+1], lsigs[j]))
+    }
+    const signedGroup = await signedGroupPromise;
+    setLoadingStage("Sending Votes For " + group_size.toString() + " CDP(s).");
+  
+    let stxns = []
+    for (let k = 0; k < group_size; k++){
+      stxns.push(signedGroup[2*k].blob)
+      stxns.push(s_lsig[k].blob)
+    }
+    response = await sendTxn(
+      stxns,
+      "Successfully voted for options " +
+        voteArray.toString() +
+        " on all CDPs "
+    );
+
+    setLoadingStage(null);
+    offset += 8
+  }
+  return response;
+  /*
   let params = await paramsPromise;
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -1199,7 +1261,8 @@ export async function voteCDP(account_id, option1, option2) {
   );
   updateDBWebActions(6, account_id, 0, 0, 0, 0, 2000);
   setLoadingStage(null);
-  return response;
+  return response;*
+  */
 }
 
 function getCDPVal(cdp, key, isInt) {
