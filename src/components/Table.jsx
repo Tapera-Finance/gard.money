@@ -241,6 +241,9 @@ const HeaderElement = styled.th`
   height: 44px;
   padding-left: 16px;
   text-align: left;
+  :first-child {
+    padding-left: 25px;
+  }
 `;
 const TableRow = styled.tr`
   height: 60px;
@@ -259,6 +262,7 @@ const Cell = styled.td`
   text-align: left;
   :first-child {
     border-bottom-left-radius: 10px;
+    padding-left: 25px;
   }
   :last-child {
     margin-top: 10px;
