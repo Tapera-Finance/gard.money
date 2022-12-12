@@ -178,7 +178,7 @@ export default function Drawer({
             <NavLogo src={logo} alt="logo" />
           </LogoButton>
         <CloseButton
-          style={{visibility: `${mobile && isOpen ? "visible" : "unset"}`}}
+          style={{visibility: `${mobile && isOpen ? "visible" : "hidden"}`}}
           onClick={() => {
             closeDrawer();
           }}
@@ -246,6 +246,7 @@ export default function Drawer({
                       }  else {
                         // if (window.innerWidth < parseInt(size.tablet)) toggleOpen();
                         navigate(v.route);
+                        closeDrawer();
                       }
                     }}
                   >
