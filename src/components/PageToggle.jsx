@@ -129,7 +129,6 @@ const Bar = styled.div`
   /* min-height: 40px;
   min-width: 74px; */
   max-width: fit-content;
-  background: #0f1733;
   border-radius: 6px;
   margin: auto;
   @media (${device.mobileL}) {
