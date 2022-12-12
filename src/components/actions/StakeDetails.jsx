@@ -503,7 +503,7 @@ const Link = styled.text`
 
 const Banner = styled.div`
   display: flex;
-  width: 100%;
+  width: 90%;
   border: 1px solid white;
   align-content: center;
   flex-direction: row;
@@ -521,7 +521,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 20%;
+  height: 100%;
   border: 1px solid white;
   background: #0e1834;
   border-radius: 10px;
@@ -544,36 +544,47 @@ const FirstRow = styled.div`
 const SecondRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  margin-top: 9px;
   justify-content: center;
-  /* background: #172756; */
-  height: 18%;
-  padding: 22px;
+  align-content: center;
+  background: #172756;
+  padding-right: 22px;
+  padding-left: 22px;
+  height: 44px;
   @media (${device.tablet}) {
-    display: flex;
-    flex-direction: column;
     width: 40%;
+    height: 18%;
+    padding: 22px;
+    grid-template-rows: repeat(4, 40px [col-start]);
   }
   ${(props) => props.mobile && css`
-    /* display: flex; */
-    grid-template-columns: unset;
+    width: 40%;
+    height: 18%;
+    padding: 22px;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 40px [col-start]);
   `}
 `;
 const ThirdRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   justify-content: center;
-  margin: 2px 22px 4px 22px;
+  margin: 22px 22px 4px 22px;
   @media (${device.tablet}) {
-    display: flex;
-    flex-direction: column;
     width: 40%;
-    margin-top: 0px;
-    margin-bottom: 18px;
+    margin: 9px 0px 0px 0px;
+    height: 18%;
+    padding: 22px;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 40px [col-start]);
   }
   ${(props) => props.mobile && css`
-    display: flex;
-    flex-direction: column;
-    height: 21.052vh;
+    width: 40%;
+    margin: 9px 0px 0px 0px;
+    height: 18%;
+    padding: 22px;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 40px [col-start]);
   `}
 `;
 
@@ -592,7 +603,6 @@ const SecondThirdCondensed = styled.div`
 const TypeCont = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: flex-start;
   @media (${device.tablet}) {
     transform: scale(0.8);
@@ -604,13 +614,14 @@ const TypeCont = styled.div`
 
 const StakeBox = styled.div`
   display: flex;
-  justify-content: center;
   flex-direction: row;
   align-items: center;
+  position: relative;
+  left: -13px;
+  top: -5px;
   @media (${device.tablet}) {
     flex-direction: column;
     /* visibility: hidden; */
-    height: 0px;
   }
 `;
 const FourthRow = styled.div`
@@ -620,7 +631,7 @@ const FourthRow = styled.div`
   margin: 10px;
   @media (${device.tablet}) {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
   ${(props) => props.mobile && css`
     display: flex;
@@ -652,8 +663,10 @@ const Arrow = styled.img`
 `;
 const Heading = styled.text`
   font-weight: 500;
-  margin: 4px;
   width: max-content;
+  @media (${device.tablet}) {
+    margin: 4px;
+  }
 `;
 const StakeHeading = styled.text`
 ${(props) => props.mobile && css`
@@ -668,17 +681,19 @@ ${(props) => props.mobile && css`
 const globalMobile = isMobile();
 
 const StakeInput = styled(InputField)`
-
-  width: ${`${globalMobile? "52vw" : "12vw"};`};
-  height: 6vh;
+  width: ${`${globalMobile? "52vw" : "8.75vw"};`};
+  height: 25px;
   border: 1px transparent;
   text-decoration-color: #7c52ff;
-  text-decoration-thickness: 2px;
-  font-size: 14pt;
+  text-decoration-thickness: 1px;
+  font-size: 16px;
   color: #ffffff;
   text-align: center;
   background: #0d122710;
-  margin: 10px 10px 10px 10px;
+  align-self: start;
+  ${(props) => props.mobile && css`
+    align-self: center;
+  `}
 
   &:active {
     appearance: none;
@@ -686,9 +701,7 @@ const StakeInput = styled(InputField)`
   &:focus {
     appearance: none;
   }
-  @media (${device.tablet}) {
-    /* visibility: hidden; */
-  }
+  
 `;
 
 const EffectContainer = styled.div`
@@ -697,6 +710,8 @@ const EffectContainer = styled.div`
   flex-direction: column;
   align-items: center;
   margin-bottom: 16px;
+  position: relative;
+  bottom: -8px;
 `;
 
 const MobileEffectContainer = styled.div`
@@ -723,7 +738,7 @@ const Text = styled.text`
 
 const MaxBtn = styled.text`
   font-weight: bold;
-  font-size: 12;
+  font-size: 12px;
   color: #80deff;
   margin: auto;
   color: #80edff;
@@ -736,7 +751,9 @@ const MaxBtn = styled.text`
 `
 
 const Result = styled.text`
+  margin-top: 1px;
   color: #999696;
+  font-size: 12px;
 `;
 
 const Options = styled.ul`
