@@ -63,7 +63,7 @@ export default function WalletConnect() {
           body: (
             <WalletOptions
               onClick={async (type) => {
-                if (type === "AlgorandWallet") {
+                if (type === "Pera") {
                   try {
                     const wallet = await connectWallet(type);
                     if (!wallet.alert) {
@@ -341,7 +341,7 @@ function WalletOptions({ onClick }) {
       <WalletOption
         style={{ marginBottom: 17 }}
         onClick={() => {
-          onClick("AlgorandWallet");
+          onClick("Pera");
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>

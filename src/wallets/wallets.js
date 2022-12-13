@@ -12,6 +12,7 @@ import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 import buffer from "buffer";
 const { Buffer } = buffer;
 let nfd_updated = 0
+const peraWallet = new PeraWalletConnect();
 
 function sleep(seconds) {
   return new Promise((resolve) => setTimeout(resolve, 1000 * seconds));
@@ -152,8 +153,8 @@ if (!window.Buffer) window.Buffer = Buffer; // Partial fix from https://github.c
 const myAlgoConnect = new MyAlgoConnect({ disableLedgerNano: false });
 
 export function disconnectWallet() {
-  if (PeraWalletConnect.isConnected) {
-    PeraWalletConnect.disconnect()
+  if (peraWallet.isConnected) {
+    peraWallet.disconnect()
   }
   activeWallet = undefined;
   activeWalletInfo = undefined;
@@ -167,9 +168,10 @@ export function disconnectWallet() {
 const storedWallet = localStorage.getItem("wallet");
 if (!(storedWallet === null) && !(storedWallet === "undefined")) {
   activeWallet = JSON.parse(storedWallet);
+  console.log(activeWallet)
   if (activeWallet.type == "Pera") {
-    let peraAccounts = await PeraWalletConnect.reconnectSession() // Ensures pera can reconnect
-    PeraWalletConnect.connector?.on("disconnect", disconnectWallet)
+    let peraAccounts = await peraWallet.reconnectSession() // Ensures pera can reconnect
+    peraWallet.connector?.on("disconnect", disconnectWallet)
     await updateWalletInfo()
   } else if (activeWallet.type == "AlgorandWallet") {
     disconnectWallet() // Old Pera Wallet - drop that
@@ -317,30 +319,26 @@ export async function connectWallet(type, address) {
       break;
     }
     case "Pera": {
-      // Used to await a connection
-      var d = [];
-      var p = new Promise(function (resolve, reject) {
-        d.push({ resolve: resolve, reject: reject });
-      });
-      let account;
+      console.log(peraWallet)
+      let accounts;
       // Actually getting the connection
-      PeraWalletConnect.connect()
-      .then((newAccounts) => {
-        // Adds the disconnect listener
-        PeraWalletConnect.connector?.on("disconnect", disconnectWallet);
-        account = newAccounts[0]
-        d[0].resolve("Done");
-      })
-      .reject((error) => {
-        if (error?.data?.type !== "CONNECT_MODAL_CLOSED") {
+      console.log("Here")
+      try {
+        accounts = await peraWallet.connect()
+      } catch(error) {
+        if (error?.data?.type == "CONNECT_MODAL_CLOSED") {
+          throw "Pera Wallet: Connection pop-up closed"
+        } else if (error?.data?.type == "SESSION_CONNECT") {
+          peraWallet.disconnect()
+          accounts = await peraWallet.connect()
+        } else {
+          console.log(error?.data?.type)
           throw error; // TODO better error handling
         }
-        throw "Pera Wallet: Connection pop-up closed"
-      })
-      await d[0];
-      await p;
+      }
+      console.log("Here")
       activeWallet = {};
-      activeWallet.address = account;
+      activeWallet.address = accounts[0];
       activeWallet.type = "Pera";
       break;
     }
@@ -415,7 +413,7 @@ export async function signGroup(info, txnarray) {
     }
     case "Pera": {
     
-      const result = await PeraWalletConnect.signTransaction([txnarray])
+      const result = await peraWallet.signTransaction([txnarray])
     
       /*
       const txnsToSign = txnarray.map((txn) => {
