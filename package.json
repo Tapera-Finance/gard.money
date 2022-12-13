@@ -8,6 +8,7 @@
     "@json-rpc-tools/utils": "^1.7.6",
     "@mui/material": "^5.8.4",
     "@pactfi/pactsdk": "0.3.0",
+    "@perawallet/connect": "^1.0.7",
     "@randlabs/myalgo-connect": "^1.1.2",
     "@reduxjs/toolkit": "^1.8.0",
     "@testing-library/jest-dom": "^5.14.1",
