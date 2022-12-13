@@ -319,7 +319,6 @@ export async function connectWallet(type, address) {
       break;
     }
     case "Pera": {
-      console.log(peraWallet)
       let accounts;
       // Actually getting the connection
       try {
@@ -412,8 +411,6 @@ export async function signGroup(info, txnarray) {
       return await signSet(myAlgoConnect, senderAddressObj, txnarray)
     }
     case "Pera": {
-      console.log("Here")
-      console.log(txnarray)
       
       const txnsToSign = txnarray.map((txn) => {
         if (!sameSender(txn["from"], senderAddressObj)) {
@@ -429,12 +426,9 @@ export async function signGroup(info, txnarray) {
         };
       });
       
-      console.log("Here")
       
       const result = await peraWallet.signTransaction([txnsToSign])
       
-      console.log("Here")
-      console.log(result)
       const signed = result.map((element) => {
         return element
           ? { blob: element }
