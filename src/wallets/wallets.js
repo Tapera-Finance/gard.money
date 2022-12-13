@@ -322,13 +322,10 @@ export async function connectWallet(type, address) {
       console.log(peraWallet)
       let accounts;
       // Actually getting the connection
-      console.log("Here")
       try {
         accounts = await peraWallet.connect()
       } catch(error) {
-        if (error?.data?.type == "CONNECT_MODAL_CLOSED") {
-          throw "Pera Wallet: Connection pop-up closed"
-        } else if (error?.data?.type == "SESSION_CONNECT") {
+        if (error?.data?.type == "SESSION_CONNECT") {
           peraWallet.disconnect()
           accounts = await peraWallet.connect()
         } else {
@@ -336,7 +333,6 @@ export async function connectWallet(type, address) {
           throw error; // TODO better error handling
         }
       }
-      console.log("Here")
       activeWallet = {};
       activeWallet.address = accounts[0];
       activeWallet.type = "Pera";
@@ -374,6 +370,20 @@ function sameSender(sender1, sender2) {
   return JSON.stringify(sender1.publicKey) == JSON.stringify(sender2.publicKey);
 }
 
+function fixSet(senderAddressObj, txnarray, signed) {
+  let res = [];
+  let sIndex = 0;
+  for (const [index, txn] of txnarray.entries()) {
+    if (sameSender(txn["from"], senderAddressObj)) {
+      res.push(signed[sIndex]);
+      sIndex++;
+    } else {
+      res.push(null);
+    }
+  }
+  return res
+}
+
 async function signSet(signer, senderAddressObj, txnarray) {
   // const senderAddressObj = algosdk.decodeAddress(info.address);
   const toSign = txnarray.filter((txn) =>
@@ -381,18 +391,8 @@ async function signSet(signer, senderAddressObj, txnarray) {
     );
     const signed = await signer.signTransaction(
       toSign.map((txn) => txn.toByte()),
-    );
-    let res = [];
-    let sIndex = 0;
-    for (const [index, txn] of txnarray.entries()) {
-      if (sameSender(txn["from"], senderAddressObj)) {
-        res.push(signed[sIndex]);
-        sIndex++;
-      } else {
-        res.push(null);
-      }
-    }
-    return res;
+    );    
+    return fixSet(senderAddressObj, txnarray, signed);
 }
 
 export async function signGroup(info, txnarray) {
@@ -412,37 +412,35 @@ export async function signGroup(info, txnarray) {
       return await signSet(myAlgoConnect, senderAddressObj, txnarray)
     }
     case "Pera": {
-    
-      const result = await peraWallet.signTransaction([txnarray])
-    
-      /*
+      console.log("Here")
+      console.log(txnarray)
+      
       const txnsToSign = txnarray.map((txn) => {
-        const encodedTxn = Buffer.from(
-          algosdk.encodeUnsignedTransaction(txn),
-        ).toString("base64");
         if (!sameSender(txn["from"], senderAddressObj)) {
           return {
-            txn: encodedTxn,
+            txn: txn,
             message: "Transactions for the GARD system", // XXX: Eventually we could have a more informative string
             signers: [],
           };
         }
         return {
-          txn: encodedTxn,
+          txn: txn,
           message: "Transactions for the GARD system", // XXX: Eventually we could have a more informative string
         };
       });
-      const requestParams = [txnsToSign];
-      const request = formatJsonRpcRequest("algo_signTxn", requestParams);
-      const result: Array<string | null> = await connector.sendCustomRequest(
-        request,
-      ); */
-      const decodedResult = result.map((element) => {
+      
+      console.log("Here")
+      
+      const result = await peraWallet.signTransaction([txnsToSign])
+      
+      console.log("Here")
+      console.log(result)
+      const signed = result.map((element) => {
         return element
-          ? { blob: new Uint8Array(Buffer.from(element, "base64")) }
+          ? { blob: element }
           : null;
       });
-      return decodedResult;
+      return fixSet(senderAddressObj, txnarray, signed);
     }
     case "AlgoSigner": {
       // Alogsigner requires all txns in a sign call to be from the same group,
