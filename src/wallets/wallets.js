@@ -2,6 +2,7 @@ import algosdk from "algosdk";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "algorand-walletconnect-qrcode-modal";
+import { PeraWalletConnect } from "@perawallet/connect";
 import { psToken } from "./keys";
 import { updateCDPs } from "../transactions/cdp";
 import { ids } from "../transactions/ids";
@@ -167,8 +168,8 @@ const storedWallet = localStorage.getItem("wallet");
 if (!(storedWallet === null) && !(storedWallet === "undefined")) {
   activeWallet = JSON.parse(storedWallet);
   if (activeWallet.type == "Pera") {
-    let peraAccounts = await peraWallet.reconnectSession() // Ensures pera can reconnect
-    peraWallet.connector?.on("disconnect", disconnectWallet)
+    let peraAccounts = await PeraWalletConnect.reconnectSession() // Ensures pera can reconnect
+    PeraWalletConnect.connector?.on("disconnect", disconnectWallet)
     await updateWalletInfo()
   } else if (activeWallet.type == "AlgorandWallet") {
     disconnectWallet() // Old Pera Wallet - drop that
@@ -323,10 +324,10 @@ export async function connectWallet(type, address) {
       });
       let account;
       // Actually getting the connection
-      peraWallet.connect()
+      PeraWalletConnect.connect()
       .then((newAccounts) => {
         // Adds the disconnect listener
-        peraWallet.connector?.on("disconnect", disconnectWallet);
+        PeraWalletConnect.connector?.on("disconnect", disconnectWallet);
         account = newAccounts[0]
         d[0].resolve("Done");
       })
@@ -412,7 +413,11 @@ export async function signGroup(info, txnarray) {
     case "MyAlgoConnect": {
       return await signSet(myAlgoConnect, senderAddressObj, txnarray)
     }
-    case "AlgorandWallet": {
+    case "Pera": {
+    
+      const result = await PeraWalletConnect.signTransaction([txnarray])
+    
+      /*
       const txnsToSign = txnarray.map((txn) => {
         const encodedTxn = Buffer.from(
           algosdk.encodeUnsignedTransaction(txn),
@@ -433,7 +438,7 @@ export async function signGroup(info, txnarray) {
       const request = formatJsonRpcRequest("algo_signTxn", requestParams);
       const result: Array<string | null> = await connector.sendCustomRequest(
         request,
-      );
+      ); */
       const decodedResult = result.map((element) => {
         return element
           ? { blob: new Uint8Array(Buffer.from(element, "base64")) }
