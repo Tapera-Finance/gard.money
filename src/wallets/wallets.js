@@ -149,19 +149,10 @@ export async function updateWalletInfo() {
 // Sets up MyAlgoWallet
 if (!window.Buffer) window.Buffer = Buffer; // Partial fix from https://github.com/randlabs/myalgo-connect/issues/27 XXX: THIS IS ALSO NEEDED FOR PERA TOO!!!
 const myAlgoConnect = new MyAlgoConnect({ disableLedgerNano: false });
-// Create a connector (used for Pera)
-let connector;
-if (localStorage.walletconnect) {
-  console.log("Using stored wallet connect");
-  connector = await new WalletConnect({
-    bridge: "https://bridge.walletconnect.org", // Required
-    qrcodeModal: QRCodeModal,
-  });
-}
 
 export function disconnectWallet() {
-  if (connector && connector.connected) {
-    connector.killSession();
+  if (PeraWalletConnect.isConnected) {
+    PeraWalletConnect.disconnect()
   }
   activeWallet = undefined;
   activeWalletInfo = undefined;
@@ -175,7 +166,13 @@ export function disconnectWallet() {
 const storedWallet = localStorage.getItem("wallet");
 if (!(storedWallet === null) && !(storedWallet === "undefined")) {
   activeWallet = JSON.parse(storedWallet);
-  if (activeWallet.type != "Exodus" || window.exodus.algorand.isConnected) {
+  if (activeWallet.type == "Pera") {
+    let peraAccounts = await peraWallet.reconnectSession() // Ensures pera can reconnect
+    peraWallet.connector?.on("disconnect", disconnectWallet)
+    await updateWalletInfo()
+  } else if (activeWallet.type == "AlgorandWallet") {
+    disconnectWallet() // Old Pera Wallet - drop that
+  } else if (activeWallet.type != "Exodus" || window.exodus.algorand.isConnected) {
     await updateWalletInfo(); // Could optimize by setting a promise and doing promise.all at the end of the page
   } else {
     disconnectWallet()
@@ -318,49 +315,32 @@ export async function connectWallet(type, address) {
       }
       break;
     }
-    case "AlgorandWallet": {
-      // Check if connection is already established
-
-      if (connector && connector.connected) {
-        connector.killSession();
-        console.log("KILLED");
-      }
-      connector = new WalletConnect({
-        bridge: "https://bridge.walletconnect.org", // Required
-        qrcodeModal: QRCodeModal,
-      });
-      connector.on("disconnect", (payload) => {
-        // TODO: Need to refresh page
-        console.log("DISCONNECT");
-        disconnectWallet();
-      });
-      connector.createSession();
+    case "Pera": {
+      // Used to await a connection
       var d = [];
       var p = new Promise(function (resolve, reject) {
         d.push({ resolve: resolve, reject: reject });
       });
       let account;
-      connector.on("connect", (error, payload) => {
-        if (isiOS() && !account) {
-          interval = setInterval(() => {
-            console.log("Awaiting pera connect completion");
-          }, 3000);
-        }
-        if (error) {
-          throw error;
-        }
-        // Get provided accounts
-        const { accounts } = payload.params[0];
-        account = accounts[0];
-
+      // Actually getting the connection
+      peraWallet.connect()
+      .then((newAccounts) => {
+        // Adds the disconnect listener
+        peraWallet.connector?.on("disconnect", disconnectWallet);
+        account = newAccounts[0]
         d[0].resolve("Done");
-      });
+      })
+      .reject((error) => {
+        if (error?.data?.type !== "CONNECT_MODAL_CLOSED") {
+          throw error; // TODO better error handling
+        }
+        throw "Pera Wallet: Connection pop-up closed"
+      })
       await d[0];
       await p;
-      // TODO: Handle errors better
       activeWallet = {};
       activeWallet.address = account;
-      activeWallet.type = "AlgorandWallet";
+      activeWallet.type = "Pera";
       break;
     }
     default:
