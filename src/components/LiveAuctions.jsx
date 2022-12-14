@@ -18,6 +18,7 @@ export default function LiveAuctions({
         overflow: "auto",
         display: "flex",
         flexDirection: "column",
+        margin: 'auto',
       }}
     >
       <div

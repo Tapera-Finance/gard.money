@@ -89,27 +89,25 @@ export default function AccountContent() {
           alignContent: "center",
         }}
       >
-        <Label>Wallet</Label>
-        {/* <Label>Rewards</Label> */}
-        <Label>Total Balance</Label>
       </div>
       <AccountContainer>
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+            justifyContent: "space-around",
+            alignItems: "start",
             marginBottom: 10,
           }}
         >
           <div>
+            <Label>Wallet</Label>
+            <br></br>
             <AccountNumber>
               {getWallet() == null
                 ? "N/A"
                 : getWallet().address.slice(0, 10) + "..."}
             </AccountNumber>
-
             <AccountButton
               onClick={() => navigator.clipboard.writeText(getWallet().address)}
             >
@@ -123,28 +121,13 @@ export default function AccountContent() {
               marginBottom: window.innerWidth < 900 ? 5 : 15,
             }}
           >
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              marginBottom: window.innerWidth < 900 ? 5 : 15,
-            }}
-          >
+            <Label>Total Balance</Label>
+            <br></br>
             <AccountInfoData>
               {getWallet() == null ? "N/A" : `${balance} Algos`}
             </AccountInfoData>
             <Dollars>{convertToDollars(balance, "algo")}</Dollars>
           </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: window.innerWidth < 900 ? "column" : "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
         </div>
       </AccountContainer>
       <div
@@ -168,7 +151,7 @@ export default function AccountContent() {
 // syled components for our wallet content
 
 const AcctPgCont = styled.div`
-  max-width: 90vw;
+  /* max-width: 90vw; */
 `
 
 const AcctPageToggle = styled(PageToggle)`
@@ -199,7 +182,7 @@ const AccountTitle = styled.text`
 const Label = styled.label`
   font-size: 22px;
   color: #ffffff;
-  margin-left: 15px;
+  text-decoration: underline;
   margin-bottom: -20px;
   /* margin-bottom: */
 `;

@@ -897,6 +897,9 @@ const Link = styled.text`
 
 const Banner = styled.div`
   display: flex;
+  width: 100%;
+  border: 1px solid white;
+  align-content: center;
   flex-direction: row;
   border-radius: 10px;
   justify-content: space-between;

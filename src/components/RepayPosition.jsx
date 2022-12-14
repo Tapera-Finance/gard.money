@@ -11,7 +11,7 @@ import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import Details from "./Details";
 
-export default function RepayPosition({cdp, price, setCurrentCDP, details}){
+export default function RepayPosition({cdp, price, setCurrentCDP, details, mobile}){
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
     const dispatch = useDispatch();
@@ -31,7 +31,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
         document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
 
-    return <div style={{marginTop: 30}}>
+    return <div style={{marginTop: 20}}>
             {loading ? <LoadingOverlay
             text={loadingText}
             close={()=>{
@@ -39,7 +39,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
             }}
             /> : <></>}
             <Container>
-            <SubContainer>
+            <SubContainer mobile={mobile}>
                 <Background>
                     <Title>Repay GARD</Title>
                     <InputContainer>
@@ -86,7 +86,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
                 />
             </SubContainer>
         </Container>
-        <div style={{position:"relative", top:-65}}>
+        <div style={{position:"relative", top:-28}}>
             <Details details={details}/>
         </div>
 </div>
@@ -95,13 +95,15 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details}){
 const Container = styled.div`
     display: flex;
     position: relative;
-    top: -40px;
     justify-content: center;
 `
 
 const SubContainer = styled.div`
     position: relative;
     width: 50%;
+    ${(props) => props.mobile && css`
+        width: 100%;
+    `}
 `
 const Background = styled.div`
     margin-top: 30px;

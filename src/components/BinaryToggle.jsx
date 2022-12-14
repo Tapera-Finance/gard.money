@@ -102,7 +102,7 @@ const Box = styled.div`
 const Text = styled.text`
   font-weight: 500px;
   text-align: center;
-  margin: 0px 2px 0px 2px;
+  margin: 0px 10px 0px 10px;
   color: #999696;
   cursor: pointer;
   ${(props) =>

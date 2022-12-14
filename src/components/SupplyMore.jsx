@@ -51,10 +51,10 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
       ]
     // TODO: combine SupplyCDP & BorrowCDP
     return <div>
-        <div style={{marginTop: 30}}>
+        <div style={{marginTop: 20}}>
             <SupplyCDP collateralType={collateralType} collateral={collateral} minted={minted}  cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} maxSupply={maxSupply} manageUpdate={manageUpdate} apr={apr} setUtilization={setUtilization}/>
         </div>
-        <div style={{position:"relative", top:-65}}>
+        <div style={{position:"relative", top:-57}}>
             <Details details={supplyDetails}/>
         </div>
     </div>

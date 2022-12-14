@@ -53,7 +53,7 @@ function debounce(fn, ms) {
  */
 export default function Main(WrappedComponent, title) {
   const [isOpen, setIsOpen] = useState(true);
-  const [mobile, setMobile] = useState(isMobile())
+  const [mobile, setMobile] = useState(isMobile());
   const [canAnimate, setCanAnimate] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
@@ -96,7 +96,7 @@ export default function Main(WrappedComponent, title) {
 
   useEffect(() => {
     if (dimmensions && dimmensions.width > parseInt(size.tablet)) {
-      setIsOpen(true);
+      // setIsOpen(true);
     }
   }, [dimmensions])
 
@@ -134,7 +134,7 @@ export default function Main(WrappedComponent, title) {
           style={{ background: "#172756" }}
         />
         <ContentContainer isOpen={isOpen}>
-          <Wrapper>
+          <Wrapper style={{maxWidth: `${mobile ? "100%" : ""}`}} >
             <WrappedComponent />
           </Wrapper>
         </ContentContainer>
@@ -169,6 +169,9 @@ const Wrapper = styled.div`
     padding-left: 0vw;
     width: 100%;
   }
+  ${(props) => props.mobile && css`
+    max-width: 100%;
+  `}
 `
 
 const ContentContainer = styled.div`
@@ -196,7 +199,9 @@ const MainContentDiv = styled.div`
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
   color: white;
-  overflow-x: scroll;
+  /* overflow-x: scroll; */
+  max-width: 100%;
+  overflow: hidden;
   /* ${(props) => css`
   animation-direction: ${!props.isOpen ? "normal" : "reverse"};
   animation-name: ${props.canAnimate && window.innerWidth > 900
@@ -213,9 +218,14 @@ const MainContentDiv = styled.div`
   @media (${device.tablet}) {
     margin-left: 0vw;
     width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
+
   @media (min-width: ${size.tablet}) {
-    margin-left: 23.75vw;
+    ${(props) => !props.mobile && css`
+      margin-left: 16.75vw;
+    `}
   }
 `;
 const HelpButton = styled.div`

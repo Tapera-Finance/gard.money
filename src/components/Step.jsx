@@ -15,6 +15,7 @@ export default function Step({
   link,
   linkText,
   allOpen,
+  mobile,
 }) {
   const walletAddress = useSelector(state => state.wallet.address)
   const [open, setOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function Step({
 
   return (
     <ExpandedStep open={open}>
-      <StepItem onClick={handleOpen} open={open}>
+      <StepItem onClick={handleOpen} open={open} mobile={mobile}>
         <div style={{ marginLeft: 8 }}>{checked ? " √" : ""}{header}</div>
         <div
           style={{
@@ -74,7 +75,9 @@ export default function Step({
           <div style={{ display: "flex", textAlign: "center", marginBottom: 0, marginTop: 4 }}>
             <Link href={link} target="_blank">{linkText}</Link>
           </div>
-            <text style={{width: "60vw", marginBottom: 18, marginTop: 6}}>{text}</text>
+            <text style={{
+              // width: "80vw",
+              marginBottom: 18, marginTop: 6}}>{text}</text>
           <div style={{ display: "flex", justifyContent: "center", margin: "2px 0px 12px 0px" }}>
             <StepButton
               text={`Go to ${goTo}`}
@@ -115,10 +118,12 @@ const StepItem = styled.div`
   text-align: left;
   align-items: center;
   background: #0f1733;
+  border: 1px solid #019fff;
   color: #019fff;
-  /* height: 80px;
-  width: 60vw; */
+  height: 96px;
+  /* width: 60vw; */
   border-radius: 10px;
+  margin: auto;
   margin-top: 20px;
   margin-bottom: 20px;
   ${(props) =>
@@ -135,6 +140,10 @@ const StepItem = styled.div`
       color: #0f1733;
 
     `}
+    ${(props) => props.mobile && css`
+    width: 90%;
+  `}
+  
 `;
 
 const StepButton = styled(PrimaryButton)`

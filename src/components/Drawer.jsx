@@ -31,8 +31,7 @@ import { setAlert } from "../redux/slices/alertSlice";
 import { useSelector } from "react-redux";
 import { device, size } from "../styles/global";
 import { px2vw, isMobile } from "../utils"
-
-
+import { useScreenOrientation } from "../hooks"
 
 function debounce(fn, ms) {
   let timer
@@ -64,6 +63,7 @@ export default function Drawer({
   const [dev, setDev] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
   const [mobile, setMobile] = useState(isMobile())
+  const [closeVisible, setCloseVisible] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
@@ -72,9 +72,17 @@ export default function Drawer({
     height: undefined
   })
 
-  const toggleOpen = () => {
+  const toggleOpen = (close = false) => {
+    if (close) {
+      setIsOpen(false);
+    }
     setIsOpen(!isOpen)
   }
+
+  const closeDrawer = () => {
+    toggleOpen(true);
+  }
+
 
   useEffect(() => {
     setMobile(isMobile())
@@ -89,7 +97,6 @@ export default function Drawer({
         height: window.innerHeight,
       });
     }, 1000)
-
     // Add event listener
     window.addEventListener("resize", debouncedHandleResize);
     // Call handler right away so state gets updated with initial window size
@@ -103,11 +110,15 @@ export default function Drawer({
     setIsOpen(window.innerWidth > size.tablet);
   }, []);
 
-  useEffect(() => {
-    if (dimmensions && dimmensions.width > parseInt(size.tablet)) {
-      setIsOpen(true);
-    }
-  }, [dimmensions])
+  // useEffect(() => {
+  //   console.log("is it open?",isOpen)
+  //   if ( dimmensions && dimmensions.width > parseInt(size.tablet)) {
+  //     setIsOpen(true);
+  //   }
+  //   if (isMobile() && dimmensions && dimmensions.width > parseInt(size.tablet)) {
+  //     setIsOpen(false);
+  //   }
+  // }, [dimmensions])
 
   return (
     <div className={className} style={{
@@ -115,9 +126,9 @@ export default function Drawer({
       flexDirection: "column",
       justifyContent: "space-between",
       alignItems: "baseline",
-      height: `${isOpen ? "" : "9vh"}`
+      height: `${!mobile ? 0 : isOpen ? "" : "9vh"}`
     }} >
-       {window.innerWidth < 900 ? <MobileDrawer open={isOpen}>
+       {window.innerWidth < 900 ? <MobileDrawer mobile={mobile} open={isOpen}>
           <LogoButton
             style={{
               display: "flex",
@@ -139,11 +150,11 @@ export default function Drawer({
             allowAnimate();
           }}
         >
-          <HamburgerIcon alt="burger" src={hamburguerIcon} />
+          <HamburgerIcon mobile={mobile} alt="burger" src={hamburguerIcon} />
         </HamburgerButton>
         </MobileDrawer> : <></>}
 
-      <DrawerDiv id="drawer" isMobile={mobile} open={isOpen} animate={animate}>
+      <DrawerDiv id="drawer" mobile={mobile} open={isOpen} animate={animate}>
         <div
           style={{
             display: "flex",
@@ -155,10 +166,9 @@ export default function Drawer({
           <LogoButton
             style={{
               display: "flex",
+              margin: "auto",
               marginTop: 48,
-              marginLeft: "03.9583333333333vw",
-              marginBottom: 38,
-              visibility: `${mobile ? "hidden" : "visible"}`
+              visibility: `${(mobile && isOpen) ? "hidden" : "visible"}`
             }}
             onClick={() => {
               if (window.innerWidth < 900) toggleOpen();
@@ -167,15 +177,14 @@ export default function Drawer({
           >
             <NavLogo src={logo} alt="logo" />
           </LogoButton>
-        {/* <HamburgerButton
-          style={{}}
+        <CloseButton
+          style={{visibility: `${mobile && isOpen ? "visible" : "hidden"}`}}
           onClick={() => {
-            toggleOpenStatus();
-            allowAnimate();
+            closeDrawer();
           }}
           >
-            <HamburgerIcon alt="burger" src={!open ? hamburguerIcon : closeIcon} />
-          </HamburgerButton> */}
+            <CloseIcon alt="close" src={closeIcon} />
+          </CloseButton>
 
           </div>
           <div
@@ -235,8 +244,9 @@ export default function Drawer({
                       } else if (["Actions"].includes(v.name) && !dev) {
                         dispatch(setAlert("This page is under construction!"));
                       }  else {
-                        if (window.innerWidth < parseInt(size.tablet)) toggleOpen();
+                        // if (window.innerWidth < parseInt(size.tablet)) toggleOpen();
                         navigate(v.route);
+                        closeDrawer();
                       }
                     }}
                   >
@@ -247,35 +257,16 @@ export default function Drawer({
                       <ButtonText>{v.name}</ButtonText>
                     </div>
                   </NavButton>
-                ) : (
-                  <DropdownNavButton
-                    name={v.name}
-                    icon={v.icon}
-                    subOptions={v.subOptions}
-                  />
+                ) : (<></>
+                  // <DropdownNavButton
+                  //   name={v.name}
+                  //   icon={v.icon}
+                  //   subOptions={v.subOptions}
+                  // />
                 )}
               </div>
             );
           })}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          <HideNavButton
-            onClick={() => {
-              allowAnimate();
-              toggleOpenStatus();
-            }}
-          >
-            <img
-              src={chevronDown}
-              alt="chev-down"
-              style={{ transform: "rotate(90deg)" }}
-            />
-          </HideNavButton>
         </div>
         <div style={{
           top: "85vh", left: 0, right: 0
@@ -402,6 +393,24 @@ const MobileDrawer = styled.div`
          margin-bottom: 7vh;
       `
     }
+  @media (min-width: ${size.tablet}) {
+    ${(props) => props.mobile && css`
+      ${(props) =>
+        props.open &&
+        css`
+          visibility: visible;
+          height: 9vh;
+          /* position: fixed; */
+        `}
+      ${(props) =>
+        !props.open &&
+        css`
+          visibility: visible;
+          height: 9vh;
+          /* position: fixed; */
+        `}
+    `}
+  }
 `
 
 const DrawerDiv = styled.div`
@@ -411,7 +420,12 @@ const DrawerDiv = styled.div`
   overflow-y: auto;
   width: ${`${isMobile() ? `100%` : `unset`}`};
 
-  ${(props) =>
+  /* ${(props) => props.mobile && props.open && css`
+    position: fixed;
+    overflow-y: hidden;
+  `} */
+
+  /* ${(props) =>
     props.mobile &&
     css`
       visibility: hidden;
@@ -419,56 +433,64 @@ const DrawerDiv = styled.div`
       overflow: scroll;
       position: unset;
       position: fixed;
-    `}
+    `} */
 
-  ${(props) =>
+  /* ${(props) =>
     props.open &&
     css`
+      position: ${`${isMobile() ? `fixed` : `inherit`}`};
       visibility: visible;
-    `}
-  ${(props) =>
+    `} */
+  /* ${(props) =>
     !props.open &&
     css`
       visibility: hidden;
-    `}
+    `} */
 
   // if screen is smaller than tablet, hide drawer until opened at full width
-  @media (${device.tablet}) {
-    visibility: hidden;
-    position: absolute;
-    ${(props) =>
-      props.open &&
-      css`
-        visibility: visible;
-        width: 100vw;
-        overflow: scroll;
-        position: unset;
-        position: fixed;
-      `}
-    ${(props) =>
-      !props.open &&
-      css`
-        height: 101vh;
-        margin-left: 0vw;
-      `}
-  }
+
+  /* ${(props) => !props.mobile && css`
+    @media (${device.tablet}) {
+      visibility: hidden;
+      position: absolute;
+      ${(props) =>
+        props.open &&
+        css`
+          visibility: visible;
+          width: 100vw;
+          overflow: scroll;
+          position: unset;
+          position: fixed;
+        `}
+      ${(props) =>
+        !props.open &&
+        css`
+          height: 101vh;
+          margin-left: 0vw;
+        `}
+      }
+  `} */
+
   // if screen is larger than tablet, show drawer always
   @media (min-width: ${size.tablet}) {
-    ${(props) =>
-      props.open &&
-      css`
-        visibility: visible;
-        height: 101vh;
-        position: fixed;
-      `}
-    ${(props) =>
-      !props.open &&
-      css`
-        visibility: visible;
-        height: 101vh;
-        position: fixed;
-      `}
+    ${(props) => !props.mobile && css`
+      ${(props) =>
+        props.open &&
+        css`
+          visibility: visible;
+          height: 101vh;
+          position: fixed;
+        `}
+      ${(props) =>
+        !props.open &&
+        css`
+          visibility: visible;
+          height: 101vh;
+          position: fixed;
+        `}
+    `}
   }
+
   // if screen is smaller than tablet, eliminate left margin
 `;
 const SocialMediaContainer = styled.div`
@@ -614,6 +636,26 @@ const HideNavButton = styled.button`
     background-color: #019fff;
   }
 `;
+const CloseButton = styled.button`
+  position: fixed;
+  right: 8px;
+  background-color: transparent;
+  width: 20px;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 0px;
+  transform: scale(0.8);
+
+  /* position: absolute; */
+`;
+const CloseIcon = styled.img`
+  height: 30px;
+  @media (min-width: ${size.tablet}) {
+    visibility: hidden;
+  }
+`;
 const HamburgerButton = styled.button`
   background-color: transparent;
   height: 40px;
@@ -623,12 +665,17 @@ const HamburgerButton = styled.button`
   align-items: center;
   justify-content: center;
   border-width: 0px;
-  /* position: absolute; */
+
 `;
 const HamburgerIcon = styled.img`
   height: 30px;
   @media (min-width: ${size.tablet}) {
     visibility: hidden;
+  }
+  @media (min-width: ${size.tablet}) {
+    ${(props) => props.mobile && css`
+        visibility: visible;
+    `}
   }
 `;
 const NavButton = styled.button`

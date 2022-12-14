@@ -1,5 +1,32 @@
 import { useEffect, useState } from "react";
 
+const getOrientation = () =>
+  window.screen.orientation.type
+
+export const useScreenOrientation = () => {
+  const [orientation, setOrientation] =
+    useState(getOrientation())
+
+  const updateOrientation = event => {
+    setOrientation(getOrientation())
+  }
+
+  useEffect(() => {
+    window.addEventListener(
+      'orientationchange',
+      updateOrientation
+    )
+    return () => {
+      window.removeEventListener(
+        'orientationchange',
+        updateOrientation
+      )
+    }
+  }, [])
+
+  return orientation
+}
+
 export function useForceUpdate() {
   const [value, setValue] = useState(0); // integer state
   return () => setValue((value) => value + 1); // update the state to force render

@@ -120,6 +120,8 @@ const buttons = [
  * Content found on home
  */
 export default function HomeContent() {
+  const [mobile, setMobile] = useState(isMobile());
+
   const [tvl, setTvl] = useState("...");
   const [apy, setApy] = useState("...");
   const [borrowed, setBorrowed] = useState("...");
@@ -216,6 +218,10 @@ export default function HomeContent() {
     },
   ];
 
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
+
   useEffect(async () => {
     let res = await fetchTvl();
     let borrowed_res = await getBorrowed();
@@ -251,9 +257,10 @@ export default function HomeContent() {
         }}
       >
 
-        <Banner expert={difficulty == "DeFi Expert" ? true : false}>
+        <Banner mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
           <div
             style={{
+              display: "flex",
               justifyContent: "center",
               textAlign: "left",
               alignItems: "center",
@@ -301,9 +308,9 @@ export default function HomeContent() {
                       ),
                     );
               }}
-            >
-              Stake
-            </Link>
+            
+              text="Stake"
+            />
           </div>
         </Banner>
 
@@ -326,7 +333,7 @@ export default function HomeContent() {
             selectedOption={setDifficulty}
           />
         </ToggleBox>
-        <Container expert={difficulty == "DeFi Expert" ? true : false}>
+        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
           <Items>
             {homeDetails.length && homeDetails.length > 0
               ? homeDetails.map((d) => {
@@ -357,7 +364,7 @@ export default function HomeContent() {
           </Text> */}
         </div>
       </div>
-      <div style={{ display: "inline-grid" }}>
+      <div>
         {difficulty === "Help Me Out" ? (
           <StepContainer>
             <Text
@@ -367,12 +374,19 @@ export default function HomeContent() {
               {allOpen ? `Collapse` : `Expand`} All
             </Text>
 
-            <ConnectStep>
-              <Text>
-                {walletAddress ? `  √` : ""} Step 1: Connect Your Wallet
-              </Text>
-              <div>
-                <WalletConnect style={{ alignSelf: "flex-start" }} />
+            <ConnectStep mobile={mobile}>
+              <div style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "space-between",
+                padding: "0px 10px 0px 10px",
+              }}>
+                <Text>
+                  {walletAddress ? `  √` : ""} Step 1: Connect Your Wallet
+                </Text>
+                <div>
+                  <WalletConnect style={{ alignSelf: "flex-end" }} />
+                </div>
               </div>
             </ConnectStep>
 
@@ -387,6 +401,7 @@ export default function HomeContent() {
               goTo="Swap"
               secondGoTo="Borrow"
               allOpen={allOpen}
+              mobile={mobile}
             />
             <Step
               header="Step 3: Gain Rewards"
@@ -408,11 +423,12 @@ export default function HomeContent() {
               goTo="Stake"
               secondGoTo="Govern"
               allOpen={allOpen}
+              mobile={mobile}
             />
           </StepContainer>
         ) : (
           <div style={{display: "flex", flexDirection: "column"}}>
-            <Text>Quick Access</Text>
+            <BoldText>Quick Actions</BoldText>
             <AccessBox expert={difficulty == "DeFi Expert" ? true : false}>
               {buttons.map((action) => {
                 return (
@@ -434,7 +450,7 @@ export default function HomeContent() {
 }
 
 const ToggleBox = styled.div`
-  margin: 8px 0px 8px 0px;
+  margin: 0px 0px 30px 0px;
   @media (${device.tablet}) {
 
   }
@@ -443,10 +459,12 @@ const ToggleBox = styled.div`
 const HomeWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  /* width: 94%; */
+  /* align-items: flex-start; */
   ${(props) =>
     props.expert &&
     css`
-      margin-right: 30px;
+      /* margin-right: 30px; */
     `
   }
 `
@@ -455,12 +473,13 @@ const AccessBox = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
+  margin-top: 20px;
   margin-bottom: 100px;
   align-items: center;
   ${(props) =>
     props.expert &&
     css`
-      margin-right: 30px;
+      /* margin-right: 30px; */
     `
   }
   @media (${device.tablet}) {
@@ -476,21 +495,22 @@ const AccessBox = styled.div`
   }
 `
 
-const Link = styled.text`
+const Link = styled(PrimaryButton)`
   text-decoration: none;
   font-weight: 500;
   color: #172756;
   margin-right: 12px;
   &:hover {
-    color: #03a0ff;
-    cursor: pointer;
+    background-color: #455278
   }
 `;
 
 const Banner = styled.div`
   display: flex;
-  width: 90%;
+  width: 100%; 
   flex-direction: row;
+  border: 1px solid white;
+  align-content: center;
   border-radius: 10px;
   justify-content: space-between;
   text-align: center;
@@ -502,27 +522,35 @@ const Banner = styled.div`
     ${(props) =>
     props.expert &&
     css`
-      margin-left: 60px;
-      width: 100%;
+      /* margin-left: 60px; */
+      /* width: 100%; */
     `
-  }
+    }
   }
   ${(props) =>
     props.expert &&
     css`
-      margin-right: 30px;
+      /* margin-right: 30px; */
     `
   }
+  ${(props) => props.mobile && css`
+    width: 90%;
+  `}
 `
 
 
 const Container = styled.div`
   background: #0E1834;
   padding-top: 30px;
-  width: 90%;
+  width: 100%;
   padding-bottom: 30px;
   border: 1px solid white;
   border-radius: 10px;
+
+  ${(props) => props.mobile && css`
+    width: 90%;
+  `}
+
   @media (${device.tablet}) {
     /* width: 100%; */
     ${(props) =>
@@ -535,7 +563,7 @@ const Container = styled.div`
   ${(props) =>
     props.expert &&
     css`
-      margin-right: 30px;
+      /* margin-right: 30px; */
     `
   }
 `;
@@ -564,17 +592,19 @@ const StepContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  align-content: center;
   align-items: center;
   margin-bottom: 50px;
 `;
 
 const ConnectStep = styled.div`
-  padding: 0px 10px 0px 10px;
   display: flex;
   font-weight: 500;
   font-size: large;
   text-align: left;
   align-items: center;
+  width: 100%;
+  border: 1px solid #019fff;
   background: #0f1733;
   color: #019fff;
   border-radius: 10px;
@@ -603,12 +633,23 @@ const ConnectStep = styled.div`
     @media (${device.mobileL}) {
       //
     }
+    ${(props) => props.mobile && css`
+    width: 90%;
+    `}
 `;
 
 const Text = styled.text`
   font-weight: 500px;
   cursor: pointer;
   margin: 0px 14px 0px 0px;
+  text-align: center;
+  align-self: center;
+`;
+
+const BoldText = styled.text`
+  font-weight: bold;
+  cursor: pointer;
+  margin: 0px 30px 0px 0px;
   text-align: center;
   align-self: center;
 `;
