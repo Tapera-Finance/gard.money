@@ -131,9 +131,9 @@ export default function WalletConnect() {
                     console.log("error connecting wallet: ", e);
                   }
                   setModalCanAnimate(false);
-                  await addReferrerToFirestore(getWallet().address)
                   setLoading(false);
                 }
+                await addReferrerToFirestore(getWallet().address)
               }}
             />
           ),
