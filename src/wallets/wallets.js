@@ -2,6 +2,7 @@ import algosdk from "algosdk";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "algorand-walletconnect-qrcode-modal";
+import { PeraWalletConnect } from "@perawallet/connect";
 import { psToken } from "./keys";
 import { updateCDPs } from "../transactions/cdp";
 import { ids } from "../transactions/ids";
@@ -11,6 +12,7 @@ import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 import buffer from "buffer";
 const { Buffer } = buffer;
 let nfd_updated = 0
+const peraWallet = new PeraWalletConnect();
 
 function sleep(seconds) {
   return new Promise((resolve) => setTimeout(resolve, 1000 * seconds));
@@ -149,19 +151,10 @@ export async function updateWalletInfo() {
 // Sets up MyAlgoWallet
 if (!window.Buffer) window.Buffer = Buffer; // Partial fix from https://github.com/randlabs/myalgo-connect/issues/27 XXX: THIS IS ALSO NEEDED FOR PERA TOO!!!
 const myAlgoConnect = new MyAlgoConnect({ disableLedgerNano: false });
-// Create a connector (used for Pera)
-let connector;
-if (localStorage.walletconnect) {
-  console.log("Using stored wallet connect");
-  connector = await new WalletConnect({
-    bridge: "https://bridge.walletconnect.org", // Required
-    qrcodeModal: QRCodeModal,
-  });
-}
 
 export function disconnectWallet() {
-  if (connector && connector.connected) {
-    connector.killSession();
+  if (peraWallet.isConnected) {
+    peraWallet.disconnect()
   }
   activeWallet = undefined;
   activeWalletInfo = undefined;
@@ -175,7 +168,14 @@ export function disconnectWallet() {
 const storedWallet = localStorage.getItem("wallet");
 if (!(storedWallet === null) && !(storedWallet === "undefined")) {
   activeWallet = JSON.parse(storedWallet);
-  if (activeWallet.type != "Exodus" || window.exodus.algorand.isConnected) {
+  console.log(activeWallet)
+  if (activeWallet.type == "Pera") {
+    let peraAccounts = await peraWallet.reconnectSession() // Ensures pera can reconnect
+    peraWallet.connector?.on("disconnect", disconnectWallet)
+    await updateWalletInfo()
+  } else if (activeWallet.type == "AlgorandWallet") {
+    disconnectWallet() // Old Pera Wallet - drop that
+  } else if (activeWallet.type != "Exodus" || window.exodus.algorand.isConnected) {
     await updateWalletInfo(); // Could optimize by setting a promise and doing promise.all at the end of the page
   } else {
     disconnectWallet()
@@ -318,49 +318,23 @@ export async function connectWallet(type, address) {
       }
       break;
     }
-    case "AlgorandWallet": {
-      // Check if connection is already established
-
-      if (connector && connector.connected) {
-        connector.killSession();
-        console.log("KILLED");
+    case "Pera": {
+      let accounts;
+      // Actually getting the connection
+      try {
+        accounts = await peraWallet.connect()
+      } catch(error) {
+        if (error?.data?.type == "SESSION_CONNECT") {
+          peraWallet.disconnect()
+          accounts = await peraWallet.connect()
+        } else {
+          console.log(error?.data?.type)
+          throw error; // TODO better error handling
+        }
       }
-      connector = new WalletConnect({
-        bridge: "https://bridge.walletconnect.org", // Required
-        qrcodeModal: QRCodeModal,
-      });
-      connector.on("disconnect", (payload) => {
-        // TODO: Need to refresh page
-        console.log("DISCONNECT");
-        disconnectWallet();
-      });
-      connector.createSession();
-      var d = [];
-      var p = new Promise(function (resolve, reject) {
-        d.push({ resolve: resolve, reject: reject });
-      });
-      let account;
-      connector.on("connect", (error, payload) => {
-        if (isiOS() && !account) {
-          interval = setInterval(() => {
-            console.log("Awaiting pera connect completion");
-          }, 3000);
-        }
-        if (error) {
-          throw error;
-        }
-        // Get provided accounts
-        const { accounts } = payload.params[0];
-        account = accounts[0];
-
-        d[0].resolve("Done");
-      });
-      await d[0];
-      await p;
-      // TODO: Handle errors better
       activeWallet = {};
-      activeWallet.address = account;
-      activeWallet.type = "AlgorandWallet";
+      activeWallet.address = accounts[0];
+      activeWallet.type = "Pera";
       break;
     }
     default:
@@ -395,6 +369,20 @@ function sameSender(sender1, sender2) {
   return JSON.stringify(sender1.publicKey) == JSON.stringify(sender2.publicKey);
 }
 
+function fixSet(senderAddressObj, txnarray, signed) {
+  let res = [];
+  let sIndex = 0;
+  for (const [index, txn] of txnarray.entries()) {
+    if (sameSender(txn["from"], senderAddressObj)) {
+      res.push(signed[sIndex]);
+      sIndex++;
+    } else {
+      res.push(null);
+    }
+  }
+  return res
+}
+
 async function signSet(signer, senderAddressObj, txnarray) {
   // const senderAddressObj = algosdk.decodeAddress(info.address);
   const toSign = txnarray.filter((txn) =>
@@ -402,18 +390,8 @@ async function signSet(signer, senderAddressObj, txnarray) {
     );
     const signed = await signer.signTransaction(
       toSign.map((txn) => txn.toByte()),
-    );
-    let res = [];
-    let sIndex = 0;
-    for (const [index, txn] of txnarray.entries()) {
-      if (sameSender(txn["from"], senderAddressObj)) {
-        res.push(signed[sIndex]);
-        sIndex++;
-      } else {
-        res.push(null);
-      }
-    }
-    return res;
+    );    
+    return fixSet(senderAddressObj, txnarray, signed);
 }
 
 export async function signGroup(info, txnarray) {
@@ -432,34 +410,31 @@ export async function signGroup(info, txnarray) {
     case "MyAlgoConnect": {
       return await signSet(myAlgoConnect, senderAddressObj, txnarray)
     }
-    case "AlgorandWallet": {
+    case "Pera": {
+      
       const txnsToSign = txnarray.map((txn) => {
-        const encodedTxn = Buffer.from(
-          algosdk.encodeUnsignedTransaction(txn),
-        ).toString("base64");
         if (!sameSender(txn["from"], senderAddressObj)) {
           return {
-            txn: encodedTxn,
+            txn: txn,
             message: "Transactions for the GARD system", // XXX: Eventually we could have a more informative string
             signers: [],
           };
         }
         return {
-          txn: encodedTxn,
+          txn: txn,
           message: "Transactions for the GARD system", // XXX: Eventually we could have a more informative string
         };
       });
-      const requestParams = [txnsToSign];
-      const request = formatJsonRpcRequest("algo_signTxn", requestParams);
-      const result: Array<string | null> = await connector.sendCustomRequest(
-        request,
-      );
-      const decodedResult = result.map((element) => {
+      
+      
+      const result = await peraWallet.signTransaction([txnsToSign])
+      
+      const signed = result.map((element) => {
         return element
-          ? { blob: new Uint8Array(Buffer.from(element, "base64")) }
+          ? { blob: element }
           : null;
       });
-      return decodedResult;
+      return fixSet(senderAddressObj, txnarray, signed);
     }
     case "AlgoSigner": {
       // Alogsigner requires all txns in a sign call to be from the same group,
