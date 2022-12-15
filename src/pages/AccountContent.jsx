@@ -98,8 +98,7 @@ export default function AccountContent() {
           justifyContent: "space-evenly",
           alignContent: "center",
         }}
-      > 
-      <RefButton navFunc={() => navigate(`/referrals`)}/>
+      >
       </div>
       <AccountContainer>
         <div
@@ -155,6 +154,7 @@ export default function AccountContent() {
         />
         {tabs[selectedTab]}
       </div>
+      <RefButton navFunc={() => navigate(`/referrals`)}/>
     </AcctPgCont>
   );
 }
