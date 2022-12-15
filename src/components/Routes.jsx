@@ -6,6 +6,7 @@ import AuctionsContent from "../pages/AuctionsContent";
 import DaoContent from "../pages/DaoContent";
 import AnalyticsContent from "../pages/AnalyticsContent";
 import HomeContent from "../pages/HomeContent";
+import ReferralContent from "../pages/ReferralContent";
 import Main from "./Main";
 import BorrowContent from "../pages/BorrowContent";
 import ActionsContent from "../pages/ActionsContent";
@@ -33,6 +34,10 @@ export default function AppRoutes() {
         <Route
           path="/analytics"
           element={Main(AnalyticsContent, "Analytics")}
+        />
+        <Route
+        path="/referrals"
+        element={Main(ReferralContent, "Referrals")}
         />
       </Routes>
     </BrowserRouter>

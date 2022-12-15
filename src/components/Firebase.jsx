@@ -70,6 +70,13 @@ export async function userInDB(walletID) {
   return querySnapshot.docs.length >= 1;
 }
 
+export async function getReferrerDB(refIDs){
+  const collectionRef = collection(db, "referrers")
+  const q = query(collectionRef, where("referred", "in", refIDs))
+  const querySnapshot = await getDocs(q)
+  return querySnapshot.docs
+}
+
 export async function updateCommitmentFirestore(
   owner_address,
   account_id,
