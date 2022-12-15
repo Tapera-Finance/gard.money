@@ -1,0 +1,4 @@
+export const eligible = {
+    "DM2VWY6UQQJJOGDDD46CKWYW7WSHA3POVTVTGHDMWKFUGGCWL25ROMNE6I": ["david"],
+
+}

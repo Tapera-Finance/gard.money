@@ -16,13 +16,23 @@ import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
 import { device } from "../styles/global";
-
-
+import { eligible } from "../assets/eligible_referrers";
+import PrimaryButton from "../components/PrimaryButton";
 
 const tabs = {
   one: <Holdings />,
   two: <TransactionHistory />,
 };
+
+function RefButton({navFunc}){
+  if (getWallet().address in eligible){
+    return <PrimaryButton 
+    text={"View Referrals"}
+    blue={true}
+    onClick={navFunc}></PrimaryButton>
+  }
+  return <></>
+}
 
 /**
  * Content for the wallet navigation option
@@ -88,7 +98,8 @@ export default function AccountContent() {
           justifyContent: "space-evenly",
           alignContent: "center",
         }}
-      >
+      > 
+      <RefButton navFunc={() => navigate(`/referrals`)}/>
       </div>
       <AccountContainer>
         <div
