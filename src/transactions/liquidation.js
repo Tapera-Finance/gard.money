@@ -20,7 +20,6 @@ const enc = new TextEncoder();
 
 
 function makeDummyXferTxn(userInfo, params, id=ids.asa.galgo) {
-  console.log("test")
   return algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: userInfo.address,
     to: userInfo.address,
@@ -75,7 +74,6 @@ export async function start_auction(cdp) {
     user_signed[1].blob,
     stxn1.blob,
   ];
-  console.log(stxns)
   let response = await sendTxn(
     stxns,
     `Successfully started the auction on ${cdp.owner}'s CDP.`,
