@@ -99,7 +99,7 @@ export async function liquidate(cdp) {
   const lsigNum = cdp.collateralID == 0 ? 1 : 0
   let txnX = makeUpdateInterestTxn(info, params);
   params.fee = 0
-  let txn0 = makeUpdateInterestTxn(info, params)
+  let txn0 = makeUpdateInterestTxn(info, params) // These first 2 transactions are for opcode budget
   params.fee = 0
   // txn 1 application call
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
