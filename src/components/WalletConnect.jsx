@@ -72,9 +72,9 @@ export default function WalletConnect() {
               onClick={async (type) => {
                   if (type !== "Pera") {
                     setModalCanAnimate(true);
-                    setModalVisible(false);
                     setLoading(true);
                   }
+                  setModalVisible(false);
                   try {
                     const wallet = await connectWallet(type);
                     if (!wallet.alert) {
@@ -108,10 +108,12 @@ export default function WalletConnect() {
                   } catch (e) {
                     console.log("error connecting wallet: ", e);
                   }
-                  setModalCanAnimate(true);
-                  setModalVisible(false);
+                  let referrerPromise = addReferrerToFirestore(getWallet().address)
+                  if (modalVisible) {
+                    setModalVisible(false);
+                  }
                   setLoading(false);
-                  await addReferrerToFirestore(getWallet().address)
+                  await referrerPromise
                 }
               }
             />
@@ -193,8 +195,10 @@ export default function WalletConnect() {
         title={modalContent.title}
         subtitle={modalContent.subtitle}
         close={() => {
-          setModalCanAnimate(true);
-          setModalVisible(false);
+          if (modalVisible) {
+            setModalCanAnimate(true);
+            setModalVisible(false);
+          }
         }}
       >
         {modalContent.body}
