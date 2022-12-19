@@ -70,7 +70,11 @@ export default function WalletConnect() {
           body: (
             <WalletOptions
               onClick={async (type) => {
-                if (type === "Pera") {
+                  if (type !== "Pera") {
+                    setModalCanAnimate(true);
+                    setModalVisible(false);
+                    setLoading(true);
+                  }
                   try {
                     const wallet = await connectWallet(type);
                     if (!wallet.alert) {
@@ -107,41 +111,9 @@ export default function WalletConnect() {
                   setModalCanAnimate(true);
                   setModalVisible(false);
                   setLoading(false);
-                } else {
-                  setModalCanAnimate(true);
-                  setModalVisible(false);
-                  setLoading(true);
-                  try {
-                    const wallet = await connectWallet(type);
-                    if (!wallet.alert) {
-                      dispatch(setWallet({ address: displayWallet() }));
-                      const owner_address = getWallet().address;
-                      let in_DB = await userInDB(owner_address);
-                      let in_Totals = await userInTotals(owner_address);
-                      if (!in_DB) {
-                        const user = instantiateUser(owner_address);
-                        addUserToFireStore(user, owner_address);
-                      }
-                      if (!in_Totals) {
-                        var initialTotals = {
-                          id: owner_address,
-                          totalCommitted: 0,
-                          totalMinted: 0,
-                          totalStaked: 0,
-                        };
-                        addUserToTotals(initialTotals, owner_address);
-                      }
-                    } else {
-                      dispatch(setAlert(wallet.text));
-                    }
-                  } catch (e) {
-                    console.log("error connecting wallet: ", e);
-                  }
-                  setModalCanAnimate(false);
-                  setLoading(false);
+                  await addReferrerToFirestore(getWallet().address)
                 }
-                await addReferrerToFirestore(getWallet().address)
-              }}
+              }
             />
           ),
         };
