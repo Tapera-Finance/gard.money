@@ -25,10 +25,12 @@ const ToolTipText = styled.span`
   text-align: center;
   border-radius: 10px;
   border: 1px solid white;
-  padding: 10px 0;
+  padding: 8px 8px;
   bottom: 100%;
 
   position: absolute;
+  bottom: 100%;
+  left: -25%;
   z-index: 1;
   ${Text}:hover & {
     visibility: visible;
