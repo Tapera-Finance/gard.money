@@ -17,7 +17,7 @@ module.exports = {
     "Fees Received" : "Cumulative GARD Protocol Fees",
     "Fee Rate" : "The fee charged by the pool is represented as a percent of the value exchanged.",
     // "GARD Governors" : "Total number of governors participating in governance through GARD",
-    "GARD Overcollateralization" : "The ratio of locked collateral value to minted GARD value",
+    "GARD System Collateralization" : "The ratio of locked collateral value to minted GARD value",
     "GARD Borrow APR": "The cost to borrow GARD each year denominated in GARD",
     "GARD Governors": "Number of unique addresses that have committed to governance via GARD protocol",
     "GARD Governance APR" : "Annual percentage yield recieved from participating in governance",

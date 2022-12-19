@@ -197,7 +197,7 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Overcollateralization",
+      title: "GARD System Collateralization",
       val: `${backed}%`,
       hasToolTip: true,
     },
@@ -205,12 +205,12 @@ export default function HomeContent() {
       title: "GARD Borrow APR",
       val: `${cdpInterest*100}%`,
       hasToolTip: true,
-    },
+    },/* Hidden until value is fixed
     {
       title: "Total Governors", // GARD Governors later
       val: `${governors} Governors`,
       hasToolTip: false,
-    },
+    },*/
     {
       title: "GARD Governance APR",
       val: `${apr}%`,
