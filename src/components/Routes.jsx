@@ -13,27 +13,28 @@ import ActionsContent from "../pages/ActionsContent";
 import AccountContent from "../pages/AccountContent";
 import SwapDetails from "./actions/SwapDetails";
 import StakeDetails from "./actions/StakeDetails";
+import { CONTENT_NAMES } from "../globals";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Referral></Referral>
       <Routes>
-        <Route path="/" element={Main(HomeContent, "Home")} />
-        <Route path="/account" element={Main(AccountContent, "Wallet")} />
-        <Route path="/borrow" element={Main(BorrowContent, "Borrow")} />
-        <Route path="/auctions" element={Main(AuctionsContent, "Auctions")} />
+        <Route path="/" element={Main(HomeContent, CONTENT_NAMES.HOME)} />
+        <Route path="/account" element={Main(AccountContent, CONTENT_NAMES.ACCOUNT)} />
+        <Route path="/borrow" element={Main(BorrowContent, CONTENT_NAMES.BORROW)} />
+        <Route path="/auctions" element={Main(AuctionsContent, CONTENT_NAMES.AUCTIONS)} />
         {/* <Route path="/actions" element={Main(ActionsContent, "Actions")} /> */}
-        <Route path="/swap" element={Main(SwapDetails, "Swap")} />
-        <Route path="/stake" element={Main(StakeDetails, "Stake")} />
+        <Route path="/swap" element={Main(SwapDetails, CONTENT_NAMES.SWAP)} />
+        <Route path="/stake" element={Main(StakeDetails, CONTENT_NAMES.STAKE)} />
         {/* <Route path="/dao" element={Main(DaoContent, "DAO")} /> */}
         <Route
           path="/govern"
-          element={Main(GovernContent, "Govern")}
+          element={Main(GovernContent, CONTENT_NAMES.GOVERN)}
         />
         <Route
           path="/analytics"
-          element={Main(AnalyticsContent, "Analytics")}
+          element={Main(AnalyticsContent, CONTENT_NAMES.ANALYTICS)}
         />
         <Route
         path="/referrals"
