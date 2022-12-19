@@ -442,7 +442,7 @@ export default function Govern() {
       <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} onClick={() => {
             navigate("/borrow");
           }}/>
-      <PrimaryButton text="View Vote Proposals" blue={true} underTable={true} onClick={async () => {
+      <PrimaryButton text="Place Votes" blue={true} underTable={true} onClick={async () => {
             setModalCanAnimate(true)
             setModal2Visible(true)
             setModalCanAnimate(false)
