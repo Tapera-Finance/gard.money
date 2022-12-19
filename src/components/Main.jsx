@@ -55,8 +55,6 @@ export default function Main(WrappedComponent, title) {
   const [isOpen, setIsOpen] = useState(true);
   const [mobile, setMobile] = useState(isMobile());
   const [canAnimate, setCanAnimate] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [mainContent, setMainContent] = useState("Home");
   const [dimmensions, setDimmensions] = useState({
     width: undefined,
@@ -127,10 +125,6 @@ export default function Main(WrappedComponent, title) {
       <MainContentDiv mobile={mobile} canAnimate={canAnimate} isOpen={isOpen}>
         <Topbar
           contentName={title}
-          setMainContent={(content) => {
-            setCanAnimate(false);
-            setModalCanAnimate(false);
-          }}
           style={{ background: "#172756" }}
         />
         <ContentContainer isOpen={isOpen}>

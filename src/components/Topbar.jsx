@@ -12,7 +12,7 @@ import { isMobile } from "../utils";
  * @param {{contentName: string}} props
  */
 
-export default function Topbar({ contentName, setMainContent }) {
+export default function Topbar({ contentName }) {
   const [mobile, setMobile] = useState(isMobile());
 
   useEffect(() => {
