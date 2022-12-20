@@ -50,7 +50,7 @@ const indexerServer = _indexerServer
 export const algodClient = new algosdk.Algodv2(psToken, nodeServer, "");
 export const indexerClient = new algosdk.Indexer(psToken, indexerServer, "");
 
-export async function accountInfo(address = null) {
+export async function accountInfo(address = null, retry = 0) {
   // XXX: Assumes the wallet is set
   // XXX: Could eventually cache for quicker/more effecient usage
   if (address == null) {
@@ -61,21 +61,21 @@ export async function accountInfo(address = null) {
     .do()
     .catch(async (e) => {
       if (rerun(e)) {
-        await sleep(1);
-        return await accountInfo(address);
+        await sleep(1 + retry);
+        return await accountInfo(address, retry + 1);
       }
       throw e;
     });
 }
 
-export async function appInfo(appId) {
+export async function appInfo(appId, retry = 0) {
   return algodClient
     .getApplicationByID(appId)
     .do()
     .catch(async (e) => {
       if (rerun(e)) {
-        await sleep(1);
-        return await appInfo(appId);
+        await sleep(1 + retry);
+        return await appInfo(appId, retry + 1);
       }
       throw e;
     });
