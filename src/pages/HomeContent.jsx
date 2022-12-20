@@ -114,6 +114,27 @@ export async function getTotalGardGovs() {
     baseURL: 'https://governance.algorand.foundation/api/governors/',
     timeout: 300000,
   })
+  async function isGovernor(address) {
+        try {
+            let response = (await axiosObj.get(address + '/status/', {}))
+            if (response) {
+              total += 1
+            }
+          }
+          catch (error) {
+            if (error.response) {
+              console.log(error.response)
+            } else if (error.request) {
+              // This means the item does not exist
+            } else {
+              // This means that there was an unhandled error
+              console.error(error)
+            }
+          }
+      }
+  
+  let promises = []
+  
   for(var i = 0; i < validators.length; i++){
     do {
       // Find accounts that are opted into the GARD price validator application
@@ -123,21 +144,14 @@ export async function getTotalGardGovs() {
         limit: 1000,
         nexttoken,
       });
+      
       for (const account of response['accounts']) {
-        try {
-
-            let response = (await axiosObj.get(account.address + '/status/', {}))
-            if (response) {
-              total += 1
-            }
-          }
-          catch (e) {
-            continue
-          }
+        promises.push(isGovernor(account.address))
       }
       nexttoken = response['next-token']
     } while (nexttoken != null);
   }
+  await Promise.allSettled(promises);
   return total
 }
 
