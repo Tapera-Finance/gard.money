@@ -249,35 +249,6 @@ export default function StakeDetails() {
               )}
             </ThirdRow>
           </SecondThirdCondensed>
-
-          {/* <MobileGrid>
-            <MobileStakeBox mobile={mobile}>
-              <MobileHeader>Stake Amount:</MobileHeader>
-              <MobileStakeContainer>
-                <MobileStakeInput
-                  id="stake-amt"
-                  placeholder="Enter Amount"
-                  min="0.0"
-                  step=".01"
-                  type="number"
-                  value={stakeAmount}
-                  callback={handleInput}
-                />
-              </MobileStakeContainer>
-            </MobileStakeBox>
-            <MobileEffectContainer>
-              <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
-              <Result>{formatToDollars(balance)}</Result>
-            </MobileEffectContainer>
-          </MobileGrid>
-          <MobileActionBar>
-            <MobileStakeBtn text="Stake" blue={true} onClick={handleStake} />
-            <MobileUnstakeBtn
-              text="Unstake"
-              blue={true}
-              onClick={handleUnstake}
-            />
-          </MobileActionBar> */}
           <FourthRow mobile={mobile}>
             <Effect
               title="Your Stake"
@@ -307,8 +278,6 @@ export default function StakeDetails() {
                 alignSelf: `${mobile || (window.innerWidth < 760)? "unset" : "baseline"}`,
               }}
             >
-              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={handleStake} />
-              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={handleUnstake} />
               {mobile || (window.innerWidth < 760) ? (
                 <StakeBox style={{flexDirection: `${mobile ? "column" : "row"}`}}>
                   {isMobile ? (<StakeHeading mobile={mobile}>Stake Amount</StakeHeading>) : (<></>)}
@@ -330,6 +299,8 @@ export default function StakeDetails() {
               ) : (
                 <></>
               )}
+              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={handleStake} />
+              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={handleUnstake} />
             </div>
           </FourthRow>
         </Container>
