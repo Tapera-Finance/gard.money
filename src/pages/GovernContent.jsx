@@ -50,8 +50,34 @@ async function getAlgoGovernanceAccountBals() {
   const v2GardPriceValidatorId = 890603991
   let nexttoken
   let response = null
-  let totalContractAlgo = 0
+  let totalCommitedAlgo = 0
+  let totalGovs = 0
 
+  const axiosObj = axios.create({
+    baseURL: 'https://governance.algorand.foundation/api/governors/',
+    timeout: 300000,
+  })
+  async function isGovernor(address) {
+    try {
+        let response = (await axiosObj.get(address + '/status/', {}))
+        if (response) {
+          totalCommitedAlgo += parseInt(response.data["committed_algo_amount"])
+          totalGovs += 1
+        }
+      }
+      catch (error) {
+        if (error.response) {
+          console.log(error.response)
+        } else if (error.request) {
+          // This means the item does not exist
+        } else {
+          // This means that there was an unhandled error
+          console.error(error)
+        }
+      }
+  }
+
+  let promises = []
   const validators = [v2GardPriceValidatorId]
   for(var i = 0; i < validators.length; i++){
     do {
@@ -63,12 +89,13 @@ async function getAlgoGovernanceAccountBals() {
         nexttoken,
       });
       for (const account of response['accounts']) {
-        totalContractAlgo += (account['amount'] / Math.pow(10, 6))
+        promises.push(isGovernor(account.address))
       }
       nexttoken = response['next-token']
     } while (nexttoken != null);
   }
-  return totalContractAlgo
+  await Promise.allSettled(promises);
+  return [(totalCommitedAlgo/1e12).toFixed(2) + 'M Algo', totalGovs]
 }
 
 function getGovernorPage(id) {
@@ -76,25 +103,6 @@ function getGovernorPage(id) {
     "https://governance.algorand.foundation/governance-period-5/governors/" +
     cdpGen(getWallet().address, id).address
   );
-}
-
-export async function getGovernanceInfo() {
-  let response;
-  try {
-    response = await axios.get(
-      "https://governance.algorand.foundation/api/periods/statistics/",
-    );
-  } catch (ex) {
-    response = null;
-    console.log(ex);
-  }
-  if (response) {
-    const governorCount = parseInt(response["data"].unique_governors_count);
-    const enrollmentEnd =
-      response["data"]["periods"][0].registration_end_datetime;
-    return [governorCount, enrollmentEnd];
-  }
-  return null;
 }
 
 export async function getCommDict(){
@@ -138,7 +146,7 @@ export default function Govern() {
   const [commitDict, setCommitDict] = useState({})
   const [vaulted, setVaulted] = useState("Loading...");
   const [shownAll, setAllVotes] = useState(true);
-  const [governors, setGovernors] = useState("...");
+  const [governors, setGovernors] = useState("Loading...");
   const [enrollmentEnd, setEnrollmentEnd] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
@@ -188,7 +196,7 @@ export default function Govern() {
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
   var details = [
     {
-      title: "Total Vaulted",
+      title: "Total Committed",
       val: vaulted,
       hasToolTip: true,
     },
@@ -198,20 +206,21 @@ export default function Govern() {
       hasToolTip: true,
     },
     {
-      title: "Total Governors", // We want this to be GARD governors later
-      val: `${governors} Governors`,
-      hasToolTip: false,
+      title: "GARD Governors",
+      val: `${governors}`,
+      hasToolTip: true,
     },
   ];
   useEffect(async () => {
-    const govInfo = await getGovernanceInfo();
     setAPR(await getAlgoGovAPR());
-    setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
   }, []);
 
   useEffect(async () => {
-    setVaulted((await getAlgoGovernanceAccountBals()/1000000).toFixed(2) + `M Algo`);
+    const algoGovPromise = getAlgoGovernanceAccountBals()
     setCommitment(await loadFireStoreCDPs());
+    const gov_results = await algoGovPromise;
+    setVaulted(gov_results[0]);
+    setGovernors(gov_results[1]);
   }, [refresh]);
 
 
