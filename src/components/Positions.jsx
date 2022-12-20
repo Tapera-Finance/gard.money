@@ -163,61 +163,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
       galgo: "gALGO",
       algo: "ALGO"
     }
-    var details = [
-        {
-            title: "Total Supplied (Asset)",
-            val: `${cAlgos === "" ? "..." : cAlgos}`,
-            hasToolTip: true,
-          },
-          {
-            title: "Total Supplied ($)",
-            val: `${cAlgos === "" ? "..." : `$${(cAlgos * supplyPrice).toFixed(2)}`}`,
-            hasToolTip: true,
-          },
-          {
-            title: "Collateral Factor",
-            val: `${(100 / 140).toFixed(2)}`,
-            hasToolTip: true,
-          },
-          {
-            title: "Borrow Utilization",
-            val: `${
-              cAlgos === "" || maxGARD === "" ? "..." : (cAlgos / maxGARD).toFixed(2)
-            }%`,
-            hasToolTip: true,
-          },
-          {
-            title: "Liquidation Price",
-            val: `${
-              getMinted() == null || getCollateral() == null
-                ? "..."
-                : displayLiquidationPrice()
-            }`,
-            hasToolTip: true,
-          },
-          // {
-          //   title: "GARD Borrow APR",
-          //   val: 0,
-          //   hasToolTip: true,
-          // },
-          {
-            title: "Bonus Supply Rewards",
-            val: 0,
-            hasToolTip: true,
-          },
-          {
-            title: "ALGO Governance APR",
-            val: `${apr}%`,
-            hasToolTip: true,
-          },
-          {
-            title: "Collateralization Ratio",
-            val: `${
-              getMinted() == null || getCollateral() == null ? "..." : displayRatio()
-            }`,
-            hasToolTip: true,
-          },
-    ];
 
     useEffect(() => {
       setMobile(isMobile())
@@ -396,6 +341,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           }
                         : () => {
                             setCurrentCDP(cdp.id + cdp.asaID);
+                            setSelectedTab("one");
                           }
                     }
                   />
@@ -412,7 +358,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           cdp={cdp}
                           price={price}
                           setCurrentCDP={setCurrentCDP}
-                          details={details}
                           maxMint={maxGARD}
                           apr={apr}
                           manageUpdate={setManageUpdate}
@@ -427,7 +372,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           cdp={cdp}
                           price={price}
                           setCurrentCDP={setCurrentCDP}
-                          details={details}
                           maxSupply={maxSupply}
                           apr={apr}
                           manageUpdate={setManageUpdate}
@@ -437,8 +381,8 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           cdp={cdp}
                           price={price}
                           setCurrentCDP={setCurrentCDP}
-                          details={details}
                           mobile={mobile}
+                          apr={apr}
                         />
                       ) : (
                         // : selectedTab === "three" ?

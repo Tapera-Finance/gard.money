@@ -5,7 +5,7 @@ import {displayRatio, mAlgosToAlgos, displayLiquidationPrice, getMinted, getColl
 import { calcRatio } from "../transactions/cdp";
 
 
-export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cdp, price, setCurrentCDP, maxMint,  manageUpdate, details, apr}) {
+export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cdp, price, setCurrentCDP, maxMint,  manageUpdate, apr}) {
     const [utilization, setUtilization] = useState(null)
     // TODO: combine SupplyCDP & BorrowCDP
     let borrowDetails = [
