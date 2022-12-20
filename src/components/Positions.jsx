@@ -396,6 +396,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           }
                         : () => {
                             setCurrentCDP(cdp.id + cdp.asaID);
+                            setSelectedTab("one");
                           }
                     }
                   />
