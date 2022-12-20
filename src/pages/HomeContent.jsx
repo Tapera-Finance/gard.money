@@ -14,7 +14,6 @@ import WalletConnect from "../components/WalletConnect";
 import Step from "../components/Step";
 import BinaryToggle from "../components/BinaryToggle";
 import { setAlert } from "../redux/slices/alertSlice";
-import { getGovernanceInfo } from "./GovernContent";
 import Effect from "../components/Effect";
 import { cdpInterest } from "../transactions/lib"
 import { getStakingAPY } from "../transactions/stake"
@@ -103,6 +102,45 @@ async function getTotalUsers() {
   return users.size
 }
 
+export async function getTotalGardGovs() {
+
+  const v2GardPriceValidatorId = 890603991
+  let nexttoken
+  let response = null
+  let total = 0
+
+  const validators = [v2GardPriceValidatorId]
+  const axiosObj = axios.create({
+    baseURL: 'https://governance.algorand.foundation/api/governors/',
+    timeout: 300000,
+  })
+  for(var i = 0; i < validators.length; i++){
+    do {
+      // Find accounts that are opted into the GARD price validator application
+      // These accounts correspond to CDP opened on the GARD protocol
+      response = await searchAccounts({
+        appId: validators[i],
+        limit: 1000,
+        nexttoken,
+      });
+      for (const account of response['accounts']) {
+        try {
+
+            let response = (await axiosObj.get(account.address + '/status/', {}))
+            if (response) {
+              total += 1
+            }
+          }
+          catch (e) {
+            continue
+          }
+      }
+      nexttoken = response['next-token']
+    } while (nexttoken != null);
+  }
+  return total
+}
+
 const buttons = [
   "Swap",
   "Stake",
@@ -129,7 +167,7 @@ export default function HomeContent() {
   const [apr, setApr] = useState(0);
   const [users, setUsers] = useState("Loading...")
   const [chainData, setChainData] = useState("");
-  const [governors, setGovernors] = useState("...");
+  const [governors, setGovernors] = useState("Loading...");
   const [allOpen, setAllOpen] = useState(true);
   const [difficulty, setDifficulty] = useState("Help Me Out");
   const [gardInWallet, setGardInWallet] = useState(false);
@@ -167,12 +205,11 @@ export default function HomeContent() {
   ) */
 
   useEffect(async () => {
+    const govsPromise = getTotalGardGovs();
     const apyPromise = getStakingAPY("NL")
-    const govInfo = await getGovernanceInfo();
     setApr(await getAlgoGovAPR())
-    setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
-    console.log("2", govInfo[1]);
     setApy((await apyPromise).toFixed(2))
+    setGovernors(await govsPromise);
   }, []);
 
   const homeDetails = [
@@ -205,12 +242,12 @@ export default function HomeContent() {
       title: "GARD Borrow APR",
       val: `${cdpInterest*100}%`,
       hasToolTip: true,
-    },/* Hidden until value is fixed
+    },
     {
-      title: "Total Governors", // GARD Governors later
-      val: `${governors} Governors`,
-      hasToolTip: false,
-    },*/
+      title: "GARD Governors",
+      val: `${governors}`,
+      hasToolTip: true,
+    },
     {
       title: "GARD Governance APR",
       val: `${apr}%`,

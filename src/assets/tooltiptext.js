@@ -20,7 +20,7 @@ module.exports = {
     "GARD System Collateralization" : "The ratio of locked collateral value to minted GARD value",
     "GARD Borrow APR": "The cost to borrow GARD each year denominated in GARD",
     "GARD Governors": "Number of unique addresses that have committed to governance via GARD protocol",
-    "GARD Governance APR" : "Annual percentage yield recieved from participating in governance",
+    "GARD Governance APR" : "Annual percentage yield recieved from participating in governance (excluding DeFi bonus)",
     "GARD Staking APR" : "The current annual return (in GARD) given current borrows, stakes, and incentives",
     "Liquidation Price" : "Price point at which you loan will be liquidated",
     "Collateralization Ratio" : "Ratio must be above 140%",
@@ -42,7 +42,7 @@ module.exports = {
     "Total Supplied ($)": "The total value in USD of the assets you’ve supplied",
     "Total Value Locked (TVL)" : "Overall value of crypto assets deposited into the GARD Protocol system",
     "Total Value Locked" : "Overall value of crypto assets deposited into the GARD Protocol system",
-    "Total Vaulted" : "Amount of ALGOs from CDPs that are currently commited to governance",
+    "Total Committed" : "Amount of ALGOs from CDPs that are currently commited to governance",
     "Volume" : "Number of GARD exchanged in the pas week",
     "Your Stake" : "Number of GARD earning rewards in the pool. Also, number of GARD entitled to withdraw.",
 };
