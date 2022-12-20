@@ -415,7 +415,7 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
   let extraTxns = txns.length;
   const cdpInfo = await cdpInfoPromise
 
-  let algosToSend = 850000 - cdpInfo.amount // XXX: This amount may not be optimal, but it works
+  let algosToSend = 850000 - Math.min(cdpInfo.amount, 850000) // XXX: This amount may not be optimal, but it works
   params.fee = 6000
   if (algosToSend > 0) {
     params.fee = 7000;
