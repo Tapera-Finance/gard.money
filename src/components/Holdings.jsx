@@ -128,7 +128,7 @@ export default function Holdings() {
             <Title>Borrow Positions {`(${formatToDollars(borrowTotal.toString())} Total Value)`}</Title>
           </div>
           <CountContainer>
-            <CountText>{`${cdpData.length} Borrow Positions`}</CountText>
+            <CountText>{(cdpData.length).toString() + ' Position'}{cdpData.length != 1 ? 's' : ''}</CountText>
           </CountContainer>
         </div>
         <div style={{ marginRight: 20 }}>
