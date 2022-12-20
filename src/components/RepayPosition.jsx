@@ -11,7 +11,7 @@ import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import Details from "./Details";
 
-export default function RepayPosition({cdp, price, setCurrentCDP, details, mobile}){
+export default function RepayPosition({cdp, price, setCurrentCDP, details, mobile, apr}){
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
     const dispatch = useDispatch();
@@ -21,8 +21,57 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
     const handleRepay = (event) => {
         setRepayment(event.target.value === "" ? "" : Number(event.target.value));
     };
-
-
+    //console.log(cdp)
+    // console.log("YEah")
+    
+    var details = [
+        {
+            title: "Total Supplied (Asset)",
+            val: `${cdp.collateral/1e6}`,
+            hasToolTip: true,
+          },
+          {
+            title: "Total Supplied ($)",
+            val: `${`$${(cdp.collateral/1e6 * price).toFixed(2)}`}`,
+            hasToolTip: true,
+          },
+          {
+            title: "Collateral Factor",
+            val: `${(100 / 140).toFixed(2)}`,
+            hasToolTip: true,
+          },
+          {
+            title: "Borrow Utilization",
+            val: `${
+              (100*(cdp.debt - parseInt(repayment*1e6)) / (cdp.collateral * price / 1.4)).toFixed(2)}
+            %`,
+            hasToolTip: true,
+          },
+          {
+            title: "Liquidation Price",
+            val: `$${
+              (1.15*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
+            }`,
+            hasToolTip: true,
+          },
+          // {
+          //   title: "GARD Borrow APR",
+          //   val: 0,
+          //   hasToolTip: true,
+          // },
+          {
+            title: "ALGO Governance APR",
+            val: `${apr}%`,
+            hasToolTip: true,
+          },
+          {
+            title: "Collateralization Ratio",
+            val: `${
+              (100*cdp.collateral*price / (cdp.debt - parseInt(repayment*1e6))).toFixed(0)
+            }%`,
+            hasToolTip: true,
+          },
+    ];
 
     var sessionStorageSetHandler = function (e) {
         setLoadingText(JSON.parse(e.value));
