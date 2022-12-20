@@ -57,6 +57,27 @@ async function getAlgoGovernanceAccountBals() {
     baseURL: 'https://governance.algorand.foundation/api/governors/',
     timeout: 300000,
   })
+  async function isGovernor(address) {
+    try {
+        let response = (await axiosObj.get(address + '/status/', {}))
+        if (response) {
+          totalCommitedAlgo += parseInt(response.data["committed_algo_amount"])
+          totalGovs += 1
+        }
+      }
+      catch (error) {
+        if (error.response) {
+          console.log(error.response)
+        } else if (error.request) {
+          // This means the item does not exist
+        } else {
+          // This means that there was an unhandled error
+          console.error(error)
+        }
+      }
+  }
+
+  let promises = []
   const validators = [v2GardPriceValidatorId]
   for(var i = 0; i < validators.length; i++){
     do {
@@ -68,20 +89,12 @@ async function getAlgoGovernanceAccountBals() {
         nexttoken,
       });
       for (const account of response['accounts']) {
-        try {
-          let response = (await axiosObj.get(account.address + '/status/', {}))
-          if (response) {
-            totalCommitedAlgo += parseInt(response.data["committed_algo_amount"])
-            totalGovs += 1
-          }
-        }
-        catch (e) {
-          continue
-        }
+        promises.push(isGovernor(account.address))
       }
       nexttoken = response['next-token']
     } while (nexttoken != null);
   }
+  await Promise.allSettled(promises);
   return [(totalCommitedAlgo/1e12).toFixed(2) + 'M Algo', totalGovs]
 }
 
