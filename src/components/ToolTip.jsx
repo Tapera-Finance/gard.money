@@ -15,6 +15,7 @@ const Text = styled.div`
     position: relative;
     display: inline-block;
     cursor: help;
+    text-align: center;
 `;
 const ToolTipText = styled.span`
   visibility: hidden;
