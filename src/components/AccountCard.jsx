@@ -5,7 +5,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import { getBalances } from "./actions/swapHelpers";
+import { getWalletInfo, getGARDInWallet } from "../wallets/wallets";
 import * as tips from "../assets/tooltiptext";
 import { ids } from "../transactions/ids";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -31,8 +31,6 @@ const theme = createTheme({
 const menuStyle = {
   color: "#01c7f3",
 };
-
-const balances = getBalances();
 
 export default function AccountCard() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -142,26 +140,26 @@ export default function AccountCard() {
           <Divider />
           <MenuItem>Asset Balances:</MenuItem>
           <MenuItem opt>
-            {balances ? (
+            {walletAddress ? (
               <IconButton
                 style={menuStyle}
                 onClick={() => window.open("https://algoexplorer.io/")}
               >
-                ALGO: {balances["algo"]}
+                ALGO: {((getWalletInfo().amount)/1e6).toFixed(2)}
               </IconButton>
             ) : (
               <></>
             )}
           </MenuItem>
           <MenuItem opt>
-            {balances ? (
+            {walletAddress ? (
               <IconButton
                 style={menuStyle}
                 onClick={() =>
                   window.open("https://algoexplorer.io/asset/" + ids.asa.gard)
                 }
               >
-                GARD: {balances["gard"]}
+                GARD: {(getGARDInWallet()/1e6).toFixed(2)}
               </IconButton>
             ) : (
               <></>
