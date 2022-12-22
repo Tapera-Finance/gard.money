@@ -38,7 +38,7 @@ const fetchTvl = async () => {
   }
 };
 
-function getStateUint(state, key, byte_switch = 0) {
+export function getStateUint(state, key, byte_switch = 0) {
   const val = state.find((entry) => {
     if (entry.key === key) {
       return entry;

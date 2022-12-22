@@ -28,15 +28,16 @@ import { voteCDPs } from "../transactions/cdp";
 
 const axios = require("axios");
 
-export async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
+export async function searchAccounts({ appId, limit = 1000, asset=0, nexttoken, }) {
   const axiosObj = axios.create({
     baseURL: 'https://mainnet-idx.algonode.cloud',
     timeout: 300000,
   })
   await new Promise((r) => setTimeout(r, 100));
+  const arg = asset ? 'asset-id' : 'application-id'
   const response = (await axiosObj.get('/v2/accounts', {
     params: {
-      'application-id': appId,
+      [arg]: appId,
       limit,
       next: nexttoken
     }
