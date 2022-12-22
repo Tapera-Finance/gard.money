@@ -10,7 +10,6 @@ import RewardNotice from "../components/RewardNotice";
 import TextButton from "../components/TextButton";
 import Table from "../components/Table";
 import { CDPsToList } from "../components/Positions";
-import { loadFireStoreCDPs } from "../components/Firebase";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { cdpGen } from "../transactions/contracts";
 import { commitCDP, getPrice } from "../transactions/cdp";
@@ -125,16 +124,21 @@ export async function getCommDict(){
     } else {
       res[addresses[k]] = 0
     }
-  }} catch (e) {
-    console.log("Error", e)
-  }
+  }} catch (error) {
+    if (error.response) {
+      console.log(error.response)
+    } else if (error.request) {
+      // This means the item does not exist
+    } else {
+      // This means that there was an unhandled error
+      console.error(error)
+    }}
   return res
 }
 
 
 export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address)
-  const [commitment, setCommitment] = useState(undefined);
   const [maxBal, setMaxBal] = useState("");
   const [vote0, setVote0] = useState("Allocate 15 MM Algos to DeFi for Q1/2023")
   const [vote1, setVote1] = useState("Yes")
@@ -217,7 +221,6 @@ export default function Govern() {
 
   useEffect(async () => {
     const algoGovPromise = getAlgoGovernanceAccountBals()
-    setCommitment(await loadFireStoreCDPs());
     const gov_results = await algoGovPromise;
     setVaulted(gov_results[0]);
     setGovernors(gov_results[1]);
