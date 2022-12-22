@@ -75,9 +75,7 @@ export default function Step({
           <div style={{ display: "flex", textAlign: "center", marginBottom: 0, marginTop: 4 }}>
             <Link href={link} target="_blank">{linkText}</Link>
           </div>
-            <text style={{
-              // width: "80vw",
-              marginBottom: 18, marginTop: 6}}>{text}</text>
+            <StepText mobile={mobile}>{text}</StepText>
           <div style={{ display: "flex", justifyContent: "center", margin: "2px 0px 12px 0px" }}>
             <StepButton
               text={`Go to ${goTo}`}
@@ -162,6 +160,14 @@ const StepButton = styled(PrimaryButton)`
 
 const ExpandedStep = styled.div`
   width: 100%;
+`;
+
+const StepText = styled.text`
+  margin-bottom: 18px; 
+  margin-top: 6px;
+  ${(props) => props.mobile && css`
+    width: 90%;
+  `}
 `;
 
 const Badge = ({ type }) => {
