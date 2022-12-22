@@ -478,9 +478,9 @@ export default function HomeContent() {
             />
           </StepContainer>
         ) : (
-          <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
+          <div style={{display: "flex", flexDirection: "column"}}>
             <BoldText>Quick Actions</BoldText>
-            <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
+            <AccessBox expert={difficulty == "DeFi Expert" ? true : false}>
               {buttons.map((action) => {
                 return (
                   <PrimaryButton
@@ -533,11 +533,17 @@ const AccessBox = styled.div`
       /* margin-right: 30px; */
     `
   }
-  ${(props) => props.mobile && css`
-    flex-direction: column;
+  @media (${device.tablet}) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
     row-gap: 10px;
-    height: 100%;
-  `}
+  }
+  @media (${device.mobileM}) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
 `
 
 const Link = styled(PrimaryButton)`
@@ -596,6 +602,15 @@ const Container = styled.div`
     width: 90%;
   `}
 
+  @media (${device.tablet}) {
+    /* width: 100%; */
+    ${(props) =>
+    props.expert &&
+    css`
+      margin-left: 70px;
+    `
+  }
+  }
   ${(props) =>
     props.expert &&
     css`
@@ -685,6 +700,7 @@ const Text = styled.text`
 const BoldText = styled.text`
   font-weight: bold;
   cursor: pointer;
+  margin: 0px 30px 0px 0px;
   text-align: center;
   align-self: center;
 `;
