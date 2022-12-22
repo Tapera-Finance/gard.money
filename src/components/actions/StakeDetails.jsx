@@ -14,6 +14,7 @@ import {
   updateWalletInfo,
 } from "../../wallets/wallets";
 import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
+import gardianLogo from "../../assets/icons/gard-logo-black-square.png"
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
@@ -203,7 +204,10 @@ export default function StakeDetails() {
           }}
         ></div>
         <Container style={{ maxWidth: `${mobile ? "90%" : ""}` }}>
-          <FirstRow>{"Staking Pool (Auto-Compounding)"}</FirstRow>
+          <FirstRow>{"Staking Pools (Auto-Compounding)"}</FirstRow>
+          <SecondRow mobile={mobile}>
+              <Heading>No-Lock GARD</Heading>
+          </SecondRow>
           <SecondThirdCondensed mobile={mobile}>
             <SecondRow mobile={mobile}>
               <Heading>TVL</Heading>
@@ -268,6 +272,105 @@ export default function StakeDetails() {
             <Effect
               title="New Rewards"
               val={`${parseFloat(accrued).toFixed(4)}`}
+              hasToolTip={true}
+            />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: `${mobile ? "column" : "row"}`,
+                margin: 10,
+                alignSelf: `${mobile || (window.innerWidth < 760)? "unset" : "baseline"}`,
+              }}
+            >
+              {mobile || (window.innerWidth < 760) ? (
+                <StakeBox style={{flexDirection: `${mobile ? "column" : "row"}`}}>
+                  {isMobile ? (<StakeHeading mobile={mobile}>Stake Amount</StakeHeading>) : (<></>)}
+                <StakeInput
+                  mobile={mobile}
+                  id="stake-amt"
+                  placeholder="Enter Amount"
+                  min="0.0"
+                  step=".01"
+                  type="number"
+                  value={stakeAmount}
+                  callback={handleInput}
+                />
+                <EffectContainer>
+                  <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
+                  <Result>{formatToDollars(balance)}</Result>
+                </EffectContainer>
+              </StakeBox>
+              ) : (
+                <></>
+              )}
+              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={handleStake} />
+              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={handleUnstake} />
+            </div>
+          </FourthRow>
+          <SecondThirdCondensed mobile={mobile}>
+          <SecondRow mobile={mobile}>
+              <Heading>No-Lock GARDIAN</Heading>
+          </SecondRow>
+            <SecondRow mobile={mobile}>
+              <Heading>TVL</Heading>
+              <Heading>Type</Heading>
+              <Heading>Duration</Heading>
+              <Heading>APR</Heading>
+              {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
+              <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
+            </SecondRow>
+            <ThirdRow mobile={mobile}>
+              <Heading>{`$${NL_TVL}`}</Heading>
+              <TypeCont>
+                <Img src={gardianLogo}></Img>
+                <Arrow src={arrowIcon}></Arrow>
+                <GardImg src={gardianLogo}></GardImg>
+                <AssetOptions
+                  open={optionsOpen}
+                  setAsset={setAssetType}
+                  setOpen={setOptionsOpen}
+                />
+              </TypeCont>
+              <Heading>No-Lock</Heading>
+              <Heading>{`${(0).toFixed(3)}%`}</Heading>
+              {mobile || (window.innerWidth < 760) ? (
+                <></>
+              ) : (
+                <StakeBox>
+
+                  <StakeInput
+                    id="stake-amt"
+                    placeholder="Enter Amount"
+                    min="0.0"
+                    step=".01"
+                    type="number"
+                    value={stakeAmount}
+                    callback={handleInput}
+                  />
+                  <EffectContainer>
+                    <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
+                    <Result>{formatToDollars(balance)}</Result>
+                  </EffectContainer>
+                </StakeBox>
+              )}
+            </ThirdRow>
+          </SecondThirdCondensed>
+          <FourthRow mobile={mobile}>
+          <Effect
+              title="Your Stake"
+              val={`${(0).toFixed(
+                3,
+              )} GARDIAN`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="Est. Rewards / Day"
+              val={`${(0).toFixed(3)} GARDIAN`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="New Rewards"
+              val={`${parseFloat(0).toFixed(4)}`}
               hasToolTip={true}
             />
             <div
