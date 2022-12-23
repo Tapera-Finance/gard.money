@@ -8,7 +8,6 @@ import {
   sendTxn,
   getWallet,
   signGroup,
-  indexerClient,
 } from "../wallets/wallets";
 import {
   updateCommitmentFirestore,
@@ -20,6 +19,7 @@ import {
   loadUserTotals
 } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
+import { searchAccounts } from "../pages/GovernContent";
 
 var $ = require("jquery");
 
@@ -1280,11 +1280,23 @@ function getCDPVal(cdp, key, isInt) {
 
 export async function getAllCDPs() {
   // TODO: Do the pages thing in case it's more than 1000
-  const optedIn = (await indexerClient
-    .searchAccounts()
-    .limit(1000)
-    .applicationID(ids.app.validator)
-    .do()).accounts
+  let optedIn = []
+  let nexttoken
+  do {
+    // Find accounts that are opted into the GARD price validator application
+    // These accounts correspond to CDP opened on the GARD protocol
+    let response = await searchAccounts({
+      appId: ids.app.validator,
+      limit: 1000,
+      nexttoken,
+    });
+    
+    for (const account of response['accounts']) {
+      optedIn.push(account)
+    }
+    nexttoken = response['next-token']
+  } while (nexttoken != null);
+
   const withState = optedIn.filter(account => "apps-local-state" in account)
   const rightApp = withState.filter(account => account['apps-local-state'][0].id == ids.app.validator)
   const unixtime = Math.floor(Date.now() / 1000)
