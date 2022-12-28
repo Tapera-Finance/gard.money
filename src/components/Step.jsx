@@ -14,25 +14,18 @@ export default function Step({
   secondGoTo,
   link,
   linkText,
-  allOpen,
   mobile,
+  onClick,
+  expanded,
 }) {
   const walletAddress = useSelector(state => state.wallet.address)
-  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleOpen = () => {
-    setOpen(!open);
-  };
-
-  useEffect(() => {
-    setOpen(allOpen);
-  }, [allOpen]);
 
   return (
-    <ExpandedStep open={open}>
-      <StepItem onClick={handleOpen} open={open} mobile={mobile}>
-        <div style={{ marginLeft: 8 }}>{checked ? " √" : ""}{header}</div>
+    <ExpandedStep open={expanded}>
+      <StepItem onClick={onClick} open={expanded} mobile={mobile}>
+        <div style={{ marginLeft: 8 }}>{checked ? " √ " : ""}{header}</div>
         <div
           style={{
             display: "flex",
@@ -40,7 +33,7 @@ export default function Step({
             justifyContent: "space-around",
           }}
         >
-          {open ? (
+          {expanded ? (
             <div
               style={{
                 display: "flex",
@@ -62,7 +55,7 @@ export default function Step({
           )}
         </div>
       </StepItem>
-      {open ? (
+      {expanded ? (
         <div
           style={{
             display: "flex",

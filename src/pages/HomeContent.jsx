@@ -190,6 +190,22 @@ export default function HomeContent() {
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
 
+  const [step2open, setStep2] = useState(true);
+  const [step3open, setStep3] = useState(true);
+
+  const handleStep2 = () => {
+    setStep2(!step2open);
+  };
+  const handleStep3 = () => {
+    setStep3(!step3open);
+  };
+
+  useEffect(()=> {
+    setAllOpen(step2open && step3open)
+    console.log("triggered", step2open, step3open)
+
+  },[step2open, step3open])
+
   useEffect(async () => {
     console.log("isMobile ?", isMobile());
     const chainDataResponse = await getChainData();
@@ -420,7 +436,10 @@ export default function HomeContent() {
           <StepContainer>
             <Text
               style={{ color: "#80edff" }}
-              onClick={() => setAllOpen(!allOpen)}
+              onClick={() => {
+                setStep2(!allOpen)
+                setStep3(!allOpen)
+              }}
             >
               {allOpen ? `Collapse` : `Expand`} All
             </Text>
@@ -451,8 +470,9 @@ export default function HomeContent() {
               linkText="How to get GARD"
               goTo="Swap"
               secondGoTo="Borrow"
-              allOpen={allOpen}
               mobile={mobile}
+              onClick={handleStep2}
+              expanded={step2open}
             />
             <Step
               header="Step 3: Gain Rewards"
@@ -473,8 +493,9 @@ export default function HomeContent() {
               linkText="What is needed to participate?"
               goTo="Stake"
               secondGoTo="Govern"
-              allOpen={allOpen}
               mobile={mobile}
+              onClick={handleStep3}
+              expanded={step3open}
             />
           </StepContainer>
         ) : (
