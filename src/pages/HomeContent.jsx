@@ -452,7 +452,7 @@ export default function HomeContent() {
                 padding: "0px 10px 0px 10px",
               }}>
                 <Text>
-                  {walletAddress ? `  √` : ""} Step 1: Connect Your Wallet
+                  {walletAddress ? <span style={{color: "green"}}>√ </span> : ""} Step 1: Connect Your Wallet
                 </Text>
                 <div>
                   <WalletConnect style={{ alignSelf: "flex-end" }} />

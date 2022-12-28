@@ -25,7 +25,7 @@ export default function Step({
   return (
     <ExpandedStep open={expanded}>
       <StepItem onClick={onClick} open={expanded} mobile={mobile}>
-        <div style={{ marginLeft: 8 }}>{checked ? " √ " : ""}{header}</div>
+        <div style={{ marginLeft: 10 }}>{checked ? <span style={{color: "green"}}> √ </span> : ""}{header}</div>
         <div
           style={{
             display: "flex",
