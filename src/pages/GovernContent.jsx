@@ -431,7 +431,7 @@ export default function Govern() {
       </GovInfoContainer>
       <PositionTableContainer
       >
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title>Algorand Positions</Title>
           </div>
@@ -476,7 +476,7 @@ export default function Govern() {
             borderBottom: "none"
           }}
         >
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
             <div style={{ marginLeft: 25, marginRight: 8 }}>
               <Title>Algorand Votes</Title>
             </div>
@@ -852,7 +852,7 @@ const CDPTable = styled(Table)`
 `
 
 const PositionTableContainer = styled.div`
-  height: 70;
+  height: 70px;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
   display: flex;

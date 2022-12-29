@@ -90,7 +90,7 @@ export default function Holdings() {
     one: (
       <div style={{marginTop: 20}}>
       <TableHeading>
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title>Wallet {`(${formatToDollars(walletTotal.toString())} Total Value)`}</Title>
           </div>
@@ -123,7 +123,7 @@ export default function Holdings() {
       <div style={{marginTop: 20}}>
       <TableHeading
       >
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title>Borrow Positions {`(${formatToDollars(borrowTotal.toString())} Total Value)`}</Title>
           </div>
@@ -197,7 +197,6 @@ const CountText = styled.text`
 const SubToggle = styled(PageToggle)`
   float: right;
   background: transparent;
-  margin-bottom: 6px;
   text {
     text-decoration: unset;
   }
@@ -237,6 +236,7 @@ const BorrowTable = styled(Table)`
 `
 
 const TableHeading = styled.div`
+  height: 70px;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
   display: flex;

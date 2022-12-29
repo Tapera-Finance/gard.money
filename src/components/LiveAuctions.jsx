@@ -34,7 +34,7 @@ export default function LiveAuctions({
           borderBottom: "none"
         }}
       >
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title>
               {selected === OPTIONS.LIVE_AUCTIONS
