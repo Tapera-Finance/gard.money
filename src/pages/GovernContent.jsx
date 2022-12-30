@@ -100,7 +100,7 @@ async function getAlgoGovernanceAccountBals() {
 
 function getGovernorPage(id) {
   return (
-    "https://governance.algorand.foundation/governance-period-5/governors/" +
+    "https://governance.algorand.foundation/governance-period-6/governors/" +
     cdpGen(getWallet().address, id).address
   );
 }
@@ -257,7 +257,7 @@ export default function Govern() {
       if (isFirefox()) {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
-          committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-5/governors">See external site</a>,
+          committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-6/governors">See external site</a>,
           id: value.id
         }
       } else {
@@ -400,7 +400,7 @@ export default function Govern() {
             transform: "rotate(180deg)",
 
           }}>
-            <h3>Algorand Governance Period #5</h3>
+            <h3>Algorand Governance Period #6</h3>
             <div style={{ fontSize: 11 }}>Registration Ends</div>
             <CountDownContainer>
             <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
@@ -426,7 +426,7 @@ export default function Govern() {
             </div>
           </div>
 
-          <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on Foundation Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-5")}/></legend>
+          <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on Foundation Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-6")}/></legend>
         </fieldset>
       </GovInfoContainer>
       <PositionTableContainer
@@ -574,11 +574,11 @@ export default function Govern() {
               <text>Place your vote below for </text>
               <Link
               onClick={() => {
-                window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
               }}
-                href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
               >
-                Governance Period #5 Voting Session #1
+                Governance Period #6 Voting Session #1
               </Link>
             </div>
         }
@@ -593,9 +593,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #1:
@@ -633,9 +633,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #2:
@@ -673,9 +673,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #3:
@@ -713,9 +713,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #4:
@@ -753,9 +753,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #5:
