@@ -33,7 +33,7 @@ function algosToMAlgos(num) {
 }
 
 // Gets Active wallet Stake in simple no-lock pool
-function getNLStake() {
+export function getNLStake() {
   const res = getLocalAppField(ids.app.gard_staking, "NL GARD Staked")
   if (res === undefined) {
     return 0;
