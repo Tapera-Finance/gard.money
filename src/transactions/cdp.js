@@ -561,7 +561,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
     await updateTotal(info.address, "totalMinted", microOpeningGard)
     let user_totals = await loadUserTotals()
     console.log('totals', user_totals)
-    if(user_totals["totalMinted"] >= 10000000){
+    if(user_totals.hasOwnProperty("totalMinted") && user_totals["totalMinted"] >= 10000000){
       addUserToGleam("mintGARD", info.address);
       completedMint.push(info.address)
       console.log('minted', completedMint)
@@ -669,7 +669,7 @@ export async function mint(accountID, newGARD, asaID) {
     await updateTotal(info.address, "totalMinted", microGARD(newGARD))
     let user_totals = await loadUserTotals()
     console.log('totals', user_totals)
-    if(user_totals["totalMinted"] >= 10000000){
+    if(user_totals.hasOwnProperty("totalMinted") && user_totals["totalMinted"] >= 10000000){
       addUserToGleam("mintGARD", info.address)
       completedMint.push(info.address)
       console.log('minted', completedMint)
