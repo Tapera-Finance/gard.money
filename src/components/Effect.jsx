@@ -5,9 +5,9 @@ import styled, { css } from "styled-components";
 import RewardWrapper from "./RewardWrapper";
 import { size, device } from "../styles/global"
 
-export default function Effect({ title, val, hasToolTip, className, rewards }) {
+export default function Effect({ title, val, hasToolTip, className, rewards, noMarginBottom }) {
   return (
-    <EffectContainer className={className}>
+    <EffectContainer className={className} noMarginBottom={noMarginBottom}>
       {hasToolTip ? (
         <div>
           <NewToolTip
@@ -37,6 +37,9 @@ const EffectContainer = styled.div`
   @media (${device.tablet}) {
     margin: 4px;
   }
+  ${(props) => props.noMarginBottom && css`
+    margin-bottom: 0px;
+  `}
 `;
 
 const Text = styled.text`

@@ -79,7 +79,7 @@ export default function SystemMetrics() {
             details.map((d) => {
                 return (
                 <Item key={d.title}>
-                        <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards}></Effect>
+                        <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards} noMarginBottom={true}></Effect>
                     </Item>
                 )
             })
