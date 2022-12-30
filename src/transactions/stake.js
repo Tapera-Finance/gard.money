@@ -126,7 +126,7 @@ export async function stake(pool, gardAmount) {
     await updateTotal(info.address, "totalStaked", parseInt(gardAmount * 1000000))
     let user_totals = await loadUserTotals()
     console.log('totals', user_totals)
-    if(user_totals["totalStaked"] >= 10000000){
+    if(user_totals.hasOwnProperty("totalStaked") && user_totals["totalStaked"] >= 10000000){
       addUserToGleam("stakeGARD", info.address)
       completedStake.push(info.address)
       console.log('staked', completedStake)
