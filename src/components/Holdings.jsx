@@ -48,13 +48,13 @@ const accumulateTotal = (arr, prop) => {
 };
 
 let algo_price = await getPrice();
-const user_assets = getAssets(algo_price);
-let transformed_assets = getAssets(algo_price).map((x) => {
+let user_assets = getWalletInfo() !== undefined ? getAssets(algo_price) : [];
+let transformed_assets = getWalletInfo() !== undefined ? getAssets(algo_price).map((x) => {
   let temp = x;
   temp.value = formatToDollars(x["value"]);
   return temp;
-}); // For some reason using user_assets here instead if another getAssets call breaks things, TODO optimize
-const walletTotal = accumulateTotal(user_assets, "value");
+}) : []; // For some reason using user_assets here instead if another getAssets call breaks things, TODO optimize
+let walletTotal = accumulateTotal(user_assets, "value");
 
 export default function Holdings() {
   const [borrowTotal, setBorrowTotal] = useState("0");
@@ -101,8 +101,13 @@ export default function Holdings() {
 
   const [currentPrice, setPrice] = useState("Loading...");
   const [selectedTab, setSelectedTab] = useState("one");
+  const curr = getAssets(algo_price).map((x) => {
+    let temp = x;
+    temp.value = formatToDollars(x["value"]);
+    return temp;
+  })
 
-  const tabs = {
+  let tabs = {
     // one: <div>stake</div>,
     one: (
       <div style={{marginTop: 20}}>
@@ -127,7 +132,7 @@ export default function Holdings() {
         </div>
       </TableHeading>
           <HoldTable
-          data={transformed_assets}
+          data={transformed_assets.length ? transformed_assets : curr}
           columns={holdColumns}
         />
       </div>
