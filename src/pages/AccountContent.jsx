@@ -165,7 +165,17 @@ export default function AccountContent() {
         />
         {tabs[selectedTab]}
       </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+          alignContent: "center",  
+          marginBottom: "36px",
+        }}
+      >
       <RefButton navFunc={() => navigate(`/referrals`)}/>
+      </div>
     </AcctPgCont>
   );
 }
