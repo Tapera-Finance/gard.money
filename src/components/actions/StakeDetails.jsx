@@ -182,7 +182,7 @@ export default function StakeDetails() {
               }}
             >
               <div style={{ color: "#172756", fontSize: "10pt" }}>
-                5k - 10k GARD being paid out WEEKLY for users staking GARD on V2
+                1k - 2k GARD being paid out WEEKLY for users staking GARD!
               </div>
             </div>
           </div>
