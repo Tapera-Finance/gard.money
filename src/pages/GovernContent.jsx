@@ -141,6 +141,7 @@ export async function getCommDict(){
 export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address)
   const [maxBal, setMaxBal] = useState("");
+  const [commit, setCommit] = useState(0);
   const [vote0, setVote0] = useState("Allocate 15 MM Algos to DeFi for Q1/2023")
   const [vote1, setVote1] = useState("Yes")
   const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants")
@@ -159,6 +160,7 @@ export default function Govern() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
+  const [modal2CanAnimate, setModal2CanAnimate] = useState(false);
   const [toWallet, setToWallet] = useState(true);
   const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
@@ -258,19 +260,23 @@ export default function Govern() {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-6/governors">See external site</a>,
-          id: value.id
+          id: value.id,
+          collateral: value.collateral
         }
       } else {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           committed: commitDict[cdp_address] == 0 || !commitDict[cdp_address] ? 0 : `${(commitDict[cdp_address] / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           id: value.id,
+          collateral: value.collateral
         };
       }
     });
   }
   let cdps = adjusted.map((value, index) => {
     let account_id = parseInt(value.id);
+    let commitBal = value.collateral
+    delete value.collateral
     delete value.id;
     return {
       ...value,
@@ -288,6 +294,7 @@ export default function Govern() {
               setModalVisible(true);
               setSelectedAccount(account_id);
               setMaxBal(value.balance);
+              setCommit(commitBal)
             }}
 
             disabled={
@@ -308,6 +315,7 @@ export default function Govern() {
               setModalVisible(true);
               setSelectedAccount(account_id);
               setMaxBal(value.balance);
+              setCommit(commitBal)
             }}
 
             disabled={(!(Date.now() < commitmentPeriodEnd)) || commitDisabled}
@@ -456,9 +464,9 @@ export default function Govern() {
             navigate("/borrow");
           }}/>
       <PrimaryButton text="Place Votes" blue={true} underTable={true} onClick={async () => {
-            setModalCanAnimate(true)
+            setModal2CanAnimate(true)
             setModal2Visible(true)
-            setModalCanAnimate(false)
+            setModal2CanAnimate(false)
           }} disabled={(Date.now() < 1670256000000 || Date.now() > 1671465600000) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps}/>
           </div>
       {voteTableDisabled ? <></>:
@@ -544,7 +552,7 @@ export default function Govern() {
                   try {
                     const res = await commitCDP(
                       selectedAccount,
-                      maxBal,
+                      commit,
                       toWallet,
                     );
                     if (res.alert) {
@@ -558,7 +566,7 @@ export default function Govern() {
                   setRefresh(refresh + 1);
                 }}
               />
-              <CancelButton style={{ marginLeft: 30 }}>
+              <CancelButton style={{ marginLeft: 30 }} onClick={() => setModalVisible(false)}>
                 <CancelButtonText>
                   Cancel
                 </CancelButtonText>
@@ -583,7 +591,7 @@ export default function Govern() {
             </div>
         }
         close={() => setModal2Visible(false)}
-        animate={modalCanAnimate}
+        animate={modal2CanAnimate}
         visible={modal2Visible}
       >
       <div>
@@ -793,7 +801,7 @@ export default function Govern() {
               <PrimaryButton
                 text="Confirm Vote"
                 onClick={async () => {
-                  setModalCanAnimate(true);
+                  setModal2CanAnimate(true);
                   setModal2Visible(false);
                   setLoading(true);
                   try {
@@ -812,7 +820,7 @@ export default function Govern() {
                   } catch (e) {
                     handleTxError(e, "Error sending vote");
                   }
-                  setModalCanAnimate(false);
+                  setModal2CanAnimate(false);
                   setLoading(false);
                 }}
                 blue={true}
