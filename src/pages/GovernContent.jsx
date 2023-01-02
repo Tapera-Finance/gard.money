@@ -100,7 +100,7 @@ async function getAlgoGovernanceAccountBals() {
 
 function getGovernorPage(id) {
   return (
-    "https://governance.algorand.foundation/governance-period-5/governors/" +
+    "https://governance.algorand.foundation/governance-period-6/governors/" +
     cdpGen(getWallet().address, id).address
   );
 }
@@ -141,6 +141,7 @@ export async function getCommDict(){
 export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address)
   const [maxBal, setMaxBal] = useState("");
+  const [commit, setCommit] = useState(0);
   const [vote0, setVote0] = useState("Allocate 15 MM Algos to DeFi for Q1/2023")
   const [vote1, setVote1] = useState("Yes")
   const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants")
@@ -159,6 +160,7 @@ export default function Govern() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
+  const [modal2CanAnimate, setModal2CanAnimate] = useState(false);
   const [toWallet, setToWallet] = useState(true);
   const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
@@ -257,20 +259,24 @@ export default function Govern() {
       if (isFirefox()) {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
-          committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-5/governors">See external site</a>,
-          id: value.id
+          committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-6/governors">See external site</a>,
+          id: value.id,
+          collateral: value.collateral
         }
       } else {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           committed: commitDict[cdp_address] == 0 || !commitDict[cdp_address] ? 0 : `${(commitDict[cdp_address] / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           id: value.id,
+          collateral: value.collateral
         };
       }
     });
   }
   let cdps = adjusted.map((value, index) => {
     let account_id = parseInt(value.id);
+    let commitBal = value.collateral
+    delete value.collateral
     delete value.id;
     return {
       ...value,
@@ -288,6 +294,7 @@ export default function Govern() {
               setModalVisible(true);
               setSelectedAccount(account_id);
               setMaxBal(value.balance);
+              setCommit(commitBal)
             }}
 
             disabled={
@@ -308,6 +315,7 @@ export default function Govern() {
               setModalVisible(true);
               setSelectedAccount(account_id);
               setMaxBal(value.balance);
+              setCommit(commitBal)
             }}
 
             disabled={(!(Date.now() < commitmentPeriodEnd)) || commitDisabled}
@@ -400,7 +408,7 @@ export default function Govern() {
             transform: "rotate(180deg)",
 
           }}>
-            <h3>Algorand Governance Period #5</h3>
+            <h3>Algorand Governance Period #6</h3>
             <div style={{ fontSize: 11 }}>Registration Ends</div>
             <CountDownContainer>
             <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
@@ -426,7 +434,7 @@ export default function Govern() {
             </div>
           </div>
 
-          <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on Foundation Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-5")}/></legend>
+          <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on Foundation Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-6")}/></legend>
         </fieldset>
       </GovInfoContainer>
       <PositionTableContainer
@@ -456,9 +464,9 @@ export default function Govern() {
             navigate("/borrow");
           }}/>
       <PrimaryButton text="Place Votes" blue={true} underTable={true} onClick={async () => {
-            setModalCanAnimate(true)
+            setModal2CanAnimate(true)
             setModal2Visible(true)
-            setModalCanAnimate(false)
+            setModal2CanAnimate(false)
           }} disabled={(Date.now() < 1670256000000 || Date.now() > 1671465600000) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps}/>
           </div>
       {voteTableDisabled ? <></>:
@@ -544,7 +552,7 @@ export default function Govern() {
                   try {
                     const res = await commitCDP(
                       selectedAccount,
-                      maxBal,
+                      commit,
                       toWallet,
                     );
                     if (res.alert) {
@@ -558,7 +566,7 @@ export default function Govern() {
                   setRefresh(refresh + 1);
                 }}
               />
-              <CancelButton style={{ marginLeft: 30 }}>
+              <CancelButton style={{ marginLeft: 30 }} onClick={() => setModalVisible(false)}>
                 <CancelButtonText>
                   Cancel
                 </CancelButtonText>
@@ -574,16 +582,16 @@ export default function Govern() {
               <text>Place your vote below for </text>
               <Link
               onClick={() => {
-                window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
               }}
-                href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
               >
-                Governance Period #5 Voting Session #1
+                Governance Period #6 Voting Session #1
               </Link>
             </div>
         }
         close={() => setModal2Visible(false)}
-        animate={modalCanAnimate}
+        animate={modal2CanAnimate}
         visible={modal2Visible}
       >
       <div>
@@ -593,9 +601,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #1:
@@ -633,9 +641,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #2:
@@ -673,9 +681,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #3:
@@ -713,9 +721,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #4:
@@ -753,9 +761,9 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #5:
@@ -793,7 +801,7 @@ export default function Govern() {
               <PrimaryButton
                 text="Confirm Vote"
                 onClick={async () => {
-                  setModalCanAnimate(true);
+                  setModal2CanAnimate(true);
                   setModal2Visible(false);
                   setLoading(true);
                   try {
@@ -812,7 +820,7 @@ export default function Govern() {
                   } catch (e) {
                     handleTxError(e, "Error sending vote");
                   }
-                  setModalCanAnimate(false);
+                  setModal2CanAnimate(false);
                   setLoading(false);
                 }}
                 blue={true}
