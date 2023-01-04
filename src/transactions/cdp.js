@@ -582,7 +582,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
       await updateTotal(info.address, "totalCommitted", openingAssetAmount)
       let user_totals = await loadUserTotals()
       console.log('totals', user_totals)
-      if(user_totals["totalCommitted"] >= 100000000) {
+      if(user_totals.hasOwnProperty("totalCommitted") && user_totals["totalCommitted"] >= 100000000) {
         addUserToGleam("commitAlgos", info.address)
         completedCommit.push(info.address)
         console.log("commited", completedCommit)
@@ -1136,7 +1136,7 @@ export async function commitCDP(account_id, amount, toWallet) {
     await updateTotal(info.address, "totalCommitted", parseInt(amount * 1000000))
     let user_totals = await loadUserTotals()
     console.log('totals', user_totals)
-    if(user_totals["totalCommitted"] >= 100000000){
+    if(user_totals.hasOwnProperty("totalCommitted") && user_totals["totalCommitted"] >= 100000000){
       addUserToGleam("commitAlgos", info.address)
       completedCommit.push(info.address)
       console.log("commited", completedCommit)
