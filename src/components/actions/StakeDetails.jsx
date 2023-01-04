@@ -7,14 +7,14 @@ import styled, { css } from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
 import { ids } from "../../transactions/ids";
-import { getAppField, getGardBalance, getLocalAppField } from "../../transactions/lib";
+import { getAppField, getGardBalance, getLocalAppField, getGardianBalance } from "../../transactions/lib";
 import {
   getWallet,
   getWalletInfo,
   updateWalletInfo,
 } from "../../wallets/wallets";
 import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
-import gardianLogo from "../../assets/icons/gard-logo-black-square.png"
+import gardianLogo from "../../assets/icons/gard-logo-white-square.png"
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
@@ -60,10 +60,13 @@ export default function StakeDetails() {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
   const [stakeAmount, setStakeAmount] = useState(null);
+  const [stake2Amount, setStake2Amount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
+  const [maxGARDIANStake, setMaxGardianStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...")
+  const [GARDIAN_TVL, setGARDIANTVL] = useState("0.00")
   const [NLAPY, setNLAPY] = useState(0)
   const [balance, setBalance] = useState("...");
   const [accrued, setAccrued] = useState(0);
@@ -83,7 +86,6 @@ export default function StakeDetails() {
   };
 
   const handleStake = async () => {
-    console.log(`action to stake ${stakeAmount}`)
     if (stakeAmount === null || !(stakeAmount > 0)) return;
     setLoading(true)
     try {
@@ -99,7 +101,6 @@ export default function StakeDetails() {
   }
 
   const handleUnstake = async () => {
-    console.log(`action to unstake ${stakeAmount}`)
     if (stakeAmount === null || !(stakeAmount > 0)) return;
     setLoading(true)
     try {
@@ -113,15 +114,62 @@ export default function StakeDetails() {
     }
     setLoading(false)
   }
+
+  const handleStake2 = async () => {
+    if (stake2Amount === null || !(stake2Amount > 0)) return;
+    setLoading(true)
+    try {
+      // const res = await stake("NL", stake2Amount)
+      const res = {
+        alert: false
+      }
+      if (res.alert) {
+        dispatch(setAlert(res.text));
+      }
+    } catch (e) {
+      alert("Error attempting to stake GARDIAN: " + e)
+      console.log(e)
+    }
+    setLoading(false)
+  }
+
+  const handleUnstake2 = async () => {
+    if (stake2Amount === null || !(stake2Amount > 0)) return;
+    setLoading(true)
+    try {
+      // const res = await unstake("NL", stake2Amount)
+      const res = {
+        alert: false
+      }
+      if (res.alert) {
+        dispatch(setAlert(res.text));
+      }
+    } catch (e) {
+      alert("Error attempting to unstake: " + e)
+      console.log(e)
+    }
+    setLoading(false)
+  }
+
+  const handleInput2 = (e) => {
+    setStake2Amount(e.target.value);
+  }
+
+  const handleMaxStake2 = () => {
+    setStake2Amount(maxGARDIANStake)
+  };
+
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
     const APYPromise = getStakingAPY("NL")
     const accruePromise = getAccruedRewards("NL")
     await infoPromise
+    const info = getWalletInfo()
     setNoLock(getNLStake())
-    setBalance(getGardBalance(getWalletInfo()).toFixed(2));
-    setMaxStake(getGardBalance(getWalletInfo()));
+    setBalance(getGardBalance(info).toFixed(2));
+    setMaxStake(getGardBalance(info));
+    setMaxGardianStake(getGardianBalance(info))
     setNLAPY((await APYPromise))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setAccrued((await accruePromise) / 1000000)
@@ -320,7 +368,7 @@ export default function StakeDetails() {
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
             <ThirdRow mobile={mobile}>
-              <Heading>{`$${NL_TVL}`}</Heading>
+              <Heading>{`$${GARDIAN_TVL}`}</Heading>
               <TypeCont>
                 <Img src={gardianLogo}></Img>
                 <Arrow src={arrowIcon}></Arrow>
@@ -344,11 +392,11 @@ export default function StakeDetails() {
                     min="0.0"
                     step=".01"
                     type="number"
-                    value={stakeAmount}
-                    callback={handleInput}
+                    value={stake2Amount}
+                    callback={handleInput2}
                   />
                   <EffectContainer>
-                    <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
+                    <MaxBtn onClick={handleMaxStake2}>+MAX</MaxBtn>
                     <Result>{formatToDollars(balance)}</Result>
                   </EffectContainer>
                 </StakeBox>
@@ -391,19 +439,19 @@ export default function StakeDetails() {
                   min="0.0"
                   step=".01"
                   type="number"
-                  value={stakeAmount}
-                  callback={handleInput}
+                  value={stake2Amount}
+                  callback={handleInput2}
                 />
                 <EffectContainer>
-                  <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
+                  <MaxBtn onClick={handleMaxStake2}>+MAX</MaxBtn>
                   <Result>{formatToDollars(balance)}</Result>
                 </EffectContainer>
               </StakeBox>
               ) : (
                 <></>
               )}
-              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={handleStake} />
-              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={handleUnstake} />
+              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={handleStake2} />
+              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={handleUnstake2} />
             </div>
           </FourthRow>
         </Container>

@@ -31,6 +31,15 @@ export function getMicroGardBalance(info) {
   return null;
 }
 
+export function getGardianBalance(info) {
+  for (var i = 0; i < info["assets"].length; i++) {
+    if (info["assets"][i]["asset-id"] == ids.asa.gardian) {
+      return info["assets"][i]["amount"];
+    }
+  }
+  return null;
+}
+
 export function getGardBalance(info) {
   return getMicroGardBalance(info)/1000000
 }
