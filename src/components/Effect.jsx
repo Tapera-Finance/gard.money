@@ -15,12 +15,12 @@ export default function Effect({ title, val, hasToolTip, className, rewards, noM
             toolTip={title}
             toolTipText={tips[title]}
           ></NewToolTip>
-          <hr style={{ border: "dashed 1px" }} />
+          <hr style={{ border: "dashed 1px", margin: "0px 0px 7px" }} />
         </div>
       ) : (
         <div>
           <Text className={className}>{title}</Text>
-          <hr style={{ border: "dashed 1px" }} />
+          <hr style={{ border: "dashed 1px", margin: "0px 0px 7px" }} />
         </div>
       )}
       {rewards ? <RewardWrapper text={val} /> : <Result>{val}</Result>}
