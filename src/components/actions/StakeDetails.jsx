@@ -241,10 +241,6 @@ export default function StakeDetails() {
                     value={stakeAmount}
                     callback={handleInput}
                   />
-                  <EffectContainer>
-                    <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
-                    <Result>{formatToDollars(balance)}</Result>
-                  </EffectContainer>
                 </StakeBox>
               )}
             </ThirdRow>
@@ -291,10 +287,6 @@ export default function StakeDetails() {
                   value={stakeAmount}
                   callback={handleInput}
                 />
-                <EffectContainer>
-                  <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
-                  <Result>{formatToDollars(balance)}</Result>
-                </EffectContainer>
               </StakeBox>
               ) : (
                 <></>
@@ -443,6 +435,7 @@ height: 0px;
 // Styled Components
 
 const StakeBtn = styled(PrimaryButton)`
+  margin-right: 9px;
   ${(props) => props.mobile && css`
     margin: 4px;
   `}
