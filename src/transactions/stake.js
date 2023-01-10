@@ -1,6 +1,6 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField } from "./lib"
+import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField, getGardianBalance } from "./lib"
 import { accountInfo, getParams, signGroup, sendTxn, updateWalletInfo } from "../wallets/wallets";
 
 const enc = new TextEncoder();
@@ -185,16 +185,16 @@ export async function GardianStake(pool, amount) {
   let params = await getParams(1000);
   let info = await infoPromise;
   
-  const gardian_bal = getMicroGardBalance(info)
+  const gardian_bal = getGardianBalance(info)
   if (gardian_bal == null || gardian_bal < amount) {
     return {
       alert: true,
       text:
         "Insufficient GARDIAN for transaction. Balance: " +
-        (gardian_bal).toFixed(2).toString() +
+        (gardian_bal).toString() +
         "\n" +
         "Required: " +
-        (amount).toFixed(2).toString(),
+        (amount).toString(),
     };
   }
   
