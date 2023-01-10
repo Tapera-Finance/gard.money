@@ -21,7 +21,7 @@ import { ids } from "../transactions/ids"
 import { size, device } from "../styles/global"
 import { isMobile } from "../utils";
 
-const instantiateUser = async (address) => {
+const instantiateUser = (address) => {
   let accountCDPs = getCDPs()[address];
   let addrs = Object.keys(accountCDPs[0]);
   addrs = addrs.concat(Object.keys(accountCDPs[ids.asa.galgo]));
@@ -80,27 +80,10 @@ export default function WalletConnect() {
                     if (!wallet.alert) {
                       dispatch(setWallet({ address: displayWallet() }));
                       const owner_address = getWallet().address;
-                      let inTotalsPromise = userInTotals(owner_address);
                       let in_DB = await userInDB(owner_address);
                       if (!in_DB) {
-                        const user = await instantiateUser(owner_address);
+                        const user = instantiateUser(owner_address);
                         addUserToFireStore(user, owner_address);
-                      }
-                      let in_Totals = await inTotalsPromise;
-                      console.log(in_Totals)
-                      if (!in_Totals) {
-                        var initialTotals = {
-                          id: owner_address,
-                          totalCommitted: 0,
-                          totalMinted: 0,
-                          totalStaked: 0,
-                        };
-                        addUserToTotals(initialTotals, owner_address);
-                        if (localStorage.getItem("gleamCommitComplete") == null){
-                          localStorage.setItem("gleamCommitComplete", JSON.stringify([]))
-                          localStorage.setItem("gleamMintComplete", JSON.stringify([]))
-                          localStorage.setItem("gleamStakeComplete", JSON.stringify([]))
-                        }
                       }
                     } else {
                       dispatch(setAlert(wallet.text));
