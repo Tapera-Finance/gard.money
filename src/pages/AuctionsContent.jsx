@@ -83,6 +83,8 @@ export default function AuctionsContent() {
       action: value.cdp.activeAuction ? (
         <PrimaryButton
           text={"Purchase"}
+          blue={true}
+          left_align={true}
           onClick={() => {
             setTransInfo([
               {

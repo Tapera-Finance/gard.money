@@ -44,4 +44,6 @@ module.exports = {
     "Total Committed" : "Amount of ALGOs from CDPs that are currently commited to governance",
     "Volume" : "Number of GARD exchanged in the pas week",
     "Your Stake" : "Number of GARD earning rewards in the pool. Also, number of GARD entitled to withdraw.",
+    "Live Auctions" : "When another user’s collateral approaches the value of their debt, it is sold at auction to pay off their debt. You may purchase Algos/gAlgos with GARD at a discount.",
+    "System Metrics" : "Measurements of TVL, Staked GARD, and Circulating GARD in GARD ecosystem"
 };

@@ -46,10 +46,12 @@ export async function addUserToFireStore(user, walletID) {
 export async function addReferrerToFirestore(walletID){
   if (referrer == null) return
   try {
-    const walletRef = doc(db, "referrers", walletID);
+    const walletRef = doc(db, "refs2023", walletID);
     const info = {
       referred: referrer,
-      timestamp: Date.now()
+      timestamp: new Date().toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+      })
     }
     const querySnapshot = await getDoc(query(walletRef))
     if (querySnapshot["_document"] != null) return;
@@ -71,7 +73,7 @@ export async function userInDB(walletID) {
 }
 
 export async function getReferrerDB(refIDs){
-  const collectionRef = collection(db, "referrers")
+  const collectionRef = collection(db, "refs2023")
   const q = query(collectionRef, where("referred", "in", refIDs))
   const querySnapshot = await getDocs(q)
   return querySnapshot.docs

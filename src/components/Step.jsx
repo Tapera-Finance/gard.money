@@ -14,25 +14,18 @@ export default function Step({
   secondGoTo,
   link,
   linkText,
-  allOpen,
   mobile,
+  onClick,
+  expanded,
 }) {
   const walletAddress = useSelector(state => state.wallet.address)
-  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleOpen = () => {
-    setOpen(!open);
-  };
-
-  useEffect(() => {
-    setOpen(allOpen);
-  }, [allOpen]);
 
   return (
-    <ExpandedStep open={open}>
-      <StepItem onClick={handleOpen} open={open} mobile={mobile}>
-        <div style={{ marginLeft: 8 }}>{checked ? " √" : ""}{header}</div>
+    <ExpandedStep open={expanded}>
+      <StepItem onClick={onClick} open={expanded} mobile={mobile}>
+        <div style={{ marginLeft: 10 }}>{checked ? <span style={{color: "green"}}> √ </span> : ""}{header}</div>
         <div
           style={{
             display: "flex",
@@ -40,7 +33,7 @@ export default function Step({
             justifyContent: "space-around",
           }}
         >
-          {open ? (
+          {expanded ? (
             <div
               style={{
                 display: "flex",
@@ -62,7 +55,7 @@ export default function Step({
           )}
         </div>
       </StepItem>
-      {open ? (
+      {expanded ? (
         <div
           style={{
             display: "flex",
@@ -75,9 +68,7 @@ export default function Step({
           <div style={{ display: "flex", textAlign: "center", marginBottom: 0, marginTop: 4 }}>
             <Link href={link} target="_blank">{linkText}</Link>
           </div>
-            <text style={{
-              // width: "80vw",
-              marginBottom: 18, marginTop: 6}}>{text}</text>
+            <StepText mobile={mobile}>{text}</StepText>
           <div style={{ display: "flex", justifyContent: "center", margin: "2px 0px 12px 0px" }}>
             <StepButton
               text={`Go to ${goTo}`}
@@ -162,6 +153,14 @@ const StepButton = styled(PrimaryButton)`
 
 const ExpandedStep = styled.div`
   width: 100%;
+`;
+
+const StepText = styled.text`
+  margin-bottom: 18px; 
+  margin-top: 6px;
+  ${(props) => props.mobile && css`
+    width: 90%;
+  `}
 `;
 
 const Badge = ({ type }) => {

@@ -8,18 +8,15 @@ import {
   sendTxn,
   getWallet,
   signGroup,
-  indexerClient,
 } from "../wallets/wallets";
 import {
   updateCommitmentFirestore,
   addCDPToFireStore,
   updateDBWebActions,
   updateLiquidationFirestore,
-  addUserToGleam,
-  updateTotal,
-  loadUserTotals
 } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
+import { searchAccounts } from "../pages/GovernContent";
 
 var $ = require("jquery");
 
@@ -342,7 +339,7 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     params.fee = 0;
     txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: cdp.address,
-      to: "7K5TT4US7M3FM7L3XBJXSXLJGF2WCXPBV2YZJJO2FH46VCZOS3ICJ7E4QU",
+      to: "SAHBJDRHHRR72JHTWSXZR5VHQQUVC7S757TJZI656FWSDO3TZZWV3IGJV4",
       amount: 0,
       note: note,
       suggestedParams: params,
@@ -552,43 +549,11 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
   
   addCDPToFireStore(accountID, -openingMicroAssetAmount, microOpeningGard, 0);
 
-  let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
-  if (completedMint == null){
-    localStorage.setItem("gleamMintComplete", JSON.stringify([]))
-    completedMint = []
-  }
-  if (!completedMint.includes(info.address)) {
-    await updateTotal(info.address, "totalMinted", microOpeningGard)
-    let user_totals = await loadUserTotals()
-    console.log('totals', user_totals)
-    if(user_totals["totalMinted"] >= 10000000){
-      addUserToGleam("mintGARD", info.address);
-      completedMint.push(info.address)
-      console.log('minted', completedMint)
-      localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
-    }
-  } 
   if (commit) {
     await new Promise(r => setTimeout(r, 1000));
     updateCommitmentFirestore(info.address, accountID, openingMicroAssetAmount);
     response.text =
-      response.text + "\nFull Balance committed to Governance Period #5!";
-      let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
-      if (completedCommit == null){
-        localStorage.setItem("gleamCommitComplete", JSON.stringify([]))
-        completedCommit = []
-      }
-      if (!completedCommit.includes(info.address)) {
-      await updateTotal(info.address, "totalCommitted", openingAssetAmount)
-      let user_totals = await loadUserTotals()
-      console.log('totals', user_totals)
-      if(user_totals["totalCommitted"] >= 100000000) {
-        addUserToGleam("commitAlgos", info.address)
-        completedCommit.push(info.address)
-        console.log("commited", completedCommit)
-        localStorage.setItem("gleamCommitComplete", JSON.stringify(completedCommit))
-      }
-    } 
+      response.text + "\nFull Balance committed to Governance Period #6!";
   }
   
   setLoadingStage(null);
@@ -660,22 +625,6 @@ export async function mint(accountID, newGARD, asaID) {
   
   // DB Updates
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
-  let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
-  if (completedMint == null){
-    localStorage.setItem("gleamMintComplete", JSON.stringify([]))
-    completedMint = []
-  }
-  if (!completedMint.includes(info.address)) {
-    await updateTotal(info.address, "totalMinted", microGARD(newGARD))
-    let user_totals = await loadUserTotals()
-    console.log('totals', user_totals)
-    if(user_totals["totalMinted"] >= 10000000){
-      addUserToGleam("mintGARD", info.address)
-      completedMint.push(info.address)
-      console.log('minted', completedMint)
-      localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
-    }
-  }
   
   setLoadingStage(null);
   return response;
@@ -764,7 +713,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
     params.fee = 0;
     txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: cdp.address,
-      to: "7K5TT4US7M3FM7L3XBJXSXLJGF2WCXPBV2YZJJO2FH46VCZOS3ICJ7E4QU",
+      to: "SAHBJDRHHRR72JHTWSXZR5VHQQUVC7S757TJZI656FWSDO3TZZWV3IGJV4",
       amount: 0,
       note: note,
       suggestedParams: params,
@@ -800,7 +749,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, govAlgos);
     response.text =
-      response.text + "\nFull Balance committed to Governance Period #5!";
+      response.text + "\nFull Balance committed to Governance Period #6!";
   }
   
   setLoadingStage(null);
@@ -1073,8 +1022,8 @@ export async function commitCDP(account_id, amount, toWallet) {
   const info = await infoPromise;
 
   const stringVal = toWallet
-    ? `af/gov1:j{"com":${parseInt(amount * 1000000)},"bnf":"${info.address}"}`
-    : "af/gov1:j{\"com\":" + parseInt(amount * 1000000).toString() + "}";
+    ? `af/gov1:j{"com":${parseInt(amount)},"bnf":"${info.address}"}`
+    : "af/gov1:j{\"com\":" + parseInt(amount).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -1092,7 +1041,7 @@ export async function commitCDP(account_id, amount, toWallet) {
   params.fee = 0;
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    to: "7K5TT4US7M3FM7L3XBJXSXLJGF2WCXPBV2YZJJO2FH46VCZOS3ICJ7E4QU",
+    to: "SAHBJDRHHRR72JHTWSXZR5VHQQUVC7S757TJZI656FWSDO3TZZWV3IGJV4",
     amount: 0,
     note: note,
     suggestedParams: params,
@@ -1116,7 +1065,7 @@ export async function commitCDP(account_id, amount, toWallet) {
     stxns,
     "Succesfully committed your algos to governance! You may verify" +
       " <a href=\"" +
-      "https://governance.algorand.foundation/governance-period-5/governors/" +
+      "https://governance.algorand.foundation/governance-period-6/governors/" +
       cdp.address +
       "\">here</a>.\n",
     true,
@@ -1127,22 +1076,6 @@ export async function commitCDP(account_id, amount, toWallet) {
     account_id,
     parseInt(amount * 1000000),
   );
-  let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
-  if (completedCommit == null){
-    localStorage.setItem("gleamCommitComplete", JSON.stringify([]))
-    completedCommit = []
-  }
-  if (!completedCommit.includes(info.address)) {
-    await updateTotal(info.address, "totalCommitted", parseInt(amount * 1000000))
-    let user_totals = await loadUserTotals()
-    console.log('totals', user_totals)
-    if(user_totals["totalCommitted"] >= 100000000){
-      addUserToGleam("commitAlgos", info.address)
-      completedCommit.push(info.address)
-      console.log("commited", completedCommit)
-      localStorage.setItem("gleamCommitComplete", JSON.stringify(completedCommit))
-    }
-  }
   return response;
 }
 
@@ -1186,7 +1119,7 @@ export async function voteCDPs(cdpArray, voteArray) {
       params.fee = 0;
       let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: cdp.address,
-        to: "7K5TT4US7M3FM7L3XBJXSXLJGF2WCXPBV2YZJJO2FH46VCZOS3ICJ7E4QU",
+        to: "SAHBJDRHHRR72JHTWSXZR5VHQQUVC7S757TJZI656FWSDO3TZZWV3IGJV4",
         amount: 0,
         note: note,
         suggestedParams: params,
@@ -1280,11 +1213,23 @@ function getCDPVal(cdp, key, isInt) {
 
 export async function getAllCDPs() {
   // TODO: Do the pages thing in case it's more than 1000
-  const optedIn = (await indexerClient
-    .searchAccounts()
-    .limit(1000)
-    .applicationID(ids.app.validator)
-    .do()).accounts
+  let optedIn = []
+  let nexttoken
+  do {
+    // Find accounts that are opted into the GARD price validator application
+    // These accounts correspond to CDP opened on the GARD protocol
+    let response = await searchAccounts({
+      appId: ids.app.validator,
+      limit: 1000,
+      nexttoken,
+    });
+    
+    for (const account of response['accounts']) {
+      optedIn.push(account)
+    }
+    nexttoken = response['next-token']
+  } while (nexttoken != null);
+
   const withState = optedIn.filter(account => "apps-local-state" in account)
   const rightApp = withState.filter(account => account['apps-local-state'][0].id == ids.app.validator)
   const unixtime = Math.floor(Date.now() / 1000)

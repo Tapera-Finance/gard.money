@@ -23,7 +23,7 @@ export function setReferrer(arg){
 
 export var referrer = null;
 
-export const commitmentPeriodEnd = 1666368000000;
+export const commitmentPeriodEnd = 1673798400000;
 
 export const VERSION = "MAINNET";
 const UPDATE = 3;

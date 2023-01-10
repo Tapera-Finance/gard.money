@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import { device } from "../styles/global";
+import Effect from "./Effect";
 
 export default function PageToggle({ selectedTab, tabs, className }) {
   const [one, setOne] = useState(true);
@@ -21,7 +22,7 @@ export default function PageToggle({ selectedTab, tabs, className }) {
           }
         }}
       >
-        <Btn selected={one}>{tabs.one}</Btn>
+        <Effect title={tabs.one} hasToolTip={true} noMarginBottom={true}><Btn selected={one}>{tabs.one}</Btn></Effect>
       </Box>
       {tabs.two ? (
         <Box

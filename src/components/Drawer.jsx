@@ -32,6 +32,8 @@ import { useSelector } from "react-redux";
 import { device, size } from "../styles/global";
 import { px2vw, isMobile } from "../utils"
 import { useScreenOrientation } from "../hooks"
+import CountdownTimer from "../components/CountdownTimer";
+import { commitmentPeriodEnd } from "../globals";
 
 function debounce(fn, ms) {
   let timer
@@ -268,6 +270,21 @@ export default function Drawer({
               </div>
             );
           })}
+        </div>
+        <div>
+          <div style={{
+            position: "relative",
+            bottom: -15,
+            right: -5,
+            textAlign: "center",
+            fontSize: 12,
+            color: "white",
+          }}>
+            Governance Enrollment Countdown
+          </div>
+          <div style={{ position: "relative", right: -5, maxWidth: 250, transform: "scale(0.75)"}}>
+            <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
+          </div>
         </div>
         <div style={{
           top: "85vh", left: 0, right: 0

@@ -106,37 +106,48 @@ export default function AccountContent() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
-            alignItems: "start",
-            marginBottom: 10,
           }}
         >
-          <div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <Label>Wallet</Label>
             <br></br>
-            <AccountNumber>
-              {getWallet() == null
-                ? "N/A"
-                : getWallet().address.slice(0, 10) + "..."}
-            </AccountNumber>
-            <AccountButton
-              onClick={() => navigator.clipboard.writeText(getWallet().address)}
-            >
-              <img src={copyIconDark} />
-            </AccountButton>
+            <div style={{display: "flex", alignItems: "start"}}>
+              <AccountNumber>
+                {getWallet() == null
+                  ? "N/A"
+                  : getWallet().address.slice(0, 10) + "..."}
+              </AccountNumber>
+              <AccountButton
+                onClick={() => navigator.clipboard.writeText(getWallet().address)}
+              >
+                <img src={copyIconDark} />
+              </AccountButton>
+            </div>
           </div>
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              marginBottom: window.innerWidth < 900 ? 5 : 15,
             }}
           >
             <Label>Total Balance</Label>
             <br></br>
-            <AccountInfoData>
-              {getWallet() == null ? "N/A" : `${balance} Algos`}
-            </AccountInfoData>
-            <Dollars>{convertToDollars(balance, "algo")}</Dollars>
+            <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+            >
+              <AccountInfoData>
+                {getWallet() == null ? "N/A" : `${balance} ALGO`}
+              </AccountInfoData>
+              <Dollars>{convertToDollars(balance, "algo")}</Dollars>
+            </div>
           </div>
         </div>
       </AccountContainer>
@@ -154,7 +165,17 @@ export default function AccountContent() {
         />
         {tabs[selectedTab]}
       </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+          alignContent: "center",  
+          marginBottom: "36px",
+        }}
+      >
       <RefButton navFunc={() => navigate(`/referrals`)}/>
+      </div>
     </AcctPgCont>
   );
 }
@@ -191,10 +212,10 @@ const AccountTitle = styled.text`
 `;
 
 const Label = styled.label`
-  font-size: 22px;
+  font-size: 20px;
   color: #ffffff;
   text-decoration: underline;
-  margin-bottom: -20px;
+  margin-bottom: -15px;
   /* margin-bottom: */
 `;
 
@@ -220,8 +241,8 @@ const AccountInfoTitle = styled.text`
 `;
 
 const AccountInfoData = styled.text`
-  font-weight: normal;
-  font-size: 20px;
+  font-weight: bold;
+  font-size: 16px;
 `;
 const LinkButton = styled.button`
   height: 20px;

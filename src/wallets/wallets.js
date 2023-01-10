@@ -48,7 +48,7 @@ if (!testnet) {
 const nodeServer = _nodeServer;
 const indexerServer = _indexerServer
 export const algodClient = new algosdk.Algodv2(psToken, nodeServer, "");
-export const indexerClient = new algosdk.Indexer(psToken, indexerServer, "");
+const indexerClient = new algosdk.Indexer(psToken, indexerServer, "");
 
 export async function accountInfo(address = null, retry = 0) {
   // XXX: Assumes the wallet is set

@@ -38,7 +38,7 @@ const fetchTvl = async () => {
   }
 };
 
-function getStateUint(state, key, byte_switch = 0) {
+export function getStateUint(state, key, byte_switch = 0) {
   const val = state.find((entry) => {
     if (entry.key === key) {
       return entry;
@@ -189,6 +189,22 @@ export default function HomeContent() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
+
+  const [step2open, setStep2] = useState(true);
+  const [step3open, setStep3] = useState(true);
+
+  const handleStep2 = () => {
+    setStep2(!step2open);
+  };
+  const handleStep3 = () => {
+    setStep3(!step3open);
+  };
+
+  useEffect(()=> {
+    setAllOpen(step2open && step3open)
+    console.log("triggered", step2open, step3open)
+
+  },[step2open, step3open])
 
   useEffect(async () => {
     console.log("isMobile ?", isMobile());
@@ -420,7 +436,10 @@ export default function HomeContent() {
           <StepContainer>
             <Text
               style={{ color: "#80edff" }}
-              onClick={() => setAllOpen(!allOpen)}
+              onClick={() => {
+                setStep2(!allOpen)
+                setStep3(!allOpen)
+              }}
             >
               {allOpen ? `Collapse` : `Expand`} All
             </Text>
@@ -433,7 +452,7 @@ export default function HomeContent() {
                 padding: "0px 10px 0px 10px",
               }}>
                 <Text>
-                  {walletAddress ? `  √` : ""} Step 1: Connect Your Wallet
+                  {walletAddress ? <span style={{color: "green"}}>√ </span> : ""} Step 1: Connect Your Wallet
                 </Text>
                 <div>
                   <WalletConnect style={{ alignSelf: "flex-end" }} />
@@ -451,8 +470,9 @@ export default function HomeContent() {
               linkText="How to get GARD"
               goTo="Swap"
               secondGoTo="Borrow"
-              allOpen={allOpen}
               mobile={mobile}
+              onClick={handleStep2}
+              expanded={step2open}
             />
             <Step
               header="Step 3: Gain Rewards"
@@ -473,14 +493,15 @@ export default function HomeContent() {
               linkText="What is needed to participate?"
               goTo="Stake"
               secondGoTo="Govern"
-              allOpen={allOpen}
               mobile={mobile}
+              onClick={handleStep3}
+              expanded={step3open}
             />
           </StepContainer>
         ) : (
-          <div style={{display: "flex", flexDirection: "column"}}>
+          <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
             <BoldText>Quick Actions</BoldText>
-            <AccessBox expert={difficulty == "DeFi Expert" ? true : false}>
+            <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
               {buttons.map((action) => {
                 return (
                   <PrimaryButton
@@ -533,17 +554,11 @@ const AccessBox = styled.div`
       /* margin-right: 30px; */
     `
   }
-  @media (${device.tablet}) {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+  ${(props) => props.mobile && css`
+    flex-direction: column;
     row-gap: 10px;
-  }
-  @media (${device.mobileM}) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-  }
+    height: 100%;
+  `}
 `
 
 const Link = styled(PrimaryButton)`
@@ -602,15 +617,6 @@ const Container = styled.div`
     width: 90%;
   `}
 
-  @media (${device.tablet}) {
-    /* width: 100%; */
-    ${(props) =>
-    props.expert &&
-    css`
-      margin-left: 70px;
-    `
-  }
-  }
   ${(props) =>
     props.expert &&
     css`
@@ -700,7 +706,6 @@ const Text = styled.text`
 const BoldText = styled.text`
   font-weight: bold;
   cursor: pointer;
-  margin: 0px 30px 0px 0px;
   text-align: center;
   align-self: center;
 `;

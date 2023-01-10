@@ -9,22 +9,22 @@ import { CDPsToList } from "./Positions";
 import { ids } from "../transactions/ids"
 import { device } from "../styles/global";
 import { isMobile } from "../utils";
+import { getNLStake } from "./actions/StakeDetails";
+import { getAccruedRewards } from "../transactions/stake";
+import { algo } from "crypto-js";
 
-
-
-const price = await getPrice();
-
-function getAssets() {
+function getAssets(alg_price) {
   var assets = [];
   let x = getWalletInfo()["assets"];
   for (var i = 0, len = x.length; i < len; i++) {
     if ([ids.asa.gard, ids.asa.gain, ids.asa.gardian, ids.asa.galgo].includes(x[i]["asset-id"])) {
-      let amnt = (x[i]["amount"] / 10 ** x[i]["decimals"]).toFixed(3);
+      let amnt = (x[i]["amount"] / 10 ** x[i]["decimals"]);
       let token_price = x[i]["asset-id"] == ids.asa.gard ? 1 : 0;
+      token_price = x[i]["asset-id"] == ids.asa.galgo ? (0.98*alg_price) : token_price;
       assets.push({
         name: x[i]["name"],
         amount: amnt,
-        value: parseFloat(amnt) * token_price,
+        value: parseFloat(amnt * token_price).toFixed(3),
       });
     }
   }
@@ -48,12 +48,20 @@ const accumulateTotal = (arr, prop) => {
 };
 
 let algo_price = await getPrice();
+let user_assets = getWalletInfo() !== undefined ? getAssets(algo_price) : [];
+let transformed_assets = getWalletInfo() !== undefined ? getAssets(algo_price).map((x) => {
+  let temp = x;
+  temp.value = formatToDollars(x["value"]);
+  return temp;
+}) : []; // For some reason using user_assets here instead if another getAssets call breaks things, TODO optimize
+let walletTotal = accumulateTotal(user_assets, "value");
 
 export default function Holdings() {
-  const [walletTotal, setWalletTotal] = useState(0);
-  const [borrowTotal, setBorrowTotal] = useState(0);
+  const [borrowTotal, setBorrowTotal] = useState("0");
+  const [stakeTotal, setStakeTotal] = useState("0");
 
   const cdps = CDPsToList();
+
   const cdpData = cdps.map((cdp, i) => {
     console.log(cdp)
     return {
@@ -73,24 +81,38 @@ export default function Holdings() {
     "Debt Amount",
     "Net Value"
   ];
+  const stakeColumns = [
+    "Pool Type",
+    "Token",
+    "Stake Value"
+  ];
 
   useEffect(() => {
-    let walletSum = accumulateTotal(getAssets(), "value");
     let netBorrowSum = accumulateTotal(cdps, "collateral");
     let netBorrowDebt = accumulateTotal(cdps, "debt");
-    setWalletTotal(walletSum);
     setBorrowTotal(((netBorrowSum*algo_price) - netBorrowDebt) / 1e6);
+  }, []);
+
+  useEffect(async () => {
+    let accruePromise = getAccruedRewards("NL")
+    let noLock = getNLStake()
+    setStakeTotal((noLock / 1000000 + parseFloat((await accruePromise) / 1000000)).toString())
   }, []);
 
   const [currentPrice, setPrice] = useState("Loading...");
   const [selectedTab, setSelectedTab] = useState("one");
+  const curr = getAssets(algo_price).map((x) => {
+    let temp = x;
+    temp.value = formatToDollars(x["value"]);
+    return temp;
+  })
 
-  const tabs = {
+  let tabs = {
     // one: <div>stake</div>,
     one: (
       <div style={{marginTop: 20}}>
       <TableHeading>
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title>Wallet {`(${formatToDollars(walletTotal.toString())} Total Value)`}</Title>
           </div>
@@ -102,19 +124,15 @@ export default function Holdings() {
           <SubToggle
             selectedTab={setSelectedTab}
             tabs={{
-              // one: "Stake",
               one: "Wallet",
               two: "Borrows",
+              three: "Stakes",
             }}
           />
         </div>
       </TableHeading>
           <HoldTable
-          data={getAssets().map((x) => {
-            let temp = x;
-            temp.value = formatToDollars(x["value"]);
-            return temp;
-          })}
+          data={transformed_assets.length ? transformed_assets : curr}
           columns={holdColumns}
         />
       </div>
@@ -123,7 +141,7 @@ export default function Holdings() {
       <div style={{marginTop: 20}}>
       <TableHeading
       >
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title>Borrow Positions {`(${formatToDollars(borrowTotal.toString())} Total Value)`}</Title>
           </div>
@@ -135,9 +153,9 @@ export default function Holdings() {
           <SubToggle
             selectedTab={setSelectedTab}
             tabs={{
-              // one: "Stake",
               one: "Wallet",
               two: "Borrows",
+              three: "Stakes",
             }}
           />
         </div>
@@ -148,31 +166,48 @@ export default function Holdings() {
       />
       </div>
     ),
+    three: (
+      <div style={{marginTop: 20}}>
+      <TableHeading>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
+          <div style={{ marginLeft: 25, marginRight: 8 }}>
+            <Title>Stake Positions {`(${formatToDollars((stakeTotal).toString())} Total Value)`}</Title>
+          </div>
+          <CountContainer>
+            <CountText>GARD pools only</CountText>
+          </CountContainer>
+        </div>
+        <div style={{ marginRight: 20 }}>
+          <SubToggle
+            selectedTab={setSelectedTab}
+            tabs={{
+              one: "Wallet",
+              two: "Borrows",
+              three: "Stakes",
+            }}
+          />
+        </div>
+      </TableHeading>
+          <HoldTable
+          data={[
+              {
+                "Pool Type": "No-Lock",
+                "Token": "GARD",
+                "Stake Value": formatToDollars(stakeTotal)
+              }]
+          }
+          columns={stakeColumns}
+        />
+      </div>
+    ),
   };
 
-
-  useEffect(async () => {
-    let price = await getPrice();
-    setPrice(price);
-  }, []);
   return (
     <div>
       {tabs[selectedTab]}
     </div>
   );
 }
-
-// dummy data for the assets table
-var dummyAssets =
-  getWallet() == null
-    ? [
-        {
-          id: "N/A",
-          name: "N/A",
-          amount: 0,
-        },
-      ]
-    : getAssets();
 
 const Title = styled.text`
   font-weight: 500;
@@ -197,7 +232,6 @@ const CountText = styled.text`
 const SubToggle = styled(PageToggle)`
   float: right;
   background: transparent;
-  margin-bottom: 6px;
   text {
     text-decoration: unset;
   }
@@ -237,6 +271,7 @@ const BorrowTable = styled(Table)`
 `
 
 const TableHeading = styled.div`
+  height: 70px;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
   display: flex;

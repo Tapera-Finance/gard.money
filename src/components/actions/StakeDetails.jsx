@@ -227,7 +227,7 @@ export default function StakeDetails() {
               }}
             >
               <div style={{ color: "#172756", fontSize: "10pt" }}>
-                5k - 10k GARD being paid out WEEKLY for users staking GARD on V2
+                1k - 2k GARD being paid out WEEKLY for users staking GARD!
               </div>
             </div>
           </div>
@@ -289,10 +289,6 @@ export default function StakeDetails() {
                     value={stakeAmount}
                     callback={handleInput}
                   />
-                  <EffectContainer>
-                    <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
-                    <Result>{formatToDollars(balance)}</Result>
-                  </EffectContainer>
                 </StakeBox>
               )}
             </ThirdRow>
@@ -339,10 +335,6 @@ export default function StakeDetails() {
                   value={stakeAmount}
                   callback={handleInput}
                 />
-                <EffectContainer>
-                  <MaxBtn onClick={handleMaxStake}>+MAX</MaxBtn>
-                  <Result>{formatToDollars(balance)}</Result>
-                </EffectContainer>
               </StakeBox>
               ) : (
                 <></>
@@ -586,6 +578,7 @@ height: 0px;
 // Styled Components
 
 const StakeBtn = styled(PrimaryButton)`
+  margin-right: 9px;
   ${(props) => props.mobile && css`
     margin: 4px;
   `}
