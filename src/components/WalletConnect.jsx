@@ -21,7 +21,7 @@ import { ids } from "../transactions/ids"
 import { size, device } from "../styles/global"
 import { isMobile } from "../utils";
 
-const instantiateUser = async (address) => {
+const instantiateUser = (address) => {
   let accountCDPs = getCDPs()[address];
   let addrs = Object.keys(accountCDPs[0]);
   addrs = addrs.concat(Object.keys(accountCDPs[ids.asa.galgo]));
