@@ -14,9 +14,6 @@ import {
   addCDPToFireStore,
   updateDBWebActions,
   updateLiquidationFirestore,
-  addUserToGleam,
-  updateTotal,
-  loadUserTotals
 } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
 import { searchAccounts } from "../pages/GovernContent";
@@ -552,43 +549,11 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
   
   addCDPToFireStore(accountID, -openingMicroAssetAmount, microOpeningGard, 0);
 
-  let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
-  if (completedMint == null){
-    localStorage.setItem("gleamMintComplete", JSON.stringify([]))
-    completedMint = []
-  }
-  if (!completedMint.includes(info.address)) {
-    await updateTotal(info.address, "totalMinted", microOpeningGard)
-    let user_totals = await loadUserTotals()
-    console.log('totals', user_totals)
-    if(user_totals.hasOwnProperty("totalMinted") && user_totals["totalMinted"] >= 10000000){
-      addUserToGleam("mintGARD", info.address);
-      completedMint.push(info.address)
-      console.log('minted', completedMint)
-      localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
-    }
-  } 
   if (commit) {
     await new Promise(r => setTimeout(r, 1000));
     updateCommitmentFirestore(info.address, accountID, openingMicroAssetAmount);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #6!";
-      let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
-      if (completedCommit == null){
-        localStorage.setItem("gleamCommitComplete", JSON.stringify([]))
-        completedCommit = []
-      }
-      if (!completedCommit.includes(info.address)) {
-      await updateTotal(info.address, "totalCommitted", openingAssetAmount)
-      let user_totals = await loadUserTotals()
-      console.log('totals', user_totals)
-      if(user_totals.hasOwnProperty("totalCommitted") && user_totals["totalCommitted"] >= 100000000) {
-        addUserToGleam("commitAlgos", info.address)
-        completedCommit.push(info.address)
-        console.log("commited", completedCommit)
-        localStorage.setItem("gleamCommitComplete", JSON.stringify(completedCommit))
-      }
-    } 
   }
   
   setLoadingStage(null);
@@ -660,22 +625,6 @@ export async function mint(accountID, newGARD, asaID) {
   
   // DB Updates
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
-  let completedMint = JSON.parse(localStorage.getItem("gleamMintComplete"))
-  if (completedMint == null){
-    localStorage.setItem("gleamMintComplete", JSON.stringify([]))
-    completedMint = []
-  }
-  if (!completedMint.includes(info.address)) {
-    await updateTotal(info.address, "totalMinted", microGARD(newGARD))
-    let user_totals = await loadUserTotals()
-    console.log('totals', user_totals)
-    if(user_totals.hasOwnProperty("totalMinted") && user_totals["totalMinted"] >= 10000000){
-      addUserToGleam("mintGARD", info.address)
-      completedMint.push(info.address)
-      console.log('minted', completedMint)
-      localStorage.setItem("gleamMintComplete", JSON.stringify(completedMint))
-    }
-  }
   
   setLoadingStage(null);
   return response;
@@ -1127,22 +1076,6 @@ export async function commitCDP(account_id, amount, toWallet) {
     account_id,
     parseInt(amount * 1000000),
   );
-  let completedCommit = JSON.parse(localStorage.getItem("gleamCommitComplete"))
-  if (completedCommit == null){
-    localStorage.setItem("gleamCommitComplete", JSON.stringify([]))
-    completedCommit = []
-  }
-  if (!completedCommit.includes(info.address)) {
-    await updateTotal(info.address, "totalCommitted", parseInt(amount * 1000000))
-    let user_totals = await loadUserTotals()
-    console.log('totals', user_totals)
-    if(user_totals.hasOwnProperty("totalCommitted") && user_totals["totalCommitted"] >= 100000000){
-      addUserToGleam("commitAlgos", info.address)
-      completedCommit.push(info.address)
-      console.log("commited", completedCommit)
-      localStorage.setItem("gleamCommitComplete", JSON.stringify(completedCommit))
-    }
-  }
   return response;
 }
 
