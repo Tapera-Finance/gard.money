@@ -34,7 +34,7 @@ function algosToMAlgos(num) {
 }
 
 // Gets Active wallet Stake in simple no-lock pool
-function getNLStake(app_id=ids.app.gard_staking) {
+export function getNLStake(app_id=ids.app.gard_staking) {
   const phrase = app_id == ids.app.gard_staking ? "NL GARD Staked" : "NL GARDIAN Staked"
   const res = getLocalAppField(app_id, phrase)
   if (res === undefined) {
@@ -71,7 +71,6 @@ export default function StakeDetails() {
   const [NL_TVL, setNLTVL] = useState("...")
   const [GARDIAN_TVL, setGARDIANTVL] = useState("0.00")
   const [NLAPY, setNLAPY] = useState(0)
-  const [balance, setBalance] = useState("...");
   const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
 
@@ -162,7 +161,6 @@ export default function StakeDetails() {
     const info = getWalletInfo()
     setNoLock(getNLStake())
     setNoLockGardian(getNLStake(ids.app.gardian_staking))
-    setBalance(getGardBalance(info).toFixed(2));
     setMaxStake(getGardBalance(info));
     setMaxGardianStake(getGardianBalance(info))
     setNLAPY((await APYPromise))
@@ -384,7 +382,6 @@ export default function StakeDetails() {
                     callback={handleInput2}
                   />
                   <EffectContainer>
-                    <Result>{formatToDollars(balance)}</Result>
                   </EffectContainer>
                 </StakeBox>
               )}
@@ -428,7 +425,6 @@ export default function StakeDetails() {
                   callback={handleInput2}
                 />
                 <EffectContainer>
-                  <Result>{formatToDollars(balance)}</Result>
                 </EffectContainer>
               </StakeBox>
               ) : (
