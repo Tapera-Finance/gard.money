@@ -69,7 +69,7 @@ export default function StakeDetails() {
   const [accruedGardian, setAccruedGardian] = useState(0)
   const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...")
-  const [GARDIAN_TVL, setGARDIANTVL] = useState("0.00")
+  const [GARDIAN_TVL, setGARDIANTVL] = useState("0")
   const [NLAPY, setNLAPY] = useState(0)
   const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
@@ -154,6 +154,7 @@ export default function StakeDetails() {
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
+    const gardianTVLPromise = getAppField(ids.app.gardian_staking, "NL")
     const APYPromise = getStakingAPY("NL")
     const accruePromise = getAccruedRewards("NL")
     const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking)
@@ -165,6 +166,7 @@ export default function StakeDetails() {
     setMaxGardianStake(getGardianBalance(info))
     setNLAPY((await APYPromise))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
+    setGARDIANTVL((await gardianTVLPromise).toLocaleString())
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
   }, []);
@@ -354,7 +356,7 @@ export default function StakeDetails() {
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
             <ThirdRow mobile={mobile}>
-              <Heading>{`$${GARDIAN_TVL}`}</Heading>
+              <Heading>{`${GARDIAN_TVL} GARDIAN`}</Heading>
               <TypeCont>
                 <Img src={gardianLogo}></Img>
                 <Arrow src={arrowIcon}></Arrow>
