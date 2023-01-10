@@ -19,7 +19,7 @@ import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
 import { formatToDollars } from "../../utils";
-import { stake, unstake, getStakingAPY, getAccruedRewards } from "../../transactions/stake"
+import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, getAccruedGardianRewards,  } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
 import { size, device } from "../../styles/global"
 import { isMobile } from "../../utils"
@@ -34,8 +34,9 @@ function algosToMAlgos(num) {
 }
 
 // Gets Active wallet Stake in simple no-lock pool
-function getNLStake() {
-  const res = getLocalAppField(ids.app.gard_staking, "NL GARD Staked")
+function getNLStake(app_id=ids.app.gard_staking) {
+  const phrase = app_id == ids.app.gard_staking ? "NL GARD Staked" : "NL GARDIAN Staked"
+  const res = getLocalAppField(app_id, phrase)
   if (res === undefined) {
     return 0;
   }
@@ -64,6 +65,8 @@ export default function StakeDetails() {
   const [maxStake, setMaxStake] = useState(0);
   const [maxGARDIANStake, setMaxGardianStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
+  const [noLockGardian, setNoLockGardian] = useState(0);
+  const [accruedGardian, setAccruedGardian] = useState(0)
   const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...")
   const [GARDIAN_TVL, setGARDIANTVL] = useState("0.00")
@@ -119,10 +122,7 @@ export default function StakeDetails() {
     if (stake2Amount === null || !(stake2Amount > 0)) return;
     setLoading(true)
     try {
-      // const res = await stake("NL", stake2Amount)
-      const res = {
-        alert: false
-      }
+      const res = await GardianStake("NL", parseInt(stake2Amount))
       if (res.alert) {
         dispatch(setAlert(res.text));
       }
@@ -137,10 +137,7 @@ export default function StakeDetails() {
     if (stake2Amount === null || !(stake2Amount > 0)) return;
     setLoading(true)
     try {
-      // const res = await unstake("NL", stake2Amount)
-      const res = {
-        alert: false
-      }
+      const res = await GardianUnstake("NL", parseInt(stake2Amount))
       if (res.alert) {
         dispatch(setAlert(res.text));
       }
@@ -155,24 +152,23 @@ export default function StakeDetails() {
     setStake2Amount(e.target.value);
   }
 
-  const handleMaxStake2 = () => {
-    setStake2Amount(maxGARDIANStake)
-  };
-
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
     const APYPromise = getStakingAPY("NL")
     const accruePromise = getAccruedRewards("NL")
+    const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking)
     await infoPromise
     const info = getWalletInfo()
     setNoLock(getNLStake())
+    setNoLockGardian(getNLStake(ids.app.gardian_staking))
     setBalance(getGardBalance(info).toFixed(2));
     setMaxStake(getGardBalance(info));
     setMaxGardianStake(getGardianBalance(info))
     setNLAPY((await APYPromise))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setAccrued((await accruePromise) / 1000000)
+    setAccruedGardian(await accruedGardianPromise)
   }, []);
 
   useEffect(() => {
@@ -396,7 +392,6 @@ export default function StakeDetails() {
                     callback={handleInput2}
                   />
                   <EffectContainer>
-                    <MaxBtn onClick={handleMaxStake2}>+MAX</MaxBtn>
                     <Result>{formatToDollars(balance)}</Result>
                   </EffectContainer>
                 </StakeBox>
@@ -406,19 +401,17 @@ export default function StakeDetails() {
           <FourthRow mobile={mobile}>
           <Effect
               title="Your Stake"
-              val={`${(0).toFixed(
-                3,
-              )} GARDIAN`}
+              val={`${(noLockGardian + accruedGardian)} GARDIAN`}
               hasToolTip={true}
             />
             <Effect
               title="Est. Rewards / Day"
-              val={`${(0).toFixed(3)} GARDIAN`}
+              val={`${(0).toString()} GARDIAN`}
               hasToolTip={true}
             />
             <Effect
               title="New Rewards"
-              val={`${parseFloat(0).toFixed(4)}`}
+              val={accruedGardian}
               hasToolTip={true}
             />
             <div
@@ -443,7 +436,6 @@ export default function StakeDetails() {
                   callback={handleInput2}
                 />
                 <EffectContainer>
-                  <MaxBtn onClick={handleMaxStake2}>+MAX</MaxBtn>
                   <Result>{formatToDollars(balance)}</Result>
                 </EffectContainer>
               </StakeBox>

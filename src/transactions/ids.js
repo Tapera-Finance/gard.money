@@ -43,6 +43,7 @@ if (VERSION == "MAINNET") {
           793124631: 908941119,
         },
         gard_staking : 890604041,
+        gardian_staking : 1007623298,
         treasury : 890603993,
         claimer : 890604040,
     }
