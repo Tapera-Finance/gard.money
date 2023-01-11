@@ -7,7 +7,7 @@ const enc = new TextEncoder();
 let stakingRevenuePercent = .8 // TODO: Get this dynamically off the chain
 
 export async function getAccruedRewards(pool, app_id=ids.app.gard_staking) {
-  const phrase = app_id = ids.app.gard_staking ? " GARD Staked" : " GARDIAN Staked"
+  const phrase = app_id === ids.app.gard_staking ? " GARD Staked" : " GARDIAN Staked"
   const staked = getLocalAppField(app_id, pool + phrase)
   const initialReturn = getLocalAppField(app_id, pool + " Initial Return Rate")
   if (staked === undefined || initialReturn === undefined) {
