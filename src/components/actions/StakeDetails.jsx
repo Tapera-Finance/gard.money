@@ -358,7 +358,7 @@ export default function StakeDetails() {
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
             <ThirdRow mobile={mobile}>
-              <Heading>{`${GARDIAN_TVL}`}</Heading>
+              <Heading>{`${GARDIAN_TVL.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
               <TypeCont>
                 <Img src={gardianLogo}></Img>
                 <Arrow src={arrowIcon}></Arrow>
@@ -401,7 +401,7 @@ export default function StakeDetails() {
               title="Est. Rewards / Day"
               val={`${(((100 * 1000000/GARDIAN_TVL) * (noLockGardian + accruedGardian)) /
               365
-              ).toFixed(0)} GARDIAN`}
+              ).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} GARDIAN`}
               hasToolTip={true}
             />
             <Effect
