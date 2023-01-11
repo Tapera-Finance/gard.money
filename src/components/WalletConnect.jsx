@@ -19,7 +19,7 @@ import { cdpGen } from "../transactions/contracts";
 import { useNavigate } from "react-router-dom";
 import { ids } from "../transactions/ids"
 import { size, device } from "../styles/global"
-import { isMobile } from "../utils";
+import { isMobile, isSafari } from "../utils";
 
 const instantiateUser = (address) => {
   let accountCDPs = getCDPs()[address];
@@ -150,6 +150,9 @@ export default function WalletConnect() {
               if (walletAddress) {
                 navigate("/account");
               } else {
+                if(isSafari()){
+                  dispatch(setAlert('We noticed you are using safari. Please make sure to <a href="https://www.avast.com/c-allow-and-block-pop-ups-safari">enable pop-ups</a> to use our web app properly!'))
+                }
                 reduceModalContent("terms");
                 setModalCanAnimate(true);
                 setModalVisible(true);
