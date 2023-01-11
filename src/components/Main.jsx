@@ -4,7 +4,7 @@ import HomeContent from "../pages/HomeContent";
 import Drawer from "./Drawer";
 import Topbar from "./Topbar";
 import { CONTENT_NAMES } from "../globals";
-import AnalyticsContent from "../pages/AnalyticsContent";
+//import AnalyticsContent from "../pages/AnalyticsContent";
 import AccountContent from "../pages/AccountContent";
 import BorrowContent from "../pages/BorrowContent";
 import AuctionsContent from "../pages/AuctionsContent";
@@ -260,8 +260,8 @@ function MainContentHandler({ content, walletAddress }) {
       return <DaoContent />;
     case CONTENT_NAMES.GOVERN:
       return <GovernContent />;
-    case CONTENT_NAMES.ANALYTICS:
-      return <AnalyticsContent />;
+    /*case CONTENT_NAMES.ANALYTICS:
+      return <AnalyticsContent />;*/
 
     default:
       return <div></div>;
