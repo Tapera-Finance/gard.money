@@ -4,7 +4,7 @@ import Referral from "./Referral";
 import GovernContent from "../pages/GovernContent";
 import AuctionsContent from "../pages/AuctionsContent";
 import DaoContent from "../pages/DaoContent";
-// import AnalyticsContent from "../pages/AnalyticsContent";
+import AnalyticsContent from "../pages/AnalyticsContent";
 import HomeContent from "../pages/HomeContent";
 import ReferralContent from "../pages/ReferralContent";
 import Main from "./Main";
@@ -32,10 +32,10 @@ export default function AppRoutes() {
           path="/govern"
           element={Main(GovernContent, CONTENT_NAMES.GOVERN)}
         />
-        {/*<Route
+        {<Route
           path="/analytics"
           element={Main(AnalyticsContent, CONTENT_NAMES.ANALYTICS)}
-        />*/}
+        />}
         <Route
         path="/referrals"
         element={Main(ReferralContent, "Referrals")}
