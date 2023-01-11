@@ -71,6 +71,7 @@ export default function StakeDetails() {
   const [NL_TVL, setNLTVL] = useState("...")
   const [GARDIAN_TVL, setGARDIANTVL] = useState("0")
   const [NLAPY, setNLAPY] = useState(0)
+  const [NLGARDIANAPY, setNLGARDIANAPY] = useState(0);
   const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
 
@@ -166,9 +167,10 @@ export default function StakeDetails() {
     setMaxGardianStake(getGardianBalance(info))
     setNLAPY((await APYPromise))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
-    setGARDIANTVL((await gardianTVLPromise).toLocaleString())
+    setGARDIANTVL((await gardianTVLPromise))
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
+    console.log(GARDIAN_TVL)
   }, []);
 
   useEffect(() => {
@@ -274,7 +276,7 @@ export default function StakeDetails() {
                 />
               </TypeCont>
               <Heading>No-Lock</Heading>
-              <Heading>{`${NLAPY.toFixed(3)}%`}</Heading>
+              <Heading>{`${NLAPY.toFixed(2)}%`}</Heading>
               {mobile || (window.innerWidth < 760) ? (
                 <></>
               ) : (
@@ -356,7 +358,7 @@ export default function StakeDetails() {
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
             <ThirdRow mobile={mobile}>
-              <Heading>{`${GARDIAN_TVL} GARDIAN`}</Heading>
+              <Heading>{`${GARDIAN_TVL}`}</Heading>
               <TypeCont>
                 <Img src={gardianLogo}></Img>
                 <Arrow src={arrowIcon}></Arrow>
@@ -368,7 +370,7 @@ export default function StakeDetails() {
                 />
               </TypeCont>
               <Heading>No-Lock</Heading>
-              <Heading>{`${(0).toFixed(3)}%`}</Heading>
+              <Heading>{`${(100*(100 * 1000000/GARDIAN_TVL)).toFixed(2)}%`}</Heading>
               {mobile || (window.innerWidth < 760) ? (
                 <></>
               ) : (
@@ -397,7 +399,9 @@ export default function StakeDetails() {
             />
             <Effect
               title="Est. Rewards / Day"
-              val={`${(0).toString()} GARDIAN`}
+              val={`${(((100 * 1000000/GARDIAN_TVL) * (noLockGardian + accruedGardian)) /
+              365
+              ).toFixed(0)} GARDIAN`}
               hasToolTip={true}
             />
             <Effect
