@@ -759,7 +759,7 @@ const menuItems = [
     subOptions: [],
     route: "/auctions",
   },
-  // {
+  /* {
   //   name: CONTENT_NAMES.DAO,
   //   icon: daoIcon,
   //   subOptions: [],
@@ -771,6 +771,7 @@ const menuItems = [
     subOptions: [],
     route: "/analytics",
   },
+  */
   {
     name: CONTENT_NAMES.ACCOUNT,
     icon: walletIcon,
