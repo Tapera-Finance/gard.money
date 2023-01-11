@@ -249,10 +249,11 @@ export default function StakeDetails() {
             justifyContent: "center",
           }}
         ></div>
-        <Container style={{ maxWidth: `${mobile ? "90%" : ""}` }}>
+        <Container style={{ maxWidth: `${mobile ? "95%" : ""}` }}>
           <FirstRow>{"Staking Pools (Auto-Compounding)"}</FirstRow>
           <StakeTitle>
               <Heading>No-Lock GARD</Heading>
+              {mobile ? <></> : <Heading>You have {maxStake.toFixed(2)} GARD</Heading>}
           </StakeTitle>
           <SecondThirdCondensed mobile={mobile}>
             <SecondRow mobile={mobile}>
@@ -260,6 +261,7 @@ export default function StakeDetails() {
               <Heading>Type</Heading>
               <Heading>Duration</Heading>
               <Heading>APR</Heading>
+              {mobile ? <Heading>GARD Balance</Heading> : <></>}
               {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
@@ -277,6 +279,7 @@ export default function StakeDetails() {
               </TypeCont>
               <Heading>No-Lock</Heading>
               <Heading>{`${NLAPY.toFixed(2)}%`}</Heading>
+              {mobile ? <Heading>{maxStake.toFixed(2)} GARD</Heading> : <></>}
               {mobile || (window.innerWidth < 760) ? (
                 <></>
               ) : (
@@ -347,6 +350,7 @@ export default function StakeDetails() {
           </FourthRow>
           <StakeTitle mobile={mobile}>
               <Heading>No-Lock GARDIAN</Heading>
+              {mobile ? <></> : <Heading>You have {maxGARDIANStake} GARDIAN</Heading>}
           </StakeTitle>
           <SecondThirdCondensed mobile={mobile}>
             <SecondRow mobile={mobile}>
@@ -354,6 +358,7 @@ export default function StakeDetails() {
               <Heading>Type</Heading>
               <Heading>Duration</Heading>
               <Heading>APR</Heading>
+              {mobile ? <Heading>GARDIAN Balance</Heading> : <></>}
               {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
@@ -371,6 +376,7 @@ export default function StakeDetails() {
               </TypeCont>
               <Heading>No-Lock</Heading>
               <Heading>{`${(100*(100 * 1000000/GARDIAN_TVL)).toFixed(2)}%`}</Heading>
+              {mobile ? <Heading>{maxGARDIANStake} GARDIAN</Heading> : <></>}
               {mobile || (window.innerWidth < 760) ? (
                 <></>
               ) : (
@@ -636,9 +642,7 @@ const Container = styled.div`
   border-radius: 10px;
   justify-self: center;
   margin-top: 25px;
-  @media (${device.tablet}) {
-    width: 80vw;
-  }
+  margin-bottom: 100px;
 `;
 
 const FirstRow = styled.div`
@@ -675,10 +679,10 @@ const SecondRow = styled.div`
   `}
 `;
 const StakeTitle = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
   margin-top: 9px;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   align-content: center;
   background: #172756;
   padding-right: 22px;
