@@ -249,9 +249,9 @@ export default function StakeDetails() {
         ></div>
         <Container style={{ maxWidth: `${mobile ? "90%" : ""}` }}>
           <FirstRow>{"Staking Pools (Auto-Compounding)"}</FirstRow>
-          <SecondRow mobile={mobile}>
+          <StakeTitle>
               <Heading>No-Lock GARD</Heading>
-          </SecondRow>
+          </StakeTitle>
           <SecondThirdCondensed mobile={mobile}>
             <SecondRow mobile={mobile}>
               <Heading>TVL</Heading>
@@ -343,10 +343,10 @@ export default function StakeDetails() {
               <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={handleUnstake} />
             </div>
           </FourthRow>
-          <SecondThirdCondensed mobile={mobile}>
-          <SecondRow mobile={mobile}>
+          <StakeTitle mobile={mobile}>
               <Heading>No-Lock GARDIAN</Heading>
-          </SecondRow>
+          </StakeTitle>
+          <SecondThirdCondensed mobile={mobile}>
             <SecondRow mobile={mobile}>
               <Heading>TVL</Heading>
               <Heading>Type</Heading>
@@ -669,6 +669,17 @@ const SecondRow = styled.div`
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, 40px [col-start]);
   `}
+`;
+const StakeTitle = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 9px;
+  justify-content: center;
+  align-content: center;
+  background: #172756;
+  padding-right: 22px;
+  padding-left: 22px;
+  height: 44px;
 `;
 const ThirdRow = styled.div`
   display: grid;
