@@ -162,6 +162,7 @@ export default function AccountContent() {
           style={{
             marginBottom: 12
           }}
+          pageHeader={false}
         />
         {tabs[selectedTab]}
       </div>

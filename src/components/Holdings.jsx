@@ -128,6 +128,7 @@ export default function Holdings() {
               two: "Borrows",
               three: "Stakes",
             }}
+            pageHeader={false}
           />
         </div>
       </TableHeading>
@@ -157,6 +158,7 @@ export default function Holdings() {
               two: "Borrows",
               three: "Stakes",
             }}
+            pageHeader={false}
           />
         </div>
       </TableHeading>
@@ -185,6 +187,7 @@ export default function Holdings() {
               two: "Borrows",
               three: "Stakes",
             }}
+            pageHeader={false}
           />
         </div>
       </TableHeading>

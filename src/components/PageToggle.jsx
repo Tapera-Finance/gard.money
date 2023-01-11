@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 import { device } from "../styles/global";
 import Effect from "./Effect";
 
-export default function PageToggle({ selectedTab, tabs, className }) {
+export default function PageToggle({ selectedTab, tabs, className, pageHeader=true }) {
   const [one, setOne] = useState(true);
   const [two, setTwo] = useState(false);
   const [three, setThree] = useState(false);
@@ -22,7 +22,9 @@ export default function PageToggle({ selectedTab, tabs, className }) {
           }
         }}
       >
-        <Effect title={tabs.one} hasToolTip={true} noMarginBottom={true}><Btn selected={one}>{tabs.one}</Btn></Effect>
+        {pageHeader ? (<Effect title={tabs.one} hasToolTip={true} noMarginBottom={true}><Btn selected={one}>{tabs.one}</Btn></Effect>) 
+        : (<Btn selected={one}>{tabs.one}</Btn>)
+        }
       </Box>
       {tabs.two ? (
         <Box
