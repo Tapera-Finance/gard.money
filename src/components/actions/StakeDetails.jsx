@@ -253,7 +253,7 @@ export default function StakeDetails() {
           <FirstRow>{"Staking Pools (Auto-Compounding)"}</FirstRow>
           <StakeTitle>
               <Heading>No-Lock GARD</Heading>
-              {mobile ? <></> : <Heading>You have {maxStake.toFixed(2)} GARD</Heading>}
+              {mobile ? <></> : <Heading>You have {Math.trunc(maxStake*Math.pow(10, 2))/Math.pow(10, 2)} GARD</Heading>}
           </StakeTitle>
           <SecondThirdCondensed mobile={mobile}>
             <SecondRow mobile={mobile}>
