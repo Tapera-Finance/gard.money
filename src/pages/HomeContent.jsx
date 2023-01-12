@@ -615,15 +615,16 @@ const Container = styled.div`
   border: 1px solid white;
   border-radius: 10px;
 
+  ${(props) => props.mobile && css`
+  width: 90%;
+  `}
+
   ${(props) =>
     props.expert &&
     css`
       /* margin-right: 30px; */
     `
   }
-  ${(props) => props.mobile && css`
-    width: 90%;
-  `}
 
 `;
 
