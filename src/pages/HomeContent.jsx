@@ -183,7 +183,7 @@ export default function HomeContent() {
   const [chainData, setChainData] = useState("");
   const [governors, setGovernors] = useState("Loading...");
   const [allOpen, setAllOpen] = useState(true);
-  const [difficulty, setDifficulty] = useState("Help Me Out");
+  const [difficulty, setDifficulty] = useState("DeFi Expert");
   const [gardInWallet, setGardInWallet] = useState(false);
   const [gaining, setGaining] = useState(false);
   const navigate = useNavigate();
@@ -395,11 +395,27 @@ export default function HomeContent() {
       >
         <ToggleBox>
           <BinaryToggle
-            optionA="Help Me Out"
-            optionB="DeFi Expert"
+            optionA="DeFi Expert"
+            optionB="Help Me Out"
             selectedOption={setDifficulty}
           />
         </ToggleBox>
+        {difficulty === "DeFi Expert" ? <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
+            <BoldText>Quick Actions</BoldText>
+            <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
+              {buttons.map((action) => {
+                return (
+                  <PrimaryButton
+                    disabled={!walletAddress}
+                    text={action}
+                    blue={true}
+                    onClick={() => navigate(`/${action.toLowerCase()}`)}
+                    key={Math.random()}
+                  />
+                );
+              })}
+            </AccessBox>
+          </div> : <></>}
         <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
           <Items>
             {homeDetails.length && homeDetails.length > 0
@@ -499,22 +515,7 @@ export default function HomeContent() {
             />
           </StepContainer>
         ) : (
-          <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
-            <BoldText>Quick Actions</BoldText>
-            <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
-              {buttons.map((action) => {
-                return (
-                  <PrimaryButton
-                    disabled={!walletAddress}
-                    text={action}
-                    blue={true}
-                    onClick={() => navigate(`/${action.toLowerCase()}`)}
-                    key={Math.random()}
-                  />
-                );
-              })}
-            </AccessBox>
-          </div>
+          <></>
         )}
       </div>
     </HomeWrapper>
@@ -546,7 +547,7 @@ const AccessBox = styled.div`
   justify-content: center;
   width: 100%;
   margin-top: 20px;
-  margin-bottom: 100px;
+  margin-bottom: 20px;
   align-items: center;
   ${(props) =>
     props.expert &&
@@ -613,16 +614,18 @@ const Container = styled.div`
   border: 1px solid white;
   border-radius: 10px;
 
-  ${(props) => props.mobile && css`
-    width: 90%;
-  `}
-
   ${(props) =>
     props.expert &&
     css`
+    margin-bottom: 250px;
       /* margin-right: 30px; */
     `
   }
+  ${(props) => props.mobile && css`
+    width: 90%;
+    margin-bottom: 100px;
+  `}
+
 `;
 
 const Items = styled.div`
