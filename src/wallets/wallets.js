@@ -3,6 +3,7 @@ import MyAlgoConnect from "@randlabs/myalgo-connect";
 import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import { PeraWalletConnect } from "@perawallet/connect";
+import { DeflyWalletConnect } from "@blockshake/defly-connect";
 import { psToken } from "./keys";
 import { updateCDPs } from "../transactions/cdp";
 import { ids } from "../transactions/ids";
@@ -13,6 +14,7 @@ import buffer from "buffer";
 const { Buffer } = buffer;
 let nfd_updated = 0
 const peraWallet = new PeraWalletConnect();
+const deflyWallet = new DeflyWalletConnect();
 
 function sleep(seconds) {
   return new Promise((resolve) => setTimeout(resolve, 1000 * seconds));
@@ -164,15 +166,23 @@ export function disconnectWallet() {
 }
 
 
+async function reconnect(conector) {
+  let reconnectAccounts = await conector.reconnectSession() // Ensures pera can reconnect
+  conector.connector?.on("disconnect", disconnectWallet)
+  await updateWalletInfo()
+  return
+}
+
+
 // Loading in the stored wallet
 const storedWallet = localStorage.getItem("wallet");
 if (!(storedWallet === null) && !(storedWallet === "undefined")) {
   activeWallet = JSON.parse(storedWallet);
   console.log(activeWallet)
   if (activeWallet.type == "Pera") {
-    let peraAccounts = await peraWallet.reconnectSession() // Ensures pera can reconnect
-    peraWallet.connector?.on("disconnect", disconnectWallet)
-    await updateWalletInfo()
+    await reconnect(peraWallet)
+  } else if (activeWallet.type == "Defly") {
+    await reconnect(deflyWallet)
   } else if (activeWallet.type == "AlgorandWallet") {
     disconnectWallet() // Old Pera Wallet - drop that
   } else if (activeWallet.type != "Exodus" || window.exodus.algorand.isConnected) {
@@ -248,6 +258,26 @@ function isiOS() {
   );
 }
 
+async function connectHelper(connector, type) {
+  let accounts;
+  // Actually getting the connection
+  try {
+    accounts = await connector.connect()
+  } catch(error) {
+    if (error?.data?.type == "SESSION_CONNECT") {
+      connector.disconnect()
+      accounts = await connector.connect()
+    } else {
+      console.log(error?.data?.type)
+      throw error; // TODO better error handling
+    }
+  }
+  activeWallet = {};
+  activeWallet.address = accounts[0];
+  activeWallet.type = type;
+  return
+}
+
 export async function connectWallet(type, address) {
   // XXX: Only MyAlgoConnect should be used for testing other functionality at present
   // XXX: A future improvement would allow users to select a specific wallet based upon some displayed info, rather than limiting them to one
@@ -319,22 +349,11 @@ export async function connectWallet(type, address) {
       break;
     }
     case "Pera": {
-      let accounts;
-      // Actually getting the connection
-      try {
-        accounts = await peraWallet.connect()
-      } catch(error) {
-        if (error?.data?.type == "SESSION_CONNECT") {
-          peraWallet.disconnect()
-          accounts = await peraWallet.connect()
-        } else {
-          console.log(error?.data?.type)
-          throw error; // TODO better error handling
-        }
-      }
-      activeWallet = {};
-      activeWallet.address = accounts[0];
-      activeWallet.type = "Pera";
+      await connectHelper(peraWallet, "Pera")
+      break;
+    }
+    case "Defly": {
+      await connectHelper(deflyWallet, "Defly")
       break;
     }
     default:
@@ -410,8 +429,8 @@ export async function signGroup(info, txnarray) {
     case "MyAlgoConnect": {
       return await signSet(myAlgoConnect, senderAddressObj, txnarray)
     }
+    case "Defly":
     case "Pera": {
-      
       const txnsToSign = txnarray.map((txn) => {
         if (!sameSender(txn["from"], senderAddressObj)) {
           return {
@@ -426,8 +445,12 @@ export async function signGroup(info, txnarray) {
         };
       });
       
-      
-      const result = await peraWallet.signTransaction([txnsToSign])
+      let result;
+      if (activeWallet.type === "Pera") {
+        result = await peraWallet.signTransaction([txnsToSign])
+      } else {
+        result = await deflyWallet.signTransaction([txnsToSign])
+      }
       
       const signed = result.map((element) => {
         return element

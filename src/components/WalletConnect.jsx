@@ -70,7 +70,7 @@ export default function WalletConnect() {
           body: (
             <WalletOptions
               onClick={async (type) => {
-                  if (type !== "Pera") {
+                  if (type !== "Pera" && type !== "Defly") {
                     setModalCanAnimate(true);
                     setLoading(true);
                   }
@@ -285,14 +285,30 @@ function WalletOptions({ onClick }) {
       <WalletOption
         style={{ marginBottom: 17 }}
         onClick={() => {
-          onClick("AlgoSigner");
+          onClick("Pera");
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
-          <img src={AlgoSignerLogo} style={{ width: 60 }} />
+          <img src={PeraLogo} style={{ width: 40 }} />
         </div>
         <div>
-          <WalletOptionText>AlgoSigner</WalletOptionText>
+          <WalletOptionText>Pera Wallet</WalletOptionText>
+        </div>
+        <div>
+          <img src={arrow} />
+        </div>
+      </WalletOption>
+      <WalletOption
+        style={{ marginBottom: 17 }}
+        onClick={() => {
+          onClick("Defly");
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img src={PeraLogo} style={{ width: 40 }} />
+        </div>
+        <div>
+          <WalletOptionText>Defly Wallet</WalletOptionText>
         </div>
         <div>
           <img src={arrow} />
@@ -317,22 +333,6 @@ function WalletOptions({ onClick }) {
       <WalletOption
         style={{ marginBottom: 17 }}
         onClick={() => {
-          onClick("Pera");
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <img src={PeraLogo} style={{ width: 40 }} />
-        </div>
-        <div>
-          <WalletOptionText>Pera Wallet</WalletOptionText>
-        </div>
-        <div>
-          <img src={arrow} />
-        </div>
-      </WalletOption>
-      <WalletOption
-        style={{ marginBottom: 17 }}
-        onClick={() => {
           onClick("Exodus");
         }}
       >
@@ -341,6 +341,22 @@ function WalletOptions({ onClick }) {
         </div>
         <div>
           <WalletOptionText>Exodus Wallet</WalletOptionText>
+        </div>
+        <div>
+          <img src={arrow} />
+        </div>
+      </WalletOption>
+      <WalletOption
+        style={{ marginBottom: 17 }}
+        onClick={() => {
+          onClick("AlgoSigner");
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img src={AlgoSignerLogo} style={{ width: 60 }} />
+        </div>
+        <div>
+          <WalletOptionText>AlgoSigner</WalletOptionText>
         </div>
         <div>
           <img src={arrow} />
