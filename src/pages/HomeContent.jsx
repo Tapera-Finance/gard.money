@@ -532,6 +532,7 @@ const ToggleBox = styled.div`
 const HomeWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  min-height: 120vh;
   /* width: 94%; */
   /* align-items: flex-start; */
   ${(props) =>
@@ -617,13 +618,11 @@ const Container = styled.div`
   ${(props) =>
     props.expert &&
     css`
-    margin-bottom: 250px;
       /* margin-right: 30px; */
     `
   }
   ${(props) => props.mobile && css`
     width: 90%;
-    margin-bottom: 100px;
   `}
 
 `;
