@@ -616,7 +616,7 @@ const Container = styled.div`
   border-radius: 10px;
 
   ${(props) => props.mobile && css`
-    width: 90%;
+  width: 90%;
   `}
 
   ${(props) =>
@@ -625,6 +625,7 @@ const Container = styled.div`
       /* margin-right: 30px; */
     `
   }
+
 `;
 
 const Items = styled.div`
