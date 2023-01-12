@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import PageToggle from "./PageToggle";
 import Table from "./Table";
 import { formatToDollars } from "../utils";
@@ -59,6 +59,7 @@ let walletTotal = accumulateTotal(user_assets, "value");
 export default function Holdings() {
   const [borrowTotal, setBorrowTotal] = useState("0");
   const [stakeTotal, setStakeTotal] = useState("0");
+  const [mobile, setMobile] = useState(isMobile());
 
   const cdps = CDPsToList();
 
@@ -99,6 +100,10 @@ export default function Holdings() {
     setStakeTotal((noLock / 1000000 + parseFloat((await accruePromise) / 1000000)).toString())
   }, []);
 
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
+
   const [currentPrice, setPrice] = useState("Loading...");
   const [selectedTab, setSelectedTab] = useState("one");
   const curr = getAssets(algo_price).map((x) => {
@@ -114,13 +119,13 @@ export default function Holdings() {
       <TableHeading>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
-            <Title>Wallet {`(${formatToDollars(walletTotal.toString())} Total Value)`}</Title>
+            <Title mobile={mobile}>Wallet {`(${formatToDollars(walletTotal.toString())} Total Value)`}</Title>
           </div>
           <CountContainer>
-            <CountText>LP Tokens excluded</CountText>
+            <CountText mobile={mobile}>LP Tokens excluded</CountText>
           </CountContainer>
         </div>
-        <div style={{ marginRight: 20 }}>
+        {mobile ? <></> : <div style={{ marginRight: 20 }}>
           <SubToggle
             selectedTab={setSelectedTab}
             tabs={{
@@ -130,7 +135,7 @@ export default function Holdings() {
             }}
             pageHeader={false}
           />
-        </div>
+        </div>}
       </TableHeading>
           <HoldTable
           data={transformed_assets.length ? transformed_assets : curr}
@@ -144,13 +149,13 @@ export default function Holdings() {
       >
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
-            <Title>Borrow Positions {`(${formatToDollars(borrowTotal.toString())} Total Value)`}</Title>
+            <Title mobile={mobile}>Borrow Positions {`(${formatToDollars(borrowTotal.toString())} Total Value)`}</Title>
           </div>
           <CountContainer>
-            <CountText>{(cdpData.length).toString() + ' Position'}{cdpData.length != 1 ? 's' : ''}</CountText>
+            <CountText mobile={mobile}>{(cdpData.length).toString() + ' Position'}{cdpData.length != 1 ? 's' : ''}</CountText>
           </CountContainer>
         </div>
-        <div style={{ marginRight: 20 }}>
+        {mobile ? <></> : <div style={{ marginRight: 20 }}>
           <SubToggle
             selectedTab={setSelectedTab}
             tabs={{
@@ -160,7 +165,7 @@ export default function Holdings() {
             }}
             pageHeader={false}
           />
-        </div>
+        </div>}
       </TableHeading>
       <BorrowTable
         data={cdpData}
@@ -173,13 +178,13 @@ export default function Holdings() {
       <TableHeading>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
-            <Title>Stake Positions {`(${formatToDollars((stakeTotal).toString())} Total Value)`}</Title>
+            <Title mobile={mobile}>Stake Positions {`(${formatToDollars((stakeTotal).toString())} Total Value)`}</Title>
           </div>
           <CountContainer>
-            <CountText>GARD pools only</CountText>
+            <CountText mobile={mobile}>GARD pools only</CountText>
           </CountContainer>
         </div>
-        <div style={{ marginRight: 20 }}>
+        {mobile ? <></> : <div style={{ marginRight: 20 }}>
           <SubToggle
             selectedTab={setSelectedTab}
             tabs={{
@@ -189,7 +194,7 @@ export default function Holdings() {
             }}
             pageHeader={false}
           />
-        </div>
+        </div>}
       </TableHeading>
           <HoldTable
           data={[
@@ -207,7 +212,19 @@ export default function Holdings() {
 
   return (
     <div>
-      {tabs[selectedTab]}
+      {mobile ? <div>
+        <SubToggle
+          mobile={mobile}
+          selectedTab={setSelectedTab}
+          tabs={{
+            one: "Wallet",
+            two: "Borrows",
+            three: "Stakes",
+          }}
+          pageHeader={false}
+        />
+      </div> : <></>}
+      <div>{tabs[selectedTab]}</div>
     </div>
   );
 }
@@ -215,6 +232,9 @@ export default function Holdings() {
 const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
+  ${(props) => props.mobile && css`
+  font-size: 16px;
+  `}
 `;
 
 const CountContainer = styled.div`
@@ -230,23 +250,19 @@ const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: white;
+  ${(props) => props.mobile && css`
+  font-size: 10px;
+  `}
 `;
 
 const SubToggle = styled(PageToggle)`
-  float: right;
   background: transparent;
   text {
     text-decoration: unset;
   }
-  @media (${device.tablet}) {
-    flex-direction: column;
-    transform: scale(0.9);
-  }
-  @media (${device.mobileL}) {
-    flex-direction: column;
-    transform: scale(0.8);
-
-  }
+  ${(props) => props.mobile && css`
+  margin-top: 20px;
+  `}
 `;
 
 const HoldTable = styled(Table)`

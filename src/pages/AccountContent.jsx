@@ -185,6 +185,8 @@ export default function AccountContent() {
 
 const AcctPgCont = styled.div`
   /* max-width: 90vw; */
+  width: 95%;
+  margin: auto;
 `
 
 const AcctPageToggle = styled(PageToggle)`

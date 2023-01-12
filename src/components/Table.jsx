@@ -31,6 +31,11 @@ export default function Table({
   const [shownRows, setShownRows] = useState(data.slice(0, 10));
   const [currentPageStart, setCurrentPageStart] = useState(1);
   const keys = Object.keys(data[0]);
+  const [mobile, setMobile] = useState(isMobile());
+
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -83,13 +88,13 @@ export default function Table({
             >
               {columns
                 ? columns.map((value, index) => {
-                    return <HeaderElement key={index}>{value}</HeaderElement>;
+                    return <HeaderElement mobile={mobile} key={index}>{value}</HeaderElement>;
                   })
                 : keys.map((value, index) => {
                     if (value === "button") return;
                     if (value === "id" && noID) return;
                     return (
-                      <HeaderElement key={index}>
+                      <HeaderElement mobile={mobile} key={index}>
                         {camelToWords(value)}
                       </HeaderElement>
                     );
@@ -104,9 +109,9 @@ export default function Table({
                   {keys.map((keyVal, keyIndex) => {
                     if (keyVal == "id" && noID) return;
                     if (keyVal === "name" || keyVal === "id") {
-                      <Cell key={keyIndex} className="left-column-cell">{value[keyVal]}</Cell>
+                      <Cell  mobile={mobile} key={keyIndex} className="left-column-cell">{value[keyVal]}</Cell>
                     }
-                    return <Cell key={keyIndex}>{value[keyVal]}</Cell>;
+                    return <Cell mobile={mobile} key={keyIndex}>{value[keyVal]}</Cell>;
                   })}
                 </TableRow>
               );
@@ -244,6 +249,11 @@ const HeaderElement = styled.th`
   :first-child {
     padding-left: 25px;
   }
+  ${(props) =>
+    props.mobile &&
+    css`
+    font-size: 12px;
+  `}
 `;
 const TableRow = styled.tr`
   height: 60px;
@@ -269,6 +279,11 @@ const Cell = styled.td`
     margin-right: 20px;
     border-bottom-right-radius: 10px;
   }
+  ${(props) =>
+    props.mobile &&
+    css`
+    font-size: 12px;
+  `}
 `;
 const PaginationBar = styled.div`
   background: #fcfcfd;
