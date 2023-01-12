@@ -185,6 +185,7 @@ export default function AccountContent() {
 
 const AcctPgCont = styled.div`
   /* max-width: 90vw; */
+  min-height: 100vh;
 `
 
 const AcctPageToggle = styled(PageToggle)`

@@ -33,13 +33,11 @@ export default function Table({
   const keys = Object.keys(data[0]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     setShownRows(data.slice(0, rowsPerPage));
     setCurrentPageStart(1);
   }, [rowsPerPage]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     setShownRows(
       data.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
     );
