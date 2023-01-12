@@ -183,7 +183,7 @@ export default function HomeContent() {
   const [chainData, setChainData] = useState("");
   const [governors, setGovernors] = useState("Loading...");
   const [allOpen, setAllOpen] = useState(true);
-  const [difficulty, setDifficulty] = useState("Help Me Out");
+  const [difficulty, setDifficulty] = useState("Defi Expert");
   const [gardInWallet, setGardInWallet] = useState(false);
   const [gaining, setGaining] = useState(false);
   const navigate = useNavigate();
@@ -395,8 +395,8 @@ export default function HomeContent() {
       >
         <ToggleBox>
           <BinaryToggle
-            optionA="Help Me Out"
-            optionB="DeFi Expert"
+            optionA="DeFi Expert"
+            optionB="Help Me Out"
             selectedOption={setDifficulty}
           />
         </ToggleBox>
