@@ -514,32 +514,6 @@ export default function Govern() {
               <div style={{ marginBottom: 16 }}>
                 <InputSubtitle>{`${maxBal} Algos will be committed`}</InputSubtitle>
               </div>
-              <div style={{ marginBottom: 8 }}>
-                <InputTitle>
-                  Optional: Send governance rewards directly to your ALGO
-                  wallet?
-                </InputTitle>
-              </div>
-              <div>
-                <label
-                  style={{
-                    display: "flex",
-                    alignContent: "center",
-                  }}
-                >
-                  <input
-                    type={"checkbox"}
-                    checked={toWallet}
-                    onChange={handleCheckboxChange1}
-                  />
-                  <InputSubtitle>
-                    Governance rewards will be sent to your{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      {toWallet ? "ALGO Wallet" : "CDP"}
-                    </span>
-                  </InputSubtitle>
-                </label>
-              </div>
             </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
               <PrimaryButton
@@ -553,7 +527,7 @@ export default function Govern() {
                     const res = await commitCDP(
                       selectedAccount,
                       commit,
-                      toWallet,
+                      true,
                     );
                     if (res.alert) {
                       dispatch(setAlert(res.text));
