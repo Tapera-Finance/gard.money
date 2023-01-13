@@ -161,7 +161,6 @@ export default function Govern() {
   const [modal2Visible, setModal2Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [modal2CanAnimate, setModal2CanAnimate] = useState(false);
-  const [toWallet, setToWallet] = useState(true);
   const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
   const dispatch = useDispatch();
@@ -192,10 +191,6 @@ export default function Govern() {
   useEffect(() => {
     if (!getWallet()) return navigate("/");
   }, []);
-
-  const handleCheckboxChange1 = () => {
-    setToWallet(!toWallet);
-  };
 
   var sessionStorageSetHandler = function (e) {
     setLoadingText(JSON.parse(e.value));
