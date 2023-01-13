@@ -233,15 +233,6 @@ export default function StakeDetails() {
               </div>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-            }}
-          >
-            <Link>Stake GARD to Earn Rewards</Link>
-          </div>
         </Banner>
         <div
           style={{
