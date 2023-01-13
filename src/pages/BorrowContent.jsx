@@ -98,7 +98,6 @@ export default function BorrowContent() {
   const [mGARD, setGARD] = useState("");
   const [maxGARD, setMaxGARD] = useState(0);
   const [commitChecked, setCommitChecked] = useState(false);
-  const [toWallet, setToWallet] = useState(true);
   const [isGAlgo, setIsGAlgo] = useState(false);
   const [createPositionShown, setCreatePositionShown] = useState(false);
   const assets = ["ALGO", "gALGO"];
@@ -107,10 +106,6 @@ export default function BorrowContent() {
 
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
-  };
-
-  const handleCheckboxChange1 = () => {
-    setToWallet(!toWallet);
   };
 
   const handleSelect = (e) => {
@@ -588,7 +583,6 @@ export default function BorrowContent() {
                     getMinted(),
                     0,
                     commitChecked,
-                    toWallet,
                   )
                 } else {
                   res = await openCDP(

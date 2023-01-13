@@ -38,13 +38,11 @@ export default function Table({
   }, [])
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     setShownRows(data.slice(0, rowsPerPage));
     setCurrentPageStart(1);
   }, [rowsPerPage]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     setShownRows(
       data.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
     );
