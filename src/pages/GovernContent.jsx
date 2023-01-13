@@ -3,7 +3,7 @@ import { useSelector, shallowEqual } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import Details from "../components/Details";
 import PrimaryButton from "../components/PrimaryButton";
 import RewardNotice from "../components/RewardNotice";
@@ -24,6 +24,7 @@ import { getAlgoGovAPR } from "../components/Positions";
 import { isFirefox } from "../utils";
 import { device, size } from "../styles/global";
 import { voteCDPs } from "../transactions/cdp";
+import { isMobile } from "../utils";
 
 const axios = require("axios");
 
@@ -139,6 +140,7 @@ export async function getCommDict(){
 
 
 export default function Govern() {
+  const [mobile, setMobile] = useState(isMobile());
   const walletAddress = useSelector(state => state.wallet.address)
   const [maxBal, setMaxBal] = useState("");
   const [commit, setCommit] = useState(0);
@@ -191,6 +193,10 @@ export default function Govern() {
   useEffect(() => {
     if (!getWallet()) return navigate("/");
   }, []);
+
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
 
   var sessionStorageSetHandler = function (e) {
     setLoadingText(JSON.parse(e.value));
@@ -281,6 +287,7 @@ export default function Govern() {
           blue={true}
             text={value.balance === value.committed ? "Committed" : "Commit More"}
             left_align={true}
+            tableShrink={mobile}
             onClick={() => {
               if (value.id == "N/A") {
                 return;
@@ -302,6 +309,7 @@ export default function Govern() {
             text={"Commit"}
             blue={true}
             left_align={true}
+            tableShrink={mobile}
             onClick={() => {
               if (value.id == "N/A") {
                 return;
@@ -321,6 +329,7 @@ export default function Govern() {
             blue={true}
             text={"Governor Page"}
             left_align={true}
+            tableShrink={mobile}
             onClick={() => {
               window.open(getGovernorPage(account_id));
             }}
@@ -330,7 +339,7 @@ export default function Govern() {
     };
   });
   return ( !walletAddress ? navigate("/") :
-    <GovContainer>
+    <GovContainer mobile={mobile}>
       {loading ? (
         <LoadingOverlay
           text={loadingText}
@@ -398,7 +407,7 @@ export default function Govern() {
             justifyContent: "space-between",
             textAlign: "center",
             background: "#0E1834",
-            padding: "20px 20px 0px",
+            padding: `${mobile ? "0px 0px 0px": "20px 20px 0px"}`,
             margin: "auto",
             transform: "rotate(180deg)",
 
@@ -410,7 +419,7 @@ export default function Govern() {
               {/* 1761180257000 */}
             </CountDownContainer>
             <div>
-              <GovernDetails>
+              <GovernDetails mobile={mobile}>
                 {details.length && details.length > 0
                   ? details.map((d) => {
                       return (
@@ -432,21 +441,25 @@ export default function Govern() {
           <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on Foundation Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-6")}/></legend>
         </fieldset>
       </GovInfoContainer>
-      <PositionTableContainer
-      >
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
-          <div style={{ marginLeft: 25, marginRight: 8 }}>
-            <Title>Algorand Positions</Title>
+      {/* <TableContainer mobile={mobile}> */}
+        <PositionTableContainer
+        mobile={mobile}
+        >
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
+            <div style={{ marginLeft: 25, marginRight: 8 }}>
+              <Title mobile={mobile}>Algorand Positions</Title>
+            </div>
+            <CountContainer>
+              <CountText mobile={mobile}>{cdps.length}{cdps.length == 1 ? " Position": " Positions" }</CountText>
+            </CountContainer>
           </div>
-          <CountContainer>
-            <CountText>{cdps.length}{cdps.length == 1 ? " Position": " Positions" }</CountText>
-          </CountContainer>
-        </div>
-        <div style={{ marginRight: 20 }}>
-          <PrimaryButton text="Commit All" blue={true} disabled={true}/>
-        </div>
-      </PositionTableContainer>
-      <CDPTable data={cdps} />
+          <div style={{ margin: `${mobile ? "0px 5px 0px" : "0px 20px 0px"}`}}>
+            <PrimaryButton text="Commit All" blue={true} disabled={true} tableShrink={mobile}/>
+          </div>
+        </PositionTableContainer>
+        <CDPTable data={cdps} mobile={mobile}/>
+      {/* </TableContainer> */}
+
       <div style={{
             display: "flex",
             flexDirection: "row",
@@ -807,25 +820,6 @@ export default function Govern() {
 }
 
 const CDPTable = styled(Table)`
-  @media (${device.mobileL}) {
-    transform: scale(0.9);
-    margin-top: -9px;
-  }
-  @media (max-width: 391px) {
-    margin-top: -16px;
-    transform: scale(0.81) translateX(-2px) translateY(-6px);
-  }
-  @media (${device.mobileM}) {
-    margin-top: -16px;
-    transform: scale(0.71) translateX(-22px) translateY(-16px);
-  }
-  @media (${device.mobileS}) {
-    transform: scale(0.61) translateX(-48px) translateY(-16px);
-  }
-
-  @media (max-width: 245px) {
-    transform: scale(0.51) translateX(-68px) translateY(-16px);
-  }
 `
 
 const PositionTableContainer = styled.div`
@@ -838,20 +832,11 @@ const PositionTableContainer = styled.div`
   background: #0E1834;
   border: 1px solid white;
   border-bottom: none;
-  @media (${device.tablet}) {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-  @media (${device.mobileL}) {
-    transform: scale(0.9);
-  }
-  @media (max-width: 391px) {
-    transform: scale(0.8)
-  }
 `
 
 const GovContainer = styled.div`
-
+margin: auto;
+width: 95%;
 `
 
 const GovInfoContainer = styled.div`
@@ -860,16 +845,6 @@ const GovInfoContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  @media (${device.mobileL}) {
-    transform: scale(0.9);
-
-  }
-  @media (max-width: 391px) {
-    transform: scale(0.8)
-  }
-  @media (${device.mobileS}) {
-    transform: scale(0.7);
   }
 `
 
@@ -909,6 +884,10 @@ const GovernDetails = styled.div`
   border-radius: 10px;
   background: #0e1834;
   align-items: flex-end;
+  ${(props) => props.mobile && css`
+  grid-template-columns: 1fr;
+  padding: 0px 0px 30px;
+`}
 `;
 const Item = styled.div`
   display: flex;
@@ -926,6 +905,9 @@ const CountDownContainer = styled.div`
 const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
+  ${(props) => props.mobile && css`
+  font-size: 16px;
+  `}
 `;
 const Select = styled.select`
   width: 24.3055555555556vw;
@@ -945,6 +927,9 @@ const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: white;
+  ${(props) => props.mobile && css`
+  font-size: 10px;
+  `}
 `;
 const dummyCommits = [
   {
