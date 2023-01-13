@@ -400,7 +400,7 @@ export default function StakeDetails() {
           <FourthRow mobile={mobile}>
           <Effect
               title="Your Stake"
-              val={`${(noLockGardian + accruedGardian)} GARDIAN`}
+              val={`${Math.floor(noLockGardian + accruedGardian).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} GARDIAN`}
               hasToolTip={true}
             />
             <Effect
@@ -412,7 +412,7 @@ export default function StakeDetails() {
             />
             <Effect
               title="New Rewards"
-              val={accruedGardian}
+              val={Math.floor(accruedGardian).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
               hasToolTip={true}
             />
             <div

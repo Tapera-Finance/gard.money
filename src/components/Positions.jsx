@@ -347,7 +347,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                   />
                   {cdp.id + cdp.asaID === currentCDP ? (
                     <ToggleContainer mobile={mobile}>
-                      <PageToggle selectedTab={setSelectedTab} tabs={tabs} />
+                      <PageToggle selectedTab={setSelectedTab} tabs={tabs} pageHeader={false}/>
                       {selectedTab === "one" ? (
                         <BorrowMore
                           supplyPrice={supplyPrice}
