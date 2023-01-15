@@ -128,7 +128,7 @@ export default function Main(WrappedComponent, title) {
           style={{ background: "#172756" }}
         />
         <ContentContainer isOpen={isOpen}>
-          <Wrapper style={{maxWidth: `${mobile ? "100%" : ""}`}} >
+          <Wrapper mobile={mobile} style={{maxWidth: `${mobile ? "100%" : ""}`}} >
             <WrappedComponent />
           </Wrapper>
         </ContentContainer>
@@ -164,6 +164,7 @@ const Wrapper = styled.div`
     width: 100%;
   }
   ${(props) => props.mobile && css`
+    padding-top: 0px;
     max-width: 100%;
   `}
 `

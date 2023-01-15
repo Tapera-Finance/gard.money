@@ -25,7 +25,7 @@ import { checkStaked } from "../components/actions/StakeDetails";
 import { commitmentPeriodEnd } from "../globals";
 import { device } from "../styles/global";
 import { isMobile } from "../utils"
-
+import TextButton from "../components/TextButton";
 const fetchTvl = async () => {
   try {
     let res = await axios.get("https://api.llama.fi/protocol/gard");
@@ -183,12 +183,13 @@ export default function HomeContent() {
   const [chainData, setChainData] = useState("");
   const [governors, setGovernors] = useState("Loading...");
   const [allOpen, setAllOpen] = useState(true);
-  const [difficulty, setDifficulty] = useState("DeFi Expert");
+  const [difficulty, setDifficulty] = useState(mobile ? "DeFi Expert" : "Help Me Out");
   const [gardInWallet, setGardInWallet] = useState(false);
   const [gaining, setGaining] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
+  const [showMore, setShowMore] = useState(false)
 
   const [step2open, setStep2] = useState(true);
   const [step3open, setStep3] = useState(true);
@@ -285,6 +286,9 @@ export default function HomeContent() {
     },
   ];
 
+  const alwaysShown = homeDetails.slice(0, 4)
+  const additionalDetails = homeDetails.slice(4)
+
   useEffect(() => {
     setMobile(isMobile())
   }, [])
@@ -352,7 +356,7 @@ export default function HomeContent() {
                 flexDirection: "column",
               }}
             >
-              <div style={{ color: "#172756", fontSize: "10pt" }}>
+              <div style={{ color: "#172756", fontSize: "10pt", textAlign: "center" }}>
                 Earn protocol rewards boosted by the Algorand Foundation via
                 Aeneas grant!
               </div>
@@ -366,6 +370,7 @@ export default function HomeContent() {
             }}
           >
             <Link
+              mobile={mobile}
               onClick={() => {
                 walletAddress
                   ? navigate("/stake")
@@ -393,47 +398,93 @@ export default function HomeContent() {
           alignItems: "center",
         }}
       >
-        <ToggleBox>
+        {mobile ? <></> : <ToggleBox>
           <BinaryToggle
-            optionA="DeFi Expert"
-            optionB="Help Me Out"
+            optionA={mobile ? "DeFi Expert" : "Help Me Out"}
+            optionB={mobile ? "Help Me Out" : "DeFi Expert"}
             selectedOption={setDifficulty}
           />
-        </ToggleBox>
+        </ToggleBox>}
+        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
+          { mobile ? <Items>
+            {alwaysShown.map((d) => {
+              return (
+                <Item key={d.title} notShown={false}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+            {additionalDetails.map((d) => {
+              return (
+                <Item key={d.title} notShown={!showMore}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+          </Items> :
+          <Items>
+          {homeDetails.length && homeDetails.length > 0
+            ? homeDetails.map((d) => {
+                return (
+                  <Item key={d.title}>
+                    <Effect
+                      title={d.title}
+                      val={d.val}
+                      hasToolTip={d.hasToolTip}
+                      rewards={d.rewards}
+                    ></Effect>
+                  </Item>
+                );
+              })
+            : null}
+        </Items>
+          }
+        </Container>
+        {mobile ? <ManageCollapse
+          positioned={true}
+          text={showMore ? "Collapse":  "Show More Details"}
+          onClick={() => {
+            setShowMore(!showMore)
+          }}
+        /> : <></>}
+        {mobile ? <ToggleBox>
+          <BinaryToggle
+            optionA={mobile ? "DeFi Expert" : "Help Me Out"}
+            optionB={mobile ? "Help Me Out" : "DeFi Expert"}
+            selectedOption={setDifficulty}
+          />
+        </ToggleBox> : <></>}
         {difficulty === "DeFi Expert" ? <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
             <BoldText>Quick Actions</BoldText>
             <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
               {buttons.map((action) => {
                 return (
-                  <PrimaryButton
-                    disabled={!walletAddress}
-                    text={action}
-                    blue={true}
-                    onClick={() => navigate(`/${action.toLowerCase()}`)}
-                    key={Math.random()}
-                  />
+                  <div 
+                  style={{flex: "0 1 30%"}}
+                  key={Math.random()}
+                  >
+                    <PrimaryButton
+                      disabled={!walletAddress}
+                      text={action}
+                      blue={true}
+                      uniform={mobile}
+                      onClick={() => navigate(`/${action.toLowerCase()}`)}
+                    />
+                  </div>
                 );
               })}
             </AccessBox>
           </div> : <></>}
-        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
-          <Items>
-            {homeDetails.length && homeDetails.length > 0
-              ? homeDetails.map((d) => {
-                  return (
-                    <Item key={d.title}>
-                      <Effect
-                        title={d.title}
-                        val={d.val}
-                        hasToolTip={d.hasToolTip}
-                        rewards={d.rewards}
-                      ></Effect>
-                    </Item>
-                  );
-                })
-              : null}
-          </Items>
-        </Container>
         <div>
           {/* <Text
             style={{
@@ -556,7 +607,7 @@ const AccessBox = styled.div`
     `
   }
   ${(props) => props.mobile && css`
-    flex-direction: column;
+    flex-wrap: wrap;
     row-gap: 10px;
     height: 100%;
   `}
@@ -570,6 +621,10 @@ const Link = styled(PrimaryButton)`
   &:hover {
     background-color: #455278
   }
+  ${(props) => props.mobile && css`
+    margin-right: 0px;
+    margin-left: 5px;
+  `}
 `;
 
 const Banner = styled.div`
@@ -585,7 +640,7 @@ const Banner = styled.div`
   padding: 8px 6px 10px 8px;
   margin: 8px;
   @media (${device.tablet}) {
-    width: 100%;
+    width: 90%;
     ${(props) =>
     props.expert &&
     css`
@@ -617,13 +672,12 @@ const Container = styled.div`
   ${(props) =>
     props.expert &&
     css`
-    margin-bottom: 250px;
       /* margin-right: 30px; */
     `
   }
   ${(props) => props.mobile && css`
     width: 90%;
-    margin-bottom: 100px;
+    padding-bottom: 60px;
   `}
 
 `;
@@ -638,13 +692,20 @@ const Items = styled.div`
     grid-template-columns: repeat(2, 40%);
   }
   @media (max-width: 422px) {
-    grid-template-columns: repeat(1, 40%)
+    grid-template-columns: repeat(2, 40%);
   }
 `;
 
 const Item = styled.div`
   display: flex;
   flex-direction: column;
+  ${(props) =>
+    props.notShown &&
+    css`
+      display: none;
+  `}
+`;
+const ManageCollapse = styled(TextButton)`
 `;
 
 // styled components
