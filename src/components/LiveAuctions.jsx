@@ -1,6 +1,7 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState, useEffect } from "react";
+import styled, { css } from "styled-components";
 import Table from "./Table";
+import { isMobile } from "../utils";
 
 export default function LiveAuctions({
   OPTIONS,
@@ -11,6 +12,11 @@ export default function LiveAuctions({
   dummyMarketHistory,
   dummyLiveAuctions
 }) {
+  const [mobile, setMobile] = useState(isMobile());
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
+
   return (
     <div
       style={{
@@ -36,7 +42,7 @@ export default function LiveAuctions({
       >
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
-            <Title>
+            <Title mobile={mobile}>
               {selected === OPTIONS.LIVE_AUCTIONS
                 ? "Live Auctions"
                 : selected === OPTIONS.BIDS
@@ -45,7 +51,7 @@ export default function LiveAuctions({
             </Title>
           </div>
           <CountContainer>
-            <CountText>
+            <CountText mobile={mobile}>
               {selected === OPTIONS.LIVE_AUCTIONS
                 ? `${
                     open_defaulted == dummyLiveAuctions
@@ -92,6 +98,9 @@ const AuctionsTable = styled(Table)`
 const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
+  ${(props) => props.mobile && css`
+  font-size: 16px;
+  `}
 `;
 
 const CountContainer = styled.div`
@@ -105,4 +114,7 @@ const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: white;
+  ${(props) => props.mobile && css`
+  font-size: 10px;
+  `}  
 `;

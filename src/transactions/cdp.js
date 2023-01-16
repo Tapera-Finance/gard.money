@@ -494,7 +494,7 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
   return stxns
 }
 
-export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = false, toWallet = false) {
+export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = false, toWallet = true) {
 
   const openingMicroAssetAmount = parseInt(openingAssetAmount * 1000000) // XXX: This works for algos and galgos, but potentially not other assets
 

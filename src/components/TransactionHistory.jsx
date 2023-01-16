@@ -9,6 +9,7 @@ import { onSnapshot } from "firebase/firestore";
 import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png"
 import { device } from "../styles/global"
+import { isMobile } from "../utils";
 
 function mAlgosToAlgos(num) {
   return num / 1000000;
@@ -119,6 +120,7 @@ const formattedHistory = formatHistory(transHistory);
  */
 
 export default function TransactionHistory() {
+  const [mobile, setMobile] = useState(isMobile());
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPageStart, setCurrentPageStart] = useState(1);
   const [documents, setDocuments] = useState(formattedHistory);
@@ -126,6 +128,10 @@ export default function TransactionHistory() {
   const keys = formattedHistory.length
     ? Object.keys(formattedHistory[0])
     : ["No transaction history to display"];
+
+  useEffect(() => {
+    setMobile(isMobile())
+  }, [])
 
   useEffect(() => {
     if (typeof getWalletInfo() !== "undefined") {
@@ -145,13 +151,11 @@ export default function TransactionHistory() {
   }, [documents]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     setShownRows(documents.slice(0, rowsPerPage));
     setCurrentPageStart(1);
   }, [rowsPerPage]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     setShownRows(
       documents.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
     );
@@ -166,21 +170,13 @@ export default function TransactionHistory() {
 
   return (
     <TxnHistContainer>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignContent: "center",
-          paddingLeft: 24,
-          marginBottom: 19,
-          marginTop: 20
-        }}
-      >
-        <div style={{ marginRight: 8, fontWeight: "bolder" }}>
-          <Title>Transactions</Title>
+      <TableHeading>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
+          <div style={{ marginLeft: 25, marginRight: 8 }}>
+          <Title mobile={mobile}>Transactions</Title>
         </div>
         <CountContainer>
-          <CountText>
+          <CountText mobile={mobile}>
             {documents.length !== 0
               ? documents.length > 1
                 ? `${documents.length} Transactions`
@@ -189,6 +185,7 @@ export default function TransactionHistory() {
           </CountText>
         </CountContainer>
       </div>
+      </TableHeading>
       <GridBox>
         <TableGrid>
           <tbody>
@@ -303,7 +300,7 @@ export default function TransactionHistory() {
             </PaginationDiv>
           </PaginationBar>
         ) : (
-          <></>
+          <TableBottom></TableBottom>
         )}
       </GridBox>
     </TxnHistContainer>
@@ -312,46 +309,37 @@ export default function TransactionHistory() {
 
 const GridBox = styled.div`
   margin-bottom: 64px;
-  @media (${device.tablet}) {
-    align-self: center;
-    transform: scale(0.8);
-    margin-top: -70px;
-  }
 `
 
 const TxnHistContainer = styled.div`
-  @media (${device.tablet}) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
 `
 
 const PaginationDiv = styled.div`
   display: flex;
   flex-direction: row;
-  @media (${device.tablet}) {
-    transform: scale(0.9);
-    flex-direction: column;
-    margin-top: -18px;
-    overflow-x: scroll;
-    width: 60vw;
-  }
-  @media (${device.mobileL}) {
-    transform: scale(0.84);
-
-  }
-  @media (${device.mobileS}) {
-    transform: scale(0.8);
-  }
 `;
+const TableHeading = styled.div`
+  margin-top: 20px;
+  height: 70px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0E1834;
+  border: 1px solid white;
+  border-bottom: none;
+`
+
 
 // styled components
 const TableGrid = styled.table`
   border: 1px transparent;
   width: 100%;
-  margin: 10px;
   border-collapse: separate;
+  border: 1px solid white;
+  border-top: none;
+  border-bottom: none;
   border-spacing: 0px;
   overflow-x: scroll;
 
@@ -374,20 +362,6 @@ const TableGrid = styled.table`
   table tr:last-child td:last-child {
     border-bottom-right-radius: 6px;
   }
-  @media (${device.tablet}) {
-    transform: scale(0.9);
-    margin-top: -18px;
-    overflow-x: scroll;
-  }
-  @media (${device.mobileL}) {
-    transform: scale(0.8) translateX(-30px);
-    margin-top: -18px;
-
-  }
-  @media (${device.mobileS}) {
-    transform: scale(0.67) translateX(-30px);
-    margin-top: -38px;
-  }
 `;
 
 const AlgoImg = styled.img`
@@ -403,6 +377,9 @@ const GardImg = styled.img`
 const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
+  ${(props) => props.mobile && css`
+  font-size: 16px;
+  `}
 `;
 
 const CountContainer = styled.div`
@@ -415,6 +392,9 @@ const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: #999696;
+  ${(props) => props.mobile && css`
+  font-size: 10px;
+  `}
 `;
 
 const HeaderRow = styled.tr`
@@ -471,6 +451,14 @@ export const Cell = styled.td`
         `
       : null}
 `;
+const TableBottom = styled.div`
+  height: 10px;
+  background: #0f1733;
+  border: 1px solid white;
+  border-top: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+`;
 
 const PaginationBar = styled.div`
   background: rgba(13, 18, 39, 0.65);
@@ -481,6 +469,10 @@ const PaginationBar = styled.div`
   padding-left: 16;
   padding-right: 16;
   justify-content: space-between;
+  border: 1px solid white;
+  border-top: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 `;
 const PaginationText = styled.text`
   font-weight: normal;
