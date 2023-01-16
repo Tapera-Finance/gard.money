@@ -57,7 +57,7 @@ export default function WalletConnect(contentName) {
   const navigate = useNavigate();
   const walletAddress = useSelector((state) => state.wallet.address);
   const [mobile, setMobile] = useState(isMobile());
-  const accountPage = contentName.contentName.contentName == "Account"
+  const accountPage = contentName?.contentName?.contentName == "Account"
 
   useEffect(() => {
     setMobile(isMobile())
