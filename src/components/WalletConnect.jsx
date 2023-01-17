@@ -171,7 +171,14 @@ export default function WalletConnect(contentName) {
                 disconnectWallet();
                 dispatch(setWallet({ address: "" }));
               }}
-            /> :<></>) : <></>}
+            /> :<></>) : <WalletBarButton
+            text="Disconnect Wallet"
+            blue={true}
+            onClick={() => {
+              disconnectWallet();
+              dispatch(setWallet({ address: "" }));
+            }}
+          />}
           </BtnBox>
         ) : (
           <></>
