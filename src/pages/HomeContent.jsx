@@ -183,7 +183,7 @@ export default function HomeContent() {
   const [chainData, setChainData] = useState("");
   const [governors, setGovernors] = useState("Loading...");
   const [allOpen, setAllOpen] = useState(true);
-  const [difficulty, setDifficulty] = useState(mobile ? "DeFi Expert" : "Help Me Out");
+  const [difficulty, setDifficulty] = useState("DeFi Expert");
   const [gardInWallet, setGardInWallet] = useState(false);
   const [gaining, setGaining] = useState(false);
   const navigate = useNavigate();
@@ -400,8 +400,8 @@ export default function HomeContent() {
       >
         {mobile ? <></> : <ToggleBox>
           <BinaryToggle
-            optionA={mobile ? "DeFi Expert" : "Help Me Out"}
-            optionB={mobile ? "Help Me Out" : "DeFi Expert"}
+            optionA={"DeFi Expert"}
+            optionB={"Help Me Out"}
             selectedOption={setDifficulty}
           />
         </ToggleBox>}
@@ -459,13 +459,13 @@ export default function HomeContent() {
         /> : <></>}
         {mobile ? <ToggleBox>
           <BinaryToggle
-            optionA={mobile ? "DeFi Expert" : "Help Me Out"}
-            optionB={mobile ? "Help Me Out" : "DeFi Expert"}
+            optionA={"DeFi Expert"}
+            optionB={"Help Me Out"}
             selectedOption={setDifficulty}
           />
         </ToggleBox> : <></>}
         {difficulty === "DeFi Expert" ? <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
-            <BoldText>Quick Actions</BoldText>
+            <BoldText moible={mobile}>Quick Actions</BoldText>
             <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
               {buttons.map((action) => {
                 return (
@@ -583,6 +583,7 @@ const ToggleBox = styled.div`
 const HomeWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  min-height: 120vh;
   /* width: 94%; */
   /* align-items: flex-start; */
   ${(props) =>
@@ -772,6 +773,10 @@ const BoldText = styled.text`
   cursor: pointer;
   text-align: center;
   align-self: center;
+  margin-top: 20px;
+  ${(props) => props.mobile && css`
+    margin-top: 0px;
+  `}
 `;
 
 const EnrollButton = styled(PrimaryButton)`
