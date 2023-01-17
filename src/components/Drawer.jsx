@@ -302,7 +302,7 @@ export default function Drawer({
           }}>
             Governance Enrollment Countdown
           </div>
-          <div style={{ position: "relative", right: `${mobile ? "-20%" : 5}`, maxWidth: 250, transform: "scale(0.75)"}}>
+          <div style={{ position: "relative", "margin-left": "auto", "margin-right": "auto", maxWidth: "80%", transform: "scale(0.75)"}}>
             <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
           </div>
         </div>
