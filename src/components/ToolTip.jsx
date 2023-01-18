@@ -16,8 +16,6 @@ const Text = styled.div`
     display: inline-block;
     cursor: help;
     text-align: center;
-    text-decoration: underline;
-    text-decoration-style: dashed;
 `;
 const ToolTipText = styled.span`
   visibility: hidden;
