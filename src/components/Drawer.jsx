@@ -453,7 +453,7 @@ const DrawerDiv = styled.div`
   height: 101vh;
   z-index: 15;
   overflow-y: auto;
-  width: ${`${isMobile() ? `100%` : `unset`}`};
+  width: ${`${isMobile() ? `100%` : `250px`}`};
 
   ${(props) => props.mobile && props.open && css`
     position: fixed;
