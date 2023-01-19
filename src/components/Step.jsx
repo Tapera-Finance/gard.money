@@ -152,7 +152,7 @@ const StepButton = styled(PrimaryButton)`
 `;
 
 const ExpandedStep = styled.div`
-  width: 100%;
+  width: 90%;
 `;
 
 const StepText = styled.text`
