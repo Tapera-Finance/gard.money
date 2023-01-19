@@ -243,6 +243,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                 >
                   {(
                       <div>
+                        <div style={{marginBottom: 10}}>
                         <PrimaryButton
                           blue={true}
                           text="Secure with GARD"
@@ -252,7 +253,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                             setLoading(false);
                             // setRefresh(refresh + 1);
                           }}
-                        />
+                        /></div>
                         <NodeInput
                         autoComplete="off"
                         display="none"
@@ -290,7 +291,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         min="0.00"
                         id="salesPrice"
                         />
-                      <div style={{ display: "flex", flexDirection: "row" }}>
+                      <div style={{ display: "flex", flexDirection: "row", marginBottom: 5}}>
                         <PrimaryButton
                           blue={true}
                           text="Secure with personal node"
