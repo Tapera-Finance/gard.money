@@ -204,6 +204,7 @@ export default function StakeDetails() {
         <Banner>
           <div
             style={{
+              display: "flex",
               justifyContent: "center",
               textAlign: "left",
               alignItems: "center",
@@ -226,10 +227,11 @@ export default function StakeDetails() {
                 display: "flex",
                 textAlign: "left",
                 flexDirection: "column",
+                marginLeft: "10px",
               }}
             >
               <div style={{ color: "#172756", fontSize: "10pt" }}>
-                1k - 2k GARD being paid out WEEKLY for users staking GARD!
+                1k - 2k extra GARD being paid out WEEKLY for users staking GARD!
               </div>
             </div>
           </div>
@@ -616,10 +618,11 @@ const Banner = styled.div`
   border-radius: 10px;
   justify-content: space-between;
   text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  background: linear-gradient(to right, #019FFF 40%, #ffffff);
   padding: 8px 6px 10px 8px;
   margin: 8px;
   margin-bottom: 12px;
+  min-height: 37.5px;
 `
 
 
