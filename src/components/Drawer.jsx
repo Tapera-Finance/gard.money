@@ -347,7 +347,7 @@ export default function Drawer({
                 }
               >
                 <div>
-                  <LinkText>Gitbook</LinkText>
+                  <LinkText>Docs</LinkText>
                 </div>
               </SocialMediaButton>
             </SocialMediaContainer>
