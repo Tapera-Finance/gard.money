@@ -331,7 +331,7 @@ export default function Drawer({
               <SocialMediaButton
                 onClick={() =>
                   window.open(
-                    "https://youtu.be/6IeOb_NZDm4",
+                    "https://youtu.be/b1nzF6uzwNY",
                   )
                 }
               >
@@ -546,7 +546,7 @@ const TermLinkBox = styled.div`
   }
 `
 
-const SocialMediaButton = styled.div`
+export const SocialMediaButton = styled.div`
   cursor: pointer;
 `;
 const SocialMediaIcon = styled.img`
@@ -566,7 +566,7 @@ ${SocialMediaButton}:hover & {
 }
 `;
 
-const LinkText = styled.text`
+export const LinkText = styled.text`
   font-size: 16px;
   font-weight: 600;
   color: #ffffff;

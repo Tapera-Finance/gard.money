@@ -26,6 +26,7 @@ import { commitmentPeriodEnd } from "../globals";
 import { device } from "../styles/global";
 import { isMobile } from "../utils"
 import TextButton from "../components/TextButton";
+import { LinkText, SocialMediaButton } from "../components/Drawer";
 const fetchTvl = async () => {
   try {
     let res = await axios.get("https://api.llama.fi/protocol/gard");
@@ -501,6 +502,18 @@ export default function HomeContent() {
       <div>
         {difficulty === "Help Me Out" ? (
           <StepContainer>
+            <SocialMediaButton
+                style={{marginBottom: "10px"}}
+                onClick={() =>
+                  window.open(
+                    "https://youtu.be/b1nzF6uzwNY",
+                  )
+                }
+              >
+                <LinkText>
+                Be sure to check out the tutorial!
+                </LinkText>
+            </SocialMediaButton>
             <Text
               style={{ color: "#80edff" }}
               onClick={() => {
@@ -791,6 +804,8 @@ const EnrollButton = styled(PrimaryButton)`
 `;
 
 
+
+
 /**
  * unused banners
  *
@@ -877,3 +892,5 @@ const EnrollButton = styled(PrimaryButton)`
         </div>
       </Banner>
  */
+ 
+
