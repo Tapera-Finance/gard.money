@@ -233,7 +233,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
           ? loadedCDPs.map((cdp, idx) => {
               return (
                 <Position mobile={mobile} key={cdp.id.toString() + idx.toString()}>
-                  <PositionInfo mobile={mobile}>
                   <Modal
                   title={"Secure the Algorand Blockchain"}
                   subtitle={"Associate the Algos in your CDP with a consensus node"}
@@ -312,6 +311,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                   </div>
                   )}
                 </Modal>
+                <PositionBox mobile={mobile}>
                   {!cdp.asaID ? <PrimaryButton
                             text="Node Consensus"
                             positioned={false}
@@ -323,6 +323,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                               // setLoading(false);
                             }}
                           /> : <></>}
+                <PositionInfo mobile={mobile}>
                     <PositionSupplyBorrow mobile={mobile} className="m_positions_item m-positions_box_1">
                       <b className="m-positions_row_1">Your Position</b>
                       <Sply mobile={mobile} >
@@ -419,6 +420,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                       </SliderRange>
                     </div>
                   </PositionInfo>
+                  </PositionBox>
                   <ManageCollapse
                     positioned={true}
                     text={
@@ -723,14 +725,11 @@ const Position = styled.div`
 `;
 const PositionInfo = styled.div`
   display: grid;
-  border: 1px solid white;
+  padding-top: 10px;
   grid-template-columns: repeat(3, 30%);
   justify-content: center;
   align-content: center;
-  background: rgba(13, 18, 39, 0.75);
-  border-radius: 10px;
   font-size: 18px;
-  padding: 40px 0px 40px;
   @media (${device.tablet}) {
     display: flex;
     flex-direction: column;
@@ -752,6 +751,16 @@ const PositionInfo = styled.div`
     transform: scale(0.85);
   }
 `;
+const PositionBox = styled.div`
+  border: 1px solid white;
+  background: rgba(13, 18, 39, 0.75);
+  padding: 20px 0px 40px;
+  border-radius: 10px;
+  ${(props) => props.mobile && css`
+  padding-top: 10px;
+  width: 90%;
+  `}
+`
 const SliderRange = styled.div`
   display: flex;
   justify-content: space-between;
