@@ -32,7 +32,7 @@ const menuStyle = {
   color: "#01c7f3",
 };
 
-export default function AccountCard() {
+export default function AccountCard(contentName) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ export default function AccountCard() {
     <div>
       <ThemeProvider theme={theme}>
         <BtnContainer>
-          <WalletConnect />
+          <WalletConnect contentName={contentName}/>
 
           {walletAddress ? (
             <IconButtonContainer>

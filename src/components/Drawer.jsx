@@ -34,6 +34,8 @@ import { px2vw, isMobile } from "../utils"
 import { useScreenOrientation } from "../hooks"
 import CountdownTimer from "../components/CountdownTimer";
 import { commitmentPeriodEnd } from "../globals";
+import syncIconWhite from "../assets/icons/sync_icon_white.png";
+
 
 function debounce(fn, ms) {
   let timer
@@ -134,9 +136,8 @@ export default function Drawer({
           <LogoButton
             style={{
               display: "flex",
-              marginTop: 13,
               width: 50,
-              height: 20,
+              height: "100%",
               marginLeft: "03.9583333333333vw",
             }}
             onClick={() => {
@@ -146,6 +147,25 @@ export default function Drawer({
           >
             <MobileNavLogo src={logo} alt="logo" />
           </LogoButton>
+          <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            height: "9vh",
+            justifyContent: "flex-end",
+          }}
+        >
+          <div style={{ marginRight: 9 }}>
+            <TopBarText>{selected}</TopBarText>
+          </div>
+          <SimplePressable
+            style={{ display: "flex", justifyContent: "center" }}
+            onClick={() => window.location.reload()}
+          >
+            <img src={syncIconWhite} style={{ height: 24 }} alt="sync-white" />
+          </SimplePressable>
+        </div>
         <HamburgerButton
           style={{}}
           onClick={() => {
@@ -171,7 +191,7 @@ export default function Drawer({
               display: "flex",
               margin: "auto",
               marginTop: 48,
-              visibility: `${(mobile && isOpen) ? "hidden" : "visible"}`
+              visibility: `${(mobile && isOpen) ? "collapse" : "visible"}`
             }}
             onClick={() => {
               if (window.innerWidth < 900) toggleOpen();
@@ -181,7 +201,7 @@ export default function Drawer({
             <NavLogo src={logo} alt="logo" />
           </LogoButton>
         <CloseButton
-          style={{visibility: `${mobile && isOpen ? "visible" : "hidden"}`}}
+          style={{visibility: `${mobile && isOpen ? "visible" : "collapse"}`}}
           onClick={() => {
             closeDrawer();
           }}
@@ -229,7 +249,7 @@ export default function Drawer({
                           "Account",
                           // "Manage CDPs",
                           "Borrow",
-                          "ALGO Governance",
+                          "Governance",
                           "Swap",
                           "Stake",
                           "Govern",
@@ -282,7 +302,7 @@ export default function Drawer({
           }}>
             Governance Enrollment Countdown
           </div>
-          <div style={{ position: "relative", right: -5, maxWidth: 250, transform: "scale(0.75)"}}>
+          <div style={{ position: "relative", "margin-left": "auto", "margin-right": "auto", maxWidth: "80%", transform: "scale(0.75)"}}>
             <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
           </div>
         </div>
@@ -393,17 +413,14 @@ const MobileDrawer = styled.div`
   background: linear-gradient(80deg, #172756 0%, #000000 100%);
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-content: center;
   width: 100vw;
-  height: 7vh;
-  @media (min-width: ${size.tablet}) {
-    appearance: none;
-    visibility: hidden;
-  }
+  height: 9vh;
 
   ${(props) => props.open &&
       css`
-         margin-bottom: 0vh;
+        margin-bottom: 0vh;
+        position: fixed;
       `
     }
     ${(props) => !props.open &&
@@ -436,12 +453,13 @@ const DrawerDiv = styled.div`
   height: 101vh;
   z-index: 15;
   overflow-y: auto;
-  width: ${`${isMobile() ? `100%` : `unset`}`};
+  width: ${`${isMobile() ? `100%` : `250px`}`};
 
-  /* ${(props) => props.mobile && props.open && css`
+  ${(props) => props.mobile && props.open && css`
     position: fixed;
+    top: 9vh;
     overflow-y: hidden;
-  `} */
+  `}
 
   /* ${(props) =>
     props.mobile &&
@@ -676,7 +694,7 @@ const CloseIcon = styled.img`
 `;
 const HamburgerButton = styled.button`
   background-color: transparent;
-  height: 40px;
+  height: 9vh;
   width: 40px;
   z-index: 0;
   display: flex;
@@ -725,7 +743,21 @@ const NavLogo = styled.img`
 `;
 const MobileNavLogo = styled.img`
   height: 25px;
+  align-self: center;
+  margin: auto;
 `
+const TopBarText = styled.text`
+  color: white;
+  font-weight: 500;
+  font-size: 20px;
+  @media (${device.tablet}) {
+    margin: 4px 0px 12px 0px;
+  }
+`;
+const SimplePressable = styled.div`
+  cursor: pointer;
+`;
+
 
 // items for our drawer method
 const menuItems = [

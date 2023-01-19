@@ -49,7 +49,7 @@ const instantiateUser = (address) => {
   return user;
 };
 
-export default function WalletConnect() {
+export default function WalletConnect(contentName) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -57,6 +57,7 @@ export default function WalletConnect() {
   const navigate = useNavigate();
   const walletAddress = useSelector((state) => state.wallet.address);
   const [mobile, setMobile] = useState(isMobile());
+  const accountPage = contentName?.contentName?.contentName == "Account"
 
   useEffect(() => {
     setMobile(isMobile())
@@ -142,7 +143,7 @@ export default function WalletConnect() {
       ) : (
         <></>
       )}
-      <WalletConnectDiv mobile={mobile}>
+      <WalletConnectDiv mobile={mobile} accountPage={accountPage}>
         <BtnBox>
           <WalletBarButton
             text={walletAddress || "Connect Wallet"}
@@ -163,14 +164,21 @@ export default function WalletConnect() {
         </BtnBox>
         {walletAddress ? (
           <BtnBox>
-            <WalletBarButton
+            {mobile ? (accountPage ?  <WalletBarButton
               text="Disconnect Wallet"
               blue={true}
               onClick={() => {
                 disconnectWallet();
                 dispatch(setWallet({ address: "" }));
               }}
-            />
+            /> :<></>) : <WalletBarButton
+            text="Disconnect Wallet"
+            blue={true}
+            onClick={() => {
+              disconnectWallet();
+              dispatch(setWallet({ address: "" }));
+            }}
+          />}
           </BtnBox>
         ) : (
           <></>
@@ -219,13 +227,11 @@ const WalletConnectDiv = styled.div`
 
   ${(props) => props.mobile && css`
     flex-direction: column;
+    height: 50px;
   `}
-
-  @media (${device.mobileL}) {
-    flex-direction: column;
-    margin: 2px 0px 2px 0px;
-    align-items: initial;
-  }
+  ${(props) => props.accountPage && css`
+    height: 70px;
+  `}
 `
 
 const StyledModal = styled(Modal)`

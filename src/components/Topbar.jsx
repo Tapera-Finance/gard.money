@@ -14,15 +14,15 @@ import { isMobile } from "../utils";
 
 export default function Topbar({ contentName }) {
   const [mobile, setMobile] = useState(isMobile());
-
+  const accountPage = contentName == "Account"
   useEffect(() => {
     setMobile(isMobile())
   }, [])
 
   return (
     <div style={{display: "flex", justifyContent: `${mobile ? "center" : ""}`}}>
-      <TopBar mobile={mobile}>
-        <div
+      <TopBar mobile={mobile} accountPage={accountPage}>
+        {mobile ? <></> : <div
           style={{
             display: "flex",
             flexDirection: "row",
@@ -40,10 +40,10 @@ export default function Topbar({ contentName }) {
           >
             <img src={syncIconWhite} style={{ height: 24 }} alt="sync-white" />
           </SimplePressable>
-        </div>
+        </div>}
         <div style={{ display: "flex", flexDirection: "row" }}>
           <div>
-          <AccountCard />
+          <AccountCard contentName={contentName}/>
           </div>
         </div>
       </TopBar>
@@ -67,19 +67,20 @@ const TopBar = styled.div`
 
   ${(props) => props.mobile && css`
     flex-direction: column;
+    padding: 0px;
+    height: 50px;
+    align-items: center;
+    margin-top: 10px;
   `}
-
+  ${(props) => props.mobile && props.accountPage && css`
+    height: 60px;
+  `}
   @media (min-width: ${size.tablet}) {
     width: 100%;
     margin-left: 2.88vw;
   }
   @media (${device.tablet}) {
     width: 100%;
-  }
-  @media (${device.mobileL}) {
-    flex-direction: column;
-    align-items: first-baseline;
-    margin-left: 25%;
   }
 `;
 const TopBarText = styled.text`
