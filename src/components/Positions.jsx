@@ -19,6 +19,8 @@ import { ids } from "../transactions/ids";
 import { device, size } from "../styles/global";
 import "../styles/mobile.css";
 import { isMobile } from "../utils"
+import Modal from "../components/Modal";
+import {CancelButton, CancelButtonText} from "../pages/GovernContent"
 
 const axios = require("axios");
 
@@ -157,6 +159,8 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const [collateralType, setCollateralType] = useState("ALGO")
     const [selectedTab, setSelectedTab] = useState("one");
     const [manageUpdate, setManageUpdate] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalCanAnimate, setModalCanAnimate] = useState(false);
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
     const typeCDP = {
@@ -230,6 +234,94 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
               return (
                 <Position mobile={mobile} key={cdp.id.toString() + idx.toString()}>
                   <PositionInfo mobile={mobile}>
+                  <Modal
+                  title={"Secure the Algorand Blockchain"}
+                  subtitle={"Associate the Algos in your CDP with a consensus node"}
+                  close={() => setModalVisible(false)}
+                  animate={modalCanAnimate}
+                  visible={modalVisible}
+                >
+                  {(
+                      <div>
+                        <PrimaryButton
+                          blue={true}
+                          text="Secure with GARD"
+                          onClick={async () => {
+                            setLoading(true);
+                            console.log("clicked")
+                            setLoading(false);
+                            // setRefresh(refresh + 1);
+                          }}
+                        />
+                        <NodeInput
+                        autoComplete="off"
+                        display="none"
+                        placeholder={"Vote Key"}
+                        type='text'
+                        id="voteKey"
+                        />
+                        <NodeInput
+                        autoComplete="off"
+                        display="none"
+                        placeholder={"Selection Key"}
+                        type='text'
+                        id="selKey"
+                        />
+                        <NodeInput
+                        autoComplete="off"
+                        display="none"
+                        placeholder={"State Proof Key"}
+                        type='text'
+                        id="sprfKey"
+                        />
+                        <NodeInput
+                        autoComplete="off"
+                        display="none"
+                        placeholder={"Vote First Round"}
+                        type='number'
+                        min="0.00"
+                        id="salesPrice"
+                        />
+                        <NodeInput
+                        autoComplete="off"
+                        display="none"
+                        placeholder={"Vote Last Round"}
+                        type='number'
+                        min="0.00"
+                        id="salesPrice"
+                        />
+                      <div style={{ display: "flex", flexDirection: "row" }}>
+                        <PrimaryButton
+                          blue={true}
+                          text="Secure with personal node"
+                          onClick={async () => {
+                            setLoading(true);
+                            console.log("clicked")
+                            setLoading(false);
+                            // setRefresh(refresh + 1);
+                          }}
+                        />
+                        
+                        <CancelButton style={{ marginLeft: 30 }} onClick={() => setModalVisible(false)}>
+                          <CancelButtonText>
+                            Cancel
+                          </CancelButtonText>
+                        </CancelButton>
+                    </div>
+                  </div>
+                  )}
+                </Modal>
+                  {!cdp.asaID ? <PrimaryButton
+                            text="Node Consensus"
+                            positioned={false}
+                            blue={true}
+                            onClick={async () => {
+                              // setLoading(true);
+                              console.log("clicked")
+                              console.log(setModalVisible(true))
+                              // setLoading(false);
+                            }}
+                          /> : <></>}
                     <PositionSupplyBorrow mobile={mobile} className="m_positions_item m-positions_box_1">
                       <b className="m-positions_row_1">Your Position</b>
                       <Sply mobile={mobile} >
@@ -664,19 +756,18 @@ const SliderRange = styled.div`
   justify-content: space-between;
   font-size: 11px;
 `;
-const Input = styled.input`
-  border-radius: 0;
-  height: 30px;
+const NodeInput = styled.input`
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 10px;
   width: 80%;
+  height: 60%;
   color: white;
   text-decoration: none;
-  border: none;
-  border-bottom: 2px solid #7c52ff;
-  text-align: center;
+  border: 2px solid white;
   opacity: 100%;
   font-size: 20px;
   background: none;
-  margin-left: 25px;
   &:focus {
     outline-width: 0;
   }

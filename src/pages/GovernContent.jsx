@@ -1015,7 +1015,7 @@ const InputSubtitle = styled.text`
   font-weight: normal;
   font-size: 12px;
 `;
-const CancelButton = styled.button`
+export const CancelButton = styled.button`
   border: 0px;
   background: transparent;
   display: flex;
@@ -1023,7 +1023,7 @@ const CancelButton = styled.button`
   height: "100%";
   cursor: pointer;
 `;
-const CancelButtonText = styled.text`
+export const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
   color: white;
