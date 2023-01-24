@@ -953,6 +953,159 @@ export async function closeCDP(accountID, asaID) {
   return response;
 }
 
+export async function goOnlineCDP(accountID, voteKey, selKey, sprfKey, first_rd, last_rd) {
+
+  // Promise setup
+  setLoadingStage("Loading...");
+
+  if (typeof accountID !== "number") {
+    return {
+      alert: true,
+      text: "Error. accountID must be passed into goOnlineCDP as a number."
+    }
+  }
+  const accountInfoPromise = accountInfo();
+  const paramsPromise = getParams(2000);
+  const info = await accountInfoPromise;
+  let cdp = cdpGen(info.address, accountID);
+  let cdpInfo = await accountInfo(cdp.address);
+
+  // input checking
+  if (typeof voteKey !== "string" || typeof selKey !== "string" || typeof sprfKey !== "string")
+  return {
+    alert: true,
+    text: "At least one entered key is invalid.",
+  };
+
+  if (typeof first_rd !== "number" || typeof last_rd !== "number" || isNaN(first_rd) || isNaN(last_rd) || first_rd < cdpInfo.round || last_rd - first_rd > 3e6 || last_rd - first_rd < 10)
+  return {
+    alert: true,
+    text: "At least one entered round is invalid.",
+  };
+
+  console.log(last_rd, first_rd)
+  let params = await paramsPromise;
+  let txn1 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: ids.app.validator,
+    onComplete: 0,
+    appArgs: [enc.encode("OwnerCheck"), algosdk.encodeUint64(accountID)],
+    accounts: [cdp.address],
+    suggestedParams: params,
+  });
+  params.fee = 0;
+  let txn2 = algosdk.makeKeyRegistrationTxnWithSuggestedParamsFromObject({
+    from: cdp.address,
+    voteKey: voteKey,
+    selectionKey: selKey,
+    voteFirst: first_rd,
+    voteLast: last_rd,
+    voteKeyDilution: Math.floor(Math.sqrt(last_rd - first_rd)), // This is some low importance parameter affecting node security/storage. Used AF recommendation.
+    stateProofKey: sprfKey,
+    suggestedParams: params,
+  });
+  let txns = [txn1, txn2];
+  algosdk.assignGroupID(txns);
+
+  const signedGroupPromise = signGroup(info, txns);
+
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
+  const stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
+  const signedGroup = await signedGroupPromise;
+  const stxn1 = signedGroup[0];
+
+  setLoadingStage("Going Online...");
+
+  let stxns = [stxn1.blob, stxn2.blob];
+  let response = await sendTxn(
+    stxns,
+    "Consensus participation enabled! You may verify" +
+      " <a href=\"" +
+      "https://algoexplorer.io/address/" +
+      cdp.address +
+      "\">here</a>.\n",
+    true,
+  );
+  setLoadingStage(null);
+  return response
+}
+
+export async function goOfflineCDP(accountID, voteKey, selKey, sprfKey, first_rd, last_rd) {
+
+  // Promise setup
+  setLoadingStage("Loading...");
+  if (typeof accountID !== "number") {
+    return {
+      alert: true,
+      text: "Error. accountID must be passed into goOnlineCDP as a number."
+    }
+  }
+
+  const accountInfoPromise = accountInfo();
+  const paramsPromise = getParams(2000);
+  const info = await accountInfoPromise;
+  let cdp = cdpGen(info.address, accountID);
+  let cdpInfo = await accountInfo(cdp.address);
+
+  // input checking
+  if (typeof voteKey !== "string" || typeof selKey !== "string" || typeof sprfKey !== "string")
+  return {
+    alert: true,
+    text: "At least one entered key is invalid.",
+  };
+
+  if (typeof first_rd !== "number" || typeof last_rd !== "number" || first_rd < cdpInfo.round || last_rd - first_rd > 3e6)
+  return {
+    alert: true,
+    text: "At least one entered round is invalid.",
+  };
+
+  let params = await paramsPromise;
+  let txn1 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: ids.app.validator,
+    onComplete: 0,
+    appArgs: [enc.encode("OwnerCheck"), algosdk.encodeUint64(accountID)],
+    accounts: [cdp.address],
+    suggestedParams: params,
+  });
+  params.fee = 0;
+  let txn2 = algosdk.makeKeyRegistrationTxnWithSuggestedParamsFromObject({
+    from: cdp.address,
+    suggestedParams: params,
+    nonParticipation: true,
+  });
+
+  let txns = [txn1, txn2];
+  algosdk.assignGroupID(txns);
+
+  const signedGroupPromise = signGroup(info, txns);
+
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+
+  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(0)]);
+  const stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
+  const signedGroup = await signedGroupPromise;
+  const stxn1 = signedGroup[0];
+
+  setLoadingStage("Going Offline...");
+
+  let stxns = [stxn1.blob, stxn2.blob];
+  let response = await sendTxn(
+    stxns,
+    "Consensus participation will be disabled in 320 rounds (~20 minutes). You may verify" +
+      " <a href=\"" +
+      "https://algoexplorer.io/address/" +
+      cdp.address +
+      "\">here</a>.\n",
+    true,
+  );
+  setLoadingStage(null);
+  return response
+}
+
 // TODO: add commitment
 async function updateCDP(
   address,

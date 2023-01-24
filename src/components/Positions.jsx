@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { microalgosToAlgos } from "algosdk";
 import styled, { css } from "styled-components";
-import { getCDPs, getPrice, calcRatio, closeCDP } from "../transactions/cdp";
+import { getCDPs, getPrice, calcRatio, closeCDP, goOnlineCDP } from "../transactions/cdp";
 import { getWalletInfo, handleTxError } from "../wallets/wallets";
 import { Slider, ThemeProvider } from "@mui/material";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -119,6 +119,15 @@ function getMinted() {
     return null;
   }
   return parseFloat(document.getElementById("borrowMore").value);
+}
+
+function getField(id){
+  if (
+    document.getElementById(id) == null
+  ) {
+    return null;
+  }
+  return document.getElementById(id).value;
 }
 
 function getCollateral() {
@@ -248,7 +257,14 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           text="Secure with GARD"
                           onClick={async () => {
                             setLoading(true);
-                            console.log("clicked")
+                            try {
+                              let res = await goOnlineCDP(parseInt(cdp.id), "hi", "test", 0, 1, 2);
+                              if (res.alert) {
+                                dispatch(setAlert(res.text));
+                              }
+                            } catch (e) {
+                              handleTxError(e, "Error going Online");
+                            }
                             setLoading(false);
                             // setRefresh(refresh + 1);
                           }}
@@ -280,7 +296,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         placeholder={"Vote First Round"}
                         type='number'
                         min="0.00"
-                        id="salesPrice"
+                        id="voteFirst"
                         />
                         <NodeInput
                         autoComplete="off"
@@ -288,7 +304,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         placeholder={"Vote Last Round"}
                         type='number'
                         min="0.00"
-                        id="salesPrice"
+                        id="voteLast"
                         />
                       <div style={{ display: "flex", flexDirection: "row", marginBottom: 5}}>
                         <PrimaryButton
@@ -296,7 +312,14 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           text="Secure with personal node"
                           onClick={async () => {
                             setLoading(true);
-                            console.log("clicked")
+                            try {
+                              let res = await goOnlineCDP(parseInt(cdp.id), getField("voteKey"), getField("selKey"), getField("sprfKey"), parseInt(getField("voteFirst")), parseInt(getField("voteLast")));
+                              if (res.alert) {
+                                dispatch(setAlert(res.text));
+                              }
+                            } catch (e) {
+                              handleTxError(e, "Error going Online");
+                            }
                             setLoading(false);
                             // setRefresh(refresh + 1);
                           }}
@@ -316,10 +339,9 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                             text="Node Consensus"
                             positioned={false}
                             blue={true}
-                            onClick={async () => {
+                            onClick={() => {
                               // setLoading(true);
-                              console.log("clicked")
-                              console.log(setModalVisible(true))
+                              setModalVisible(true)
                               // setLoading(false);
                             }}
                           /> : <></>}
