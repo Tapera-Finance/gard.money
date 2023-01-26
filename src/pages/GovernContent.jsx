@@ -25,6 +25,7 @@ import { isFirefox } from "../utils";
 import { device, size } from "../styles/global";
 import { voteCDPs } from "../transactions/cdp";
 import { isMobile } from "../utils";
+import { Banner } from "../components/Banner"
 
 const axios = require("axios");
 
@@ -860,20 +861,6 @@ const Link = styled.text`
   }
 `;
 
-const Banner = styled.div`
-  display: flex;
-  width: 100%;
-  border: 1px solid white;
-  align-content: center;
-  flex-direction: row;
-  border-radius: 10px;
-  justify-content: space-between;
-  text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-  margin-bottom: 14px;
-`
 const GovernDetails = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 30%);

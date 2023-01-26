@@ -23,6 +23,7 @@ import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, Gardian
 import LoadingOverlay from "../LoadingOverlay";
 import { size, device } from "../../styles/global"
 import { isMobile } from "../../utils"
+import { Banner } from "../Banner"
 
 // asset types: 0 === GARD, 1 === ALGO
 
@@ -248,12 +249,6 @@ export default function StakeDetails() {
             </div>
           </div>
         </Banner>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-          }}
-        ></div>
         <Container style={{ maxWidth: `${mobile ? "95%" : ""}` }}>
           <FirstRow>{"Staking Pools (Auto-Compounding)"}</FirstRow>
           <StakeTitle>
@@ -620,22 +615,6 @@ const Link = styled.text`
     cursor: pointer;
   } */
 `;
-
-const Banner = styled.div`
-  display: flex;
-  width: 90%;
-  border: 1px solid white;
-  align-content: center;
-  flex-direction: row;
-  border-radius: 10px;
-  justify-content: space-between;
-  text-align: center;
-  background: linear-gradient(to right, #019FFF 40%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-  margin-bottom: 12px;
-  min-height: 37.5px;
-`
 
 
 const Container = styled.div`

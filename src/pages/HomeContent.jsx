@@ -27,6 +27,8 @@ import { device } from "../styles/global";
 import { isMobile } from "../utils"
 import TextButton from "../components/TextButton";
 import { LinkText, SocialMediaButton } from "../components/Drawer";
+import { Banner } from "../components/Banner"
+
 const fetchTvl = async () => {
   try {
     let res = await axios.get("https://api.llama.fi/protocol/gard");
@@ -639,40 +641,6 @@ const Link = styled(PrimaryButton)`
     margin-left: 5px;
   `}
 `;
-
-const Banner = styled.div`
-  display: flex;
-  width: 90%; 
-  flex-direction: row;
-  border: 1px solid white;
-  align-content: center;
-  border-radius: 10px;
-  justify-content: space-between;
-  text-align: center;
-  background: linear-gradient(to right, #019FFF 40%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-  @media (${device.tablet}) {
-    width: 90%;
-    ${(props) =>
-    props.expert &&
-    css`
-      /* margin-left: 60px; */
-      /* width: 100%; */
-    `
-    }
-  }
-  ${(props) =>
-    props.expert &&
-    css`
-      /* margin-right: 30px; */
-    `
-  }
-  ${(props) => props.mobile && css`
-    width: 90%;
-  `}
-`
-
 
 const Container = styled.div`
   background: #0E1834;

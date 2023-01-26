@@ -29,6 +29,7 @@ import Select from "../components/Select";
 import { ids } from "../transactions/ids"
 import { size, device } from "../styles/global"
 import { isMobile } from "../utils";
+import { Banner } from "../components/Banner"
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
@@ -614,24 +615,6 @@ const V1Link = styled.text`
     color: #03a0ff;
     cursor: pointer;
   }
-`;
-
-const Banner = styled.div`
-  display: flex;
-  min-height: 37.5px;
-  border: 1px solid white;
-  flex-direction: row;
-  border-radius: 10px;
-  justify-content: space-between;
-  align-content: center;
-  text-align: center;
-  background: linear-gradient(to right, #019FFF 40%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-  margin-bottom: 20px;
-  ${(props) => props.mobile && css`
-    width: 90%;
-  `}
 `;
 
 const BorrowRewardNotice = styled(RewardNotice)`
