@@ -61,12 +61,6 @@ export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
   return parseFloat(assetX / assetY).toFixed(4);
 };
 
-export const algoGardRatio = async () =>
-  exchangeRatioAssetXtoAssetY(
-    mAlgosToAlgos(gardpool.calculator.primaryAssetPrice),
-    mAlgosToAlgos(gardpool.calculator.secondaryAssetPrice),
-  );
-
 /**
  * Component Helpers
  */

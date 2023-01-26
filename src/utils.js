@@ -39,18 +39,6 @@ export function utcToLocal(utcTime) {
   return moment(momentUtc).local().format("YYYY-MM-DD HH:mm:ss");
 }
 
-export function setCookie(name, value) {
-  cookies.set(value, name);
-}
-
-export function getCookie(name) {
-  cookies.get(name);
-}
-
-export function removeCookie(name) {
-  cookies.remove(name);
-}
-
 export function titleToToolTip(str) {
   return str
     .split(" ")
