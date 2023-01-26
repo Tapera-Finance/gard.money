@@ -466,7 +466,7 @@ export default function HomeContent() {
             selectedOption={setDifficulty}
           />
         </ToggleBox> : <></>}
-        {difficulty === "DeFi Expert" ? <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
+        {difficulty === "DeFi Expert" ? <div style={{display: "flex", flexDirection: "column", maxWidth:"100%"}}>
             <BoldText moible={mobile}>Quick Actions</BoldText>
             <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
               {buttons.map((action) => {
@@ -608,6 +608,7 @@ const HomeWrapper = styled.div`
 `
 
 const AccessBox = styled.div`
+  gap: 25px;
   display: flex;
   justify-content: center;
   width: 100%;
