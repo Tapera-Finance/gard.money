@@ -15,15 +15,12 @@ import { handleTxError, getWallet } from "../wallets/wallets";
 import { commitmentPeriodEnd } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
-import { textAlign } from "@mui/system";
-import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
 import { isFirefox } from "../utils";
 import { device } from "../styles/global";
 import { voteCDPs } from "../transactions/cdp";
 import { isMobile } from "../utils";
-import { Banner } from "../components/Banner";
 
 const axios = require("axios");
 
@@ -152,12 +149,9 @@ export default function Govern() {
   const [refresh, setRefresh] = useState(0);
   const [commitDict, setCommitDict] = useState({});
   const [vaulted, setVaulted] = useState("Loading...");
-  const [shownAll, setAllVotes] = useState(true);
   const [governors, setGovernors] = useState("Loading...");
-  const [enrollmentEnd, setEnrollmentEnd] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
-  const [voteTableDisabled, setVoteTable] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
@@ -273,7 +267,7 @@ export default function Govern() {
       }
     });
   }
-  let cdps = adjusted.map((value, index) => {
+  let cdps = adjusted.map((value,) => {
     let account_id = parseInt(value.id);
     let commitBal = value.collateral;
     delete value.collateral;
@@ -349,46 +343,6 @@ export default function Govern() {
       ) : (
         <></>
       )}
-{/*
-<Banner
-      >
-        <div
-          style={{
-            justifyContent: "center",
-            textAlign: "left",
-            alignItems: "center",
-            color: "#172756",
-          }}
-        >
-          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 21, 2022 EOD</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
-          }}
-        >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
-
-          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
-          </div>
-        </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <Link onClick={() => {
-            window.open("https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors")
-          }}>Learn More</Link>
-        </div>
-      </Banner>
-        */}
       <GovInfoContainer>
         <fieldset
           style={{
@@ -476,35 +430,6 @@ export default function Govern() {
             setModal2CanAnimate(false);
           }} disabled={(Date.now() < 1670256000000 || Date.now() > 1671465600000) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps}/>
           </div>
-      {voteTableDisabled ? <></>:
-      <div>
-        <div
-          style={{
-            height: 70,
-            borderTopRightRadius: 10,
-            borderTopLeftRadius: 10,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            background: "#0E1834",
-            border: "1px solid white",
-            borderBottom: "none"
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
-            <div style={{ marginLeft: 25, marginRight: 8 }}>
-              <Title>Algorand Votes</Title>
-            </div>
-            <CountContainer>
-              <CountText>2 Votes Open, 1 Closed Vote</CountText>
-            </CountContainer>
-          </div>
-          <div style={{ display: "flex", marginRight: 20 }}>
-            <PrimaryButton text="Submit All Votes" blue={true}/>
-          </div>
-        </div>
-        <Table data={dummyVotes} />
-      </div>}
       <Modal
         title={"ALGOs to Commit"}
         close={() => setModalVisible(false)}
@@ -916,74 +841,7 @@ const CountText = styled.text`
   font-size: 10px;
   `}
 `;
-const dummyCommits = [
-  {
-    Account: "123456",
-    Balance: "Dec 29, 2021",
-    APY: "4.5%",
-    "": <PrimaryButton blue={true} text="Commit" />,
-  },
-  {
-    Account: "123456",
-    Balance: "Closed",
-    APY: "4.5%",
-    "": <PrimaryButton blue={true} text="Commit" />,
-  },
-];
 
-const dummyVotes = [
-  {
-    nameOfProposal: "Lorem ippsum dol...",
-    votesCloses: "Dec 29, 2021",
-    votesInFavor: "59%",
-    votesOutstanding: "37%",
-    "": (
-      // <PrimaryButton
-      //   blue={true}
-      //   text="Vote"
-      // />
-      <div style={{ display: "flex" }}>
-        <div style={{ alignSelf: "center", color: "#01d1ff" }}>Yes</div>
-        <Switch />
-        <div style={{ alignSelf: "center", color: "grey" }}>No</div>
-      </div>
-    ),
-  },
-  {
-    nameOfProposal: "Lorem ippsum dol...",
-    votesCloses: "Dec 29, 2021",
-    votesInFavor: "59%",
-    votesOutstanding: "37%",
-    "": (
-      // <PrimaryButton
-      //   blue={true}
-      //   text="Vote"
-      // />
-      <div style={{ display: "flex" }}>
-        <div style={{ alignSelf: "center", color: "#01d1ff" }}>Yes</div>
-        <Switch />
-        <div style={{ alignSelf: "center", color: "grey" }}>No</div>
-      </div>
-    ),
-  },
-  {
-    nameOfProposal: "Lorem ippsum dol...",
-    votesCloses: "Closed",
-    votesInFavor: "59%",
-    votesOutstanding: "36%",
-    "": (
-      // <PrimaryButton
-      //   blue={true}
-      //   text="Vote"
-      // />
-      <div style={{ display: "flex" }}>
-        <div style={{ alignSelf: "center", color: "#01d1ff" }}>Yes</div>
-        <Switch />
-        <div style={{ alignSelf: "center", color: "grey" }}>No</div>
-      </div>
-    ),
-  },
-];
 const InputMandatory = styled.text`
   font-weight: bold;
   font-size: 16px;
@@ -992,9 +850,6 @@ const InputMandatory = styled.text`
 const InputTitle = styled.text`
   font-weight: bold;
   font-size: 16px;
-`;
-const BoldText = styled.text`
-  font-weight: 700;
 `;
 const InputSubtitle = styled.text`
   font-weight: normal;

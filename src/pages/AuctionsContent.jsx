@@ -1,27 +1,18 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import styled, { css } from "styled-components";
-import { formatToDollars } from "../utils";
 import Modal from "../components/Modal";
 import PrimaryButton from "../components/PrimaryButton";
-import RadioButtonSet from "../components/RadioButtonSet";
-import Table from "../components/Table";
 import LoadingOverlay from "../components/LoadingOverlay";
 import TransactionSummary from "../components/TransactionSummary";
 import LiveAuctions from "../components/LiveAuctions";
-import PageToggle from "../components/PageToggle";
 import {
-  getChainData,
   getCurrentAlgoUsd,
 } from "../prices/prices";
-import { accountInfo } from "../wallets/wallets";
-import { ids } from "../transactions/ids";
 import { start_auction, liquidate } from "../transactions/liquidation";
 import { getAllCDPs } from "../transactions/cdp";
 import { setAlert } from "../redux/slices/alertSlice";
 
-let chainDataResponse;
 let cdp_data_promise = loadDefaulted();
 let curr_price = await getCurrentAlgoUsd();
 let cdp_data = await cdp_data_promise;
@@ -36,8 +27,6 @@ async function loadDefaulted() {
  */
 export default function AuctionsContent() {
   const walletAddress = useSelector(state => state.wallet.address);
-  const [selected, setSelected] = useState(OPTIONS.LIVE_AUCTIONS);
-  const [selectedTab, setSelectedTab] = useState("one");
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -74,7 +63,7 @@ export default function AuctionsContent() {
       cdp: cdp
     };
   });
-  let liveAuctions = defaulted.map((value, index) => {
+  let liveAuctions = defaulted.map((value,) => {
     return {
       collateralAvailable: value.collateralAvailable / 1000000,
       collateralType: value.collateralType,
@@ -136,44 +125,22 @@ export default function AuctionsContent() {
   if (defaulted.length == 0) {
     liveAuctions = dummyLiveAuctions;
   }
-  const tabs = {
-    one: <LiveAuctions OPTIONS={OPTIONS} open_defaulted={defaulted} selected={selected} liveAuctions={liveAuctions} dummyBids={dummyBids} dummyMarketHistory={dummyMarketHistory} dummyLiveAuctions={dummyLiveAuctions} />
-  };
   return (
     <div>
       {loading ? <LoadingOverlay text={loadingText} close={setLoading(false)} /> : <></>}
-      <div style={{marginBottom: 20}}>
-
-      <PageToggle selectedTab={setSelectedTab} tabs={{one: "Live Auctions"}} />
-      </div>
-      {tabs[selectedTab]}
-      {selected === OPTIONS.BIDS ? (
-        <PrimaryButton
-          text="Create a Bid"
-          onClick={() => {
-            setCanAnimate(true);
-            setModalVisible(true);
-          }}
-        />
-      ) : (
-        <></>
-      )}
+      <LiveAuctions open_defaulted={defaulted} liveAuctions={liveAuctions} dummyBids={dummyBids} dummyMarketHistory={dummyMarketHistory} dummyLiveAuctions={dummyLiveAuctions} />
       <Modal
         visible={modalVisible}
         close={() => setModalVisible(false)}
         animate={canAnimate}
         title={
-          selected === OPTIONS.LIVE_AUCTIONS
-            ? "Are you sure you want to proceed?"
-            : "Enter Bid Details"
+          "Are you sure you want to proceed?"
         }
         subtitle={
-          selected === OPTIONS.LIVE_AUCTIONS
-            ? "Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
-            : "Enter the details for your bid to the right. If the discount trigger you set is reached, the transaction will be executed automatically using the GARD staked. "
+          "Review the details of this transaction to the right and click “Confirm Transaction” to proceed."
         }
       >
-        {selected === OPTIONS.LIVE_AUCTIONS ? (
+        {(
           <TransactionSummary
             specifics={transInfo}
             transactionFunc={async () => {
@@ -194,155 +161,11 @@ export default function AuctionsContent() {
             }}
             cancelCallback={() => setModalVisible(false)}
           />
-        ) : (
-          <div>
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <InputTitle>Discount Trigger</InputTitle>
-                  <InputMandatory>*</InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Input placeholder="e.g. 5%" />
-                </div>
-                <div>
-                  <InputSubitle>
-                    Bid executed if market discount reaches or exceeds this
-                    rate.
-                  </InputSubitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <InputTitle>GARD Staked</InputTitle>
-                  <InputMandatory>*</InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Input placeholder="e.g. 123 GARD" />
-                </div>
-                <div>
-                  <InputSubitle>
-                    Number of tokens you are staking for the bid.
-                  </InputSubitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <InputTitle>Bid Expiration</InputTitle>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Input placeholder="select date" />
-                </div>
-                <div>
-                  <InputSubitle>
-                    Select the date the bid should expire (optional).
-                  </InputSubitle>
-                </div>
-              </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              <PrimaryButton text="Confirm Transaction" />
-              <CancelButton
-                style={{ marginLeft: 30 }}
-                onClick={() => {
-                  setModalVisible(false);
-                }}
-              >
-                <CancelButtonText>Cancel</CancelButtonText>
-              </CancelButton>
-            </div>
-          </div>
         )}
       </Modal>
     </div>
   );
 }
-
-
-// styled components
-const AuctionsDiv = styled.div`
-  background-color:#0f1733;
-  border-radius: 10px;
-`;
-
-const AuctionsTable = styled(Table)`
-  tr {
-    background-color: #172756;
-    border-top: 3px solid #0f1733;
-    border-bottom: 3px solid #0f1733;
-    border-radius: 10px;
-  }
-`;
-
-const Title = styled.text`
-  font-weight: 500;
-  font-size: 18px;
-`;
-
-const CountContainer = styled.div`
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 2px 8px;
-`;
-
-const CountText = styled.text`
-  font-weight: 500;
-  font-size: 12px;
-  color: #999696;
-`;
-const InactiveRadio = styled.button`
-  background-color: transparent;
-  padding: 8px 18px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  border: 1px solid transparent;
-  border-radius: 6px;
-`;
-
-const InactiveRadioText = styled.text`
-  color: #98a2b3;
-  font-weight: 500;
-  font-size: 16px;
-`;
-const ButtonAlternateText = styled.text`
-  font-weight: 500;
-  font-size: 14px;
-  color: #7f56d9;
-`;
-const InputTitle = styled.text`
-  font-weight: bold;
-  font-size: 16px;
-`;
-const InputSubitle = styled.text`
-  font-weight: normal;
-  font-size: 12px;
-`;
-const Input = styled.input`
-  width: 80%;
-  height: 44px;
-  border: 1px solid #dce1e6;
-  padding-left: 12px;
-`;
-const InputMandatory = styled.text`
-  font-weight: bold;
-  font-size: 16px;
-  color: #ff0000;
-`;
-const CancelButton = styled.button`
-  border: 0px;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  height: "100%";
-  cursor: pointer;
-`;
-const CancelButtonText = styled.text`
-  font-weight: 500;
-  font-size: 16px;
-  color: white;
-`;
 
 // dummy info for our 3 tables
 const dummyLiveAuctions = [
@@ -389,10 +212,3 @@ const dummyMarketHistory = [
     executed: "123456",
   },
 ];
-
-// options for each tab
-const OPTIONS = {
-  LIVE_AUCTIONS: "Live Auctions",
-  // BIDS: 'Bids',
-  // MARKET_HISTORY: 'Market History',
-};

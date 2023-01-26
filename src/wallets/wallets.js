@@ -37,13 +37,10 @@ var activeWalletInfo;
 
 // Sets up algosdk client
 let _nodeServer = "https://testnet-algorand.api.purestake.io/ps2";
-let _indexerServer = "https://testnet-algorand.api.purestake.io/idx2";
 if (!testnet) {
   _nodeServer = "https://mainnet-algorand.api.purestake.io/ps2";
-  _indexerServer = "https://mainnet-algorand.api.purestake.io/idx2";
 }
 const nodeServer = _nodeServer;
-const indexerServer = _indexerServer;
 export const algodClient = new algosdk.Algodv2(psToken, nodeServer, "");
 
 export async function accountInfo(address = null, retry = 0) {
@@ -161,7 +158,7 @@ export function disconnectWallet() {
 
 
 async function reconnect(conector) {
-  let reconnectAccounts = await conector.reconnectSession(); // Ensures pera can reconnect
+  await conector.reconnectSession(); // Ensures pera can reconnect
   conector.connector?.on("disconnect", disconnectWallet);
   await updateWalletInfo();
   return;
@@ -272,7 +269,7 @@ async function connectHelper(connector, type) {
   return;
 }
 
-export async function connectWallet(type, address) {
+export async function connectWallet(type) {
   // XXX: Only MyAlgoConnect should be used for testing other functionality at present
   // XXX: A future improvement would allow users to select a specific wallet based upon some displayed info, rather than limiting them to one
   let interval;
@@ -320,7 +317,7 @@ export async function connectWallet(type, address) {
     case "AlgoSigner": {
       if (typeof AlgoSigner !== "undefined") {
         try {
-          let instance = await AlgoSigner.connect();
+          await AlgoSigner.connect();
           let ledger = "TestNet";
           if (!testnet) {
             ledger = "MainNet";
@@ -385,7 +382,7 @@ function sameSender(sender1, sender2) {
 function fixSet(senderAddressObj, txnarray, signed) {
   let res = [];
   let sIndex = 0;
-  for (const [index, txn] of txnarray.entries()) {
+  for (const [, txn] of txnarray.entries()) {
     if (sameSender(txn["from"], senderAddressObj)) {
       res.push(signed[sIndex]);
       sIndex++;

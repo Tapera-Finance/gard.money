@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import algosdk from "algosdk";
 import styled, {css} from "styled-components";
-import Details from "../components/Details";
 import { ids } from "../transactions/ids";
-import CountdownTimer from "../components/CountdownTimer";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getAlgoGovAPR } from "../components/Positions";
-import { getCurrentAlgoUsd } from "../prices/prices";
 import WalletConnect from "../components/WalletConnect";
 import Step from "../components/Step";
 import BinaryToggle from "../components/BinaryToggle";
@@ -21,7 +18,6 @@ import { searchAccounts } from "./GovernContent";
 import { getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "../components/Positions";
 import { checkStaked } from "../components/actions/StakeDetails";
-import { commitmentPeriodEnd } from "../globals";
 import { device } from "../styles/global";
 import { isMobile } from "../utils";
 import TextButton from "../components/TextButton";
@@ -748,17 +744,6 @@ const BoldText = styled.text`
   ${(props) => props.mobile && css`
     margin-top: 0px;
   `}
-`;
-
-const EnrollButton = styled(PrimaryButton)`
-  appearance: none;
-  border: none;
-  color: unset;
-  margin: 6px 0px 10px 80px;
-  padding: 0px 14px 0px 14px;
-  &:hover {
-    color: #019fff;
-  }
 `;
 
 

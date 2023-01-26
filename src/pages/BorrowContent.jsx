@@ -7,7 +7,6 @@ import LoadingOverlay from "../components/LoadingOverlay";
 import Positions from "../components/Positions";
 import { CDPsToList, dummyCDPs } from "../components/Positions";
 import PrimaryButton from "../components/PrimaryButton";
-import RewardNotice from "../components/RewardNotice";
 import ToolTip from "../components/ToolTip";
 import {
   getWallet,
@@ -78,17 +77,13 @@ export function getCollateral() {
 export default function BorrowContent() {
   const [mobile, setMobile] = useState(isMobile());
   const walletAddress = useSelector(state => state.wallet.address);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [canAnimate, setCanAnimate] = useState(false);
   const [collateralType, setCollateralType] = useState("ALGO");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [balance, setBalance] = useState("...");
   const [price, setPrice] = useState(0);
   const [supplyPrice, setSupplyPrice] = useState(0);
   const [apr, setAPR] = useState(0);
-  const [borrowPrice, setBorrowPrice] = useState(0);
   const cdps = CDPsToList();
 
   //initial code snippets
@@ -135,7 +130,6 @@ export default function BorrowContent() {
     setPrice(await getPrice());
     await updateWalletInfo();
     getWallet();
-    setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
     console.log("log wallet", getWalletInfo());
     setMaxCollateral(adjustedMax());
   }, []);
@@ -153,7 +147,6 @@ export default function BorrowContent() {
       ); // hardcoded asa for now, should filter based on generic selected asset
       setMaxCollateral((Math.trunc(max*1000)/1000).toFixed(3));
     } else {
-      setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
       setMaxCollateral(adjustedMax());
     }
   }, [isGAlgo]);
@@ -553,13 +546,6 @@ export default function BorrowContent() {
   );
 }
 
-const BorrowRewardNotice = styled(RewardNotice)`
-  font-size: 10pt;
-  text {
-    font-size: 8pt;
-  }
-`;
-
 const AlgoImg = styled.img`
   /* filter: invert(); */
   height: 75px;
@@ -575,12 +561,6 @@ const AlgoImg = styled.img`
       margin-bottom: 12.5px;
     `
   }
-`;
-
-const gAlgoImg = styled.img`
-  height: 30px;
-  width: 30px;
-  position: relative;
 `;
 
 const GardImg = styled.img`
@@ -726,59 +706,4 @@ const InputTitle = styled.text`
   font-size: 16px;
   margin: 0px 4px 0px 2px;
 `;
-const InputSubtitle = styled.text`
-  font-weight: normal;
-  font-size: 12px;
-  margin: 3px 3px 3px 4px;
-`;
-
-function dummyTrans() {
-  if (getMinted() == null || getCollateral() == null) {
-    return [
-      {
-        title: "Collateral Staked",
-        value: "x Algos",
-      },
-      {
-        title: "GARD to Be Minted",
-        value: "Minimum 1 GARD",
-      },
-      {
-        title: "Collateralization Ratio",
-        value: "...",
-      },
-      {
-        title: "Liquidation Price (in ALGO/USD)",
-        value: "...",
-      },
-      {
-        title: "Transaction Fee",
-        value: "...",
-      },
-    ];
-  } else {
-    return [
-      {
-        title: "Collateral Staked",
-        value: getCollateral() + " Algos",
-      },
-      {
-        title: "GARD to Be Minted",
-        value: getMinted() + " GARD",
-      },
-      {
-        title: "Collateralization Ratio",
-        value: displayRatio(),
-      },
-      {
-        title: "Liquidation Price",
-        value: displayLiquidationPrice(),
-      },
-      {
-        title: "Transaction Fee",
-        value: "TODO: FIXME",
-      },
-    ];
-  }
-}
 
