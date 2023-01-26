@@ -14,7 +14,7 @@ import { getAccruedRewards } from "../transactions/stake";
 import { algo } from "crypto-js";
 
 function getAssets(alg_price) {
-  var assets = [];
+  var assets = [{name: "ALGO", amount: getWalletInfo().amount/1e6, value: parseFloat(alg_price*getWalletInfo().amount/1e6).toFixed(3)}];
   let x = getWalletInfo()["assets"];
   for (var i = 0, len = x.length; i < len; i++) {
     if ([ids.asa.gard, ids.asa.gain, ids.asa.gardian, ids.asa.galgo].includes(x[i]["asset-id"])) {
