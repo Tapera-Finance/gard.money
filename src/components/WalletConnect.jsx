@@ -18,8 +18,8 @@ import { userInDB, addUserToFireStore, addReferrerToFirestore, userInTotals, add
 import { getCDPs } from "../transactions/cdp";
 import { cdpGen } from "../transactions/contracts";
 import { useNavigate } from "react-router-dom";
-import { ids } from "../transactions/ids"
-import { size, device } from "../styles/global"
+import { ids } from "../transactions/ids";
+import { size, device } from "../styles/global";
 import { isMobile, isSafari } from "../utils";
 
 const instantiateUser = (address) => {
@@ -57,11 +57,11 @@ export default function WalletConnect(contentName) {
   const navigate = useNavigate();
   const walletAddress = useSelector((state) => state.wallet.address);
   const [mobile, setMobile] = useState(isMobile());
-  const accountPage = contentName?.contentName?.contentName == "Account"
+  const accountPage = contentName?.contentName?.contentName == "Account";
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
@@ -93,12 +93,12 @@ export default function WalletConnect(contentName) {
                   } catch (e) {
                     console.log("error connecting wallet: ", e);
                   }
-                  let referrerPromise = addReferrerToFirestore(getWallet().address)
+                  let referrerPromise = addReferrerToFirestore(getWallet().address);
                   if (modalVisible) {
                     setModalVisible(false);
                   }
                   setLoading(false);
-                  await referrerPromise
+                  await referrerPromise;
                 }
               }
             />
@@ -153,7 +153,7 @@ export default function WalletConnect(contentName) {
                 navigate("/account");
               } else {
                 if(isSafari()){
-                  dispatch(setAlert('We noticed you are using safari. Please make sure to <a href="https://www.avast.com/c-allow-and-block-pop-ups-safari">enable pop-ups</a> to use our web app properly!'))
+                  dispatch(setAlert("We noticed you are using safari. Please make sure to <a href=\"https://www.avast.com/c-allow-and-block-pop-ups-safari\">enable pop-ups</a> to use our web app properly!"));
                 }
                 reduceModalContent("terms");
                 setModalCanAnimate(true);
@@ -208,7 +208,7 @@ const WalletBarButton = styled(PrimaryButton)`
     width: 100%;
     margin: 2px 0px 2px 0px;
   }
-`
+`;
 
 const BtnBox = styled.div`
     margin: 4px 0px 4px 0px;
@@ -216,7 +216,7 @@ const BtnBox = styled.div`
   @media (${device.mobileL}) {
     margin: 4px 0px 4px 0px;
   }
-`
+`;
 
 const WalletConnectDiv = styled.div`
   height: 96px;
@@ -232,11 +232,11 @@ const WalletConnectDiv = styled.div`
   ${(props) => props.accountPage && css`
     height: 70px;
   `}
-`
+`;
 
 const StyledModal = styled(Modal)`
   background: #172756;
-`
+`;
 
 const WalletOption = styled.button`
   width: ${window.innerWidth < 900 ? "80vw" : "327px"};

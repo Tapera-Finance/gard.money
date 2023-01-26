@@ -27,7 +27,7 @@ import { formatToDollars } from "../../utils";
 import { gardpool, swap } from "../../transactions/swap";
 import { titleToToolTip } from "../../utils";
 import { VERSION } from "../../globals";
-import { size, device } from "../../styles/global"
+import { size, device } from "../../styles/global";
 import { isMobile } from "../../utils";
 
 const initEffectState = {
@@ -40,7 +40,7 @@ const initEffectState = {
 
 const swapEnabled = VERSION === "MAINNET" ? true : false;
 // const swapEnabled = true;
-console.log("enabled?", swapEnabled)
+console.log("enabled?", swapEnabled);
 
 
 export default function SwapDetails() {
@@ -284,17 +284,17 @@ export default function SwapDetails() {
   }
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   useEffect(() => {
     if (leftInputAmt === "") {
-      setLeftDollars(0.00)
+      setLeftDollars(0.00);
     }
     if (rightInputAmt === "") {
-      setRightDollars(0.00)
+      setRightDollars(0.00);
     }
-  }, [])
+  }, []);
 
   // set right if left changes
   useEffect(() => {
@@ -328,11 +328,11 @@ export default function SwapDetails() {
 
   // convert to dollars when inputs change
   useEffect(() => {
-    let leftDollars
+    let leftDollars;
     if (leftSelectVal === assets[0] && rightSelectVal === assets[1]) {
       leftDollars = convertToDollars(leftInputAmt, leftSelectVal.toLowerCase());
     } else if (leftSelectVal === assets[1] && rightSelectVal === assets[0]) {
-      leftDollars = formatToDollars(leftInputAmt)
+      leftDollars = formatToDollars(leftInputAmt);
     }
     setLeftDollars(leftDollars);
     if (
@@ -349,9 +349,9 @@ export default function SwapDetails() {
   }, [leftInputAmt]);
 
   useEffect(() => {
-    let rightDollars
+    let rightDollars;
     if (rightSelectVal === assets[1]) {
-      rightDollars = formatToDollars(rightInputAmt)
+      rightDollars = formatToDollars(rightInputAmt);
     } else if (rightSelectVal === assets[0]) {
       rightDollars = inverseToDollars(rightInputAmt, leftSelectVal.toLowerCase());
     }
@@ -565,7 +565,7 @@ const SwapContainer = styled.div`
   @media (min-width: ${size.tablet}) {
     margin-left: 2vw;
   }
-`
+`;
 
 const SlippageEffect = styled.div`
 align-self: center;
@@ -576,7 +576,7 @@ const TestAlert = styled.text`
   margin: 4px;
   font-weight: bolder;
   text-align: center;
-`
+`;
 
 const Text = styled.text`
   margin: 4px;

@@ -1,5 +1,5 @@
-import { createGlobalStyle } from "styled-components"
-import { px2vw } from "../utils"
+import { createGlobalStyle } from "styled-components";
+import { px2vw } from "../utils";
 
 // define viewport sizes
 export const size = {
@@ -10,7 +10,7 @@ export const size = {
   laptop: "1024px",
   laptopL: "1440px",
   desktop: "2560px"
-}
+};
 
 export const device = {
   mobileS: `(max-width: ${size.mobileS})`,
@@ -20,5 +20,5 @@ export const device = {
   laptop: `(max-width: ${size.laptop})`,
   laptopL: `(max-width: ${size.laptopL})`,
   desktop: `(max-width: ${size.desktop})`
-}
+};
 

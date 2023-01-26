@@ -3,7 +3,7 @@ import ToolTip from "./ToolTip";
 import * as tips from "../assets/tooltiptext";
 import styled, { css } from "styled-components";
 import RewardWrapper from "./RewardWrapper";
-import { size, device } from "../styles/global"
+import { size, device } from "../styles/global";
 
 export default function Effect({ title, val, hasToolTip, className, rewards, noMarginBottom }) {
   return (

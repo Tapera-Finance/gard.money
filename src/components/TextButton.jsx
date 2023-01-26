@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { size, device } from "../styles/global"
+import { size, device } from "../styles/global";
 
 /**
  * @prop {string} text - Text to be rendered inside the button

@@ -15,19 +15,19 @@ import Step from "../components/Step";
 import BinaryToggle from "../components/BinaryToggle";
 import { setAlert } from "../redux/slices/alertSlice";
 import Effect from "../components/Effect";
-import { cdpInterest } from "../transactions/lib"
-import { getStakingAPY } from "../transactions/stake"
+import { cdpInterest } from "../transactions/lib";
+import { getStakingAPY } from "../transactions/stake";
 import { searchAccounts } from "./GovernContent";
 import { getWalletInfo } from "../wallets/wallets";
 import { getCDPs } from "../transactions/cdp";
-import { CDPsToList } from "../components/Positions"
+import { CDPsToList } from "../components/Positions";
 import { checkStaked } from "../components/actions/StakeDetails";
 import { commitmentPeriodEnd } from "../globals";
 import { device } from "../styles/global";
-import { isMobile } from "../utils"
+import { isMobile } from "../utils";
 import TextButton from "../components/TextButton";
 import { LinkText, SocialMediaButton } from "../components/Drawer";
-import { Banner } from "../components/Banner"
+import { Banner } from "../components/Banner";
 
 const fetchTvl = async () => {
   try {
@@ -46,19 +46,19 @@ export function getStateUint(state, key, byte_switch = 0) {
     if (entry.key === key) {
       return entry;
     }
-  })
-  return byte_switch ? val.value.bytes : val.value.uint
+  });
+  return byte_switch ? val.value.bytes : val.value.uint;
 }
 
 export async function getBorrowed() {
-  const v2GardPriceValidatorId = 890603991
-  const sgardGardId = 890603920
+  const v2GardPriceValidatorId = 890603991;
+  const sgardGardId = 890603920;
   async function lookupApplications(appId) {
     const axiosObj = axios.create({
-      baseURL: 'https://mainnet-idx.algonode.cloud',
+      baseURL: "https://mainnet-idx.algonode.cloud",
       timeout: 300000,
-    })
-    return (await axiosObj.get(`/v2/applications/${appId}`)).data
+    });
+    return (await axiosObj.get(`/v2/applications/${appId}`)).data;
   }
   async function getAppState(appId) {
     const res = await lookupApplications(appId);
@@ -66,10 +66,10 @@ export async function getBorrowed() {
   }
 
   const validatorState = await getAppState(v2GardPriceValidatorId);
-  const SGardDebt = getStateUint(validatorState, btoa('SGARD_OWED'))
+  const SGardDebt = getStateUint(validatorState, btoa("SGARD_OWED"));
   const sgardState = await getAppState(sgardGardId);
-  const SGardConversion = getStateUint(sgardState, btoa('conversion_rate'))
-  return (SGardDebt * SGardConversion / 1e10)/1e6
+  const SGardConversion = getStateUint(sgardState, btoa("conversion_rate"));
+  return (SGardDebt * SGardConversion / 1e10)/1e6;
 }
 
 async function getTotalUsers() {
@@ -78,7 +78,7 @@ async function getTotalUsers() {
   let response = null;
   const users = new Set();
 
-  const validators = [ids.app.validator, ids.app.gard_staking, ids.app.gardian_staking]
+  const validators = [ids.app.validator, ids.app.gard_staking, ids.app.gardian_staking];
   for(var i = 0; i < validators.length; i++){
     do {
       // Find accounts that are opted into the GARD price validator application
@@ -88,55 +88,55 @@ async function getTotalUsers() {
         limit: 1000,
         nexttoken,
       });
-      for (const account of response['accounts']) {
+      for (const account of response["accounts"]) {
         if (i){
           users.add(account.address);
         }
         else {
-          if(account['apps-local-state']){
-          let cdp_state = account['apps-local-state'][0]['key-value']
-          users.add(algosdk.encodeAddress(Buffer.from(getStateUint(cdp_state, btoa("OWNER"), 1), "base64")))
+          if(account["apps-local-state"]){
+          let cdp_state = account["apps-local-state"][0]["key-value"];
+          users.add(algosdk.encodeAddress(Buffer.from(getStateUint(cdp_state, btoa("OWNER"), 1), "base64")));
           }
         }
       }
-      nexttoken = response['next-token']
+      nexttoken = response["next-token"];
     } while (nexttoken != null);
   }
-  return users.size
+  return users.size;
 }
 
 export async function getTotalGardGovs() {
 
-  const v2GardPriceValidatorId = 890603991
-  let nexttoken
-  let response = null
-  let total = 0
+  const v2GardPriceValidatorId = 890603991;
+  let nexttoken;
+  let response = null;
+  let total = 0;
 
-  const validators = [v2GardPriceValidatorId]
+  const validators = [v2GardPriceValidatorId];
   const axiosObj = axios.create({
-    baseURL: 'https://governance.algorand.foundation/api/governors/',
+    baseURL: "https://governance.algorand.foundation/api/governors/",
     timeout: 300000,
-  })
+  });
   async function isGovernor(address) {
         try {
-            let response = (await axiosObj.get(address + '/status/', {}))
+            let response = (await axiosObj.get(address + "/status/", {}));
             if (response) {
-              total += 1
+              total += 1;
             }
           }
           catch (error) {
             if (error.response) {
-              console.log(error.response)
+              console.log(error.response);
             } else if (error.request) {
               // This means the item does not exist
             } else {
               // This means that there was an unhandled error
-              console.error(error)
+              console.error(error);
             }
           }
       }
   
-  let promises = []
+  let promises = [];
   
   for(var i = 0; i < validators.length; i++){
     do {
@@ -148,14 +148,14 @@ export async function getTotalGardGovs() {
         nexttoken,
       });
       
-      for (const account of response['accounts']) {
-        promises.push(isGovernor(account.address))
+      for (const account of response["accounts"]) {
+        promises.push(isGovernor(account.address));
       }
-      nexttoken = response['next-token']
+      nexttoken = response["next-token"];
     } while (nexttoken != null);
   }
   await Promise.allSettled(promises);
-  return total
+  return total;
 }
 
 const buttons = [
@@ -169,7 +169,7 @@ const buttons = [
   // "Pool",
   // "Stake",
   // "Trade CDP",
-]
+];
 
 /**
  * Content found on home
@@ -182,7 +182,7 @@ export default function HomeContent() {
   const [borrowed, setBorrowed] = useState("...");
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
-  const [users, setUsers] = useState("Loading...")
+  const [users, setUsers] = useState("Loading...");
   const [chainData, setChainData] = useState("");
   const [governors, setGovernors] = useState("Loading...");
   const [allOpen, setAllOpen] = useState(true);
@@ -192,7 +192,7 @@ export default function HomeContent() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
-  const [showMore, setShowMore] = useState(false)
+  const [showMore, setShowMore] = useState(false);
 
   const [step2open, setStep2] = useState(true);
   const [step3open, setStep3] = useState(true);
@@ -205,10 +205,10 @@ export default function HomeContent() {
   };
 
   useEffect(()=> {
-    setAllOpen(step2open && step3open)
-    console.log("triggered", step2open, step3open)
+    setAllOpen(step2open && step3open);
+    console.log("triggered", step2open, step3open);
 
-  },[step2open, step3open])
+  },[step2open, step3open]);
 
   useEffect(async () => {
     console.log("isMobile ?", isMobile());
@@ -218,31 +218,31 @@ export default function HomeContent() {
 
   useEffect(async () => {
     if (walletAddress) {
-     let info = await getWalletInfo()
-     let gardInfo = info["assets"].filter((asset) => asset["asset-id"] === ids.asa.gard)
+     let info = await getWalletInfo();
+     let gardInfo = info["assets"].filter((asset) => asset["asset-id"] === ids.asa.gard);
       if (gardInfo.length > 0 && gardInfo[0]["amount"] > 0) {
-        setGardInWallet(true)
+        setGardInWallet(true);
       }
     }
     if (walletAddress) {
-      let stakePromise = await checkStaked()
+      let stakePromise = await checkStaked();
       let cdps = CDPsToList();
       if (cdps.length > 0 || stakePromise === true) {
-        setGaining(true)
+        setGaining(true);
       }
     }
-  }, [])
+  }, []);
 
-  const circulating = "TBD"
+  const circulating = "TBD";
   /* const circulating = JSON.parse(
     chainData ? chainData["circulating-gard"][8064 - 1] : 0,
   ) */
 
   useEffect(async () => {
     const govsPromise = getTotalGardGovs();
-    const apyPromise = getStakingAPY("NL")
-    setApr(await getAlgoGovAPR())
-    setApy((await apyPromise).toFixed(2))
+    const apyPromise = getStakingAPY("NL");
+    setApr(await getAlgoGovAPR());
+    setApy((await apyPromise).toFixed(2));
     setGovernors(await govsPromise);
   }, []);
 
@@ -289,12 +289,12 @@ export default function HomeContent() {
     },
   ];
 
-  const alwaysShown = homeDetails.slice(0, 4)
-  const additionalDetails = homeDetails.slice(4)
+  const alwaysShown = homeDetails.slice(0, 4);
+  const additionalDetails = homeDetails.slice(4);
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   useEffect(async () => {
     let res = await fetchTvl();
@@ -456,7 +456,7 @@ export default function HomeContent() {
           positioned={true}
           text={showMore ? "Collapse":  "Show More Details"}
           onClick={() => {
-            setShowMore(!showMore)
+            setShowMore(!showMore);
           }}
         /> : <></>}
         {mobile ? <ToggleBox>
@@ -518,11 +518,11 @@ export default function HomeContent() {
             <Text
               style={{ color: "#80edff" }}
               onClick={() => {
-                setStep2(!allOpen)
-                setStep3(!allOpen)
+                setStep2(!allOpen);
+                setStep3(!allOpen);
               }}
             >
-              {allOpen ? `Collapse` : `Expand`} All
+              {allOpen ? "Collapse" : "Expand"} All
             </Text>
 
             <ConnectStep mobile={mobile}>
@@ -592,7 +592,7 @@ const ToggleBox = styled.div`
   @media (${device.tablet}) {
 
   }
-`
+`;
 
 const HomeWrapper = styled.div`
   display: flex;
@@ -605,7 +605,7 @@ const HomeWrapper = styled.div`
       /* margin-right: 30px; */
     `
   }
-`
+`;
 
 const AccessBox = styled.div`
   gap: 25px;
@@ -626,7 +626,7 @@ const AccessBox = styled.div`
     row-gap: 10px;
     height: 100%;
   `}
-`
+`;
 
 const Link = styled(PrimaryButton)`
   text-decoration: none;

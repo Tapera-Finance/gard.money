@@ -14,10 +14,10 @@ import { isMobile } from "../utils";
 
 export default function Topbar({ contentName }) {
   const [mobile, setMobile] = useState(isMobile());
-  const accountPage = contentName == "Account"
+  const accountPage = contentName == "Account";
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   return (
     <div style={{display: "flex", justifyContent: `${mobile ? "center" : ""}`}}>

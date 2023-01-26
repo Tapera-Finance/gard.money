@@ -36,16 +36,16 @@ export async function start_auction(cdp) {
   cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralID);
   let params = await paramsPromise;
   const info = await infoPromise;
-  const firstDummyTxn = cdp.collateralID != 0 ? makeDummyXferTxn(info, params, cdp.collateralID) : null
-  const dummyTxn = makeUpdateInterestTxn(info, params)
-  params.fee = 0
-  let foreignApps = [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest]
-  let foreignAssets = [ids.asa.gard]
-  let lsigNum = 3
+  const firstDummyTxn = cdp.collateralID != 0 ? makeDummyXferTxn(info, params, cdp.collateralID) : null;
+  const dummyTxn = makeUpdateInterestTxn(info, params);
+  params.fee = 0;
+  let foreignApps = [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest];
+  let foreignAssets = [ids.asa.gard];
+  let lsigNum = 3;
   if (cdp.collateralID != 0) {
     foreignApps.push(ids.app.oracle[cdp.collateralID]);
-    foreignAssets.push(cdp.collateralID)
-    lsigNum = 2
+    foreignAssets.push(cdp.collateralID);
+    lsigNum = 2;
   }
   let txn = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.contract.address,
@@ -57,15 +57,15 @@ export async function start_auction(cdp) {
     foreignAssets: foreignAssets,
     suggestedParams: params,
   });
-  let txns = firstDummyTxn === null ? [dummyTxn, txn] : [firstDummyTxn, dummyTxn, txn]
+  let txns = firstDummyTxn === null ? [dummyTxn, txn] : [firstDummyTxn, dummyTxn, txn];
   algosdk.assignGroupID(txns);
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   const signTxnsPromise = signGroup(info, txns);
   let lsig = algosdk.makeLogicSig(cdp.contract.logic, [algosdk.encodeUint64(lsigNum)]);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn, lsig);
   const user_signed = await signTxnsPromise;
-  console.log(stxn1)
-  console.log(user_signed)
+  console.log(stxn1);
+  console.log(user_signed);
   let stxns = firstDummyTxn === null ? [
     user_signed[0].blob,
     stxn1.blob,
@@ -96,11 +96,11 @@ export async function liquidate(cdp) {
     (cdp.gard_owed + cdp.premium + 0.001).toFixed(3) + " GARD."
   };
 
-  const lsigNum = cdp.collateralID == 0 ? 1 : 0
+  const lsigNum = cdp.collateralID == 0 ? 1 : 0;
   let txnX = makeUpdateInterestTxn(info, params);
-  params.fee = 0
-  let txn0 = makeUpdateInterestTxn(info, params) // These first 2 transactions are for opcode budget
-  params.fee = 0
+  params.fee = 0;
+  let txn0 = makeUpdateInterestTxn(info, params); // These first 2 transactions are for opcode budget
+  params.fee = 0;
   // txn 1 application call
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.address,

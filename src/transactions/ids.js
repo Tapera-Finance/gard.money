@@ -4,11 +4,11 @@ import { VERSION } from "../globals";
 let _usdcID = 31566704;
 
 // pact pool ids
-let _pactUSDCGARDID = 701249684
+let _pactUSDCGARDID = 701249684;
 let _pactALGOGARDID = 801613881;
 let _pactALGOUSDID = 620995314;
 
-let _ids
+let _ids;
 
 // swap recipients
 let _pactAlgoGardPoolAddress =
@@ -47,7 +47,7 @@ if (VERSION == "MAINNET") {
         treasury : 890603993,
         claimer : 890604040,
     }
- }
+ };
   // ASAs
   // _gainID = 684649672;
   // _gardID = 684649988;
@@ -55,7 +55,7 @@ if (VERSION == "MAINNET") {
   _usdcID = 31566704;
 
 // pact app ids
-  _pactUSDCGARDID = 701249684
+  _pactUSDCGARDID = 701249684;
   _pactALGOGARDID = 801613881;
   _pactALGOUSDID = 620995314;
   // App ids
@@ -94,11 +94,11 @@ if (VERSION == "MAINNET") {
          treasury : 113908111,
          claimer : 113908141,
      }
-  }
+  };
 }
 
 // IDs object
-export const ids = _ids
+export const ids = _ids;
 
 // ASAs
 export const usdcID = _usdcID;
@@ -106,7 +106,7 @@ export const usdcID = _usdcID;
 // pact pool ids
 export const pactUSDCGARD = _pactUSDCGARDID;
 export const pactALGOGARDID = _pactALGOGARDID;
-export const pactALGOUSDID = _pactALGOUSDID
+export const pactALGOUSDID = _pactALGOUSDID;
 
 // swap AlgoGardPoolAddress
 export const pactAlgoGardPoolAddress = _pactAlgoGardPoolAddress;

@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Button from '@mui/material/Button';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Button from "@mui/material/Button";
 
 export const ThemeContext = React.createContext();
 
@@ -14,15 +14,15 @@ const theme = createTheme({
     },
     danger: {
       // This is green.A700 as hex.
-      main: '#f04438',
+      main: "#f04438",
     },
     moderate: {
       // This is green.A700 as hex.
-      main: '#f79009',
+      main: "#f79009",
     },
     healthy: {
       // This is green.A700 as hex.
-      main: '#4bb543',
+      main: "#4bb543",
     },
   },
 });

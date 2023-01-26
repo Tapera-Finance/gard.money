@@ -14,7 +14,7 @@ import PrimaryButton from "./PrimaryButton";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import WalletConnect from "./WalletConnect";
-import { size, device } from "../styles/global"
+import { size, device } from "../styles/global";
 
 const theme = createTheme({
   components: {
@@ -40,7 +40,7 @@ export default function AccountCard(contentName) {
 
   const handleClick = (e) => {
     if (!walletAddress) {
-      return
+      return;
     }
     setAnchorEl(e.currentTarget);
   };
@@ -112,7 +112,7 @@ export default function AccountCard(contentName) {
                 mr: 1,
               },
               "&:before": {
-                content: '""',
+                content: "\"\"",
                 display: "block",
                 position: "absolute",
                 top: 0,
@@ -178,7 +178,7 @@ const BtnContainer = styled.div`
   @media (${device.mobileL}) {
     display: unset;
   }
-`
+`;
 
 const AvatarBox = styled.div`
   display: flex;
@@ -204,4 +204,4 @@ align-items: center;
     visibility: hidden;
     width: 0px;
   }
-`
+`;

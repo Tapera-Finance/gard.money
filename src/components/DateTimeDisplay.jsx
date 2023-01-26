@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
 const DateTimeDisplay = ({ value, type, isDanger }) => {
   return (
-    <div className={isDanger ? 'countdown danger' : 'countdown'}>
+    <div className={isDanger ? "countdown danger" : "countdown"}>
       <p>{value}</p>
       <span style={{color: "grey"}}>{type}</span>
     </div>

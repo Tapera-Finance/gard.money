@@ -14,4 +14,4 @@ export const Banner = styled.div`
   padding: 10px 12px 10px 12px;
   margin: 8px;
   margin-bottom: 14px;
-`
+`;

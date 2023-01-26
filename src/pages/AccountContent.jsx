@@ -29,9 +29,9 @@ function RefButton({navFunc}){
     return <PrimaryButton 
     text={"View Referrals"}
     blue={true}
-    onClick={navFunc}></PrimaryButton>
+    onClick={navFunc}></PrimaryButton>;
   }
-  return <></>
+  return <></>;
 }
 
 /**
@@ -175,7 +175,7 @@ export default function AccountContent() {
           marginBottom: "36px",
         }}
       >
-      <RefButton navFunc={() => navigate(`/referrals`)}/>
+      <RefButton navFunc={() => navigate("/referrals")}/>
       </div>
     </AcctPgCont>
   );
@@ -187,13 +187,13 @@ const AcctPgCont = styled.div`
   /* max-width: 90vw; */
   width: 95%;
   margin: auto;
-`
+`;
 
 const AcctPageToggle = styled(PageToggle)`
   @media (${device.tablet}) {
     max-width: fit-content;
   }
-`
+`;
 
 const AccountContainer = styled.div`
   background: rgba(13, 18, 39, 0.75);

@@ -1,31 +1,31 @@
 import { useEffect, useState } from "react";
 
 const getOrientation = () =>
-  window.screen.orientation.type
+  window.screen.orientation.type;
 
 export const useScreenOrientation = () => {
   const [orientation, setOrientation] =
-    useState(getOrientation())
+    useState(getOrientation());
 
   const updateOrientation = event => {
-    setOrientation(getOrientation())
-  }
+    setOrientation(getOrientation());
+  };
 
   useEffect(() => {
     window.addEventListener(
-      'orientationchange',
+      "orientationchange",
       updateOrientation
-    )
+    );
     return () => {
       window.removeEventListener(
-        'orientationchange',
+        "orientationchange",
         updateOrientation
-      )
-    }
-  }, [])
+      );
+    };
+  }, []);
 
-  return orientation
-}
+  return orientation;
+};
 
 export function useWindowSize() {
   const [windowSize, setWindowSize] = useState({

@@ -14,16 +14,16 @@ import {
   updateWalletInfo,
 } from "../../wallets/wallets";
 import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
-import gardianLogo from "../../assets/icons/gard-logo-white-square.png"
+import gardianLogo from "../../assets/icons/gard-logo-white-square.png";
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import PrimaryButton from "../PrimaryButton";
 import { formatToDollars } from "../../utils";
-import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, getAccruedGardianRewards,  } from "../../transactions/stake"
+import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, getAccruedGardianRewards,  } from "../../transactions/stake";
 import LoadingOverlay from "../LoadingOverlay";
-import { size, device } from "../../styles/global"
-import { isMobile } from "../../utils"
-import { Banner } from "../Banner"
+import { size, device } from "../../styles/global";
+import { isMobile } from "../../utils";
+import { Banner } from "../Banner";
 
 // asset types: 0 === GARD, 1 === ALGO
 
@@ -36,23 +36,23 @@ function algosToMAlgos(num) {
 
 // Gets Active wallet Stake in simple no-lock pool
 export function getNLStake(app_id=ids.app.gard_staking) {
-  const phrase = app_id == ids.app.gard_staking ? "NL GARD Staked" : "NL GARDIAN Staked"
-  const res = getLocalAppField(app_id, phrase)
+  const phrase = app_id == ids.app.gard_staking ? "NL GARD Staked" : "NL GARDIAN Staked";
+  const res = getLocalAppField(app_id, phrase);
   if (res === undefined) {
     return 0;
   }
-  return res
+  return res;
 }
 
 export const checkStaked = async () => {
-  const accruePromise = getAccruedRewards("NL")
-  const accrued = await accruePromise
-  return ((getNLStake()/1000000)+parseFloat(accrued)).toFixed(3) > 0
-}
+  const accruePromise = getAccruedRewards("NL");
+  const accrued = await accruePromise;
+  return ((getNLStake()/1000000)+parseFloat(accrued)).toFixed(3) > 0;
+};
 
 const mobileView = () => {
-  return window.innerWidth < parseInt(size.tablet)
-}
+  return window.innerWidth < parseInt(size.tablet);
+};
 
 export default function StakeDetails() {
   const [mobile, setMobile] = useState(isMobile());
@@ -67,18 +67,18 @@ export default function StakeDetails() {
   const [maxGARDIANStake, setMaxGardianStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const [noLockGardian, setNoLockGardian] = useState(0);
-  const [accruedGardian, setAccruedGardian] = useState(0)
+  const [accruedGardian, setAccruedGardian] = useState(0);
   const dispatch = useDispatch();
-  const [NL_TVL, setNLTVL] = useState("...")
-  const [GARDIAN_TVL, setGARDIANTVL] = useState("0")
-  const [NLAPY, setNLAPY] = useState(0)
+  const [NL_TVL, setNLTVL] = useState("...");
+  const [GARDIAN_TVL, setGARDIANTVL] = useState("0");
+  const [NLAPY, setNLAPY] = useState(0);
   const [NLGARDIANAPY, setNLGARDIANAPY] = useState(0);
   const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
 
   const handleInput = (e) => {
     setStakeAmount(e.target.value);
-  }
+  };
 
   var sessionStorageSetHandler = function (e) {
     setLoadingText(JSON.parse(e.value));
@@ -86,104 +86,104 @@ export default function StakeDetails() {
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
   const handleMaxStake = () => {
-    setStakeAmount(maxStake)
+    setStakeAmount(maxStake);
   };
 
   const handleStake = async () => {
     if (stakeAmount === null || !(stakeAmount > 0)) {
-      dispatch(setAlert("You must enter a positive amount to Stake!"))
-      return
+      dispatch(setAlert("You must enter a positive amount to Stake!"));
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await stake("NL", stakeAmount)
+      const res = await stake("NL", stakeAmount);
       if (res.alert) {
         dispatch(setAlert(res.text));
       }
     } catch (e) {
-      alert("Error attempting to stake: " + e)
-      console.log(e)
+      alert("Error attempting to stake: " + e);
+      console.log(e);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleUnstake = async () => {
     if (stakeAmount === null || !(stakeAmount > 0)) {
-      dispatch(setAlert("You must enter a positive amount to Unstake!"))
-      return
+      dispatch(setAlert("You must enter a positive amount to Unstake!"));
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await unstake("NL", stakeAmount)
+      const res = await unstake("NL", stakeAmount);
       if (res.alert) {
         dispatch(setAlert(res.text));
       }
     } catch (e) {
-      alert("Error attempting to unstake: " + e)
-      console.log(e)
+      alert("Error attempting to unstake: " + e);
+      console.log(e);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleStake2 = async () => {
     if (stake2Amount === null || !(stake2Amount > 0)) {
-      dispatch(setAlert("You must enter a positive amount to Stake!"))
-      return
+      dispatch(setAlert("You must enter a positive amount to Stake!"));
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await GardianStake("NL", parseInt(stake2Amount))
+      const res = await GardianStake("NL", parseInt(stake2Amount));
       if (res.alert) {
         dispatch(setAlert(res.text));
       }
     } catch (e) {
-      alert("Error attempting to stake GARDIAN: " + e)
-      console.log(e)
+      alert("Error attempting to stake GARDIAN: " + e);
+      console.log(e);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleUnstake2 = async () => {
     if (stake2Amount === null || !(stake2Amount > 0)) {
-      dispatch(setAlert("You must enter a positive amount to Unstake!"))
-      return
+      dispatch(setAlert("You must enter a positive amount to Unstake!"));
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await GardianUnstake("NL", parseInt(stake2Amount))
+      const res = await GardianUnstake("NL", parseInt(stake2Amount));
       if (res.alert) {
         dispatch(setAlert(res.text));
       }
     } catch (e) {
-      alert("Error attempting to unstake: " + e)
-      console.log(e)
+      alert("Error attempting to unstake: " + e);
+      console.log(e);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleInput2 = (e) => {
     setStake2Amount(e.target.value);
-  }
+  };
 
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
-    const TVLPromise = getAppField(ids.app.gard_staking, "NL")
-    const gardianTVLPromise = getAppField(ids.app.gardian_staking, "NL")
-    const APYPromise = getStakingAPY("NL")
-    const accruePromise = getAccruedRewards("NL")
-    const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking)
-    await infoPromise
-    const info = getWalletInfo()
-    setNoLock(getNLStake())
-    setNoLockGardian(getNLStake(ids.app.gardian_staking))
+    const TVLPromise = getAppField(ids.app.gard_staking, "NL");
+    const gardianTVLPromise = getAppField(ids.app.gardian_staking, "NL");
+    const APYPromise = getStakingAPY("NL");
+    const accruePromise = getAccruedRewards("NL");
+    const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking);
+    await infoPromise;
+    const info = getWalletInfo();
+    setNoLock(getNLStake());
+    setNoLockGardian(getNLStake(ids.app.gardian_staking));
     setMaxStake(getGardBalance(info));
-    setMaxGardianStake(getGardianBalance(info))
-    setNLAPY((await APYPromise))
-    setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
-    setGARDIANTVL((await gardianTVLPromise))
-    setAccrued((await accruePromise) / 1000000)
-    setAccruedGardian(await accruedGardianPromise)
-    console.log(GARDIAN_TVL)
+    setMaxGardianStake(getGardianBalance(info));
+    setNLAPY((await APYPromise));
+    setNLTVL(((await TVLPromise) / 1000000).toLocaleString());
+    setGARDIANTVL((await gardianTVLPromise));
+    setAccrued((await accruePromise) / 1000000);
+    setAccruedGardian(await accruedGardianPromise);
+    console.log(GARDIAN_TVL);
   }, []);
 
   useEffect(() => {
@@ -191,8 +191,8 @@ export default function StakeDetails() {
   }, [walletAddress]);
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
 
   return (
@@ -491,7 +491,7 @@ const StakeBtn = styled(PrimaryButton)`
   @media (${device.tablet}) {
     /* visibility: hidden; */
   }
-`
+`;
 const UnstakeBtn = styled(PrimaryButton)`
 ${(props) => props.mobile && css`
     margin: 4px;
@@ -499,7 +499,7 @@ ${(props) => props.mobile && css`
   @media (${device.tablet}) {
     /* visibility: hidden; */
   }
-`
+`;
 
 
 const Link = styled.text`
@@ -605,7 +605,7 @@ const SecondThirdCondensed = styled.div`
     /* grid-template-columns: repeat(2, 49%); */
   `}
 
-`
+`;
 
 const TypeCont = styled.div`
   display: flex;
@@ -617,7 +617,7 @@ const TypeCont = styled.div`
     justify-content: unset;
     padding-right: 10px;
   }
-`
+`;
 
 const StakeBox = styled.div`
   display: flex;
@@ -640,7 +640,7 @@ const FourthRow = styled.div`
     display: flex;
     flex-direction: column-reverse;
   `}
-`
+`;
 
 const Img = styled.img`
   height: 25px;
@@ -679,7 +679,7 @@ ${(props) => props.mobile && css`
   @media (${device.tablet}) {
     /* visibility: hidden; */
   }
-`
+`;
 
 const globalMobile = isMobile();
 
@@ -727,7 +727,7 @@ const MobileEffectContainer = styled.div`
     margin-bottom: 16px;
     visibility: visible;
   }
-`
+`;
 
 const Text = styled.text`
   font-weight: bold;
@@ -751,7 +751,7 @@ const MaxBtn = styled.text`
   &:hover {
     transform: scale(1.1)
   }
-`
+`;
 
 const Result = styled.text`
   margin-top: 1px;

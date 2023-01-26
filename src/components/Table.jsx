@@ -4,7 +4,7 @@ import copyIconSmall from "../assets/icons/copy_icon_small.png";
 import { camelToWords } from "../utils";
 import PrimaryButton from "./PrimaryButton";
 import chevron from "../assets/icons/tablePag_icon.png";
-import "../styles/table.css"
+import "../styles/table.css";
 import { isMobile } from "../utils";
 
 /**
@@ -34,8 +34,8 @@ export default function Table({
   const [mobile, setMobile] = useState(isMobile());
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   useEffect(() => {
     setShownRows(data.slice(0, rowsPerPage));
@@ -107,7 +107,7 @@ export default function Table({
                   {keys.map((keyVal, keyIndex) => {
                     if (keyVal == "id" && noID) return;
                     if (keyVal === "name" || keyVal === "id") {
-                      <Cell  mobile={mobile} key={keyIndex} className="left-column-cell">{value[keyVal]}</Cell>
+                      <Cell  mobile={mobile} key={keyIndex} className="left-column-cell">{value[keyVal]}</Cell>;
                     }
                     return <Cell mobile={mobile} key={keyIndex}>{value[keyVal]}</Cell>;
                   })}
@@ -206,7 +206,7 @@ const TableGrid = styled.table`
   border-top: none;
   background: #0f1733;
   overflow-x: auto;
-`
+`;
 
 // styled components
 const Title = styled.text`
@@ -217,7 +217,7 @@ const Title = styled.text`
 const Total = styled.text`
   font-weight: 600;
   /* font */
-`
+`;
 
 const CountContainer = styled.div`
   background: #ffffff;
@@ -236,7 +236,7 @@ const HeaderRow = styled.tr`
   background: #172756;
   height: 44px;
   border-radius: 10px;
-`
+`;
 const HeaderElement = styled.th`
   font-weight: 500;
   font-size: 14px;

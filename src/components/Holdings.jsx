@@ -6,7 +6,7 @@ import { formatToDollars } from "../utils";
 import { getPrice } from "../transactions/cdp";
 import { getWallet, getWalletInfo } from "../wallets/wallets";
 import { CDPsToList } from "./Positions";
-import { ids } from "../transactions/ids"
+import { ids } from "../transactions/ids";
 import { device } from "../styles/global";
 import { isMobile } from "../utils";
 import { getNLStake } from "./actions/StakeDetails";
@@ -64,15 +64,15 @@ export default function Holdings() {
   const cdps = CDPsToList();
 
   const cdpData = cdps.map((cdp, i) => {
-    console.log(cdp)
+    console.log(cdp);
     return {
       id: i + 1,
       liquidationPrice: cdp.liquidationPrice,
       collateral: formatToDollars((algo_price*cdp.collateral).toString(), true),
       debt: formatToDollars(cdp.debt.toString(), true),
       net: formatToDollars((algo_price*cdp.collateral) - (cdp.debt), true),
-    }
-  })
+    };
+  });
 
   const holdColumns = ["Asset", "Token Amount", "Token Value"];
   const borrowColumns = [
@@ -95,14 +95,14 @@ export default function Holdings() {
   }, []);
 
   useEffect(async () => {
-    let accruePromise = getAccruedRewards("NL")
-    let noLock = getNLStake()
-    setStakeTotal((noLock / 1000000 + parseFloat((await accruePromise) / 1000000)).toString())
+    let accruePromise = getAccruedRewards("NL");
+    let noLock = getNLStake();
+    setStakeTotal((noLock / 1000000 + parseFloat((await accruePromise) / 1000000)).toString());
   }, []);
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   const [currentPrice, setPrice] = useState("Loading...");
   const [selectedTab, setSelectedTab] = useState("one");
@@ -110,7 +110,7 @@ export default function Holdings() {
     let temp = x;
     temp.value = formatToDollars(x["value"]);
     return temp;
-  })
+  });
 
   let tabs = {
     // one: <div>stake</div>,
@@ -152,7 +152,7 @@ export default function Holdings() {
             <Title mobile={mobile}>Borrow Positions {`(${formatToDollars(borrowTotal.toString())} Total Value)`}</Title>
           </div>
           <CountContainer>
-            <CountText mobile={mobile}>{(cdpData.length).toString() + ' Position'}{cdpData.length != 1 ? 's' : ''}</CountText>
+            <CountText mobile={mobile}>{(cdpData.length).toString() + " Position"}{cdpData.length != 1 ? "s" : ""}</CountText>
           </CountContainer>
         </div>
         {mobile ? <></> : <div style={{ marginRight: 20 }}>
@@ -275,7 +275,7 @@ const HoldTable = styled(Table)`
     margin-top: -18px;
 
   }
-`
+`;
 
 const BorrowTable = styled(Table)`
   @media (${device.tablet}) {
@@ -287,7 +287,7 @@ const BorrowTable = styled(Table)`
     margin-top: -18px;
     overflow-x: auto;
   }
-`
+`;
 
 const TableHeading = styled.div`
   height: 70px;
@@ -302,4 +302,4 @@ const TableHeading = styled.div`
   @media (${device.tablet}) {
     transform: scale(0.9);
   }
-`
+`;

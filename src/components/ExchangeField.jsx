@@ -4,7 +4,7 @@ import Select from "./Select";
 import InputField from "./InputField";
 import Effect from "./Effect";
 import chevronDown from "../assets/chevron_down.png";
-import { size, device } from "../styles/global"
+import { size, device } from "../styles/global";
 import { isMobile } from "../utils";
 
 // entire container for currency select, input field, text for displaying vals
@@ -141,7 +141,7 @@ const TextContainer = styled.div`
   @media (${device.tablet}) {
     align-items: center;
   }
-`
+`;
 
 const DollarEffect = styled(Effect)`
   color: #999696;

@@ -75,20 +75,20 @@ export default function AlertOverlay({ text, requestClose }) {
           <div style={{marginTop: 10}}>{content}</div>
             <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
               <PrimaryButton blue={true} onClick={() => {
-                navigate("/stake")
-                requestClose()
+                navigate("/stake");
+                requestClose();
                 }} text="Go To Stake" />
               <PrimaryButton blue={true} onClick={() => {
-                navigate("/swap")
-                requestClose()
+                navigate("/swap");
+                requestClose();
                 }} text="Go To Swap"/>
               <PrimaryButton blue={true} onClick={() => {
-                navigate("/borrow")
-                requestClose()
+                navigate("/borrow");
+                requestClose();
             }} text="Go To Borrow"/>
             <PrimaryButton blue={true} onClick={() => {
-                navigate("/")
-                requestClose()
+                navigate("/");
+                requestClose();
             }} text="Back To Home"/>
             </div>
         </Container>

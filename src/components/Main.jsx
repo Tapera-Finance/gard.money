@@ -17,8 +17,8 @@ import { useSelector } from "react-redux";
 import { hide } from "../redux/slices/alertSlice";
 import SwapDetails from "./actions/SwapDetails";
 import StakeDetails from "./actions/StakeDetails";
-import { size, device } from "../styles/global"
-import { isMobile } from "../utils"
+import { size, device } from "../styles/global";
+import { isMobile } from "../utils";
 
 async function googleStuff() {
   const script = document.createElement("script");
@@ -38,14 +38,14 @@ async function googleStuff() {
 }
 
 function debounce(fn, ms) {
-  let timer
+  let timer;
   return _ => {
-    clearTimeout(timer)
+    clearTimeout(timer);
     timer = setTimeout(_ => {
-      timer = null
-      fn.apply(this, arguments)
-    }, ms)
-  }
+      timer = null;
+      fn.apply(this, arguments);
+    }, ms);
+  };
 }
 
 /**
@@ -59,11 +59,11 @@ export default function Main(WrappedComponent, title) {
   const [dimmensions, setDimmensions] = useState({
     width: undefined,
     height: undefined
-  })
+  });
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function Main(WrappedComponent, title) {
         width: window.innerWidth,
         height: window.innerHeight,
       });
-    }, 1000)
+    }, 1000);
 
     // Add event listener
     window.addEventListener("resize", debouncedHandleResize);
@@ -96,7 +96,7 @@ export default function Main(WrappedComponent, title) {
     if (dimmensions && dimmensions.width > parseInt(size.tablet)) {
       // setIsOpen(true);
     }
-  }, [dimmensions])
+  }, [dimmensions]);
 
   const dispatch = useDispatch();
   const alertData = useSelector((state) => state.alert);
@@ -148,7 +148,7 @@ const ContainedDrawer = styled(Drawer)`
         visibility: visible;
       `
     } */
-`
+`;
 
 const Wrapper = styled.div`
   /* padding-left: 1.9444444444444vw;
@@ -167,7 +167,7 @@ const Wrapper = styled.div`
     padding-top: 0px;
     max-width: 100%;
   `}
-`
+`;
 
 const ContentContainer = styled.div`
   display: flex;
@@ -179,7 +179,7 @@ const ContentContainer = styled.div`
   @media (min-width: ${size.tablet}) {
     //
   }
-`
+`;
 
 //animation to expand or retract the main content container, depending on if the drawer is open or closed
 const expandMainContentAnimation = keyframes`
@@ -252,7 +252,7 @@ function MainContentHandler({ content, walletAddress }) {
     case CONTENT_NAMES.AUCTIONS:
       return <AuctionsContent />;
     case CONTENT_NAMES.SWAP:
-      return <SwapDetails />
+      return <SwapDetails />;
     case CONTENT_NAMES.STAKE:
       return <StakeDetails />;
     case CONTENT_NAMES.ACTIONS:

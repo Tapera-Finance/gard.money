@@ -1,5 +1,5 @@
 import React from "react";
-import rewardsIcon from "../assets/icons/rewards_icon.png"
+import rewardsIcon from "../assets/icons/rewards_icon.png";
 
 export default function RewardWrapper({text}){
     return <div style={{position: "relative"}}>
@@ -23,5 +23,5 @@ export default function RewardWrapper({text}){
             {text}
             <span style={{position: "absolute", bottom: ".5rem", right: "-.85rem"}}><img style={{height: "27px"}} src={rewardsIcon}/></span>
         </div>
-    </div>
+    </div>;
 }

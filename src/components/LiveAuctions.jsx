@@ -14,8 +14,8 @@ export default function LiveAuctions({
 }) {
   const [mobile, setMobile] = useState(isMobile());
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   return (
     <div
@@ -24,7 +24,7 @@ export default function LiveAuctions({
         overflow: "auto",
         display: "flex",
         flexDirection: "column",
-        margin: 'auto',
+        margin: "auto",
       }}
     >
       <div

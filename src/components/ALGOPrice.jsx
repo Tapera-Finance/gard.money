@@ -30,4 +30,4 @@ export default function ALGOPrice(props) {
 const PriceText = styled.div`
   color: #8f9093;
   font-size: 10pt;
-`
+`;

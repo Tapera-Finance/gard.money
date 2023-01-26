@@ -28,7 +28,7 @@ let cdp_data = await cdp_data_promise;
 
 async function loadDefaulted() {
   const allCDPs = await getAllCDPs();
-  return allCDPs.filter(cdp => (cdp.ratio <= 115 || cdp.activeAuction))
+  return allCDPs.filter(cdp => (cdp.ratio <= 115 || cdp.activeAuction));
 }
 
 /**
@@ -37,7 +37,7 @@ async function loadDefaulted() {
 export default function AuctionsContent() {
   const walletAddress = useSelector(state => state.wallet.address);
   const [selected, setSelected] = useState(OPTIONS.LIVE_AUCTIONS);
-  const [selectedTab, setSelectedTab] = useState("one")
+  const [selectedTab, setSelectedTab] = useState("one");
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -138,7 +138,7 @@ export default function AuctionsContent() {
   }
   const tabs = {
     one: <LiveAuctions OPTIONS={OPTIONS} open_defaulted={defaulted} selected={selected} liveAuctions={liveAuctions} dummyBids={dummyBids} dummyMarketHistory={dummyMarketHistory} dummyLiveAuctions={dummyLiveAuctions} />
-  }
+  };
   return (
     <div>
       {loading ? <LoadingOverlay text={loadingText} close={setLoading(false)} /> : <></>}
@@ -186,7 +186,7 @@ export default function AuctionsContent() {
                   dispatch(setAlert(res.text));
                 }
               } catch (e) {
-                console.log(e)
+                console.log(e);
                 alert("Liquidation Failed.");
               }
               setCanAnimate(false);
@@ -263,7 +263,7 @@ export default function AuctionsContent() {
 const AuctionsDiv = styled.div`
   background-color:#0f1733;
   border-radius: 10px;
-`
+`;
 
 const AuctionsTable = styled(Table)`
   tr {
@@ -272,7 +272,7 @@ const AuctionsTable = styled(Table)`
     border-bottom: 3px solid #0f1733;
     border-radius: 10px;
   }
-`
+`;
 
 const Title = styled.text`
   font-weight: 500;
@@ -283,13 +283,13 @@ const CountContainer = styled.div`
   background: #ffffff;
   border-radius: 16px;
   padding: 2px 8px;
-`
+`;
 
 const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: #999696;
-`
+`;
 const InactiveRadio = styled.button`
   background-color: transparent;
   padding: 8px 18px;

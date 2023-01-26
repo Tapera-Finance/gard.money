@@ -18,7 +18,7 @@ import LoadingOverlay from "./LoadingOverlay";
 import { ids } from "../transactions/ids";
 import { device, size } from "../styles/global";
 import "../styles/mobile.css";
-import { isMobile } from "../utils"
+import { isMobile } from "../utils";
 
 const axios = require("axios");
 
@@ -142,19 +142,19 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
 
     const dispatch = useDispatch();
     const {theme} = useContext(ThemeContext);
-    const [price, setPrice] = useState(0)
-    const [supplyPrice, setSupplyPrice] = useState(0)
-    const [apr, setAPR] = useState(0)
+    const [price, setPrice] = useState(0);
+    const [supplyPrice, setSupplyPrice] = useState(0);
+    const [apr, setAPR] = useState(0);
     const [cAlgos, setCollateral] = useState("");
-    const [mGARD, setGARD] = useState("")
-    const [minted, setMinted] = useState("")
+    const [mGARD, setGARD] = useState("");
+    const [minted, setMinted] = useState("");
     const loadedCDPs = CDPsToList().sort(function  (a, b) {
-      let r1 = parseInt(calcRatio(a.collateral, a.debt / 1e6,a.asaID,true,).slice(0,-1))
-      let r2 = parseInt(calcRatio(b.collateral, b.debt / 1e6,b.asaID,true,).slice(0,-1))
-      return r1 - r2
+      let r1 = parseInt(calcRatio(a.collateral, a.debt / 1e6,a.asaID,true,).slice(0,-1));
+      let r2 = parseInt(calcRatio(b.collateral, b.debt / 1e6,b.asaID,true,).slice(0,-1));
+      return r1 - r2;
     });
     const [currentCDP, setCurrentCDP] = useState(null);
-    const [collateralType, setCollateralType] = useState("ALGO")
+    const [collateralType, setCollateralType] = useState("ALGO");
     const [selectedTab, setSelectedTab] = useState("one");
     const [manageUpdate, setManageUpdate] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -162,11 +162,11 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const typeCDP = {
       galgo: "gALGO",
       algo: "ALGO"
-    }
+    };
 
     useEffect(() => {
-      setMobile(isMobile())
-    }, [])
+      setMobile(isMobile());
+    }, []);
 
   useEffect(async () => {
     setAPR(await getAlgoGovAPR());
@@ -260,7 +260,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                       <APRBox>
                         <div>APR: </div>
                         <span style={{ color: "#01d1ff", marginLeft: 8 }}>
-                          {`  ` + apr}%
+                          {"  " + apr}%
                         </span>
                       </APRBox>
                     </div>

@@ -22,14 +22,14 @@ import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
 import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
-import gAlgoLogo from "../assets/icons/galgo-icon.png"
+import gAlgoLogo from "../assets/icons/galgo-icon.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
 import Select from "../components/Select";
-import { ids } from "../transactions/ids"
-import { size, device } from "../styles/global"
+import { ids } from "../transactions/ids";
+import { size, device } from "../styles/global";
 import { isMobile } from "../utils";
-import { Banner } from "../components/Banner"
+import { Banner } from "../components/Banner";
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
@@ -103,7 +103,7 @@ export default function BorrowContent() {
   const [createPositionShown, setCreatePositionShown] = useState(false);
   const assets = ["ALGO", "gALGO"];
 
-  const borrowIcon = collateralType === "ALGO" ? algoLogo : gAlgoLogo
+  const borrowIcon = collateralType === "ALGO" ? algoLogo : gAlgoLogo;
 
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
@@ -113,9 +113,9 @@ export default function BorrowContent() {
     if (e.target.value === "") {
       return;
     }
-    setCollateralType(e.target.value)
-    console.log('collat selected',e.target.value);
-  }
+    setCollateralType(e.target.value);
+    console.log("collat selected",e.target.value);
+  };
 
   useEffect(() => {
     if (cdps == dummyCDPs) {
@@ -124,24 +124,24 @@ export default function BorrowContent() {
   }, []);
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   useEffect(() => {
-    collateralType === "gALGO" ? setIsGAlgo(true) : setIsGAlgo(false)
-  }, [collateralType])
+    collateralType === "gALGO" ? setIsGAlgo(true) : setIsGAlgo(false);
+  }, [collateralType]);
 
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
     getWallet();
     setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
-    console.log("log wallet", getWalletInfo())
+    console.log("log wallet", getWalletInfo());
     setMaxCollateral(adjustedMax());
   }, []);
 
   useEffect(() => {
-    let walletInfo = getWalletInfo() && getWalletInfo()["assets"].length > 0 ? getWalletInfo()["assets"] : null
+    let walletInfo = getWalletInfo() && getWalletInfo()["assets"].length > 0 ? getWalletInfo()["assets"] : null;
     if (isGAlgo) {
       let max = (
         walletInfo &&
@@ -156,14 +156,14 @@ export default function BorrowContent() {
       setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
       setMaxCollateral(adjustedMax());
     }
-  }, [isGAlgo])
+  }, [isGAlgo]);
 
   useEffect(() => {
     setSupplyPrice(price);
   }, [price]);
 
   useEffect(async () => {
-    setAPR(await getAlgoGovAPR())
+    setAPR(await getAlgoGovAPR());
 }, []);
 
   useEffect(() => {
@@ -173,7 +173,7 @@ export default function BorrowContent() {
   const handleSupplyChange = async (event) => {
     setCollateral(event.target.value === "" ? "" : Number(event.target.value));
     if (typeof Number(event.target.value) === "number" && mGARD === "") {
-      setGARD(1)
+      setGARD(1);
     }
     let max =
       Math.trunc(
@@ -232,7 +232,7 @@ export default function BorrowContent() {
       console.log("heyy");
       return;
     }
-    console.log("logging max gard", maxGARD)
+    console.log("logging max gard", maxGARD);
     if (cAlgos > max) {
       // setCollateral(max);
     }
@@ -549,19 +549,19 @@ export default function BorrowContent() {
               setLoading(true);
               try {
                 let res;
-                if (collateralType == 'ALGO') {
+                if (collateralType == "ALGO") {
                   res = await openCDP(
                     getCollateral(),
                     getMinted(),
                     0,
                     commitChecked,
-                  )
+                  );
                 } else {
                   res = await openCDP(
                     getCollateral(),
                     getMinted(),
                     ids.asa.galgo,
-                  )
+                  );
                 }
                 if (res.alert) {
                   setCreatePositionShown(false);
@@ -645,7 +645,7 @@ const gAlgoImg = styled.img`
   height: 30px;
   width: 30px;
   position: relative;
-`
+`;
 
 const GardImg = styled.img`
   height: 50px;
@@ -716,7 +716,7 @@ display: grid;
   justify-content: center;
   padding: 30px 0px 30px;
   border-radius: 10px;
-`
+`;
 
 const Item = styled.div`
   display: flex;
