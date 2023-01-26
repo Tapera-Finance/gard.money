@@ -1,7 +1,7 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
 import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField, getGardianBalance } from "./lib";
-import { accountInfo, getParams, signGroup, sendTxn, updateWalletInfo } from "../wallets/wallets";
+import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
 
 const enc = new TextEncoder();
 let stakingRevenuePercent = .8; // TODO: Get this dynamically off the chain

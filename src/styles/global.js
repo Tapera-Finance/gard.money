@@ -1,5 +1,3 @@
-import { createGlobalStyle } from "styled-components";
-import { px2vw } from "../utils";
 
 // define viewport sizes
 export const size = {

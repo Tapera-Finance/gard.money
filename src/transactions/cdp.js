@@ -6,14 +6,12 @@ import {
   accountInfo,
   getParams,
   sendTxn,
-  getWallet,
   signGroup,
 } from "../wallets/wallets";
 import {
   updateCommitmentFirestore,
   addCDPToFireStore,
   updateDBWebActions,
-  updateLiquidationFirestore,
 } from "../components/Firebase";
 import { VERSION, MINID, MAXID } from "../globals";
 import { searchAccounts } from "../pages/GovernContent";
@@ -22,9 +20,6 @@ var $ = require("jquery");
 
 const enc = new TextEncoder();
 const MINRATIO = 140;
-const fundingAmount = 300000;
-let currentBigPrice = 816;
-let currentDecimals = 3;
 export let currentPrice = 0.30; // XXX: This should be kept close to the actual price - it is updated on initialization though
 
 // XXX: All of these assume accountInfo has already been set! We should improve the UX of this after getting core functionality done
@@ -36,8 +31,6 @@ export async function getPrice() {
     "https://storage.googleapis.com/algo-pricing-data-2022/latest_pricing.json",
   );
   currentPrice = currentPriceJSON.float_price;
-  currentBigPrice = currentPriceJSON.price;
-  currentDecimals = currentPriceJSON.decimals;
   return currentPrice;
 }
 // We immeadiately update the price in a background thread

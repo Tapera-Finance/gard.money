@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getAlgoGovAPR } from "../components/Positions";
-import { getCurrentAlgoUsd, getChainData } from "../prices/prices";
+import { getCurrentAlgoUsd } from "../prices/prices";
 import WalletConnect from "../components/WalletConnect";
 import Step from "../components/Step";
 import BinaryToggle from "../components/BinaryToggle";
@@ -19,7 +19,6 @@ import { cdpInterest } from "../transactions/lib";
 import { getStakingAPY } from "../transactions/stake";
 import { searchAccounts } from "./GovernContent";
 import { getWalletInfo } from "../wallets/wallets";
-import { getCDPs } from "../transactions/cdp";
 import { CDPsToList } from "../components/Positions";
 import { checkStaked } from "../components/actions/StakeDetails";
 import { commitmentPeriodEnd } from "../globals";
@@ -183,7 +182,6 @@ export default function HomeContent() {
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
   const [users, setUsers] = useState("Loading...");
-  const [chainData, setChainData] = useState("");
   const [governors, setGovernors] = useState("Loading...");
   const [allOpen, setAllOpen] = useState(true);
   const [difficulty, setDifficulty] = useState("DeFi Expert");
@@ -212,8 +210,6 @@ export default function HomeContent() {
 
   useEffect(async () => {
     console.log("isMobile ?", isMobile());
-    const chainDataResponse = await getChainData();
-    setChainData(chainDataResponse);
   }, []);
 
   useEffect(async () => {
@@ -232,11 +228,6 @@ export default function HomeContent() {
       }
     }
   }, []);
-
-  const circulating = "TBD";
-  /* const circulating = JSON.parse(
-    chainData ? chainData["circulating-gard"][8064 - 1] : 0,
-  ) */
 
   useEffect(async () => {
     const govsPromise = getTotalGardGovs();

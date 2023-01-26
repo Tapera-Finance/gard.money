@@ -8,7 +8,7 @@
   "rules": {
     "semi": ["warn", "always"],
     "quotes": ["warn", "double"],
-    "no-unused-vars": "off",
+    "no-unused-vars": "warn",
     "no-prototype-builtins": "off",
     "no-redeclare": "off",
     "react/prop-types": "off",

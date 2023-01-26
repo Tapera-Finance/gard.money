@@ -1,6 +1,4 @@
 import moment from "moment";
-import Cookies from "universal-cookie";
-const cookies = new Cookies();
 
 /**
  * Transform a numeric string into a dollar format

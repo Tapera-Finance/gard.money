@@ -27,7 +27,7 @@ import gardLogo from "../assets/icons/gardlogo_icon_small.png";
 import { getAlgoGovAPR } from "../components/Positions";
 import Select from "../components/Select";
 import { ids } from "../transactions/ids";
-import { size, device } from "../styles/global";
+import { device } from "../styles/global";
 import { isMobile } from "../utils";
 import { Banner } from "../components/Banner";
 
@@ -368,51 +368,6 @@ export default function BorrowContent() {
           </div>
         </div>
       </Banner>
-      {/*
-      <Banner>
-        <div
-          style={{
-            justifyContent: "center",
-            textAlign: "left",
-            alignItems: "center",
-            color: "#172756",
-          }}
-        >
-          <div style={{ fontSize: "10pt" }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 21, 2022 EOD</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              textAlign: "left",
-              flexDirection: "column",
-            }}
-          >
-            <div style={{ color: "#172756", fontSize: "10pt" }}>
-              7M Algo bonus rewards when participating via DeFi protocols
-            </div>
-          </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}
-        >
-          <Link>Open CDP to Participate</Link>
-        </div>
-      </Banner>
-        */}
       {createPositionShown ? (
         <div>
           <Container mobile={mobile}>
@@ -597,25 +552,6 @@ export default function BorrowContent() {
     </div>
   );
 }
-
-const Link = styled.text`
-  text-decoration: none;
-  font-weight: 400;
-  font-size: 10pt;
-  color: #172756;
-  text-align: left;
-`;
-
-const V1Link = styled.text`
-  text-decoration: none;
-  font-weight: 500;
-  color: #172756;
-  margin-right: 12px;
-  &:hover {
-    color: #03a0ff;
-    cursor: pointer;
-  }
-`;
 
 const BorrowRewardNotice = styled(RewardNotice)`
   font-size: 10pt;

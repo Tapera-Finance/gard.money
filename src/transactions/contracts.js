@@ -5,9 +5,6 @@ function contractStringToBytes(string) {
   return Uint8Array.from(atob(string), (c) => c.charCodeAt(0));
 }
 
-// Setup
-const encoder = new TextEncoder();
-
 // Last updated: 22.02.2022
 let cdpTemplateString = "BiAEAQKNs6g2ADEgMgMSMQElEhAtFyUSQACrLRciEkAANi0XIxJAACMtF4EDEkAAAQAxGCQSMRklEhA2GgCAB0F1Y3Rpb24SEEIAuDEZIhIxGCQSEEIArDEQgQYSQAAlMRYjCTgAMQASMRYjCTgYJBIQMRYjCTgZIxIQMRAiEhAiEEIAfzYcAoAgidvdgUvaEmcgvQpmihRuPxTHx528uJZ7duefZhSx298SMRgkEhAxFiMIOAAxABIQMRYjCDgQIhIQQv+6MRYiCTkaAReBDxIxFiIJORoAgApPd25lckNoZWNrEhAxFiIJOBgkEhAxECISMQglEhAxCTIDEhAxECMSERAQQw==";
 let cdpTemplateString2 = "BiAEAQLXk9aoAwAxIDIDEjEBJRIQLRclEkAAqy0XIhJAADYtFyMSQAAjLReBAxJAAAEAMRgkEjEZJRIQNhoAgAdBdWN0aW9uEhBCALgxGSISMRgkEhBCAKwxEIEGEkAAJTEWIwk4ADEAEjEWIwk4GCQSEDEWIwk4GSMSEDEQIhIQIhBCAH82HAKAIL7p6xm8yfmfnSyG84Q8xISSrV4W9G8N9RyEldpnDdpiEjEYJBIQMRYjCDgAMQASEDEWIwg4ECISEEL/ujEWIgk5GgEXgQgSMRYiCTkaAIAKT3duZXJDaGVjaxIQMRYiCTgYJBIQMRAiEjEIJRIQMQkyAxIQMRAjEhEQEEM=";
@@ -77,8 +74,6 @@ export function cdpGen(userAddress, accountID, asaID = 0) {
     const sub1 = template.slice(slices[0], slices[1]);
     const sub2 = template.slice(slices[2], slices[3]);
     const sub3 = template.slice(slices[4]);
-    
-    const asaIDBytes = new Uint8Array([asaID]);
 
     // Crafts the contract with proper insertions
     contract = new Uint8Array([
