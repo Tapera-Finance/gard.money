@@ -89,7 +89,10 @@ export default function StakeDetails() {
   };
 
   const handleStake = async () => {
-    if (stakeAmount === null || !(stakeAmount > 0)) return;
+    if (stakeAmount === null || !(stakeAmount > 0)) {
+      dispatch(setAlert("You must enter a positive amount to Stake!"))
+      return
+    }
     setLoading(true)
     try {
       const res = await stake("NL", stakeAmount)
@@ -104,7 +107,10 @@ export default function StakeDetails() {
   }
 
   const handleUnstake = async () => {
-    if (stakeAmount === null || !(stakeAmount > 0)) return;
+    if (stakeAmount === null || !(stakeAmount > 0)) {
+      dispatch(setAlert("You must enter a positive amount to Unstake!"))
+      return
+    }
     setLoading(true)
     try {
       const res = await unstake("NL", stakeAmount)
@@ -119,7 +125,10 @@ export default function StakeDetails() {
   }
 
   const handleStake2 = async () => {
-    if (stake2Amount === null || !(stake2Amount > 0)) return;
+    if (stake2Amount === null || !(stake2Amount > 0)) {
+      dispatch(setAlert("You must enter a positive amount to Stake!"))
+      return
+    }
     setLoading(true)
     try {
       const res = await GardianStake("NL", parseInt(stake2Amount))
@@ -134,7 +143,10 @@ export default function StakeDetails() {
   }
 
   const handleUnstake2 = async () => {
-    if (stake2Amount === null || !(stake2Amount > 0)) return;
+    if (stake2Amount === null || !(stake2Amount > 0)) {
+      dispatch(setAlert("You must enter a positive amount to Unstake!"))
+      return
+    }
     setLoading(true)
     try {
       const res = await GardianUnstake("NL", parseInt(stake2Amount))
