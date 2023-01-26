@@ -597,7 +597,6 @@ const ToggleBox = styled.div`
 const HomeWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 120vh;
   /* width: 94%; */
   /* align-items: flex-start; */
   ${(props) =>
