@@ -409,7 +409,7 @@ function TermsOfService({ closeModal, accept }) {
           }}
         />
         <CancelButton style={{ marginLeft: 30 }} onClick={() => closeModal()}>
-          <CancelButtonText>I don't accept</CancelButtonText>
+          <CancelButtonText>I do not accept</CancelButtonText>
         </CancelButton>
       </div>
     </div>

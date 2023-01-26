@@ -66,7 +66,7 @@ export default function ExchangeField({
           </div>
         ) : (
           <div>
-            <Span htmlFor={ids[0]}>You'll Receive</Span>
+            <Span htmlFor={ids[0]}>You will Receive</Span>
             <Container>
               <SelectContainer>
                 <ExchangeSelect
