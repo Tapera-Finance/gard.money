@@ -346,6 +346,27 @@ export default function BorrowContent() {
       ) : (
         <></>
       )}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+      <Banner mobile={mobile}>
+        <div
+          style={{
+            justifyContent: "center",
+            margin: "auto",
+            alignItems: "center",
+            color: "#172756",
+          }}
+        >
+          <div style={{ color: "#172756", fontSize: "10pt" }}>
+            <span style={{ fontSize: "12pt", color: "#172756", fontWeight: "bold" }}>Notice:</span> GARD borrow APR is fixed at 2% it will not change without warning
+          </div>
+        </div>
+      </Banner>
       {/*
       <Banner>
         <div
@@ -571,6 +592,7 @@ export default function BorrowContent() {
           <Positions maxSupply={maxCollateral} maxGARD={maxGARD} />
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -596,17 +618,20 @@ const V1Link = styled.text`
 
 const Banner = styled.div`
   display: flex;
-  width: 100%;
+  min-height: 37.5px;
   border: 1px solid white;
   flex-direction: row;
   border-radius: 10px;
   justify-content: space-between;
   align-content: center;
   text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  background: linear-gradient(to right, #019FFF 40%, #ffffff);
   padding: 8px 6px 10px 8px;
   margin: 8px;
   margin-bottom: 20px;
+  ${(props) => props.mobile && css`
+    width: 90%;
+  `}
 `;
 
 const BorrowRewardNotice = styled(RewardNotice)`

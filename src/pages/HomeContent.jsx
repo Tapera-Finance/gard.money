@@ -157,9 +157,9 @@ export async function getTotalGardGovs() {
 }
 
 const buttons = [
+  "Borrow",
   "Swap",
   "Stake",
-  "Borrow",
   "Govern",
   "Auctions",
   // "Analytics",
@@ -339,7 +339,7 @@ export default function HomeContent() {
               color: "#172756",
             }}
           >
-            <div style={{ fontSize: "10pt" }}>GARD Staking Rewards!</div>
+            <div style={{ fontSize: "12pt" }}>GARD Staking Rewards!</div>
           </div>
           <div
             style={{
@@ -358,8 +358,7 @@ export default function HomeContent() {
               }}
             >
               <div style={{ color: "#172756", fontSize: "10pt", textAlign: "center" }}>
-                Earn protocol rewards boosted by the Algorand Foundation via
-                Aeneas grant!
+              Earn protocol revenues boosted by the Algorand Foundation!
               </div>
             </div>
           </div>
@@ -478,7 +477,7 @@ export default function HomeContent() {
                       disabled={!walletAddress}
                       text={action}
                       blue={true}
-                      uniform={mobile}
+                      uniform={true}
                       onClick={() => navigate(`/${action.toLowerCase()}`)}
                     />
                   </div>
@@ -527,7 +526,7 @@ export default function HomeContent() {
             <ConnectStep mobile={mobile}>
               <div style={{
                 display: "flex",
-                width: "100%",
+                width: "90%",
                 justifyContent: "space-between",
                 padding: "0px 10px 0px 10px",
               }}>
@@ -643,14 +642,14 @@ const Link = styled(PrimaryButton)`
 
 const Banner = styled.div`
   display: flex;
-  width: 100%; 
+  width: 90%; 
   flex-direction: row;
   border: 1px solid white;
   align-content: center;
   border-radius: 10px;
   justify-content: space-between;
   text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  background: linear-gradient(to right, #019FFF 40%, #ffffff);
   padding: 8px 6px 10px 8px;
   margin: 8px;
   @media (${device.tablet}) {
@@ -678,7 +677,7 @@ const Banner = styled.div`
 const Container = styled.div`
   background: #0E1834;
   padding-top: 30px;
-  width: 100%;
+  width: 90%;
   padding-bottom: 30px;
   border: 1px solid white;
   border-radius: 10px;
@@ -738,7 +737,7 @@ const ConnectStep = styled.div`
   font-size: large;
   text-align: left;
   align-items: center;
-  width: 100%;
+  width: 90%;
   border: 1px solid #019fff;
   background: #0f1733;
   color: #019fff;

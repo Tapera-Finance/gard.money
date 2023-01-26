@@ -89,7 +89,10 @@ export default function StakeDetails() {
   };
 
   const handleStake = async () => {
-    if (stakeAmount === null || !(stakeAmount > 0)) return;
+    if (stakeAmount === null || !(stakeAmount > 0)) {
+      dispatch(setAlert("You must enter a positive amount to Stake!"))
+      return
+    }
     setLoading(true)
     try {
       const res = await stake("NL", stakeAmount)
@@ -104,7 +107,10 @@ export default function StakeDetails() {
   }
 
   const handleUnstake = async () => {
-    if (stakeAmount === null || !(stakeAmount > 0)) return;
+    if (stakeAmount === null || !(stakeAmount > 0)) {
+      dispatch(setAlert("You must enter a positive amount to Unstake!"))
+      return
+    }
     setLoading(true)
     try {
       const res = await unstake("NL", stakeAmount)
@@ -119,7 +125,10 @@ export default function StakeDetails() {
   }
 
   const handleStake2 = async () => {
-    if (stake2Amount === null || !(stake2Amount > 0)) return;
+    if (stake2Amount === null || !(stake2Amount > 0)) {
+      dispatch(setAlert("You must enter a positive amount to Stake!"))
+      return
+    }
     setLoading(true)
     try {
       const res = await GardianStake("NL", parseInt(stake2Amount))
@@ -134,7 +143,10 @@ export default function StakeDetails() {
   }
 
   const handleUnstake2 = async () => {
-    if (stake2Amount === null || !(stake2Amount > 0)) return;
+    if (stake2Amount === null || !(stake2Amount > 0)) {
+      dispatch(setAlert("You must enter a positive amount to Unstake!"))
+      return
+    }
     setLoading(true)
     try {
       const res = await GardianUnstake("NL", parseInt(stake2Amount))
@@ -204,6 +216,7 @@ export default function StakeDetails() {
         <Banner>
           <div
             style={{
+              display: "flex",
               justifyContent: "center",
               textAlign: "left",
               alignItems: "center",
@@ -226,10 +239,11 @@ export default function StakeDetails() {
                 display: "flex",
                 textAlign: "left",
                 flexDirection: "column",
+                marginLeft: "10px",
               }}
             >
               <div style={{ color: "#172756", fontSize: "10pt" }}>
-                1k - 2k GARD being paid out WEEKLY for users staking GARD!
+                1k - 2k extra GARD being paid out WEEKLY for users staking GARD!
               </div>
             </div>
           </div>
@@ -616,10 +630,11 @@ const Banner = styled.div`
   border-radius: 10px;
   justify-content: space-between;
   text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
+  background: linear-gradient(to right, #019FFF 40%, #ffffff);
   padding: 8px 6px 10px 8px;
   margin: 8px;
   margin-bottom: 12px;
+  min-height: 37.5px;
 `
 
 
