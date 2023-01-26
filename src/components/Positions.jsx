@@ -423,9 +423,6 @@ const Sply = styled.div`
   @media (${device.laptop}) {
     flex-direction: column;
   }
-  @media (${device.tablet}) {
-    flex-direction: row;
-  }
   ${(props) => props.mobile && css`
     flex-direction: row;
   `}
@@ -436,12 +433,8 @@ const Brr = styled.div`
   @media (${device.laptop}) {
     flex-direction: column;
   }
-  @media (${device.tablet}) {
-    flex-direction: row;
-  }
   ${(props) => props.mobile && css`
   flex-direction: row;
-
   `}
 `;
 
@@ -465,10 +458,6 @@ const ManageCollapse = styled(TextButton)`
 `;
 
 const ToggleContainer = styled.div`
-  @media (${device.tablet}) {
-    transform: scale(0.9);
-    max-width: 90vw;
-  }
   ${(props) => props.mobile && css`
   transform: scale(0.9);
     max-width: 90vw;
@@ -486,21 +475,8 @@ const ToggleContainer = styled.div`
 const PositionSupplyBorrow = styled.div`
   display: flex;
   flex-direction: column;
-  @media (min-width: ${size.tablet}) {
-  }
-  ${(props) => !props.mobile && css`
-
-
-  `}
-
-  @media (${device.tablet}) {
-    row-gap: 6px;
-    margin: 6px 0px 6px 0px;
-    border-radius: 10px;
-    padding: 20px;
-  }
   ${(props) => props.mobile && css`
-  row-gap: 6px;
+    row-gap: 6px;
     margin: 6px 0px 6px 0px;
     border-radius: 10px;
     padding: 20px;
@@ -535,16 +511,6 @@ const Header = styled.div`
     border-radius: 10px;
     padding: 8px;
   `}
-  @media (${device.tablet}) {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    align-items: flex-start;
-    border: 1px solid white;
-    width: 400px;
-    border-radius: 10px;
-    padding: 8px;
-  }
   @media (${device.mobileL}) {
     width: 350px;
   }
@@ -573,13 +539,6 @@ const PositionInfo = styled.div`
   border-radius: 10px;
   font-size: 18px;
   padding: 40px 0px 40px;
-  @media (${device.tablet}) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 4px 10px 4px 10px;
-    max-width: 432px;
-  }
   ${(props) => props.mobile && css`
     display: flex;
     flex-direction: column;

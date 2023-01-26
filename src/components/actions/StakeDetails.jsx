@@ -738,10 +738,6 @@ const FourthRow = styled.div`
   grid-template-columns: 1fr 1fr 1fr 1fr;
   justify-content: center;
   margin: 10px;
-  @media (${device.tablet}) {
-    display: flex;
-    flex-direction: column-reverse;
-  }
   ${(props) => props.mobile && css`
     display: flex;
     flex-direction: column-reverse;
