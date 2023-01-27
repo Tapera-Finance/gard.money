@@ -33,7 +33,6 @@ const EffectContainer = styled.div`
   justify-content: space-between;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 16px;
   @media (${device.tablet}) {
     margin: 4px;
   }
