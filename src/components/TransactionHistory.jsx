@@ -186,7 +186,7 @@ export default function TransactionHistory() {
         </CountContainer>
       </div>
       </TableHeading>
-      <GridBox>
+      <div>
         <TableGrid>
           <tbody>
             <HeaderRow>
@@ -302,14 +302,10 @@ export default function TransactionHistory() {
         ) : (
           <TableBottom></TableBottom>
         )}
-      </GridBox>
+      </div>
     </TxnHistContainer>
   );
 }
-
-const GridBox = styled.div`
-  margin-bottom: 64px;
-`;
 
 const TxnHistContainer = styled.div`
 `;

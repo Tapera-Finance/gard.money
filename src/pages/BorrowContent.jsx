@@ -20,9 +20,9 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
-import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
-import gAlgoLogo from "../assets/icons/galgo-icon.png";
-import gardLogo from "../assets/icons/gardlogo_icon_small.png";
+import algoLogo from "../assets/icons/algorand_logo_mark_white_square.png";
+import gAlgoLogo from "../assets/icons/galgo-icon_square.png";
+import gardLogo from "../assets/icons/gardlogo_icon_small_square.png";
 import { getAlgoGovAPR } from "../components/Positions";
 import Select from "../components/Select";
 import { ids } from "../transactions/ids";
@@ -366,16 +366,18 @@ export default function BorrowContent() {
           <Container mobile={mobile}>
             <SubContainer>
               <Background>
-                <Title>
-                  Supply{" "}
-                  <ExchangeSelect
-                    options={assets}
-                    value={collateralType}
-                    callback={handleSelect}
-                  />
+                <BorrowTitle>
+                  <ActionName>Supply</ActionName>
+                  <AssetName>
+                    <ExchangeSelect
+                      options={assets}
+                      value={collateralType}
+                      callback={handleSelect}
+                    />
+                  </AssetName>
                   {/* ALGO */}
-                  <AlgoImg src={borrowIcon} isGAlgo={!isGAlgo} />
-                </Title>
+                  <AssetImg src={borrowIcon} isGAlgo={!isGAlgo} />
+                </BorrowTitle>
                 <InputContainer>
                   <div style={{ display: "flex" }}>
                     <Input
@@ -445,7 +447,7 @@ export default function BorrowContent() {
             <SubContainer>
               <Background>
                 <BorrowTitle>
-                  Borrow GARD <GardImg src={gardLogo} />
+                  <ActionName>Borrow</ActionName><AssetName>GARD</AssetName><AssetImg src={gardLogo} />
                 </BorrowTitle>
 
                 <InputContainer>
@@ -546,28 +548,19 @@ export default function BorrowContent() {
   );
 }
 
-const AlgoImg = styled.img`
-  /* filter: invert(); */
-  height: 75px;
-  width: 75px;
-  right: --4px;
-  position: relative;
-  ${(props) => !props.isGAlgo &&
-    css`
-      height: 50px;
-      width: 50px;
-      margin-left: 8px;
-      margin-top: 12.5px;
-      margin-bottom: 12.5px;
-    `
-  }
-`;
+const ActionName = styled.div`
+`
 
-const GardImg = styled.img`
+const AssetName = styled.div`
+  min-width: 8em;
+  display: flex;
+  justify-content: center;
+`
+
+const AssetImg = styled.img`
   height: 50px;
-  margin: 2px 18px 2px 14px;
+  width: 50px;
   position: relative;
-  top: -2px;
 `;
 
 const Container = styled.div`
@@ -590,14 +583,6 @@ const Background = styled.div`
   background: #1b2d65;
   border-radius: 10px;
 `;
-const Title = styled.div`
-  display: flex;
-  justify-content: center;
-  font-size: 14pt;
-  align-items: center;
-  text-align: center;
-  padding: 20px 0px 20px;
-`;
 
 const BorrowTitle = styled.div`
   display: flex;
@@ -605,9 +590,8 @@ const BorrowTitle = styled.div`
   font-size: 14pt;
   align-items: center;
   text-align: center;
-  padding: 20px 0px 20px;
-  margin-bottom: 9px;
-  padding-top: 31px;
+  padding: 10px 0px 10px;
+  gap: 10px
 `;
 
 const InputContainer = styled.div`
@@ -689,8 +673,8 @@ const CommitBox = styled.input`
 `;
 
 const ExchangeSelect = styled(Select)`
+  text-align: center;
   font-size: 14pt;
-  margin: 0px 0px 0px 12px;
   border: 1px solid #01d1ff;
   color: white;
   &:hover {

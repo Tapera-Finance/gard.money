@@ -224,7 +224,7 @@ export default function Holdings() {
           pageHeader={false}
         />
       </div> : <></>}
-      <div>{tabs[selectedTab]}</div>
+      {tabs[selectedTab]}
     </div>
   );
 }

@@ -744,6 +744,7 @@ export default function Govern() {
 }
 
 const CDPTable = styled(Table)`
+  margin-bottom: 64;
 `;
 
 const PositionTableContainer = styled.div`

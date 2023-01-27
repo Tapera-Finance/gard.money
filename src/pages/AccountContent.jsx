@@ -90,7 +90,7 @@ export default function AccountContent() {
   if (!walletAddress) return <div></div>;
   return (
     <AcctPgCont>
-      <AccountContainer>
+      <AccountContainer id="AccountContainer">
         <div
           style={{
             display: "flex",
@@ -145,6 +145,7 @@ export default function AccountContent() {
         style={{
           marginBottom: 8,
         }}
+        id="AccountTables"
       >
         <AcctPageToggle
           selectedTab={setSelectedTab}
@@ -189,15 +190,8 @@ const AccountContainer = styled.div`
   background: rgba(13, 18, 39, 0.75);
   border: 1px solid white;
   padding: 5vw 4vw;
-  margin-top: 36px;
   margin-bottom: 20px;
   border-radius: 10px;
-  @media (${device.mobileL}) {
-    max-width: 90vw;
-  }
-  @media (${device.tablet}) {
-    max-width: 90vw;
-  }
 `;
 const AccountTitle = styled.text`
   font-weight: 500;

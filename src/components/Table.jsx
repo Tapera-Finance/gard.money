@@ -79,7 +79,7 @@ export default function Table({
       ) : (
         <></>
       )}
-      <div style={{ marginBottom: 64 }}>
+      <div>
         <TableGrid>
           <tbody>
             <HeaderRow
