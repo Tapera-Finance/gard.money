@@ -347,7 +347,7 @@ export default function BorrowContent() {
           alignItems: "center",
         }}
       >
-      <Banner mobile={mobile}>
+      <Banner mobile={mobile} style={{marginBottom: "20px"}}>
         <div
           style={{
             justifyContent: "center",
@@ -540,6 +540,7 @@ export default function BorrowContent() {
               setCreatePositionShown(!createPositionShown);
             }}
           />
+          {createPositionShown ? <></> : <div style={{height: "20px"}}></div>}
           <Positions maxSupply={maxCollateral} maxGARD={maxGARD} />
         </div>
       )}

@@ -488,7 +488,6 @@ const PositionContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 14px;
   /* flex: 1 1 0px; */
   width: auto;
 `;
