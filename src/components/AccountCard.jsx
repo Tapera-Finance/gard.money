@@ -195,7 +195,6 @@ const IconButtonContainer = styled.div`
 display: flex;
 align-items: center;
   @media (max-width: 542px) {
-    visibility: hidden;
-    width: 0px;
+    display: none;
   }
 `;

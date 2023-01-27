@@ -382,84 +382,15 @@ export default function HomeContent() {
           justifyContent: "center",
           flexDirection: "column",
           textAlign: "center",
-          marginTop: "18px",
-          marginBottom: "18px",
           alignItems: "center",
         }}
       >
-        {mobile ? <></> : <ToggleBox>
-          <BinaryToggle
-            optionA={"DeFi Expert"}
-            optionB={"Help Me Out"}
-            selectedOption={setDifficulty}
-          />
-        </ToggleBox>}
-        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
-          { mobile ? <Items>
-            {alwaysShown.map((d) => {
-              return (
-                <Item key={d.title} notShown={false}>
-                  <Effect
-                    title={d.title}
-                    val={d.val}
-                    hasToolTip={d.hasToolTip}
-                    rewards={d.rewards}
-                  ></Effect>
-                </Item>
-              );
-            })}
-            {additionalDetails.map((d) => {
-              return (
-                <Item key={d.title} notShown={!showMore}>
-                  <Effect
-                    title={d.title}
-                    val={d.val}
-                    hasToolTip={d.hasToolTip}
-                    rewards={d.rewards}
-                  ></Effect>
-                </Item>
-              );
-            })}
-          </Items> :
-          <Items>
-          {homeDetails.length && homeDetails.length > 0
-            ? homeDetails.map((d) => {
-                return (
-                  <Item key={d.title}>
-                    <Effect
-                      title={d.title}
-                      val={d.val}
-                      hasToolTip={d.hasToolTip}
-                      rewards={d.rewards}
-                    ></Effect>
-                  </Item>
-                );
-              })
-            : null}
-        </Items>
-          }
-        </Container>
-        {mobile ? <ManageCollapse
-          positioned={true}
-          text={showMore ? "Collapse":  "Show More Details"}
-          onClick={() => {
-            setShowMore(!showMore);
-          }}
-        /> : <></>}
-        {mobile ? <ToggleBox>
-          <BinaryToggle
-            optionA={"DeFi Expert"}
-            optionB={"Help Me Out"}
-            selectedOption={setDifficulty}
-          />
-        </ToggleBox> : <></>}
-        {difficulty === "DeFi Expert" ? <div style={{display: "flex", flexDirection: "column", maxWidth:"100%"}}>
+        <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
             <BoldText moible={mobile}>Quick Actions</BoldText>
             <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
               {buttons.map((action) => {
                 return (
                   <div 
-                  style={{flex: "0 1 30%"}}
                   key={Math.random()}
                   >
                     <PrimaryButton
@@ -473,22 +404,16 @@ export default function HomeContent() {
                 );
               })}
             </AccessBox>
-          </div> : <></>}
-        <div>
-          {/* <Text
-            style={{
-              color: "#7c52ff",
-              textAlign: "center",
-              fontWeight: "bolder",
-            }}
-            // onClick={() => navigate("/analytics")}
-          >
-            {`See More Metrics ${">"}`}
-          </Text> */}
-        </div>
-      </div>
-      <div>
+          </div>
+          <ToggleBox>
+          <BinaryToggle
+            optionA={"DeFi Expert"}
+            optionB={"Help Me Out"}
+            selectedOption={setDifficulty}
+          />
+        </ToggleBox>
         {difficulty === "Help Me Out" ? (
+          <div>
           <StepContainer>
             <SocialMediaButton
                 style={{marginBottom: "10px"}}
@@ -566,19 +491,69 @@ export default function HomeContent() {
               expanded={step3open}
             />
           </StepContainer>
+          </div>
         ) : (
           <></>
         )}
+        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
+          { mobile ? <Items>
+            {alwaysShown.map((d) => {
+              return (
+                <Item key={d.title} notShown={false}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+            {additionalDetails.map((d) => {
+              return (
+                <Item key={d.title} notShown={!showMore}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+          </Items> :
+          <Items>
+          {homeDetails.length && homeDetails.length > 0
+            ? homeDetails.map((d) => {
+                return (
+                  <Item key={d.title}>
+                    <Effect
+                      title={d.title}
+                      val={d.val}
+                      hasToolTip={d.hasToolTip}
+                      rewards={d.rewards}
+                    ></Effect>
+                  </Item>
+                );
+              })
+            : null}
+        </Items>
+          }
+        </Container>
+        {mobile ? <ManageCollapse
+          positioned={true}
+          text={showMore ? "Collapse":  "Show More Details"}
+          onClick={() => {
+            setShowMore(!showMore);
+          }}
+        /> : <></>}
       </div>
     </HomeWrapper>
   );
 }
 
 const ToggleBox = styled.div`
-  margin: 0px 0px 30px 0px;
-  @media (${device.tablet}) {
-
-  }
+  margin: 15px 0px 15px 0px;
 `;
 
 const HomeWrapper = styled.div`
@@ -598,9 +573,11 @@ const AccessBox = styled.div`
   gap: 25px;
   display: flex;
   justify-content: center;
-  width: 100%;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  width: 95%;
+  margin-top: 15px;
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
   align-items: center;
   ${(props) =>
     props.expert &&
@@ -683,7 +660,7 @@ const StepContainer = styled.div`
   justify-content: space-evenly;
   align-content: center;
   align-items: center;
-  margin-bottom: 50px;
+  margin-bottom: 15px;
 `;
 
 const ConnectStep = styled.div`
@@ -719,9 +696,6 @@ const ConnectStep = styled.div`
       }
 
     }
-    @media (${device.mobileL}) {
-      //
-    }
     ${(props) => props.mobile && css`
     width: 90%;
     `}
@@ -740,10 +714,7 @@ const BoldText = styled.text`
   cursor: pointer;
   text-align: center;
   align-self: center;
-  margin-top: 20px;
-  ${(props) => props.mobile && css`
-    margin-top: 0px;
-  `}
+  margin-top: 15px;
 `;
 
 
