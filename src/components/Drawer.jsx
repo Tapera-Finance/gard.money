@@ -416,18 +416,8 @@ const MobileDrawer = styled.div`
   align-content: center;
   width: 100vw;
   height: 9vh;
+  margin-bottom: 0vh;
 
-  ${(props) => props.open &&
-      css`
-        margin-bottom: 0vh;
-        position: fixed;
-      `
-    }
-    ${(props) => !props.open &&
-      css`
-         margin-bottom: 7vh;
-      `
-    }
   @media (min-width: ${size.tablet}) {
     ${(props) => props.mobile && css`
       ${(props) =>

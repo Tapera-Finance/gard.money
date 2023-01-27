@@ -10,7 +10,6 @@ import PageToggle from "../components/PageToggle";
 import { formatToDollars } from "../utils";
 import { getPrice } from "../transactions/cdp";
 import TransactionHistory from "../components/TransactionHistory";
-import AccountCard from "../components/AccountCard";
 import Holdings from "../components/Holdings";
 import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
@@ -200,7 +199,7 @@ const AccountContainer = styled.div`
   border: 1px solid white;
   padding: 5vw 4vw;
   margin-top: 36px;
-  margin-bottom: 56px;
+  margin-bottom: 20px;
   border-radius: 10px;
   @media (${device.mobileL}) {
     max-width: 90vw;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import ToolTip from "./ToolTip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -8,25 +8,14 @@ import IconButton from "@mui/material/IconButton";
 import { getWalletInfo, getGARDInWallet } from "../wallets/wallets";
 import * as tips from "../assets/tooltiptext";
 import { ids } from "../transactions/ids";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import gardIcon from "../assets/icons/gardlogo_icon_small.png";
 import PrimaryButton from "./PrimaryButton";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import WalletConnect from "./WalletConnect";
 import { size, device } from "../styles/global";
+import { isMobile } from "../utils";
 
-const theme = createTheme({
-  components: {
-    AccountCard: {
-      styleOverrides: {
-        root: {
-          background: "#0f1733",
-        },
-      },
-    },
-  },
-});
 
 const menuStyle = {
   color: "#01c7f3",
@@ -50,11 +39,9 @@ export default function AccountCard(contentName) {
   };
 
   return (
-    <div>
-      <ThemeProvider theme={theme}>
-        <BtnContainer>
+      <AccountCardDiv id="AccountCard" mobile={isMobile()}>
+        <BtnContainer id="AccountBtnContainer">
           <WalletConnect contentName={contentName}/>
-
           {walletAddress ? (
             <IconButtonContainer>
               <IconButton
@@ -64,6 +51,9 @@ export default function AccountCard(contentName) {
                 aria-controls={open ? "account-menu" : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? "true" : undefined}
+                style={{
+                  padding: "0",
+                }}
                 >
                 <div
                   style={{
@@ -166,14 +156,18 @@ export default function AccountCard(contentName) {
             )}
           </MenuItem>
         </Menu>
-      </ThemeProvider>
-    </div>
+      </AccountCardDiv>
   );
 }
-
+const AccountCardDiv = styled.div`
+  ${(props) => !props.mobile && css`
+    margin-right: 5%;
+  `}
+`;
 const BtnContainer = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-evenly;
   @media (${device.mobileL}) {
     display: unset;

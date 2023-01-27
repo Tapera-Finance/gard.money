@@ -56,12 +56,7 @@ export default function WalletConnect(contentName) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const walletAddress = useSelector((state) => state.wallet.address);
-  const [mobile, setMobile] = useState(isMobile());
   const accountPage = contentName?.contentName?.contentName == "Account";
-
-  useEffect(() => {
-    setMobile(isMobile());
-  }, []);
 
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
@@ -137,13 +132,13 @@ export default function WalletConnect(contentName) {
   );
 
   return (
-    <div>
+    <div id="WalletConnect">
       {loading ? (
         <LoadingOverlay text={"Waiting for Wallet connection..."} />
       ) : (
         <></>
       )}
-      <WalletConnectDiv mobile={mobile} accountPage={accountPage}>
+      <WalletConnectDiv id="WalletConnectButtons" mobile={isMobile()} accountPage={accountPage}>
         <BtnBox>
           <WalletBarButton
             text={walletAddress || "Connect Wallet"}
@@ -164,7 +159,7 @@ export default function WalletConnect(contentName) {
         </BtnBox>
         {walletAddress ? (
           <BtnBox>
-            {mobile ? (accountPage ?  <WalletBarButton
+            {isMobile() ? (accountPage ?  <WalletBarButton
               text="Disconnect Wallet"
               blue={true}
               onClick={() => {
@@ -219,18 +214,13 @@ const BtnBox = styled.div`
 `;
 
 const WalletConnectDiv = styled.div`
-  height: 96px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
 
-  ${(props) => props.mobile && css`
+  ${(props) => props.accountPage && props.mobile && css`
     flex-direction: column;
-    height: 50px;
-  `}
-  ${(props) => props.accountPage && css`
-    height: 70px;
   `}
 `;
 

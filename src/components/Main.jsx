@@ -153,7 +153,6 @@ const ContainedDrawer = styled(Drawer)`
 const Wrapper = styled.div`
   /* padding-left: 1.9444444444444vw;
   padding-right: 1.9444444444444vw; */
-  padding-top: 40px;
   flex: 1;
   @media (min-width: ${size.tablet}) {
     padding-left: 6.9444444444444vw;
@@ -219,7 +218,7 @@ const MainContentDiv = styled.div`
 
   @media (min-width: ${size.tablet}) {
     ${(props) => !props.mobile && css`
-      margin-left: 16.75vw;
+      margin-left: 250px;
     `}
   }
 `;

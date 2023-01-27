@@ -12,6 +12,5 @@ export const Banner = styled.div`
   text-align: center;
   background: linear-gradient(to right, #019FFF 40%, #ffffff);
   padding: 10px 12px 10px 12px;
-  margin: 8px;
-  margin-bottom: 14px;
+  margin: 0 8px 0 8px;
 `;
