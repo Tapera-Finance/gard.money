@@ -12,14 +12,13 @@ const Backdrop = styled.div`
   z-index: ${21};
 `;
 const Container = styled.div`
-  height: 270px;
   width: 400px;
   background: #0E1834;
   color: white;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  padding: 10px 20px;
+  padding: 10px 15px 15px 15px;
   border: 1px solid white;
 `;
 
@@ -141,7 +140,6 @@ const CloseButton = styled.button`
   border: 0px;
   background: transparent;
   cursor: pointer;
-  margin-bottom: 10px;
 `;
 
 function textWithLink(text) {
