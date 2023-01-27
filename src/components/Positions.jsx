@@ -538,6 +538,7 @@ const PositionInfo = styled.div`
   border-radius: 10px;
   font-size: 18px;
   padding: 40px 0px 40px;
+  width: 100%;
   ${(props) => props.mobile && css`
     display: flex;
     flex-direction: column;
