@@ -550,13 +550,13 @@ export default function BorrowContent() {
 }
 
 const ActionName = styled.div`
-`
+`;
 
 const AssetName = styled.div`
   min-width: 8em;
   display: flex;
   justify-content: center;
-`
+`;
 
 const AssetImg = styled.img`
   height: 50px;
