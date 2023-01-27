@@ -269,7 +269,6 @@ const SubContainer = styled.div`
   margin-bottom: 30px;
 `;
 const Background = styled.div`
-  margin-top: 30px;
   background: #1b2d65;
   border-radius: 10px;
 `;
