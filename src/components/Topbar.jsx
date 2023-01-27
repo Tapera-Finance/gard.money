@@ -11,7 +11,7 @@ import { isMobile } from "../utils";
  * @param {{contentName: string}} props
  */
 
-export default function Topbar({ contentName }) {
+export default function TopBar({ contentName }) {
   const [mobile, setMobile] = useState(isMobile());
   const accountPage = contentName == "Account";
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function Topbar({ contentName }) {
   }, []);
 
   return (
-      <TopBar id="TopBar" mobile={mobile} accountPage={accountPage}>
+      <TopBarDiv id="TopBar" mobile={mobile} accountPage={accountPage}>
         {mobile ? <></> : <div
           style={{
             display: "flex",
@@ -41,7 +41,7 @@ export default function Topbar({ contentName }) {
           </SimplePressable>
         </div>}
         <AccountCard contentName={contentName}/>
-      </TopBar>
+      </TopBarDiv>
   );
 }
 
@@ -49,7 +49,7 @@ export default function Topbar({ contentName }) {
 
 
 
-const TopBar = styled.div`
+const TopBarDiv = styled.div`
   background: #172756;
   display: flex;
   flex-direction: row;

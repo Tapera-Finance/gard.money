@@ -90,15 +90,6 @@ export default function AccountContent() {
   if (!walletAddress) return <div></div>;
   return (
     <AcctPgCont>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          alignContent: "center",
-        }}
-      >
-      </div>
       <AccountContainer>
         <div
           style={{

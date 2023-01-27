@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import styled, { keyframes, css } from "styled-components";
 import HomeContent from "../pages/HomeContent";
 import Drawer from "./Drawer";
-import Topbar from "./Topbar";
+import TopBar from "./Topbar";
 import { CONTENT_NAMES } from "../globals";
 //import AnalyticsContent from "../pages/AnalyticsContent";
 import AccountContent from "../pages/AccountContent";
@@ -123,12 +123,12 @@ export default function Main(WrappedComponent, title) {
         allowAnimate={() => setCanAnimate(true)}
       />
       <MainContentDiv mobile={mobile} canAnimate={canAnimate} isOpen={isOpen}>
-        <Topbar
+        <TopBar
           contentName={title}
           style={{ background: "#172756" }}
         />
-        <ContentContainer isOpen={isOpen}>
-          <Wrapper mobile={mobile} style={{maxWidth: `${mobile ? "100%" : ""}`}} >
+        <ContentContainer>
+          <Wrapper mobile={mobile}>
             <WrappedComponent />
           </Wrapper>
         </ContentContainer>
@@ -151,16 +151,10 @@ const ContainedDrawer = styled(Drawer)`
 `;
 
 const Wrapper = styled.div`
-  /* padding-left: 1.9444444444444vw;
-  padding-right: 1.9444444444444vw; */
   flex: 1;
   @media (min-width: ${size.tablet}) {
     padding-left: 6.9444444444444vw;
     padding-right: 6.9444444444444vw;
-  }
-  @media (${device.mobileM}) {
-    padding-left: 0vw;
-    width: 100%;
   }
   ${(props) => props.mobile && css`
     padding-top: 0px;
@@ -172,12 +166,6 @@ const ContentContainer = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
-  @media (${device.tablet}) {
-    margin-left: 0vw;
-  }
-  @media (min-width: ${size.tablet}) {
-    //
-  }
 `;
 
 //animation to expand or retract the main content container, depending on if the drawer is open or closed
