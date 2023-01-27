@@ -421,10 +421,10 @@ export default function Govern() {
             padding: "20px 20px 0px",
             margin: "auto",
         }}>
-      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} onClick={() => {
+      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={false} onClick={() => {
             navigate("/borrow");
           }}/>
-      <PrimaryButton text="Place Votes" blue={true} underTable={true} onClick={async () => {
+      <PrimaryButton text="Place Votes" blue={true} underTable={false} onClick={async () => {
             setModal2CanAnimate(true);
             setModal2Visible(true);
             setModal2CanAnimate(false);
