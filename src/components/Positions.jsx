@@ -277,21 +277,20 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                       >
                         <div>
                           {" "}
-                          Health{" "}
-                          {`(${calcRatio(
+                          Health:{" "}
+                          {`${calcRatio(
                             cdp.collateral,
                             cdp.debt / 1e6,
                             cdp.asaID,
                             true,
-                          )})`}{" "}
+                          )}`}{" "}
                         </div>
                         <div>
-                          Liquidation Price ($
+                          Liquidation Price: $
                           {(
                             (1.15 * mAlgosToAlgos(cdp.debt)) /
                             mAlgosToAlgos(cdp.collateral)
                           ).toFixed(4)}
-                          )
                         </div>
                       </div>
                       <ThemeProvider theme={theme}>
@@ -419,23 +418,14 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
 
 const Sply = styled.div`
   display: flex;
-  margin-bottom: 20px;
-  @media (${device.laptop}) {
-    flex-direction: column;
-  }
-  ${(props) => props.mobile && css`
-    flex-direction: row;
+  ${(props) => !props.mobile && css`
+    margin-bottom: 10px;
   `}
+  
 `;
 
 const Brr = styled.div`
   display: flex;
-  @media (${device.laptop}) {
-    flex-direction: column;
-  }
-  ${(props) => props.mobile && css`
-  flex-direction: row;
-  `}
 `;
 
 const APRBox = styled.div`
@@ -479,7 +469,6 @@ const PositionSupplyBorrow = styled.div`
     row-gap: 6px;
     margin: 6px 0px 6px 0px;
     border-radius: 10px;
-    padding: 20px;
 
   `}
 `;
