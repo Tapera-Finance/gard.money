@@ -170,6 +170,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const [manageUpdate, setManageUpdate] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalCanAnimate, setModalCanAnimate] = useState(false);
+    const [personal, setPersonal] = useState(false)
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
     const typeCDP = {
@@ -251,10 +252,10 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                 >
                   {(
                       <div>
-                        <div style={{marginBottom: 10}}>
+                        <div style={{marginBottom: 10, display: "flex", flexDirection: "row"}}>
                         <PrimaryButton
                           blue={true}
-                          text="Secure with GARD"
+                          text="Use GARD Node"
                           onClick={async () => {
                             setLoading(true);
                             try {
@@ -268,7 +269,14 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                             setLoading(false);
                             // setRefresh(refresh + 1);
                           }}
-                        /></div>
+                        /><PrimaryButton
+                        blue={true}
+                        text="I run my own"
+                        onClick={() => {
+                          setPersonal(!personal);
+                        }}
+                      /></div>
+                      {personal ? (<>
                         <NodeInput
                         autoComplete="off"
                         display="none"
@@ -331,6 +339,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           </CancelButtonText>
                         </CancelButton>
                     </div>
+                    </>) : <></>}
                   </div>
                   )}
                 </Modal>
