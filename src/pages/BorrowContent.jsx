@@ -267,7 +267,22 @@ export default function BorrowContent() {
     setLoadingText(JSON.parse(e.value));
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
-  var details = [
+  var details = mobile ? [
+    {
+      title: "GARD Borrow APR",
+      val: `${cdpInterest*100}%`,
+      hasToolTip: true,
+    },
+    {
+      title: "Liquidation Price",
+      val: `${
+        getMinted() == null || getCollateral() == null
+          ? "..."
+          : displayLiquidationPrice()
+      }`,
+      hasToolTip: true,
+    },
+  ] :[
     {
       title: "Total Supplied (Asset)",
       val: `${cAlgos === "" ? "..." : cAlgos}`,
@@ -551,7 +566,9 @@ export default function BorrowContent() {
               setLoading(false);
             }}
           />
-          <Details mobile={mobile} className={"borrow"} details={details} />
+          <CreateDetails mobile={mobile}>
+            <Details mobile={mobile} className={"borrow"} details={details} />
+          </CreateDetails>
         </div>
       ) : (
         <></>
@@ -559,7 +576,7 @@ export default function BorrowContent() {
       {cdps == dummyCDPs ? (
         <></>
       ) : (
-        <div>
+        <PositionsContainer mobile={mobile}>
           <PrimaryButton
             text={createPositionShown ? "Exit" : "Create New Position"}
             blue={true}
@@ -569,7 +586,7 @@ export default function BorrowContent() {
             }}
           />
           <Positions maxSupply={maxCollateral} maxGARD={maxGARD} />
-        </div>
+        </PositionsContainer>
       )}
     </div>
   );
@@ -652,11 +669,24 @@ const Container = styled.div`
   column-gap: 2%;
   @media (${device.tablet}) {
     grid-template-columns: 1fr;
+    margin: auto;
+    transform: scale(0.9);
+    // max-width: 90vw;
   }
   ${(props) => props.mobile && css`
     grid-template-columns: 1fr;
+    margin: auto;
+    transform: scale(0.9);
+    // max-width: 90vw;
   `}
 `;
+
+const PositionsContainer = styled.div`
+${(props) => props.mobile && css`
+    margin: auto;
+    width: 90%;
+  `}
+`
 
 const SubContainer = styled.div`
   position: relative;
@@ -692,6 +722,13 @@ const InputContainer = styled.div`
   border: 1px solid white;
 `;
 
+const CreateDetails = styled.div`
+${(props) => props.mobile && css`
+  margin: auto;
+  transform: scale(0.9);
+  // max-width: 90vw;
+`}
+`
 const SupplyInputDetails = styled.div`
   // display: grid;
   grid-template-columns: repeat(1, 40%);
