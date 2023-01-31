@@ -10,6 +10,7 @@ import { handleTxError } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import Details from "./Details";
+import { mAlgosToAlgos } from "../pages/BorrowContent";
 
 export default function RepayPosition({cdp, price, setCurrentCDP, details, mobile, apr}){
     const [loading, setLoading] = useState(false);
@@ -24,7 +25,24 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
     //console.log(cdp)
     // console.log("YEah")
     
-    var details = [
+    
+    var details = mobile ? [
+        {
+          title: "Liquidation Price",
+          val: `$${
+            (1.15*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
+          }`,
+          hasToolTip: true,
+        },
+        {
+          title: "Collateralization Ratio",
+          val: `${
+            (100*cdp.collateral*price / (cdp.debt - parseInt(repayment*1e6))).toFixed(0)
+          }%`,
+          hasToolTip: true,
+        },
+  ]
+  : [
         {
             title: "Total Supplied (Asset)",
             val: `${cdp.collateral/1e6}`,
@@ -72,6 +90,24 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
             hasToolTip: true,
           },
     ];
+    var borrowDetails = [
+      {
+        title: "Already Borrowed",
+        val: `${mAlgosToAlgos(cdp.debt).toFixed(2)}`,
+        hasToolTip: true
+      },
+      {
+        title: "Borrow Limit",
+        val: `${Math.max(
+          0,
+          Math.trunc(
+            (100 * ((price * cdp.collateral) / 1000000)) / 1.4 -
+              (100 * cdp.debt) / 1000000,
+          ) / 100,
+        )} GARD`,
+        hasToolTip: true,
+      },
+    ];
 
     var sessionStorageSetHandler = function (e) {
         setLoadingText(JSON.parse(e.value));
@@ -108,6 +144,21 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
                             </MaxButton>
                         </div>
                         <Valuation>$Value: ${(repayment * 1).toFixed(2)}</Valuation>
+                        <InputDetails>
+                        {borrowDetails.length && borrowDetails.length > 0
+                          ? borrowDetails.map((d) => {
+                              return (
+                                <Item key={d.title}>
+                                  <Effect
+                                    title={d.title}
+                                    val={d.val}
+                                    hasToolTip={d.hasToolTip}
+                                  ></Effect>
+                                </Item>
+                              );
+                            })
+                          : null}
+                        </InputDetails>
                     </InputContainer>
                 </Background>
                 <PrimaryButton
@@ -136,7 +187,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
             </SubContainer>
         </Container>
         <div style={{position:"relative", top:-28}}>
-            <Details details={details}/>
+            <Details mobile={mobile} details={details}/>
         </div>
 </div>
 
@@ -149,7 +200,6 @@ const Container = styled.div`
 
 const SubContainer = styled.div`
     position: relative;
-    width: 50%;
     ${(props) => props.mobile && css`
         width: 100%;
     `}
@@ -170,17 +220,16 @@ const InputContainer = styled.div`
     background: rgba(13, 18, 39, .75);
     border-radius: 10px;
     border: 1px solid white;
-    padding-bottom: 35px;
 `
 
 const InputDetails = styled.div`
-display: grid;
-grid-template-columns:repeat(3, 30%);
-row-gap: 30px;
-justify-content: center;
-padding: 30px 0px 30px;
-border-radius: 10px;
-`
+  display: grid;
+  grid-template-columns: repeat(2, 49%);
+  row-gap: 30px;
+  justify-content: center;
+  padding: 30px 0px 30px;
+  border-radius: 10px;
+`;
 
 const Item = styled.div`
     display: flex;
