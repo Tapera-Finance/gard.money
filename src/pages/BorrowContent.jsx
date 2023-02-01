@@ -7,7 +7,6 @@ import LoadingOverlay from "../components/LoadingOverlay";
 import Positions from "../components/Positions";
 import { CDPsToList, dummyCDPs } from "../components/Positions";
 import PrimaryButton from "../components/PrimaryButton";
-import RewardNotice from "../components/RewardNotice";
 import ToolTip from "../components/ToolTip";
 import {
   getWallet,
@@ -21,14 +20,15 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { commitmentPeriodEnd } from "../globals";
-import algoLogo from "../assets/icons/algorand_logo_mark_white.png";
-import gAlgoLogo from "../assets/icons/galgo-icon.png"
-import gardLogo from "../assets/icons/gardlogo_icon_small.png";
+import algoLogo from "../assets/icons/algorand_logo_mark_white_square.png";
+import gAlgoLogo from "../assets/icons/galgo-icon_square.png";
+import gardLogo from "../assets/icons/gardlogo_icon_small_square.png";
 import { getAlgoGovAPR } from "../components/Positions";
 import Select from "../components/Select";
-import { ids } from "../transactions/ids"
-import { size, device } from "../styles/global"
+import { ids } from "../transactions/ids";
+import { device } from "../styles/global";
 import { isMobile } from "../utils";
+import { Banner } from "../components/Banner";
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
@@ -77,17 +77,13 @@ export function getCollateral() {
 export default function BorrowContent() {
   const [mobile, setMobile] = useState(isMobile());
   const walletAddress = useSelector(state => state.wallet.address);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [canAnimate, setCanAnimate] = useState(false);
   const [collateralType, setCollateralType] = useState("ALGO");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [balance, setBalance] = useState("...");
   const [price, setPrice] = useState(0);
   const [supplyPrice, setSupplyPrice] = useState(0);
   const [apr, setAPR] = useState(0);
-  const [borrowPrice, setBorrowPrice] = useState(0);
   const cdps = CDPsToList();
 
   //initial code snippets
@@ -102,7 +98,7 @@ export default function BorrowContent() {
   const [createPositionShown, setCreatePositionShown] = useState(false);
   const assets = ["ALGO", "gALGO"];
 
-  const borrowIcon = collateralType === "ALGO" ? algoLogo : gAlgoLogo
+  const borrowIcon = collateralType === "ALGO" ? algoLogo : gAlgoLogo;
 
   const handleCheckboxChange = () => {
     setCommitChecked(!commitChecked);
@@ -112,9 +108,9 @@ export default function BorrowContent() {
     if (e.target.value === "") {
       return;
     }
-    setCollateralType(e.target.value)
-    console.log('collat selected',e.target.value);
-  }
+    setCollateralType(e.target.value);
+    console.log("collat selected",e.target.value);
+  };
 
   useEffect(() => {
     if (cdps == dummyCDPs) {
@@ -123,24 +119,23 @@ export default function BorrowContent() {
   }, []);
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   useEffect(() => {
-    collateralType === "gALGO" ? setIsGAlgo(true) : setIsGAlgo(false)
-  }, [collateralType])
+    collateralType === "gALGO" ? setIsGAlgo(true) : setIsGAlgo(false);
+  }, [collateralType]);
 
   useEffect(async () => {
     setPrice(await getPrice());
     await updateWalletInfo();
     getWallet();
-    setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
-    console.log("log wallet", getWalletInfo())
+    console.log("log wallet", getWalletInfo());
     setMaxCollateral(adjustedMax());
   }, []);
 
   useEffect(() => {
-    let walletInfo = getWalletInfo() && getWalletInfo()["assets"].length > 0 ? getWalletInfo()["assets"] : null
+    let walletInfo = getWalletInfo() && getWalletInfo()["assets"].length > 0 ? getWalletInfo()["assets"] : null;
     if (isGAlgo) {
       let max = (
         walletInfo &&
@@ -152,17 +147,16 @@ export default function BorrowContent() {
       ); // hardcoded asa for now, should filter based on generic selected asset
       setMaxCollateral((Math.trunc(max*1000)/1000).toFixed(3));
     } else {
-      setBalance((getWalletInfo()["amount"] / 1000000).toFixed(3));
       setMaxCollateral(adjustedMax());
     }
-  }, [isGAlgo])
+  }, [isGAlgo]);
 
   useEffect(() => {
     setSupplyPrice(price);
   }, [price]);
 
   useEffect(async () => {
-    setAPR(await getAlgoGovAPR())
+    setAPR(await getAlgoGovAPR());
 }, []);
 
   useEffect(() => {
@@ -172,7 +166,7 @@ export default function BorrowContent() {
   const handleSupplyChange = async (event) => {
     setCollateral(event.target.value === "" ? "" : Number(event.target.value));
     if (typeof Number(event.target.value) === "number" && mGARD === "") {
-      setGARD(1)
+      setGARD(1);
     }
     let max =
       Math.trunc(
@@ -231,7 +225,7 @@ export default function BorrowContent() {
       console.log("heyy");
       return;
     }
-    console.log("logging max gard", maxGARD)
+    console.log("logging max gard", maxGARD);
     if (cAlgos > max) {
       // setCollateral(max);
     }
@@ -346,116 +340,44 @@ export default function BorrowContent() {
       ) : (
         <></>
       )}
-      <Banner>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+      <Banner mobile={mobile} style={{marginBottom: "20px"}}>
         <div
           style={{
             justifyContent: "center",
-            textAlign: "left",
+            margin: "auto",
             alignItems: "center",
             color: "#172756",
           }}
         >
-          <div style={{ fontSize: "10pt" }}>Missing your CDP? </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              textAlign: "left",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{ color: "#172756", fontSize: "10pt", textAlign: "left" }}
-            >
-              Make sure to migrate from V1 to V2
-            </div>
+          <div style={{ color: "#172756", fontSize: "10pt" }}>
+            <span style={{ fontSize: "12pt", color: "#172756", fontWeight: "bold" }}>Notice:</span> GARD borrow APR is fixed at 2% it will not change without warning
           </div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}
-        >
-          <V1Link
-            onClick={() => {
-              window.open("https://www.v1.gard.money/");
-            }}
-          >
-            V1 Site
-          </V1Link>
-        </div>
       </Banner>
-      {/*
-      <Banner>
-        <div
-          style={{
-            justifyContent: "center",
-            textAlign: "left",
-            alignItems: "center",
-            color: "#172756",
-          }}
-        >
-          <div style={{ fontSize: "10pt" }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 21, 2022 EOD</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              textAlign: "left",
-              flexDirection: "column",
-            }}
-          >
-            <div style={{ color: "#172756", fontSize: "10pt" }}>
-              7M Algo bonus rewards when participating via DeFi protocols
-            </div>
-          </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}
-        >
-          <Link>Open CDP to Participate</Link>
-        </div>
-      </Banner>
-        */}
       {createPositionShown ? (
         <div>
           <Container mobile={mobile}>
             <SubContainer>
               <Background>
-                <Title>
-                  Supply{" "}
-                  <ExchangeSelect
-                    options={assets}
-                    value={collateralType}
-                    callback={handleSelect}
-                  />
+                <BorrowTitle>
+                  <ActionName>Supply</ActionName>
+                  <AssetName>
+                    <ExchangeSelect
+                      options={assets}
+                      value={collateralType}
+                      callback={handleSelect}
+                    />
+                  </AssetName>
                   {/* ALGO */}
-                  <AlgoImg src={borrowIcon} isGAlgo={!isGAlgo} />
-                </Title>
+                  <AssetImg src={borrowIcon} isGAlgo={!isGAlgo} />
+                </BorrowTitle>
                 <InputContainer>
                   <div style={{ display: "flex" }}>
                     <Input
@@ -525,7 +447,7 @@ export default function BorrowContent() {
             <SubContainer>
               <Background>
                 <BorrowTitle>
-                  Borrow GARD <GardImg src={gardLogo} />
+                  <ActionName>Borrow</ActionName><AssetName>GARD</AssetName><AssetImg src={gardLogo} />
                 </BorrowTitle>
 
                 <InputContainer>
@@ -577,19 +499,19 @@ export default function BorrowContent() {
               setLoading(true);
               try {
                 let res;
-                if (collateralType == 'ALGO') {
+                if (collateralType == "ALGO") {
                   res = await openCDP(
                     getCollateral(),
                     getMinted(),
                     0,
                     commitChecked,
-                  )
+                  );
                 } else {
                   res = await openCDP(
                     getCollateral(),
                     getMinted(),
                     ids.asa.galgo,
-                  )
+                  );
                 }
                 if (res.alert) {
                   setCreatePositionShown(false);
@@ -618,82 +540,28 @@ export default function BorrowContent() {
               setCreatePositionShown(!createPositionShown);
             }}
           />
+          {createPositionShown ? <></> : <div style={{height: "20px"}}></div>}
           <Positions maxSupply={maxCollateral} maxGARD={maxGARD} />
         </div>
       )}
+      </div>
     </div>
   );
 }
 
-const Link = styled.text`
-  text-decoration: none;
-  font-weight: 400;
-  font-size: 10pt;
-  color: #172756;
-  text-align: left;
+const ActionName = styled.div`
 `;
 
-const V1Link = styled.text`
-  text-decoration: none;
-  font-weight: 500;
-  color: #172756;
-  margin-right: 12px;
-  &:hover {
-    color: #03a0ff;
-    cursor: pointer;
-  }
-`;
-
-const Banner = styled.div`
+const AssetName = styled.div`
+  min-width: 8em;
   display: flex;
-  width: 100%;
-  border: 1px solid white;
-  flex-direction: row;
-  border-radius: 10px;
-  justify-content: space-between;
-  align-content: center;
-  text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-  margin-bottom: 20px;
+  justify-content: center;
 `;
 
-const BorrowRewardNotice = styled(RewardNotice)`
-  font-size: 10pt;
-  text {
-    font-size: 8pt;
-  }
-`;
-
-const AlgoImg = styled.img`
-  /* filter: invert(); */
-  height: 75px;
-  width: 75px;
-  right: --4px;
-  position: relative;
-  ${(props) => !props.isGAlgo &&
-    css`
-      height: 50px;
-      width: 50px;
-      margin-left: 8px;
-      margin-top: 12.5px;
-      margin-bottom: 12.5px;
-    `
-  }
-`;
-
-const gAlgoImg = styled.img`
-  height: 30px;
-  width: 30px;
-  position: relative;
-`
-
-const GardImg = styled.img`
+const AssetImg = styled.img`
   height: 50px;
-  margin: 2px 18px 2px 14px;
+  width: 50px;
   position: relative;
-  top: -2px;
 `;
 
 const Container = styled.div`
@@ -716,14 +584,6 @@ const Background = styled.div`
   background: #1b2d65;
   border-radius: 10px;
 `;
-const Title = styled.div`
-  display: flex;
-  justify-content: center;
-  font-size: 14pt;
-  align-items: center;
-  text-align: center;
-  padding: 20px 0px 20px;
-`;
 
 const BorrowTitle = styled.div`
   display: flex;
@@ -731,9 +591,8 @@ const BorrowTitle = styled.div`
   font-size: 14pt;
   align-items: center;
   text-align: center;
-  padding: 20px 0px 20px;
-  margin-bottom: 9px;
-  padding-top: 31px;
+  padding: 10px 0px 10px;
+  gap: 10px
 `;
 
 const InputContainer = styled.div`
@@ -758,7 +617,7 @@ display: grid;
   justify-content: center;
   padding: 30px 0px 30px;
   border-radius: 10px;
-`
+`;
 
 const Item = styled.div`
   display: flex;
@@ -815,8 +674,8 @@ const CommitBox = styled.input`
 `;
 
 const ExchangeSelect = styled(Select)`
+  text-align: center;
   font-size: 14pt;
-  margin: 0px 0px 0px 12px;
   border: 1px solid #01d1ff;
   color: white;
   &:hover {
@@ -831,9 +690,4 @@ const InputTitle = styled.text`
   font-weight: bold;
   font-size: 16px;
   margin: 0px 4px 0px 2px;
-`;
-const InputSubtitle = styled.text`
-  font-weight: normal;
-  font-size: 12px;
-  margin: 3px 3px 3px 4px;
 `;

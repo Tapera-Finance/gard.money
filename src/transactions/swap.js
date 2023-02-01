@@ -1,8 +1,6 @@
 import algosdk from "algosdk";
 import {
   ids,
-  gainID,
-  gardianID,
   pactALGOGARDID,
   pactAlgoGardPoolAddress,
 } from "./ids";
@@ -11,11 +9,9 @@ import {
   getParams,
   sendTxn,
   signGroup,
-  algodClient,
 } from "../wallets/wallets";
 import { verifyOptIn } from "./cdp";
 import { updateDBWebActions } from "../components/Firebase";
-import { VERSION } from "../globals";
 import { psToken } from "../wallets/keys";
 
 import pactsdk from "@pactfi/pactsdk";

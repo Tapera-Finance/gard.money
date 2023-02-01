@@ -4,9 +4,7 @@ import Table from "./Table";
 import { isMobile } from "../utils";
 
 export default function LiveAuctions({
-  OPTIONS,
   open_defaulted,
-  selected,
   liveAuctions,
   dummyBids,
   dummyMarketHistory,
@@ -14,8 +12,8 @@ export default function LiveAuctions({
 }) {
   const [mobile, setMobile] = useState(isMobile());
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   return (
     <div
@@ -24,7 +22,7 @@ export default function LiveAuctions({
         overflow: "auto",
         display: "flex",
         flexDirection: "column",
-        margin: 'auto',
+        margin: "auto",
       }}
     >
       <div
@@ -43,24 +41,18 @@ export default function LiveAuctions({
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title mobile={mobile}>
-              {selected === OPTIONS.LIVE_AUCTIONS
-                ? "Live Auctions"
-                : selected === OPTIONS.BIDS
-                ? "Bids"
-                : "Auction Marketplace Transaction History"}
+              {"Live Auctions"}
             </Title>
           </div>
           <CountContainer>
             <CountText mobile={mobile}>
-              {selected === OPTIONS.LIVE_AUCTIONS
-                ? `${
+              {
+                `${
                     open_defaulted == dummyLiveAuctions
                       ? 0
                       : open_defaulted.length
                   } ${"Live Auctions"}`
-                : selected === OPTIONS.BIDS
-                ? `${dummyBids.length} ${"Bids"}`
-                : `${dummyMarketHistory.length} ${"Auctions"}`}
+              }
             </CountText>
           </CountContainer>
         </div>
@@ -68,11 +60,7 @@ export default function LiveAuctions({
       <AuctionsDiv>
         <AuctionsTable
           data={
-            selected === OPTIONS.LIVE_AUCTIONS
-              ? liveAuctions
-              : selected === OPTIONS.BIDS
-              ? dummyBids
-              : dummyMarketHistory
+            liveAuctions
           }
         />
       </AuctionsDiv>

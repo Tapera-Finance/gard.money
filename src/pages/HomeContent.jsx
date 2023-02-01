@@ -1,30 +1,28 @@
 import React, { useState, useEffect } from "react";
 import algosdk from "algosdk";
 import styled, {css} from "styled-components";
-import Details from "../components/Details";
 import { ids } from "../transactions/ids";
-import CountdownTimer from "../components/CountdownTimer";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getAlgoGovAPR } from "../components/Positions";
-import { getCurrentAlgoUsd, getChainData } from "../prices/prices";
 import WalletConnect from "../components/WalletConnect";
 import Step from "../components/Step";
 import BinaryToggle from "../components/BinaryToggle";
 import { setAlert } from "../redux/slices/alertSlice";
 import Effect from "../components/Effect";
-import { cdpInterest } from "../transactions/lib"
-import { getStakingAPY } from "../transactions/stake"
+import { cdpInterest } from "../transactions/lib";
+import { getStakingAPY } from "../transactions/stake";
 import { searchAccounts } from "./GovernContent";
 import { getWalletInfo } from "../wallets/wallets";
-import { getCDPs } from "../transactions/cdp";
-import { CDPsToList } from "../components/Positions"
+import { CDPsToList } from "../components/Positions";
 import { checkStaked } from "../components/actions/StakeDetails";
-import { commitmentPeriodEnd } from "../globals";
 import { device } from "../styles/global";
-import { isMobile } from "../utils"
+import { isMobile } from "../utils";
+import TextButton from "../components/TextButton";
+import { LinkText, SocialMediaButton } from "../components/Drawer";
+import { Banner } from "../components/Banner";
 
 const fetchTvl = async () => {
   try {
@@ -43,19 +41,19 @@ export function getStateUint(state, key, byte_switch = 0) {
     if (entry.key === key) {
       return entry;
     }
-  })
-  return byte_switch ? val.value.bytes : val.value.uint
+  });
+  return byte_switch ? val.value.bytes : val.value.uint;
 }
 
 export async function getBorrowed() {
-  const v2GardPriceValidatorId = 890603991
-  const sgardGardId = 890603920
+  const v2GardPriceValidatorId = 890603991;
+  const sgardGardId = 890603920;
   async function lookupApplications(appId) {
     const axiosObj = axios.create({
-      baseURL: 'https://mainnet-idx.algonode.cloud',
+      baseURL: "https://mainnet-idx.algonode.cloud",
       timeout: 300000,
-    })
-    return (await axiosObj.get(`/v2/applications/${appId}`)).data
+    });
+    return (await axiosObj.get(`/v2/applications/${appId}`)).data;
   }
   async function getAppState(appId) {
     const res = await lookupApplications(appId);
@@ -63,10 +61,10 @@ export async function getBorrowed() {
   }
 
   const validatorState = await getAppState(v2GardPriceValidatorId);
-  const SGardDebt = getStateUint(validatorState, btoa('SGARD_OWED'))
+  const SGardDebt = getStateUint(validatorState, btoa("SGARD_OWED"));
   const sgardState = await getAppState(sgardGardId);
-  const SGardConversion = getStateUint(sgardState, btoa('conversion_rate'))
-  return (SGardDebt * SGardConversion / 1e10)/1e6
+  const SGardConversion = getStateUint(sgardState, btoa("conversion_rate"));
+  return (SGardDebt * SGardConversion / 1e10)/1e6;
 }
 
 async function getTotalUsers() {
@@ -75,7 +73,7 @@ async function getTotalUsers() {
   let response = null;
   const users = new Set();
 
-  const validators = [ids.app.validator, ids.app.gard_staking, ids.app.gardian_staking]
+  const validators = [ids.app.validator, ids.app.gard_staking, ids.app.gardian_staking];
   for(var i = 0; i < validators.length; i++){
     do {
       // Find accounts that are opted into the GARD price validator application
@@ -85,55 +83,55 @@ async function getTotalUsers() {
         limit: 1000,
         nexttoken,
       });
-      for (const account of response['accounts']) {
+      for (const account of response["accounts"]) {
         if (i){
           users.add(account.address);
         }
         else {
-          if(account['apps-local-state']){
-          let cdp_state = account['apps-local-state'][0]['key-value']
-          users.add(algosdk.encodeAddress(Buffer.from(getStateUint(cdp_state, btoa("OWNER"), 1), "base64")))
+          if(account["apps-local-state"]){
+          let cdp_state = account["apps-local-state"][0]["key-value"];
+          users.add(algosdk.encodeAddress(Buffer.from(getStateUint(cdp_state, btoa("OWNER"), 1), "base64")));
           }
         }
       }
-      nexttoken = response['next-token']
+      nexttoken = response["next-token"];
     } while (nexttoken != null);
   }
-  return users.size
+  return users.size;
 }
 
 export async function getTotalGardGovs() {
 
-  const v2GardPriceValidatorId = 890603991
-  let nexttoken
-  let response = null
-  let total = 0
+  const v2GardPriceValidatorId = 890603991;
+  let nexttoken;
+  let response = null;
+  let total = 0;
 
-  const validators = [v2GardPriceValidatorId]
+  const validators = [v2GardPriceValidatorId];
   const axiosObj = axios.create({
-    baseURL: 'https://governance.algorand.foundation/api/governors/',
+    baseURL: "https://governance.algorand.foundation/api/governors/",
     timeout: 300000,
-  })
+  });
   async function isGovernor(address) {
         try {
-            let response = (await axiosObj.get(address + '/status/', {}))
+            let response = (await axiosObj.get(address + "/status/", {}));
             if (response) {
-              total += 1
+              total += 1;
             }
           }
           catch (error) {
             if (error.response) {
-              console.log(error.response)
+              console.log(error.response);
             } else if (error.request) {
               // This means the item does not exist
             } else {
               // This means that there was an unhandled error
-              console.error(error)
+              console.error(error);
             }
           }
       }
   
-  let promises = []
+  let promises = [];
   
   for(var i = 0; i < validators.length; i++){
     do {
@@ -145,20 +143,20 @@ export async function getTotalGardGovs() {
         nexttoken,
       });
       
-      for (const account of response['accounts']) {
-        promises.push(isGovernor(account.address))
+      for (const account of response["accounts"]) {
+        promises.push(isGovernor(account.address));
       }
-      nexttoken = response['next-token']
+      nexttoken = response["next-token"];
     } while (nexttoken != null);
   }
   await Promise.allSettled(promises);
-  return total
+  return total;
 }
 
 const buttons = [
+  "Borrow",
   "Swap",
   "Stake",
-  "Borrow",
   "Govern",
   "Auctions",
   // "Analytics",
@@ -166,7 +164,7 @@ const buttons = [
   // "Pool",
   // "Stake",
   // "Trade CDP",
-]
+];
 
 /**
  * Content found on home
@@ -179,16 +177,16 @@ export default function HomeContent() {
   const [borrowed, setBorrowed] = useState("...");
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
-  const [users, setUsers] = useState("Loading...")
-  const [chainData, setChainData] = useState("");
+  const [users, setUsers] = useState("Loading...");
   const [governors, setGovernors] = useState("Loading...");
   const [allOpen, setAllOpen] = useState(true);
-  const [difficulty, setDifficulty] = useState("Defi Expert");
+  const [difficulty, setDifficulty] = useState("DeFi Expert");
   const [gardInWallet, setGardInWallet] = useState(false);
   const [gaining, setGaining] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
+  const [showMore, setShowMore] = useState(false);
 
   const [step2open, setStep2] = useState(true);
   const [step3open, setStep3] = useState(true);
@@ -201,44 +199,37 @@ export default function HomeContent() {
   };
 
   useEffect(()=> {
-    setAllOpen(step2open && step3open)
-    console.log("triggered", step2open, step3open)
+    setAllOpen(step2open && step3open);
+    console.log("triggered", step2open, step3open);
 
-  },[step2open, step3open])
+  },[step2open, step3open]);
 
   useEffect(async () => {
     console.log("isMobile ?", isMobile());
-    const chainDataResponse = await getChainData();
-    setChainData(chainDataResponse);
   }, []);
 
   useEffect(async () => {
     if (walletAddress) {
-     let info = await getWalletInfo()
-     let gardInfo = info["assets"].filter((asset) => asset["asset-id"] === ids.asa.gard)
+     let info = await getWalletInfo();
+     let gardInfo = info["assets"].filter((asset) => asset["asset-id"] === ids.asa.gard);
       if (gardInfo.length > 0 && gardInfo[0]["amount"] > 0) {
-        setGardInWallet(true)
+        setGardInWallet(true);
       }
     }
     if (walletAddress) {
-      let stakePromise = await checkStaked()
+      let stakePromise = await checkStaked();
       let cdps = CDPsToList();
       if (cdps.length > 0 || stakePromise === true) {
-        setGaining(true)
+        setGaining(true);
       }
     }
-  }, [])
-
-  const circulating = "TBD"
-  /* const circulating = JSON.parse(
-    chainData ? chainData["circulating-gard"][8064 - 1] : 0,
-  ) */
+  }, []);
 
   useEffect(async () => {
     const govsPromise = getTotalGardGovs();
-    const apyPromise = getStakingAPY("NL")
-    setApr(await getAlgoGovAPR())
-    setApy((await apyPromise).toFixed(2))
+    const apyPromise = getStakingAPY("NL");
+    setApr(await getAlgoGovAPR());
+    setApy((await apyPromise).toFixed(2));
     setGovernors(await govsPromise);
   }, []);
 
@@ -285,9 +276,12 @@ export default function HomeContent() {
     },
   ];
 
+  const alwaysShown = homeDetails.slice(0, 4);
+  const additionalDetails = homeDetails.slice(4);
+
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   useEffect(async () => {
     let res = await fetchTvl();
@@ -334,7 +328,7 @@ export default function HomeContent() {
               color: "#172756",
             }}
           >
-            <div style={{ fontSize: "10pt" }}>GARD Staking Rewards!</div>
+            <div style={{ fontSize: "12pt" }}>GARD Staking Rewards!</div>
           </div>
           <div
             style={{
@@ -352,9 +346,8 @@ export default function HomeContent() {
                 flexDirection: "column",
               }}
             >
-              <div style={{ color: "#172756", fontSize: "10pt" }}>
-                Earn protocol rewards boosted by the Algorand Foundation via
-                Aeneas grant!
+              <div style={{ color: "#172756", fontSize: "10pt", textAlign: "center" }}>
+              Earn protocol revenues boosted by the Algorand Foundation!
               </div>
             </div>
           </div>
@@ -366,6 +359,7 @@ export default function HomeContent() {
             }}
           >
             <Link
+              mobile={mobile}
               onClick={() => {
                 walletAddress
                   ? navigate("/stake")
@@ -388,66 +382,65 @@ export default function HomeContent() {
           justifyContent: "center",
           flexDirection: "column",
           textAlign: "center",
-          marginTop: "18px",
-          marginBottom: "18px",
           alignItems: "center",
         }}
       >
-        <ToggleBox>
+        <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
+            <BoldText moible={mobile}>Quick Actions</BoldText>
+            <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
+              {buttons.map((action) => {
+                return (
+                  <div 
+                  key={Math.random()}
+                  >
+                    <PrimaryButton
+                      disabled={!walletAddress}
+                      text={action}
+                      blue={true}
+                      uniform={true}
+                      onClick={() => navigate(`/${action.toLowerCase()}`)}
+                    />
+                  </div>
+                );
+              })}
+            </AccessBox>
+          </div>
+          <ToggleBox>
           <BinaryToggle
-            optionA="DeFi Expert"
-            optionB="Help Me Out"
+            optionA={"DeFi Expert"}
+            optionB={"Help Me Out"}
             selectedOption={setDifficulty}
           />
         </ToggleBox>
-        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
-          <Items>
-            {homeDetails.length && homeDetails.length > 0
-              ? homeDetails.map((d) => {
-                  return (
-                    <Item key={d.title}>
-                      <Effect
-                        title={d.title}
-                        val={d.val}
-                        hasToolTip={d.hasToolTip}
-                        rewards={d.rewards}
-                      ></Effect>
-                    </Item>
-                  );
-                })
-              : null}
-          </Items>
-        </Container>
-        <div>
-          {/* <Text
-            style={{
-              color: "#7c52ff",
-              textAlign: "center",
-              fontWeight: "bolder",
-            }}
-            // onClick={() => navigate("/analytics")}
-          >
-            {`See More Metrics ${">"}`}
-          </Text> */}
-        </div>
-      </div>
-      <div>
         {difficulty === "Help Me Out" ? (
+          <div>
           <StepContainer>
+            <SocialMediaButton
+                style={{marginBottom: "10px"}}
+                onClick={() =>
+                  window.open(
+                    "https://youtu.be/b1nzF6uzwNY",
+                  )
+                }
+              >
+                <LinkText>
+                Be sure to check out the tutorial!
+                </LinkText>
+            </SocialMediaButton>
             <Text
               style={{ color: "#80edff" }}
               onClick={() => {
-                setStep2(!allOpen)
-                setStep3(!allOpen)
+                setStep2(!allOpen);
+                setStep3(!allOpen);
               }}
             >
-              {allOpen ? `Collapse` : `Expand`} All
+              {allOpen ? "Collapse" : "Expand"} All
             </Text>
 
             <ConnectStep mobile={mobile}>
               <div style={{
                 display: "flex",
-                width: "100%",
+                width: "90%",
                 justifyContent: "space-between",
                 padding: "0px 10px 0px 10px",
               }}>
@@ -498,35 +491,70 @@ export default function HomeContent() {
               expanded={step3open}
             />
           </StepContainer>
-        ) : (
-          <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
-            <BoldText>Quick Actions</BoldText>
-            <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
-              {buttons.map((action) => {
-                return (
-                  <PrimaryButton
-                    disabled={!walletAddress}
-                    text={action}
-                    blue={true}
-                    onClick={() => navigate(`/${action.toLowerCase()}`)}
-                    key={Math.random()}
-                  />
-                );
-              })}
-            </AccessBox>
           </div>
+        ) : (
+          <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
+          { mobile ? <Items>
+            {alwaysShown.map((d) => {
+              return (
+                <Item key={d.title} notShown={false}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+            {additionalDetails.map((d) => {
+              return (
+                <Item key={d.title} notShown={!showMore}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+          </Items> :
+          <Items>
+          {homeDetails.length && homeDetails.length > 0
+            ? homeDetails.map((d) => {
+                return (
+                  <Item key={d.title}>
+                    <Effect
+                      title={d.title}
+                      val={d.val}
+                      hasToolTip={d.hasToolTip}
+                      rewards={d.rewards}
+                    ></Effect>
+                  </Item>
+                );
+              })
+            : null}
+        </Items>
+          }
+        </Container>
         )}
+        
+        {mobile && difficulty == "DeFi Expert" ? <ManageCollapse
+          positioned={true}
+          text={showMore ? "Collapse":  "Show More Details"}
+          onClick={() => {
+            setShowMore(!showMore);
+          }}
+        /> : <></>}
       </div>
     </HomeWrapper>
   );
 }
 
 const ToggleBox = styled.div`
-  margin: 0px 0px 30px 0px;
-  @media (${device.tablet}) {
-
-  }
-`
+  margin: 15px 0px 15px 0px;
+`;
 
 const HomeWrapper = styled.div`
   display: flex;
@@ -539,14 +567,17 @@ const HomeWrapper = styled.div`
       /* margin-right: 30px; */
     `
   }
-`
+`;
 
 const AccessBox = styled.div`
+  gap: 25px;
   display: flex;
   justify-content: center;
-  width: 100%;
-  margin-top: 20px;
-  margin-bottom: 100px;
+  width: 95%;
+  margin-top: 15px;
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
   align-items: center;
   ${(props) =>
     props.expert &&
@@ -555,11 +586,11 @@ const AccessBox = styled.div`
     `
   }
   ${(props) => props.mobile && css`
-    flex-direction: column;
+    flex-wrap: wrap;
     row-gap: 10px;
     height: 100%;
   `}
-`
+`;
 
 const Link = styled(PrimaryButton)`
   text-decoration: none;
@@ -569,53 +600,19 @@ const Link = styled(PrimaryButton)`
   &:hover {
     background-color: #455278
   }
-`;
-
-const Banner = styled.div`
-  display: flex;
-  width: 100%; 
-  flex-direction: row;
-  border: 1px solid white;
-  align-content: center;
-  border-radius: 10px;
-  justify-content: space-between;
-  text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-  @media (${device.tablet}) {
-    width: 100%;
-    ${(props) =>
-    props.expert &&
-    css`
-      /* margin-left: 60px; */
-      /* width: 100%; */
-    `
-    }
-  }
-  ${(props) =>
-    props.expert &&
-    css`
-      /* margin-right: 30px; */
-    `
-  }
   ${(props) => props.mobile && css`
-    width: 90%;
+    margin-right: 0px;
+    margin-left: 5px;
   `}
-`
-
+`;
 
 const Container = styled.div`
   background: #0E1834;
   padding-top: 30px;
-  width: 100%;
+  width: 90%;
   padding-bottom: 30px;
   border: 1px solid white;
   border-radius: 10px;
-
-  ${(props) => props.mobile && css`
-    width: 90%;
-  `}
 
   ${(props) =>
     props.expert &&
@@ -623,6 +620,11 @@ const Container = styled.div`
       /* margin-right: 30px; */
     `
   }
+  ${(props) => props.mobile && css`
+    width: 90%;
+    padding-bottom: 60px;
+  `}
+
 `;
 
 const Items = styled.div`
@@ -635,13 +637,20 @@ const Items = styled.div`
     grid-template-columns: repeat(2, 40%);
   }
   @media (max-width: 422px) {
-    grid-template-columns: repeat(1, 40%)
+    grid-template-columns: repeat(2, 40%);
   }
 `;
 
 const Item = styled.div`
   display: flex;
   flex-direction: column;
+  ${(props) =>
+    props.notShown &&
+    css`
+      display: none;
+  `}
+`;
+const ManageCollapse = styled(TextButton)`
 `;
 
 // styled components
@@ -651,7 +660,7 @@ const StepContainer = styled.div`
   justify-content: space-evenly;
   align-content: center;
   align-items: center;
-  margin-bottom: 50px;
+  margin-bottom: 15px;
 `;
 
 const ConnectStep = styled.div`
@@ -660,7 +669,7 @@ const ConnectStep = styled.div`
   font-size: large;
   text-align: left;
   align-items: center;
-  width: 100%;
+  width: 90%;
   border: 1px solid #019fff;
   background: #0f1733;
   color: #019fff;
@@ -687,9 +696,6 @@ const ConnectStep = styled.div`
       }
 
     }
-    @media (${device.mobileL}) {
-      //
-    }
     ${(props) => props.mobile && css`
     width: 90%;
     `}
@@ -708,18 +714,10 @@ const BoldText = styled.text`
   cursor: pointer;
   text-align: center;
   align-self: center;
+  margin-top: 15px;
 `;
 
-const EnrollButton = styled(PrimaryButton)`
-  appearance: none;
-  border: none;
-  color: unset;
-  margin: 6px 0px 10px 80px;
-  padding: 0px 14px 0px 14px;
-  &:hover {
-    color: #019fff;
-  }
-`;
+
 
 
 /**
@@ -808,3 +806,5 @@ const EnrollButton = styled(PrimaryButton)`
         </div>
       </Banner>
  */
+ 
+

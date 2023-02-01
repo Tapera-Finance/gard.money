@@ -18,7 +18,7 @@ export default function Step({
   onClick,
   expanded,
 }) {
-  const walletAddress = useSelector(state => state.wallet.address)
+  const walletAddress = useSelector(state => state.wallet.address);
   const navigate = useNavigate();
 
 
@@ -100,7 +100,7 @@ const Link = styled.a`
     color: #a5e8ff;
   }
 
-`
+`;
 
 const StepItem = styled.div`
   display: flex;
@@ -152,7 +152,7 @@ const StepButton = styled(PrimaryButton)`
 `;
 
 const ExpandedStep = styled.div`
-  width: 100%;
+  width: 90%;
 `;
 
 const StepText = styled.text`

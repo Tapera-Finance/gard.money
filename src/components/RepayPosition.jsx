@@ -16,7 +16,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
     const [loadingText, setLoadingText] = useState(null);
     const dispatch = useDispatch();
 
-    const [repayment, setRepayment] = useState("")
+    const [repayment, setRepayment] = useState("");
 
     const handleRepay = (event) => {
         setRepayment(event.target.value === "" ? "" : Number(event.target.value));
@@ -115,7 +115,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
                 positioned={true}
                 text="Repay"
                 onClick={ async () => {
-                    if (repayment === "") return
+                    if (repayment === "") return;
                     setLoading(true);
                     try {
                         let res = await repayCDP(
@@ -138,14 +138,14 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
         <div style={{position:"relative", top:-28}}>
             <Details details={details}/>
         </div>
-</div>
+</div>;
 
 }
 const Container = styled.div`
     display: flex;
     position: relative;
     justify-content: center;
-`
+`;
 
 const SubContainer = styled.div`
     position: relative;
@@ -153,25 +153,24 @@ const SubContainer = styled.div`
     ${(props) => props.mobile && css`
         width: 100%;
     `}
-`
+`;
 const Background = styled.div`
-    margin-top: 30px;
     background: #1b2d65;
     border-radius: 10px;
-`
+`;
 const Title = styled.div`
     display: flex;
     justify-content: center;
     text-align: center;
     padding: 20px 0px 20px;
-`
+`;
 
 const InputContainer = styled.div`
     background: rgba(13, 18, 39, .75);
     border-radius: 10px;
     border: 1px solid white;
     padding-bottom: 35px;
-`
+`;
 
 const InputDetails = styled.div`
 display: grid;
@@ -180,13 +179,13 @@ row-gap: 30px;
 justify-content: center;
 padding: 30px 0px 30px;
 border-radius: 10px;
-`
+`;
 
 const Item = styled.div`
     display: flex;
     flex-direction: column;
     font-size: 14px;
-`
+`;
 const MaxButton = styled.button`
     color: #01d1ff;
     background: none;
@@ -194,13 +193,13 @@ const MaxButton = styled.button`
     margin-top: 50px;
     cursor: pointer;
     font-size: 12px;
-`
+`;
 const Valuation = styled.div`
     margin-left: 25px;
     margin-top: 3px;
     font-size: 12px;
     color: #999696;
-`
+`;
 const Input = styled.input`
   padding-top: 35px;
   border-radius: 0;
@@ -217,4 +216,4 @@ const Input = styled.input`
   &:focus {
       outline-width: 0;
     }
-`
+`;

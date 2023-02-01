@@ -153,19 +153,19 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
 
     const dispatch = useDispatch();
     const {theme} = useContext(ThemeContext);
-    const [price, setPrice] = useState(0)
-    const [supplyPrice, setSupplyPrice] = useState(0)
-    const [apr, setAPR] = useState(0)
+    const [price, setPrice] = useState(0);
+    const [supplyPrice, setSupplyPrice] = useState(0);
+    const [apr, setAPR] = useState(0);
     const [cAlgos, setCollateral] = useState("");
-    const [mGARD, setGARD] = useState("")
-    const [minted, setMinted] = useState("")
+    const [mGARD, setGARD] = useState("");
+    const [minted, setMinted] = useState("");
     const loadedCDPs = CDPsToList().sort(function  (a, b) {
-      let r1 = parseInt(calcRatio(a.collateral, a.debt / 1e6,a.asaID,true,).slice(0,-1))
-      let r2 = parseInt(calcRatio(b.collateral, b.debt / 1e6,b.asaID,true,).slice(0,-1))
-      return r1 - r2
+      let r1 = parseInt(calcRatio(a.collateral, a.debt / 1e6,a.asaID,true,).slice(0,-1));
+      let r2 = parseInt(calcRatio(b.collateral, b.debt / 1e6,b.asaID,true,).slice(0,-1));
+      return r1 - r2;
     });
     const [currentCDP, setCurrentCDP] = useState(null);
-    const [collateralType, setCollateralType] = useState("ALGO")
+    const [collateralType, setCollateralType] = useState("ALGO");
     const [selectedTab, setSelectedTab] = useState("one");
     const [manageUpdate, setManageUpdate] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -176,11 +176,11 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const typeCDP = {
       galgo: "gALGO",
       algo: "ALGO"
-    }
+    };
 
     useEffect(() => {
-      setMobile(isMobile())
-    }, [])
+      setMobile(isMobile());
+    }, []);
 
   useEffect(async () => {
     setAPR(await getAlgoGovAPR());
@@ -238,7 +238,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
       ) : (
         <></>
       )}
-      <Container>
         {loadedCDPs.length && loadedCDPs.length > 0
           ? loadedCDPs.map((cdp, idx) => {
               return (
@@ -386,7 +385,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                       <APRBox>
                         <div>APR: </div>
                         <span style={{ color: "#01d1ff", marginLeft: 8 }}>
-                          {`  ` + apr}%
+                          {"  " + apr}%
                         </span>
                       </APRBox>
                     </div>
@@ -511,37 +510,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           apr={apr}
                         />
                       ) : (
-                        // : selectedTab === "three" ?
-                        //     <div>
-                        //         <SalesHeader>
-                        //             <b style={{textAlign:"left"}}>Position</b>
-                        //             <b>Sell for</b>
-                        //             <b style={{textAlign: "center"}}>Amount</b>
-                        //             <b style={{textAlign: "center"}}>Sale Discount</b>
-                        //         </SalesHeader>
-                        //         <SalesInfo>
-                        //             <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
-                        //                 <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
-                        //                 <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
-                        //             </div>
-                        //             <PrimaryButton text="ALGO"/>
-                        //             <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>
-                        //                 <Input
-                        //                 autoComplete="off"
-                        //                 display="none"
-                        //                 placeholder={"enter amount"}
-                        //                 type='number'
-                        //                 min="0.00"
-                        //                 id="salesPrice"
-                        //                 // value={salesPrice}
-                        //                 // onChange={handleSalesPrice}
-                        //                 />
-                        //                 <Valuation>Value: ${12.3}</Valuation>
-                        //             </div>
-                        //             <div style={{color: "grey", textAlign: "center"}}> 4.33%</div>
-                        //         </SalesInfo>
-                        //         <PrimaryButton text="List for Sale" purple={true} disabled={true} />
-                        // </div>
                         <div style={{ marginTop: 40 }}>
                           <PrimaryButton
                             text="Close Position"
@@ -571,7 +539,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
               );
             })
           : null}
-      </Container>
     </PositionContainer>
   );
 }
@@ -581,9 +548,6 @@ const Sply = styled.div`
   margin-bottom: 20px;
   @media (${device.laptop}) {
     flex-direction: column;
-  }
-  @media (${device.tablet}) {
-    flex-direction: row;
   }
   ${(props) => props.mobile && css`
     flex-direction: row;
@@ -595,12 +559,8 @@ const Brr = styled.div`
   @media (${device.laptop}) {
     flex-direction: column;
   }
-  @media (${device.tablet}) {
-    flex-direction: row;
-  }
   ${(props) => props.mobile && css`
   flex-direction: row;
-
   `}
 `;
 
@@ -624,10 +584,6 @@ const ManageCollapse = styled(TextButton)`
 `;
 
 const ToggleContainer = styled.div`
-  @media (${device.tablet}) {
-    transform: scale(0.9);
-    max-width: 90vw;
-  }
   ${(props) => props.mobile && css`
   transform: scale(0.9);
     max-width: 90vw;
@@ -645,21 +601,8 @@ const ToggleContainer = styled.div`
 const PositionSupplyBorrow = styled.div`
   display: flex;
   flex-direction: column;
-  @media (min-width: ${size.tablet}) {
-  }
-  ${(props) => !props.mobile && css`
-
-
-  `}
-
-  @media (${device.tablet}) {
-    row-gap: 6px;
-    margin: 6px 0px 6px 0px;
-    border-radius: 10px;
-    padding: 20px;
-  }
   ${(props) => props.mobile && css`
-  row-gap: 6px;
+    row-gap: 6px;
     margin: 6px 0px 6px 0px;
     border-radius: 10px;
     padding: 20px;
@@ -671,9 +614,9 @@ const PositionContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
   /* flex: 1 1 0px; */
-  width: auto;
+  max-width: 90%;
+  margin: auto;
 `;
 
 const Header = styled.div`
@@ -694,16 +637,6 @@ const Header = styled.div`
     border-radius: 10px;
     padding: 8px;
   `}
-  @media (${device.tablet}) {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    align-items: flex-start;
-    border: 1px solid white;
-    width: 400px;
-    border-radius: 10px;
-    padding: 8px;
-  }
   @media (${device.mobileL}) {
     width: 350px;
   }
@@ -714,45 +647,13 @@ const Header = styled.div`
     width: 240px;
   }
 `;
-const SalesHeader = styled.div`
-  display: grid;
-  grid-template-columns: 30% 20% 20% 20%;
-  justify-content: center;
-  align-content: center;
-  text-align: center;
-  font-size: 16px;
-  margin-top: 50px;
-  margin-bottom: 20px;
-`;
-const SalesInfo = styled.div`
-  display: grid;
-  grid-template-columns: 30% 20% 20% 20%;
-  justify-content: center;
-  align-content: center;
-  align-items: center;
-  background: rgba(13, 18, 39, 0.75);
-  border-radius: 10px;
-  font-size: 18px;
-  padding: 40px 0px 40px;
-  margin-bottom: 20px;
-`;
-
-const Container = styled.div`
-  margin: 10px 0px 40px;
-`;
 
 const Position = styled.div`
   position: relative;
-  @media (${device.tablet}) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  ${(props) => props.mobile && css`
   display: flex;
-    flex-direction: column;
-    align-items: center;
-  `}
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 `;
 const PositionInfo = styled.div`
   display: grid;
@@ -761,15 +662,10 @@ const PositionInfo = styled.div`
   justify-content: center;
   align-content: center;
   font-size: 18px;
-  @media (${device.tablet}) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 4px 10px 4px 10px;
-    max-width: 432px;
-  }
+  padding: 40px 0px 40px;
+  width: 100%;
   ${(props) => props.mobile && css`
-  display: flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
     padding: 4px 10px 4px 10px;

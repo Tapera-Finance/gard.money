@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import PageToggle from "../components/PageToggle";
-import SystemMetrics from "../components/SystemMetrics"
+import SystemMetrics from "../components/SystemMetrics";
 import YourMetrics from "../components/YourMetrics";
 
 export default function AnalyticsContent() {

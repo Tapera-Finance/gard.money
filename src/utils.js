@@ -1,6 +1,4 @@
 import moment from "moment";
-import Cookies from "universal-cookie";
-const cookies = new Cookies();
 
 /**
  * Transform a numeric string into a dollar format
@@ -39,18 +37,6 @@ export function utcToLocal(utcTime) {
   return moment(momentUtc).local().format("YYYY-MM-DD HH:mm:ss");
 }
 
-export function setCookie(name, value) {
-  cookies.set(value, name);
-}
-
-export function getCookie(name) {
-  cookies.get(name);
-}
-
-export function removeCookie(name) {
-  cookies.remove(name);
-}
-
 export function titleToToolTip(str) {
   return str
     .split(" ")
@@ -59,11 +45,11 @@ export function titleToToolTip(str) {
 }
 
 export function isFirefox() {
-  return navigator.userAgent.includes("Firefox")
+  return navigator.userAgent.includes("Firefox");
 }
 
 export function isSafari() {
-  return navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0
+  return navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0;
 }
 
 export const px2vw = (size, width = 1440) => `${(size / width) * 100}vw`;

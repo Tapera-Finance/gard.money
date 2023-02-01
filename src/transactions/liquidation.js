@@ -1,19 +1,14 @@
-import { setLoadingStage, getMicroGardBalance, getGardBalance } from "./lib";
+import { setLoadingStage, getGardBalance } from "./lib";
 import { ids } from "./ids";
 import {
   accountInfo,
   getParams,
   sendTxn,
-  getWallet,
-  getAppByID,
   signGroup,
 } from "../wallets/wallets";
-import { validatorAddress, cdpGen } from "./contracts";
+import { cdpGen } from "./contracts";
 import { makeUpdateInterestTxn } from "./cdp";
 import algosdk from "algosdk";
-import {
-  updateLiquidationFirestore,
-} from "../components/Firebase";
 
 
 const enc = new TextEncoder();
@@ -36,16 +31,16 @@ export async function start_auction(cdp) {
   cdp.contract = cdpGen(cdp.creator, cdp.id, cdp.collateralID);
   let params = await paramsPromise;
   const info = await infoPromise;
-  const firstDummyTxn = cdp.collateralID != 0 ? makeDummyXferTxn(info, params, cdp.collateralID) : null
-  const dummyTxn = makeUpdateInterestTxn(info, params)
-  params.fee = 0
-  let foreignApps = [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest]
-  let foreignAssets = [ids.asa.gard]
-  let lsigNum = 3
+  const firstDummyTxn = cdp.collateralID != 0 ? makeDummyXferTxn(info, params, cdp.collateralID) : null;
+  const dummyTxn = makeUpdateInterestTxn(info, params);
+  params.fee = 0;
+  let foreignApps = [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest];
+  let foreignAssets = [ids.asa.gard];
+  let lsigNum = 3;
   if (cdp.collateralID != 0) {
     foreignApps.push(ids.app.oracle[cdp.collateralID]);
-    foreignAssets.push(cdp.collateralID)
-    lsigNum = 2
+    foreignAssets.push(cdp.collateralID);
+    lsigNum = 2;
   }
   let txn = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.contract.address,
@@ -57,15 +52,15 @@ export async function start_auction(cdp) {
     foreignAssets: foreignAssets,
     suggestedParams: params,
   });
-  let txns = firstDummyTxn === null ? [dummyTxn, txn] : [firstDummyTxn, dummyTxn, txn]
+  let txns = firstDummyTxn === null ? [dummyTxn, txn] : [firstDummyTxn, dummyTxn, txn];
   algosdk.assignGroupID(txns);
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   const signTxnsPromise = signGroup(info, txns);
   let lsig = algosdk.makeLogicSig(cdp.contract.logic, [algosdk.encodeUint64(lsigNum)]);
   const stxn1 = algosdk.signLogicSigTransactionObject(txn, lsig);
   const user_signed = await signTxnsPromise;
-  console.log(stxn1)
-  console.log(user_signed)
+  console.log(stxn1);
+  console.log(user_signed);
   let stxns = firstDummyTxn === null ? [
     user_signed[0].blob,
     stxn1.blob,
@@ -96,11 +91,11 @@ export async function liquidate(cdp) {
     (cdp.gard_owed + cdp.premium + 0.001).toFixed(3) + " GARD."
   };
 
-  const lsigNum = cdp.collateralID == 0 ? 1 : 0
+  const lsigNum = cdp.collateralID == 0 ? 1 : 0;
   let txnX = makeUpdateInterestTxn(info, params);
-  params.fee = 0
-  let txn0 = makeUpdateInterestTxn(info, params) // These first 2 transactions are for opcode budget
-  params.fee = 0
+  params.fee = 0;
+  let txn0 = makeUpdateInterestTxn(info, params); // These first 2 transactions are for opcode budget
+  params.fee = 0;
   // txn 1 application call
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: cdp.address,
@@ -157,111 +152,8 @@ export async function liquidate(cdp) {
     `Successfully liquidated ${cdp.owner}'s CDP.`,
     true,
   );
-  // updateLiquidationFirestore(cdp.owner, cdp.id);
   setLoadingStage(null);
   return response;
 
 }
 
-/*
-export async function liquidate(
-  account_id,
-  owner_address,
-  microDebt,
-  microPremium,
-) {
-
-  let reserve;
-  let treasury;
-
-  // Setting up promises
-  setLoadingStage("Loading...");
-
-  const infoPromise = accountInfo();
-  const paramsPromise = getParams(0);
-
-  let cdp = cdpGen(owner_address, account_id);
-
-  const info = await infoPromise;
-  let params = await paramsPromise;
-
-  const liquid_fee = Math.floor(microPremium / 5);
-  const to_user = liquid_fee * 4;
-  let gard_bal = getMicroGardBalance(info);
-
-  if (gard_bal == null || gard_bal < microDebt + to_user + liquid_fee) {
-    return {
-      alert: true,
-      text:
-        "Insufficient GARD for transaction. Balance: " +
-        (gard_bal / 1000000).toFixed(2).toString() +
-        "\n" +
-        "Required: " +
-        ((microDebt + to_user + liquid_fee) / 1000000).toFixed(2).toString(),
-    };
-  }
-
-  let txn1 = algosdk.makeApplicationCallTxnFromObject({
-    from: cdp.address,
-    appIndex: ids.app.validator,
-    onComplete: 2,
-    foreignAssets: [ids.asa.gard],
-    suggestedParams: params,
-  });
-  let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    from: cdp.address,
-    to: info.address,
-    closeRemainderTo: info.address,
-    amount: 0,
-    suggestedParams: params,
-  });
-  params.fee = 5000;
-  let txn3 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: reserve.address,
-    amount: microDebt,
-    suggestedParams: params,
-    assetIndex: ids.asa.gard,
-  });
-  params.fee = 0;
-  let txn4 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: treasury.address,
-    amount: liquid_fee,
-    suggestedParams: params,
-    assetIndex: ids.asa.gard,
-  });
-  let txn5 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: info.address,
-    to: owner_address,
-    amount: to_user,
-    suggestedParams: params,
-    assetIndex: ids.asa.gard,
-  });
-  let txns = [txn1, txn2, txn3, txn4, txn5];
-  algosdk.assignGroupID(txns);
-
-  const signTxnsPromise = signGroup(info, txns);
-  setLoadingStage("Awaiting Signature from Algorand Wallet...");
-  let lsig = algosdk.makeLogicSig(cdp.logic, [algosdk.encodeUint64(1)]);
-  const stxn2 = algosdk.signLogicSigTransactionObject(txn2, lsig);
-  const stxn1 = algosdk.signLogicSigTransactionObject(txn1, lsig);
-  const user_signed = await signTxnsPromise;
-  setLoadingStage("Liquidating CDP...");
-  let stxns = [
-    stxn1.blob,
-    stxn2.blob,
-    user_signed[2].blob,
-    user_signed[3].blob,
-    user_signed[4].blob,
-  ];
-  let response = await sendTxn(
-    stxns,
-    `Successfully liquidated ${owner_address}'s CDP.`,
-    true,
-  );
-  updateLiquidationFirestore(owner_address, account_id);
-  setLoadingStage(null);
-  return response;
-}
-*/

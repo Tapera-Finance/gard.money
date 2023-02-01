@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import BorrowCDP from "./BorrowCDP";
 import Details from "./Details";
-import {displayRatio, mAlgosToAlgos, displayLiquidationPrice, getMinted, getCollateral} from "../pages/BorrowContent"
+import {displayRatio, mAlgosToAlgos, displayLiquidationPrice, getMinted, getCollateral} from "../pages/BorrowContent";
 import { calcRatio } from "../transactions/cdp";
 
 
 export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cdp, price, setCurrentCDP, maxMint,  manageUpdate, apr}) {
-    const [utilization, setUtilization] = useState(null)
+    const [utilization, setUtilization] = useState(null);
     // TODO: combine SupplyCDP & BorrowCDP
     let borrowDetails = [
       {
@@ -49,7 +49,7 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
         val: `${mAsset == null || mAsset == "" ?  calcRatio(cdp.collateral, cdp.debt / 1000000, cdp.asaID, true) : calcRatio(cdp.collateral, cdp.debt / 1000000 + mAsset, cdp.asaID, true)}`,
         hasToolTip: true,
       },
-    ]
+    ];
     return <div>
         <div style={{marginTop: 20}}>
             <BorrowCDP  minted={minted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} maxMint={maxMint} apr={apr} manageUpdate={manageUpdate} setUtilization={setUtilization}/>
@@ -57,5 +57,5 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
         <div style={{position:"relative", top:-57}}>
             <Details details={borrowDetails}/>
         </div>
-    </div>
+    </div>;
 }

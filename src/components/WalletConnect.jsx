@@ -18,8 +18,8 @@ import { userInDB, addUserToFireStore, addReferrerToFirestore, userInTotals, add
 import { getCDPs } from "../transactions/cdp";
 import { cdpGen } from "../transactions/contracts";
 import { useNavigate } from "react-router-dom";
-import { ids } from "../transactions/ids"
-import { size, device } from "../styles/global"
+import { ids } from "../transactions/ids";
+import { size, device } from "../styles/global";
 import { isMobile, isSafari } from "../utils";
 
 const instantiateUser = (address) => {
@@ -49,18 +49,14 @@ const instantiateUser = (address) => {
   return user;
 };
 
-export default function WalletConnect() {
+export default function WalletConnect(contentName) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const walletAddress = useSelector((state) => state.wallet.address);
-  const [mobile, setMobile] = useState(isMobile());
-
-  useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+  const accountPage = contentName?.contentName?.contentName == "Account";
 
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
@@ -92,12 +88,12 @@ export default function WalletConnect() {
                   } catch (e) {
                     console.log("error connecting wallet: ", e);
                   }
-                  let referrerPromise = addReferrerToFirestore(getWallet().address)
+                  let referrerPromise = addReferrerToFirestore(getWallet().address);
                   if (modalVisible) {
                     setModalVisible(false);
                   }
                   setLoading(false);
-                  await referrerPromise
+                  await referrerPromise;
                 }
               }
             />
@@ -136,13 +132,13 @@ export default function WalletConnect() {
   );
 
   return (
-    <div>
+    <div id="WalletConnect">
       {loading ? (
         <LoadingOverlay text={"Waiting for Wallet connection..."} />
       ) : (
         <></>
       )}
-      <WalletConnectDiv mobile={mobile}>
+      <WalletConnectDiv id="WalletConnectButtons" mobile={isMobile()} accountPage={accountPage}>
         <BtnBox>
           <WalletBarButton
             text={walletAddress || "Connect Wallet"}
@@ -152,7 +148,7 @@ export default function WalletConnect() {
                 navigate("/account");
               } else {
                 if(isSafari()){
-                  dispatch(setAlert('We noticed you are using safari. Please make sure to <a href="https://www.avast.com/c-allow-and-block-pop-ups-safari">enable pop-ups</a> to use our web app properly!'))
+                  dispatch(setAlert("We noticed you are using safari. Please make sure to <a href=\"https://www.avast.com/c-allow-and-block-pop-ups-safari\">enable pop-ups</a> to use our web app properly!"));
                 }
                 reduceModalContent("terms");
                 setModalCanAnimate(true);
@@ -163,14 +159,21 @@ export default function WalletConnect() {
         </BtnBox>
         {walletAddress ? (
           <BtnBox>
-            <WalletBarButton
+            {isMobile() ? (accountPage ?  <WalletBarButton
               text="Disconnect Wallet"
               blue={true}
               onClick={() => {
                 disconnectWallet();
                 dispatch(setWallet({ address: "" }));
               }}
-            />
+            /> :<></>) : <WalletBarButton
+            text="Disconnect Wallet"
+            blue={true}
+            onClick={() => {
+              disconnectWallet();
+              dispatch(setWallet({ address: "" }));
+            }}
+          />}
           </BtnBox>
         ) : (
           <></>
@@ -200,7 +203,7 @@ const WalletBarButton = styled(PrimaryButton)`
     width: 100%;
     margin: 2px 0px 2px 0px;
   }
-`
+`;
 
 const BtnBox = styled.div`
     margin: 4px 0px 4px 0px;
@@ -208,29 +211,22 @@ const BtnBox = styled.div`
   @media (${device.mobileL}) {
     margin: 4px 0px 4px 0px;
   }
-`
+`;
 
 const WalletConnectDiv = styled.div`
-  height: 96px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
 
-  ${(props) => props.mobile && css`
+  ${(props) => props.accountPage && props.mobile && css`
     flex-direction: column;
   `}
-
-  @media (${device.mobileL}) {
-    flex-direction: column;
-    margin: 2px 0px 2px 0px;
-    align-items: initial;
-  }
-`
+`;
 
 const StyledModal = styled(Modal)`
   background: #172756;
-`
+`;
 
 const WalletOption = styled.button`
   width: ${window.innerWidth < 900 ? "80vw" : "327px"};
@@ -403,7 +399,7 @@ function TermsOfService({ closeModal, accept }) {
           }}
         />
         <CancelButton style={{ marginLeft: 30 }} onClick={() => closeModal()}>
-          <CancelButtonText>I don't accept</CancelButtonText>
+          <CancelButtonText>I do not accept</CancelButtonText>
         </CancelButton>
       </div>
     </div>

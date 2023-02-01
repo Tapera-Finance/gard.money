@@ -1,28 +1,28 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField, getGardianBalance } from "./lib"
-import { accountInfo, getParams, signGroup, sendTxn, updateWalletInfo } from "../wallets/wallets";
+import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField, getGardianBalance } from "./lib";
+import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
 
 const enc = new TextEncoder();
-let stakingRevenuePercent = .8 // TODO: Get this dynamically off the chain
+let stakingRevenuePercent = .8; // TODO: Get this dynamically off the chain
 
 export async function getAccruedRewards(pool, app_id=ids.app.gard_staking) {
-  const phrase = app_id === ids.app.gard_staking ? " GARD Staked" : " GARDIAN Staked"
-  const staked = getLocalAppField(app_id, pool + phrase)
-  const initialReturn = getLocalAppField(app_id, pool + " Initial Return Rate")
+  const phrase = app_id === ids.app.gard_staking ? " GARD Staked" : " GARDIAN Staked";
+  const staked = getLocalAppField(app_id, pool + phrase);
+  const initialReturn = getLocalAppField(app_id, pool + " Initial Return Rate");
   if (staked === undefined || initialReturn === undefined) {
-    return 0
+    return 0;
   }
-  const currentReturn = await getAppField(app_id, pool + " Return Rate")
-  return (staked * currentReturn) / initialReturn - staked
+  const currentReturn = await getAppField(app_id, pool + " Return Rate");
+  return (staked * currentReturn) / initialReturn - staked;
 }
 
 export async function getStakingAPY(pool) {
   // TODO: In the future this will need to be more granular
-  const expectedBonus = 1000 * 52 * 1000000
-  const nltvlpromise = getAppField(ids.app.gard_staking, pool)
-  const gardIssued = await getAppField(ids.app.validator, "GARD_ISSUED")
-  return 100 * (stakingRevenuePercent * cdpInterest * gardIssued + expectedBonus) / (await nltvlpromise)
+  const expectedBonus = 1000 * 52 * 1000000;
+  const nltvlpromise = getAppField(ids.app.gard_staking, pool);
+  const gardIssued = await getAppField(ids.app.validator, "GARD_ISSUED");
+  return 100 * (stakingRevenuePercent * cdpInterest * gardIssued + expectedBonus) / (await nltvlpromise);
 }
 
 function isOptedIn(appID, info) {
@@ -31,7 +31,7 @@ function isOptedIn(appID, info) {
       return true;
     }
   }
-  return false
+  return false;
 }
 
 export async function stake(pool, gardAmount) {
@@ -43,7 +43,7 @@ export async function stake(pool, gardAmount) {
   let params = await getParams(1000);
   let info = await infoPromise;
   
-  const gard_bal = getMicroGardBalance(info)
+  const gard_bal = getMicroGardBalance(info);
   if (gard_bal == null || gard_bal < microGARDAmount) {
     return {
       alert: true,
@@ -66,7 +66,7 @@ export async function stake(pool, gardAmount) {
       suggestedParams: params,
       appIndex: ids.app.gard_staking,
     });
-    txns.push(txnOptIn)
+    txns.push(txnOptIn);
   }
   // txn 0 - app call
   let txn0 = algosdk.makeApplicationCallTxnFromObject({
@@ -79,7 +79,7 @@ export async function stake(pool, gardAmount) {
     foreignAssets: [ids.asa.gard],
     suggestedParams: params,
   });
-  txns.push(txn0)
+  txns.push(txn0);
   // txn 1 - entrance transfer
   let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -88,14 +88,14 @@ export async function stake(pool, gardAmount) {
     suggestedParams: params,
     assetIndex: ids.asa.gard,
   });
-  txns.push(txn1)
+  txns.push(txn1);
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: algosdk.getApplicationAddress(ids.app.gard_staking),
     amount: 1000,
     suggestedParams: params,
   });
-  txns.push(txn2)
+  txns.push(txn2);
   
   algosdk.assignGroupID(txns);
   
@@ -106,7 +106,7 @@ export async function stake(pool, gardAmount) {
 
   let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
   if (signedGroup.length == 4) {
-    stxns.push(signedGroup[3].blob)
+    stxns.push(signedGroup[3].blob);
   }
 
   let response = await sendTxn(
@@ -143,7 +143,7 @@ export async function unstake(pool, gardAmount) {
     suggestedParams: params,
   });
   // txn 1 - useless transaction, required for structure
-  params.fee = 1000
+  params.fee = 1000;
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: algosdk.getApplicationAddress(ids.app.gard_staking),
@@ -179,13 +179,13 @@ export async function unstake(pool, gardAmount) {
 
 export async function GardianStake(pool, amount) {
   setLoadingStage("Loading...");
-  console.log(amount, typeof amount)
+  console.log(amount, typeof amount);
   let infoPromise = accountInfo();
 
   let params = await getParams(1000);
   let info = await infoPromise;
   
-  const gardian_bal = getGardianBalance(info)
+  const gardian_bal = getGardianBalance(info);
   if (gardian_bal == null || gardian_bal < amount) {
     return {
       alert: true,
@@ -208,7 +208,7 @@ export async function GardianStake(pool, amount) {
       suggestedParams: params,
       appIndex: ids.app.gardian_staking,
     });
-    txns.push(txnOptIn)
+    txns.push(txnOptIn);
   }
   // txn 0 - app call
   let txn0 = algosdk.makeApplicationCallTxnFromObject({
@@ -221,7 +221,7 @@ export async function GardianStake(pool, amount) {
     foreignAssets: [ids.asa.gardian],
     suggestedParams: params,
   });
-  txns.push(txn0)
+  txns.push(txn0);
   // txn 1 - entrance transfer
   let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: info.address,
@@ -230,14 +230,14 @@ export async function GardianStake(pool, amount) {
     suggestedParams: params,
     assetIndex: ids.asa.gardian,
   });
-  txns.push(txn1)
+  txns.push(txn1);
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: algosdk.getApplicationAddress(ids.app.gardian_staking),
     amount: 1000,
     suggestedParams: params,
   });
-  txns.push(txn2)
+  txns.push(txn2);
   
   algosdk.assignGroupID(txns);
   
@@ -248,7 +248,7 @@ export async function GardianStake(pool, amount) {
 
   let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
   if (signedGroup.length == 4) {
-    stxns.push(signedGroup[3].blob)
+    stxns.push(signedGroup[3].blob);
   }
 
   let response = await sendTxn(
@@ -262,7 +262,7 @@ export async function GardianStake(pool, amount) {
 
 export async function GardianUnstake(pool, amount) {
   setLoadingStage("Loading...");
-  console.log(amount, typeof amount)
+  console.log(amount, typeof amount);
   let infoPromise = accountInfo();
 
   // XXX: This could be more optimally set -
@@ -283,7 +283,7 @@ export async function GardianUnstake(pool, amount) {
     suggestedParams: params,
   });
   // txn 1 - useless transaction, required for structure
-  params.fee = 1000
+  params.fee = 1000;
   let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: info.address,
     to: algosdk.getApplicationAddress(ids.app.gardian_staking),
