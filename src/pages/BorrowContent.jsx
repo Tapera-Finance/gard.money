@@ -575,13 +575,6 @@ const AssetName = styled.div`
   justify-content: center;
 `;
 
-const BorrowRewardNotice = styled(RewardNotice)`
-  font-size: 10pt;
-  text {
-    font-size: 8pt;
-  }
-`;
-
 const AlgoImg = styled.img`
   /* filter: invert(); */
   height: 75px;
