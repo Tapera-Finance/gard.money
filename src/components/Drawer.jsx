@@ -417,25 +417,8 @@ const MobileDrawer = styled.div`
   width: 100vw;
   height: 9vh;
   margin-bottom: 0vh;
-
-  @media (min-width: ${size.tablet}) {
-    ${(props) => props.mobile && css`
-      ${(props) =>
-        props.open &&
-        css`
-          visibility: visible;
-          height: 9vh;
-          /* position: fixed; */
-        `}
-      ${(props) =>
-        !props.open &&
-        css`
-          visibility: visible;
-          height: 9vh;
-          /* position: fixed; */
-        `}
-    `}
-  }
+  position: fixed;
+  z-index: 15;
 `;
 
 const DrawerDiv = styled.div`
@@ -444,80 +427,22 @@ const DrawerDiv = styled.div`
   z-index: 15;
   overflow-y: auto;
   width: ${`${isMobile() ? "100%" : "250px"}`};
+  position: fixed;
 
-  ${(props) => props.mobile && props.open && css`
-    position: fixed;
+  ${(props) => props.mobile && !props.open && css`
+    display: none;
+  `}
+  ${(props) => props.mobile && css`
     top: 9vh;
     overflow-y: hidden;
   `}
 
-  /* ${(props) =>
-    props.mobile &&
-    css`
-      visibility: hidden;
-      width: 100vw;
-      overflow: scroll;
-      position: unset;
-      position: fixed;
-    `} */
-
-  /* ${(props) =>
-    props.open &&
-    css`
-      position: ${`${isMobile() ? "fixed" : "inherit"}`};
-      visibility: visible;
-    `} */
-  /* ${(props) =>
-    !props.open &&
-    css`
-      visibility: hidden;
-    `} */
-
-  // if screen is smaller than tablet, hide drawer until opened at full width
-
-  /* ${(props) => !props.mobile && css`
-    @media (${device.tablet}) {
-      visibility: hidden;
-      position: absolute;
-      ${(props) =>
-        props.open &&
-        css`
-          visibility: visible;
-          width: 100vw;
-          overflow: scroll;
-          position: unset;
-          position: fixed;
-        `}
-      ${(props) =>
-        !props.open &&
-        css`
-          height: 101vh;
-          margin-left: 0vw;
-        `}
-      }
-  `} */
-
   // if screen is larger than tablet, show drawer always
   @media (min-width: ${size.tablet}) {
     ${(props) => !props.mobile && css`
-      ${(props) =>
-        props.open &&
-        css`
           visibility: visible;
-          height: 101vh;
-          position: fixed;
-        `}
-      ${(props) =>
-        !props.open &&
-        css`
-          visibility: visible;
-          height: 101vh;
-          position: fixed;
-        `}
     `}
   }
-
-  // if screen is smaller than tablet, eliminate left margin
 `;
 const SocialMediaContainer = styled.div`
   width: 80%;
