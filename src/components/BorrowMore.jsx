@@ -5,10 +5,21 @@ import {displayRatio, mAlgosToAlgos, displayLiquidationPrice, getMinted, getColl
 import { calcRatio } from "../transactions/cdp";
 
 
-export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cdp, price, setCurrentCDP, maxMint,  manageUpdate, apr}) {
+export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cdp, price, setCurrentCDP, maxMint,  manageUpdate, apr, mobile}) {
     const [utilization, setUtilization] = useState(null);
     // TODO: combine SupplyCDP & BorrowCDP
-    let borrowDetails = [
+    let borrowDetails = mobile ? [
+      {
+        title: "Liquidation Price",
+        val: `$${mAsset == null || mAsset == "" ? ((1.15 * (mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral))).toFixed(4)) : ((1.15 * (mAlgosToAlgos(cdp.debt) + mAsset) / (mAlgosToAlgos(cdp.collateral))).toFixed(4))}`,
+        hasToolTip: true,
+      },
+      {
+        title: "ALGO Governance APR",
+        val: `${apr}%`,
+        hasToolTip: true,
+      },
+    ] : [
       {
         title: "Total Supplied (Asset)",
         val: `${mAlgosToAlgos(cdp.collateral + (collateral !== "" ? collateral : 0)).toFixed(2)}`,
@@ -55,7 +66,7 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
             <BorrowCDP  minted={minted} cdp={cdp} price={price} setCurrentCDP={setCurrentCDP} maxMint={maxMint} apr={apr} manageUpdate={manageUpdate} setUtilization={setUtilization}/>
         </div>
         <div style={{position:"relative", top:-57}}>
-            <Details details={borrowDetails}/>
+            <Details mobile={mobile} details={borrowDetails}/>
         </div>
     </div>;
 }

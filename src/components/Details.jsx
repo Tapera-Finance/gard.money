@@ -51,10 +51,10 @@ const Items = styled.div`
     grid-template-columns: repeat(2, 44%);
   }
   @media (${device.mobileM}) {
-    grid-template-columns: repeat(1, 80%);
+    grid-template-columns: repeat(2, 44%);
   }
   ${(props) => props.mobile && css`
-  grid-template-columns: repeat(1, 80%);
+  grid-template-columns: repeat(2, 44%);
   `}
 `;
 
