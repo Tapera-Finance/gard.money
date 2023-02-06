@@ -949,7 +949,7 @@ export async function closeCDP(accountID, asaID) {
 export async function goOnlineCDP(accountID, voteKey, selKey, sprfKey, first_rd, last_rd) {
 
   // Promise setup
-  setLoadingStage("Loading...");
+  setLoadingStage("Loading Transactions...");
 
   if (typeof accountID !== "number") {
     return {

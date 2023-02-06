@@ -21,6 +21,7 @@ import { isFirefox } from "../utils";
 import { device } from "../styles/global";
 import { voteCDPs, goOnlineCDP } from "../transactions/cdp";
 import { isMobile } from "../utils";
+import { setLoadingStage } from "../transactions/lib";
 
 const axios = require("axios");
 
@@ -146,6 +147,7 @@ export default function Govern() {
   const [vote3, setVote3] = useState("Yes");
   const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection");
   const [selectedAccount, setSelectedAccount] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState("")
   const [refresh, setRefresh] = useState(0);
   const [commitDict, setCommitDict] = useState({});
   const [vaulted, setVaulted] = useState("Loading...");
@@ -291,6 +293,7 @@ export default function Govern() {
               setModalCanAnimate(true);
               setModalVisible(true);
               setSelectedAccount(account_id);
+              setSelectedAddress(cdpGen(getWallet().address, selectedAccount).address)
               setMaxBal(value.balance);
               setCommit(commitBal);
             }}
@@ -313,6 +316,7 @@ export default function Govern() {
               setModalCanAnimate(true);
               setModalVisible(true);
               setSelectedAccount(account_id);
+              setSelectedAddress(cdpGen(getWallet().address, selectedAccount).address)
               setMaxBal(value.balance);
               setCommit(commitBal);
             }}
@@ -763,14 +767,51 @@ export default function Govern() {
         >
           {(
               <div>
+                Your CDP is currently:
+                { typeof selectedAddress !== "string" ? (
+                <div style={{justifyContent: "center", alignItems: "center", color: "#228B22",}}>
+                  ONLINE
+                </div>) : (<div style={{justifyContent: "center", alignItems: "center", color: "#EE4B2B",}}>
+                  OFFLINE
+                </div>)}
                 <div style={{marginBottom: 10, display: "flex", flexDirection: "row"}}>
                 <PrimaryButton
                   blue={true}
                   text="Use GARD Node"
                   onClick={async () => {
                     setLoading(true);
+                    setLoadingStage("Checking for existing, valid Participation Key...")
+                    // async call
+                    const endpoint = axios.create({
+                      baseURL: "https://node1.gard.money",
+                      timeout: 300000,
+                    });
+                    const response = (await endpoint.get("", {
+                      params: {
+                        "Address": selectedAddress,
+                      }
+                    }));
+                    console.log(response)
+                    console.log(response.data)
+                    let key_exists = false;
+                    if (!key_exists){
+                      setLoadingStage("Generating Participation Keys (this will take at least 5 minutes, so feel free to check back soon; your keys will be saved)...")
+                    // another async call
+                    while(!key_exists) {
+                      const response = (await endpoint.get("", {
+                        params: {
+                          "Address": selectedAddress,
+                        }
+                      }));
+                      console.log(response)
+                      console.log(response.data)
+                      if (Date.now() < 10000){
+                        key_exists = true
+                      }
+                    }
+                    }
                     try {
-                      let res = await goOnlineCDP(parseInt(selectedAccount), "hi", "test", 0, 1, 2);
+                      let res = await goOnlineCDP(selectedAccount, "hi", "test", 0, 1, 2);
                       if (res.alert) {
                         dispatch(setAlert(res.text));
                       }
@@ -832,7 +873,7 @@ export default function Govern() {
                   onClick={async () => {
                     setLoading(true);
                     try {
-                      let res = await goOnlineCDP(parseInt(selectedAccount), getField("voteKey"), getField("selKey"), getField("sprfKey"), parseInt(getField("voteFirst")), parseInt(getField("voteLast")));
+                      let res = await goOnlineCDP(selectedAccount, getField("voteKey"), getField("selKey"), getField("sprfKey"), parseInt(getField("voteFirst")), parseInt(getField("voteLast")));
                       if (res.alert) {
                         dispatch(setAlert(res.text));
                       }
