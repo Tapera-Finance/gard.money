@@ -16,10 +16,10 @@ import { commitmentPeriodEnd } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
 import Modal from "../components/Modal";
-import { getAlgoGovAPR } from "../components/Positions";
+import { getAlgoGovAPR, getField } from "../components/Positions";
 import { isFirefox } from "../utils";
 import { device } from "../styles/global";
-import { voteCDPs } from "../transactions/cdp";
+import { voteCDPs, goOnlineCDP } from "../transactions/cdp";
 import { isMobile } from "../utils";
 
 const axios = require("axios");
@@ -154,8 +154,11 @@ export default function Govern() {
   const [loadingText, setLoadingText] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
+  const [modal3Visible, setModal3Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [modal2CanAnimate, setModal2CanAnimate] = useState(false);
+  const [modal3CanAnimate, setModal3CanAnimate] = useState(false);
+  const [personal, setPersonal] = useState(false)
   const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
   const dispatch = useDispatch();
@@ -327,6 +330,18 @@ export default function Govern() {
               window.open(getGovernorPage(account_id));
             }}
             disabled={commitDisabled}
+            />
+        ),
+        "Consensus": (
+          <PrimaryButton
+            blue={true}
+            text={"Node Consensus"}
+            left_align={true}
+            tableShrink={mobile}
+            onClick={() => {
+              setModal3CanAnimate(true)
+              setModal3Visible(true)
+            }}
             />
         ),
     };
@@ -739,6 +754,106 @@ export default function Govern() {
             </div>
           </div>
         </Modal>
+        <Modal
+          title={"Secure the Algorand Blockchain"}
+          subtitle={"Associate the Algos in your CDP with a consensus node"}
+          close={() => setModal3Visible(false)}
+          animate={modal3CanAnimate}
+          visible={modal3Visible}
+        >
+          {(
+              <div>
+                <div style={{marginBottom: 10, display: "flex", flexDirection: "row"}}>
+                <PrimaryButton
+                  blue={true}
+                  text="Use GARD Node"
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      let res = await goOnlineCDP(parseInt(selectedAccount), "hi", "test", 0, 1, 2);
+                      if (res.alert) {
+                        dispatch(setAlert(res.text));
+                      }
+                    } catch (e) {
+                      handleTxError(e, "Error going Online");
+                    }
+                    setLoading(false);
+                    // setRefresh(refresh + 1);
+                  }}
+                /><PrimaryButton
+                blue={true}
+                text="I run my own"
+                onClick={() => {
+                  setPersonal(!personal);
+                }}
+              /></div>
+              {personal ? (<>
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Vote Key"}
+                type='text'
+                id="voteKey"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Selection Key"}
+                type='text'
+                id="selKey"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"State Proof Key"}
+                type='text'
+                id="sprfKey"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Vote First Round"}
+                type='number'
+                min="0.00"
+                id="voteFirst"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Vote Last Round"}
+                type='number'
+                min="0.00"
+                id="voteLast"
+                />
+              <div style={{ display: "flex", flexDirection: "row", marginBottom: 5}}>
+                <PrimaryButton
+                  blue={true}
+                  text="Secure with personal node"
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      let res = await goOnlineCDP(parseInt(selectedAccount), getField("voteKey"), getField("selKey"), getField("sprfKey"), parseInt(getField("voteFirst")), parseInt(getField("voteLast")));
+                      if (res.alert) {
+                        dispatch(setAlert(res.text));
+                      }
+                    } catch (e) {
+                      handleTxError(e, "Error going Online");
+                    }
+                    setLoading(false);
+                    // setRefresh(refresh + 1);
+                  }}
+                />
+                
+                <CancelButton style={{ marginLeft: 30 }} onClick={() => setModal3Visible(false)}>
+                  <CancelButtonText>
+                    Cancel
+                  </CancelButtonText>
+                </CancelButton>
+            </div>
+            </>) : <></>}
+          </div>
+          )}
+        </Modal>
     </GovContainer>
   );
 }
@@ -863,6 +978,22 @@ export const CancelButton = styled.button`
   align-items: center;
   height: "100%";
   cursor: pointer;
+`;
+const NodeInput = styled.input`
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 10px;
+  width: 80%;
+  height: 60%;
+  color: white;
+  text-decoration: none;
+  border: 2px solid white;
+  opacity: 100%;
+  font-size: 20px;
+  background: none;
+  &:focus {
+    outline-width: 0;
+  }
 `;
 export const CancelButtonText = styled.text`
   font-weight: 500;

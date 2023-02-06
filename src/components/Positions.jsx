@@ -122,7 +122,7 @@ function getMinted() {
   return parseFloat(document.getElementById("borrowMore").value);
 }
 
-function getField(id){
+export function getField(id){
   if (
     document.getElementById(id) == null
   ) {
@@ -169,9 +169,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
     const [collateralType, setCollateralType] = useState("ALGO");
     const [selectedTab, setSelectedTab] = useState("one");
     const [manageUpdate, setManageUpdate] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [modalCanAnimate, setModalCanAnimate] = useState(false);
-    const [personal, setPersonal] = useState(false)
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
     const typeCDP = {
@@ -243,117 +240,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
           ? loadedCDPs.map((cdp, idx) => {
               return (
                 <Position mobile={mobile} key={cdp.id.toString() + idx.toString()}>
-                  <Modal
-                  title={"Secure the Algorand Blockchain"}
-                  subtitle={"Associate the Algos in your CDP with a consensus node"}
-                  close={() => setModalVisible(false)}
-                  animate={modalCanAnimate}
-                  visible={modalVisible}
-                >
-                  {(
-                      <div>
-                        <div style={{marginBottom: 10, display: "flex", flexDirection: "row"}}>
-                        <PrimaryButton
-                          blue={true}
-                          text="Use GARD Node"
-                          onClick={async () => {
-                            setLoading(true);
-                            try {
-                              let res = await goOnlineCDP(parseInt(cdp.id), "hi", "test", 0, 1, 2);
-                              if (res.alert) {
-                                dispatch(setAlert(res.text));
-                              }
-                            } catch (e) {
-                              handleTxError(e, "Error going Online");
-                            }
-                            setLoading(false);
-                            // setRefresh(refresh + 1);
-                          }}
-                        /><PrimaryButton
-                        blue={true}
-                        text="I run my own"
-                        onClick={() => {
-                          setPersonal(!personal);
-                        }}
-                      /></div>
-                      {personal ? (<>
-                        <NodeInput
-                        autoComplete="off"
-                        display="none"
-                        placeholder={"Vote Key"}
-                        type='text'
-                        id="voteKey"
-                        />
-                        <NodeInput
-                        autoComplete="off"
-                        display="none"
-                        placeholder={"Selection Key"}
-                        type='text'
-                        id="selKey"
-                        />
-                        <NodeInput
-                        autoComplete="off"
-                        display="none"
-                        placeholder={"State Proof Key"}
-                        type='text'
-                        id="sprfKey"
-                        />
-                        <NodeInput
-                        autoComplete="off"
-                        display="none"
-                        placeholder={"Vote First Round"}
-                        type='number'
-                        min="0.00"
-                        id="voteFirst"
-                        />
-                        <NodeInput
-                        autoComplete="off"
-                        display="none"
-                        placeholder={"Vote Last Round"}
-                        type='number'
-                        min="0.00"
-                        id="voteLast"
-                        />
-                      <div style={{ display: "flex", flexDirection: "row", marginBottom: 5}}>
-                        <PrimaryButton
-                          blue={true}
-                          text="Secure with personal node"
-                          onClick={async () => {
-                            setLoading(true);
-                            try {
-                              let res = await goOnlineCDP(parseInt(cdp.id), getField("voteKey"), getField("selKey"), getField("sprfKey"), parseInt(getField("voteFirst")), parseInt(getField("voteLast")));
-                              if (res.alert) {
-                                dispatch(setAlert(res.text));
-                              }
-                            } catch (e) {
-                              handleTxError(e, "Error going Online");
-                            }
-                            setLoading(false);
-                            // setRefresh(refresh + 1);
-                          }}
-                        />
-                        
-                        <CancelButton style={{ marginLeft: 30 }} onClick={() => setModalVisible(false)}>
-                          <CancelButtonText>
-                            Cancel
-                          </CancelButtonText>
-                        </CancelButton>
-                    </div>
-                    </>) : <></>}
-                  </div>
-                  )}
-                </Modal>
                 <PositionBox mobile={mobile}>
-                  {!cdp.asaID ? <PrimaryButton
-                            text="Node Consensus"
-                            positioned={false}
-                            blue={true}
-                            onClick={() => {
-                              // setLoading(true);
-                              setModalVisible(true)
-                              // setLoading(false);
-                            }}
-                          /> : <></>}
                 <PositionInfo mobile={mobile}>
                     <PositionSupplyBorrow mobile={mobile} className="m_positions_item m-positions_box_1">
                       <b className="m-positions_row_1">Your Position</b>
@@ -733,22 +620,6 @@ const SliderRange = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-`;
-const NodeInput = styled.input`
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 10px;
-  width: 80%;
-  height: 60%;
-  color: white;
-  text-decoration: none;
-  border: 2px solid white;
-  opacity: 100%;
-  font-size: 20px;
-  background: none;
-  &:focus {
-    outline-width: 0;
-  }
 `;
 const Valuation = styled.div`
   margin-left: 25px;
