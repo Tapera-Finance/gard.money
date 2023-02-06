@@ -493,7 +493,9 @@ export default function HomeContent() {
           </StepContainer>
           </div>
         ) : (
-          <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
+          <></>
+        )}
+        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
           { mobile ? <Items>
             {alwaysShown.map((d) => {
               return (
@@ -538,9 +540,7 @@ export default function HomeContent() {
         </Items>
           }
         </Container>
-        )}
-        
-        {mobile && difficulty == "DeFi Expert" ? <ManageCollapse
+        {mobile ? <ManageCollapse
           positioned={true}
           text={showMore ? "Collapse":  "Show More Details"}
           onClick={() => {

@@ -657,8 +657,7 @@ const PositionContainer = styled.div`
   flex-direction: column;
   align-items: center;
   /* flex: 1 1 0px; */
-  max-width: 90%;
-  margin: auto;
+  width: auto;
 `;
 
 const Header = styled.div`
