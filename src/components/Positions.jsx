@@ -65,6 +65,7 @@ function _CDPsToList(CDPList) {
         debt: value["debt"],
         asaID: value["asaID"],
         committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
+        status: value["status"],
       });
     }
   }

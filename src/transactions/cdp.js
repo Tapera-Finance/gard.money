@@ -79,11 +79,13 @@ export function calcRatio(collateral, minted, asaID, string = false) {
 function getCDPState(cdpInfo, asaID) {
   let res = {
     state: "closed",
+    status: "offline",
   };
   if (cdpInfo.amount > 0 && (!asaID || (asaID && cdpInfo["assets"].length))) {
     res.state = "opened";
     if (asaID == 0) {
       res.collateral = cdpInfo.amount;
+      res.status = cdpInfo.status;
     } else {
       res.collateral = 0;
       for (let i = 0; i < cdpInfo["assets"].length; i++) {
@@ -1147,6 +1149,7 @@ async function updateCDP(
     principal: _principal,
     checked: Date.now(),
     state: state.state,
+    status: state.status,
   };
   accountCDPs[asaID] = typeCDPs;
   CDPs[address] = accountCDPs;

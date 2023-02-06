@@ -161,6 +161,7 @@ export default function Govern() {
   const [modal2CanAnimate, setModal2CanAnimate] = useState(false);
   const [modal3CanAnimate, setModal3CanAnimate] = useState(false);
   const [personal, setPersonal] = useState(false)
+  const [onlineStatus, setOnlineStatus] = useState(false)
   const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
   const dispatch = useDispatch();
@@ -260,14 +261,16 @@ export default function Govern() {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-6/governors">See external site</a>,
           id: value.id,
-          collateral: value.collateral
+          collateral: value.collateral,
+          status: value.status
         };
       } else {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           committed: commitDict[cdp_address] == 0 || !commitDict[cdp_address] ? 0 : `${(commitDict[cdp_address] / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           id: value.id,
-          collateral: value.collateral
+          collateral: value.collateral,
+          status: value.status
         };
       }
     });
@@ -275,6 +278,8 @@ export default function Govern() {
   let cdps = adjusted.map((value,) => {
     let account_id = parseInt(value.id);
     let commitBal = value.collateral;
+    let status = value.status;
+    delete value.status
     delete value.collateral;
     delete value.id;
     return {
@@ -343,8 +348,12 @@ export default function Govern() {
             left_align={true}
             tableShrink={mobile}
             onClick={() => {
+              setSelectedAccount(account_id);
+              setSelectedAddress(cdpGen(getWallet().address, selectedAccount).address)
+              setOnlineStatus(status !== "Offline")
               setModal3CanAnimate(true)
               setModal3Visible(true)
+
             }}
             />
         ),
@@ -767,13 +776,15 @@ export default function Govern() {
         >
           {(
               <div>
-                Your CDP is currently:
-                { typeof selectedAddress !== "string" ? (
+                <div style={{justifyContent: "center", alignItems: "center", display: "flex", flexDirection:"row"}}>
+                  Your ALGOs are currently:&nbsp; 
+                { onlineStatus ? (
                 <div style={{justifyContent: "center", alignItems: "center", color: "#228B22",}}>
                   ONLINE
                 </div>) : (<div style={{justifyContent: "center", alignItems: "center", color: "#EE4B2B",}}>
                   OFFLINE
                 </div>)}
+                </div>
                 <div style={{marginBottom: 10, display: "flex", flexDirection: "row"}}>
                 <PrimaryButton
                   blue={true}

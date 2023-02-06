@@ -26,7 +26,7 @@ export var referrer = null;
 export const commitmentPeriodEnd = 1673798400000;
 
 export const VERSION = "MAINNET";
-const UPDATE = 3;
+const UPDATE = 4;
 // TESTNET1 = initial testnet release
 // TESTNET2 = testnet w/ updated backend code
 // MAINNET = mainnet
