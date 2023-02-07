@@ -1,6 +1,6 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField, getGardianBalance } from "./lib"
+import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField, getTokenBalance } from "./lib"
 import { accountInfo, getParams, signGroup, sendTxn, updateWalletInfo } from "../wallets/wallets";
 
 const enc = new TextEncoder();
@@ -185,7 +185,7 @@ export async function GardianStake(pool, amount) {
   let params = await getParams(1000);
   let info = await infoPromise;
   
-  const gardian_bal = getGardianBalance(info)
+  const gardian_bal = getTokenBalance(info, ids.asa.gardian)
   if (gardian_bal == null || gardian_bal < amount) {
     return {
       alert: true,

@@ -7,7 +7,7 @@ import styled, { css } from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
 import { ids } from "../../transactions/ids";
-import { getAppField, getGardBalance, getLocalAppField, getGardianBalance } from "../../transactions/lib";
+import { getAppField, getLocalAppField, getTokenBalance } from "../../transactions/lib";
 import {
   getWallet,
   getWalletInfo,
@@ -17,7 +17,10 @@ import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
 import gardianLogo from "../../assets/icons/gard-logo-white-square.png"
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
+import glitterLogo from "../../assets/icons/XGLI.png"
+import xSolLogo from "../../assets/icons/xSOL.png"
 import PrimaryButton from "../PrimaryButton";
+import BinaryTextInToggle from "../BinaryTextInToggle";
 import { formatToDollars } from "../../utils";
 import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, getAccruedGardianRewards,  } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
@@ -60,12 +63,16 @@ export default function StakeDetails() {
   const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
+  const [selectedTab, setSelectedTab] = useState("Protocol Pools");
   const [stakeAmount, setStakeAmount] = useState(null);
   const [stake2Amount, setStake2Amount] = useState(null);
+  const [stake3Amount, setStake3Amount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
   const [maxGARDIANStake, setMaxGardianStake] = useState(0);
+  const [maxGlitterStake, setMaxGlitterStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const [noLockGardian, setNoLockGardian] = useState(0);
+  const [noLockGlitter, setNoLockGlitter] = useState([0, 0]);
   const [accruedGardian, setAccruedGardian] = useState(0)
   const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...")
@@ -164,6 +171,10 @@ export default function StakeDetails() {
     setStake2Amount(e.target.value);
   }
 
+  const handleInput3 = (e) => {
+    setStake3Amount(e.target.value);
+  }
+
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
@@ -175,8 +186,10 @@ export default function StakeDetails() {
     const info = getWalletInfo()
     setNoLock(getNLStake())
     setNoLockGardian(getNLStake(ids.app.gardian_staking))
-    setMaxStake(getGardBalance(info));
-    setMaxGardianStake(getGardianBalance(info))
+    setNoLockGlitter([999999, 69])
+    setMaxStake(getTokenBalance(info, ids.asa.gard)/1e6);
+    setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
+    setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter))
     setNLAPY((await APYPromise))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
@@ -253,8 +266,15 @@ export default function StakeDetails() {
             display: "flex",
             justifyContent: "center",
           }}
-        ></div>
+        >
+          <BinaryTextInToggle
+            optionA={"Protocol Pools"}
+            optionB={"Partner Pools"}
+            selectedOption={setSelectedTab}
+          />
+        </div>
         <Container style={{ maxWidth: `${mobile ? "95%" : ""}` }}>
+          {selectedTab === "Protocol Pools" ? ( <>
           <FirstRow>{"Staking Pools (Auto-Compounding)"}</FirstRow>
           <StakeTitle>
               <Heading>No-Lock GARD</Heading>
@@ -450,7 +470,135 @@ export default function StakeDetails() {
               <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={handleStake2} />
               <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={handleUnstake2} />
             </div>
+          </FourthRow> </>) : <>
+          <FirstRow>{"Glitter Pool (Auto-Compounding)"}</FirstRow>
+          <StakeTitle>
+              <Heading>No-Lock xGLI</Heading>
+              {mobile ? <></> : <Heading>You have {Math.trunc(maxGlitterStake*Math.pow(10, 2))/Math.pow(10, 2)} xGLI</Heading>}
+          </StakeTitle>
+          <SecondThirdCondensed mobile={mobile}>
+            <SecondRow mobile={mobile}>
+              <Heading>TVL</Heading>
+              <Heading>Type</Heading>
+              <Heading>Duration</Heading>
+              <Heading>APR</Heading>
+              {mobile ? <Heading>GARD Balance</Heading> : <></>}
+              {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
+              <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
+            </SecondRow>
+            <ThirdRow mobile={mobile}>
+              <Heading>{`0`}</Heading>
+              <TypeCont>
+                <Img src={glitterLogo}></Img>
+                <Arrow src={arrowIcon}></Arrow>
+                <GardImg src={xSolLogo}></GardImg>
+                <AssetOptions
+                  open={optionsOpen}
+                  setAsset={setAssetType}
+                  setOpen={setOptionsOpen}
+                />
+              </TypeCont>
+              <Heading>No-Lock</Heading>
+              <Heading>{`${(NLAPY*0).toFixed(2)}%`}</Heading>
+              {mobile ? <Heading>{maxGlitterStake.toFixed(2)} xGLI</Heading> : <></>}
+              {mobile || (window.innerWidth < 760) ? (
+                <></>
+              ) : (
+                <StakeBox>
+
+                  <StakeInput
+                    id="gltr-stake-amt"
+                    placeholder="Enter Amount"
+                    min="0.0"
+                    step=".01"
+                    type="number"
+                    value={stake3Amount}
+                    callback={handleInput3}
+                  />
+                </StakeBox>
+              )}
+            </ThirdRow>
+          </SecondThirdCondensed>
+          <FourthRow mobile={mobile}>
+            <Effect
+              title="Your Stake"
+              val={`${noLockGlitter[0]} xGLI, ${noLockGlitter[1]} xSOL`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="Est. Rewards / Day"
+              val={`0 xSOL`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="New Rewards"
+              val={`${parseFloat(0).toFixed(4)}`}
+              hasToolTip={true}
+            />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: `${mobile ? "column" : "row"}`,
+                margin: 10,
+                alignSelf: `${mobile || (window.innerWidth < 760)? "unset" : "baseline"}`,
+              }}
+            >
+              {mobile || (window.innerWidth < 760) ? (
+                <StakeBox style={{flexDirection: `${mobile ? "column" : "row"}`}}>
+                  {isMobile ? (<StakeHeading mobile={mobile}>Stake Amount</StakeHeading>) : (<></>)}
+                <StakeInput
+                  mobile={mobile}
+                  id="gltr-stake-amt"
+                  placeholder="Enter Amount"
+                  min="0.0"
+                  step=".01"
+                  type="number"
+                  value={stake3Amount}
+                  callback={handleInput3}
+                />
+              </StakeBox>
+              ) : (
+                <></>
+              )}
+              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={async () => {
+                  if (stake3Amount === null || !(stake3Amount > 0)) {
+                    dispatch(setAlert("You must enter a positive amount to Stake!"))
+                    return
+                  }
+                  setLoading(true)
+                  try {
+                    const res = {alert: true, text: "method not implemented"}
+                    // const res = await GardianStake("NL", parseInt(stake2Amount))
+                    if (res.alert) {
+                      dispatch(setAlert(res.text));
+                    }
+                  } catch (e) {
+                    alert("Error attempting to stake xGLI: " + e)
+                    console.log(e)
+                  }
+                  setLoading(false)}}
+               />
+              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={async () => {
+                if (stake3Amount === null || !(stake3Amount > 0)) {
+                  dispatch(setAlert("You must enter a positive amount to Unstake!"))
+                  return
+                }
+                setLoading(true)
+                try {
+                  const res = {alert: true, text: "method not implemented"}
+                  // const res = await GardianUnstake("NL", parseInt(stake2Amount))
+                  if (res.alert) {
+                    dispatch(setAlert(res.text));
+                  }
+                } catch (e) {
+                  alert("Error attempting to unstake: " + e)
+                  console.log(e)
+                }
+                setLoading(false)}} 
+            />
+            </div>
           </FourthRow>
+          </> }
         </Container>
       </div>
     </div>
@@ -647,7 +795,7 @@ const Container = styled.div`
   background: #0e1834;
   border-radius: 10px;
   justify-self: center;
-  margin-top: 25px;
+  margin-top: 12px;
   margin-bottom: 100px;
 `;
 
