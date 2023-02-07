@@ -5,26 +5,23 @@ import styled, {css} from "styled-components";
 import Effect from "./Effect";
 import ToolTip from "./ToolTip";
 import PrimaryButton from "./PrimaryButton";
-import { repayCDP } from "../transactions/cdp";
 import { handleTxError } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import Details from "./Details";
 import { mAlgosToAlgos } from "../pages/BorrowContent";
+import { closeCDP } from "../transactions/cdp";
 
-export default function RepayPosition({cdp, price, setCurrentCDP, details, mobile, apr}){
+
+export default function ClosePosition({cdp, price, setCurrentCDP, details, mobile, apr }){
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState(null);
     const dispatch = useDispatch();
-
     const [repayment, setRepayment] = useState("")
 
     const handleRepay = (event) => {
         setRepayment(event.target.value === "" ? "" : Number(event.target.value));
     };
-    //console.log(cdp)
-    // console.log("YEah")
-    
     
     var details = mobile ? [
         {
@@ -90,6 +87,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
             hasToolTip: true,
           },
     ];
+
     var borrowDetails = [
       {
         title: "Already Borrowed",
@@ -115,7 +113,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
 
         document.addEventListener("itemInserted", sessionStorageSetHandler, false);
 
-
+    
     return <div style={{marginTop: 20}}>
             {loading ? <LoadingOverlay
             text={loadingText}
@@ -126,7 +124,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
             <Container>
             <SubContainer mobile={mobile}>
                 <Background>
-                    <Title>Repay GARD</Title>
+                    <Title>Close Position</Title>
                     <InputContainer>
                         <div style={{display: "flex"}}>
                             <Input
@@ -136,14 +134,13 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
                             type='number'
                             min="0.00"
                             id="repay"
-                            value={repayment}
-                            onChange={handleRepay}
+                            value={mAlgosToAlgos(cdp.debt).toFixed(2)}
                             />
                             <MaxButton>
-                                <ToolTip toolTip={"+MAX"} toolTipText={"Click to repay the maximum amount"}/>
+                                <ToolTip toolTip={"+MAX"} toolTipText={"Max amount is already being repaid"}/>
                             </MaxButton>
                         </div>
-                        <Valuation>$Value: ${(repayment * 1).toFixed(2)}</Valuation>
+                        <Valuation>$Value: ${(mAlgosToAlgos(cdp.debt)).toFixed(2)}</Valuation>
                         <InputDetails>
                         {borrowDetails.length && borrowDetails.length > 0
                           ? borrowDetails.map((d) => {
@@ -164,22 +161,17 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
                 <PrimaryButton
                 blue={true}
                 positioned={true}
-                text="Repay"
-                onClick={ async () => {
-                    if (repayment === "") return
+                text="Close Position"
+                onClick={async () => {
                     setLoading(true);
                     try {
-                        let res = await repayCDP(
-                          cdp.id,
-                          repayment,
-                          cdp.asaID,
-                        );
-                        if (res.alert) {
-                          dispatch(setAlert(res.text));
-                        }
-                      } catch (e) {
-                        handleTxError(e, "Error repaying CDP");
-                      }
+                    let res = await closeCDP(cdp.id, cdp.asaID);
+                    if (res.alert) {
+                        dispatch(setAlert(res.text));
+                    }
+                    } catch (e) {
+                    handleTxError(e, "Error minting from CDP");
+                    }
                     setLoading(false);
                     setCurrentCDP(null);
                 }}

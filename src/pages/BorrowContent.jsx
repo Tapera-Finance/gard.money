@@ -267,7 +267,22 @@ export default function BorrowContent() {
     setLoadingText(JSON.parse(e.value));
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
-  var details = [
+  var details = mobile ? [
+    {
+      title: "GARD Borrow APR",
+      val: `${cdpInterest*100}%`,
+      hasToolTip: true,
+    },
+    {
+      title: "Liquidation Price",
+      val: `${
+        getMinted() == null || getCollateral() == null
+          ? "..."
+          : displayLiquidationPrice()
+      }`,
+      hasToolTip: true,
+    },
+  ] :[
     {
       title: "Total Supplied (Asset)",
       val: `${cAlgos === "" ? "..." : cAlgos}`,
@@ -417,7 +432,7 @@ export default function BorrowContent() {
           <Container mobile={mobile}>
             <SubContainer>
               <Background>
-                <Title>
+                <Title mobile={mobile}>
                   Supply{" "}
                   <ExchangeSelect
                     options={assets}
@@ -425,7 +440,7 @@ export default function BorrowContent() {
                     callback={handleSelect}
                   />
                   {/* ALGO */}
-                  <AlgoImg src={borrowIcon} isGAlgo={!isGAlgo} />
+                  <AlgoImg mobile={mobile} src={borrowIcon} isGAlgo={!isGAlgo} />
                 </Title>
                 <InputContainer>
                   <div style={{ display: "flex" }}>
@@ -438,6 +453,7 @@ export default function BorrowContent() {
                       id="collateral"
                       value={cAlgos}
                       onChange={handleSupplyChange}
+                      mobile={mobile}
                     />
                     <MaxButton onClick={handleMaxCollateral}>
                       <ToolTip
@@ -450,7 +466,7 @@ export default function BorrowContent() {
                     $Value: $
                     {cAlgos === "..." ? 0.0 : (cAlgos * supplyPrice).toFixed(2)}
                   </Valuation>
-                  <SupplyInputDetails>
+                  <SupplyInputDetails mobile={mobile}>
                     {supplyDetails.length && supplyDetails.length > 0
                       ? supplyDetails.map((d) => {
                           return (
@@ -495,8 +511,8 @@ export default function BorrowContent() {
 
             <SubContainer>
               <Background>
-                <BorrowTitle>
-                  Borrow GARD <GardImg src={gardLogo} />
+                <BorrowTitle mobile={mobile}>
+                  Borrow GARD <GardImg mobile={mobile} src={gardLogo} />
                 </BorrowTitle>
 
                 <InputContainer>
@@ -510,6 +526,7 @@ export default function BorrowContent() {
                       value={mGARD}
                       size="small"
                       onChange={handleBorrowChange}
+                      mobile={mobile}
                     />
                     <MaxButton onClick={handleMaxBorrow}>
                       <ToolTip
@@ -519,7 +536,7 @@ export default function BorrowContent() {
                     </MaxButton>
                   </div>
                   <Valuation>$Value: ${mGARD === "" ? 0 : mGARD}</Valuation>
-                  <BorrowInputDetails>
+                  <BorrowInputDetails mobile={mobile}>
                     {borrowDetails.length && borrowDetails.length > 0
                       ? borrowDetails.map((d) => {
                           return (
@@ -572,7 +589,9 @@ export default function BorrowContent() {
               setLoading(false);
             }}
           />
-          <Details mobile={mobile} className={"borrow"} details={details} />
+          <CreateDetails mobile={mobile}>
+            <Details mobile={mobile} className={"borrow"} details={details} />
+          </CreateDetails>
         </div>
       ) : (
         <></>
@@ -580,7 +599,7 @@ export default function BorrowContent() {
       {cdps == dummyCDPs ? (
         <></>
       ) : (
-        <div>
+        <PositionsContainer mobile={mobile}>
           <PrimaryButton
             text={createPositionShown ? "Exit" : "Create New Position"}
             blue={true}
@@ -590,7 +609,7 @@ export default function BorrowContent() {
             }}
           />
           <Positions maxSupply={maxCollateral} maxGARD={maxGARD} />
-        </div>
+        </PositionsContainer>
       )}
       </div>
     </div>
@@ -656,6 +675,10 @@ const AlgoImg = styled.img`
       margin-bottom: 12.5px;
     `
   }
+  ${(props) => props.mobile && css`
+  height: 30px
+  width: 30px;
+  `}
 `;
 
 const gAlgoImg = styled.img`
@@ -665,10 +688,14 @@ const gAlgoImg = styled.img`
 `
 
 const GardImg = styled.img`
-  height: 50px;
-  margin: 2px 18px 2px 14px;
+  height: 40px;
+  margin: 17.5px 18px 17.5px 18px;
   position: relative;
   top: -2px;
+  ${(props) => props.mobile && css`
+  height: 30px
+  margin: 17.5px 19.86px 17.5px 19.86px;
+  `}
 `;
 
 const Container = styled.div`
@@ -677,11 +704,24 @@ const Container = styled.div`
   column-gap: 2%;
   @media (${device.tablet}) {
     grid-template-columns: 1fr;
+    margin: auto;
+    transform: scale(0.9);
+    // max-width: 90vw;
   }
   ${(props) => props.mobile && css`
     grid-template-columns: 1fr;
+    margin: auto;
+    transform: scale(0.9);
+    // max-width: 90vw;
   `}
 `;
+
+const PositionsContainer = styled.div`
+${(props) => props.mobile && css`
+    margin: auto;
+    width: 90%;
+  `}
+`
 
 const SubContainer = styled.div`
   position: relative;
@@ -698,6 +738,9 @@ const Title = styled.div`
   align-items: center;
   text-align: center;
   padding: 20px 0px 20px;
+  ${(props) => props.mobile && css`
+  padding: 0px 0px 0px;
+  `}
 `;
 
 const BorrowTitle = styled.div`
@@ -707,8 +750,9 @@ const BorrowTitle = styled.div`
   align-items: center;
   text-align: center;
   padding: 20px 0px 20px;
-  margin-bottom: 9px;
-  padding-top: 31px;
+  ${(props) => props.mobile && css`
+  padding: 0px 0px 0px;
+  `}
 `;
 
 const InputContainer = styled.div`
@@ -717,6 +761,13 @@ const InputContainer = styled.div`
   border: 1px solid white;
 `;
 
+const CreateDetails = styled.div`
+${(props) => props.mobile && css`
+  margin: auto;
+  transform: scale(0.9);
+  // max-width: 90vw;
+`}
+`
 const SupplyInputDetails = styled.div`
   // display: grid;
   grid-template-columns: repeat(1, 40%);
@@ -724,6 +775,10 @@ const SupplyInputDetails = styled.div`
   justify-content: center;
   padding: 30px 0px 30px;
   border-radius: 10px;
+  ${(props) => props.mobile && css`
+  padding: 15px 0px 15px;
+  row-gap: 15px;
+  `}
 `;
 
 const BorrowInputDetails = styled.div`
@@ -733,6 +788,10 @@ display: grid;
   justify-content: center;
   padding: 30px 0px 30px;
   border-radius: 10px;
+  ${(props) => props.mobile && css`
+  padding: 15px 0px 15px;
+  row-gap: 15px;
+  `}
 `
 
 const Item = styled.div`
@@ -770,6 +829,9 @@ const Input = styled.input`
   &:focus {
     outline-width: 0;
   }
+  ${(props) => props.mobile && css`
+  padding-top: 15px;
+  `}
 `;
 
 const CommitBox = styled.input`
