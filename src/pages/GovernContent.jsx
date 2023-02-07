@@ -298,7 +298,6 @@ export default function Govern() {
               setModalCanAnimate(true);
               setModalVisible(true);
               setSelectedAccount(account_id);
-              setSelectedAddress(cdpGen(getWallet().address, selectedAccount).address)
               setMaxBal(value.balance);
               setCommit(commitBal);
             }}
@@ -321,7 +320,6 @@ export default function Govern() {
               setModalCanAnimate(true);
               setModalVisible(true);
               setSelectedAccount(account_id);
-              setSelectedAddress(cdpGen(getWallet().address, selectedAccount).address)
               setMaxBal(value.balance);
               setCommit(commitBal);
             }}
@@ -349,11 +347,11 @@ export default function Govern() {
             tableShrink={mobile}
             onClick={() => {
               setSelectedAccount(account_id);
-              setSelectedAddress(cdpGen(getWallet().address, selectedAccount).address)
+              let temp = cdpGen(getWallet().address, account_id).address;
+              setSelectedAddress(temp)
               setOnlineStatus(status !== "Offline")
               setModal3CanAnimate(true)
               setModal3Visible(true)
-
             }}
             />
         ),
@@ -776,7 +774,7 @@ export default function Govern() {
         >
           {(
               <div>
-                <div style={{justifyContent: "center", alignItems: "center", display: "flex", flexDirection:"row"}}>
+                <div style={{justifyContent: "center", alignItems: "center", display: "flex", flexDirection:"row", marginBottom: 10,}}>
                   Your ALGOs are currently:&nbsp; 
                 { onlineStatus ? (
                 <div style={{justifyContent: "center", alignItems: "center", color: "#228B22",}}>
@@ -797,18 +795,34 @@ export default function Govern() {
                       baseURL: "https://node1.gard.money",
                       timeout: 300000,
                     });
-                    const response = (await endpoint.get("", {
-                      params: {
-                        "Address": selectedAddress,
+                    let response;
+                    console.log(selectedAddress)
+                    try {
+                          response = (await endpoint.get("/", {
+                            params: {
+                              "Address": selectedAddress,
+                            }
+                          }));
+                          console.log(response)
+                          console.log(response.data)
+                        }
+                      catch (error) {
+                        if (error.response) {
+                          console.log(error.response);
+                        } else if (error.request) {
+                          // This means the item does not exist
+                          console.log("Item does not exist")
+                        } else {
+                          // This means that there was an unhandled error
+                          console.error(error);
+                        }
                       }
-                    }));
-                    console.log(response)
-                    console.log(response.data)
                     let key_exists = false;
                     if (!key_exists){
                       setLoadingStage("Generating Participation Keys (this will take at least 5 minutes, so feel free to check back soon; your keys will be saved)...")
                     // another async call
                     while(!key_exists) {
+                      await new Promise((r) => setTimeout(r, 2000));
                       const response = (await endpoint.get("", {
                         params: {
                           "Address": selectedAddress,
