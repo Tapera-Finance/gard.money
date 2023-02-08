@@ -482,8 +482,8 @@ export default function StakeDetails() {
           </FourthRow> </>) : <>
           <FirstRow>{"Glitter Pool (Auto-Compounding)"}</FirstRow>
           <StakeTitle>
-              <Heading>No-Lock xGLI</Heading>
-              {mobile ? <></> : <Heading>You have {Math.trunc(maxGlitterStake*Math.pow(10, 2))/Math.pow(10, 2)} xGLI</Heading>}
+              <Heading>No-Lock XGLI</Heading>
+              {mobile ? <></> : <Heading>You have {Math.trunc(maxGlitterStake*Math.pow(10, 2))/Math.pow(10, 2)} XGLI</Heading>}
           </StakeTitle>
           <SecondThirdCondensed mobile={mobile}>
             <SecondRow mobile={mobile}>
@@ -509,7 +509,7 @@ export default function StakeDetails() {
               </TypeCont>
               <Heading>No-Lock</Heading>
               <Heading>{`${(glitterAPY).toFixed(2)}%`}</Heading>
-              {mobile ? <Heading>{maxGlitterStake.toFixed(2)} xGLI</Heading> : <></>}
+              {mobile ? <Heading>{maxGlitterStake.toFixed(2)} XGLI</Heading> : <></>}
               {mobile || (window.innerWidth < 760) ? (
                 <></>
               ) : (
@@ -531,7 +531,7 @@ export default function StakeDetails() {
           <FourthRow mobile={mobile}>
             <Effect
               title="Your Stake"
-              val={`${noLockGlitter[0]} xGLI`}
+              val={`${noLockGlitter[0]} XGLI`}
               hasToolTip={true}
             />
             <Effect
@@ -541,7 +541,7 @@ export default function StakeDetails() {
             />
             <Effect
               title="New Rewards"
-              val={`${noLockGlitter[1]} xSol`}
+              val={`${noLockGlitter[1]} xSOL`}
               hasToolTip={true}
             />
             <div
@@ -581,7 +581,7 @@ export default function StakeDetails() {
                       dispatch(setAlert(res.text));
                     }
                   } catch (e) {
-                    alert("Error attempting to stake xGLI: " + e)
+                    alert("Error attempting to stake XGLI: " + e)
                     console.log(e)
                   }
                   setLoading(false)}}
