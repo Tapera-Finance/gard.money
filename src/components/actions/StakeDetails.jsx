@@ -196,13 +196,12 @@ export default function StakeDetails() {
     setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
     setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
     setNLAPY((await APYPromise))
-    setGlitterAPY((81*23.09*6)/parseInt(dollarValueGlitter))
+    setGlitterAPY((81*23.09*6)/dollarValueGlitter)
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
-    setGlitterTVL(await dollarValueGlitter)
+    setGlitterTVL(dollarValueGlitter)
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
-    console.log(GARDIAN_TVL)
   }, []);
 
   useEffect(() => {
