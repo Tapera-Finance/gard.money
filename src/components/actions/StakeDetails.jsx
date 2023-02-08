@@ -38,7 +38,8 @@ function algosToMAlgos(num) {
 
 // Gets Active wallet Stake in simple no-lock pool
 export function getNLStake(app_id=ids.app.gard_staking) {
-  const phrase = app_id == ids.app.gard_staking ? "NL GARD Staked" : "NL GARDIAN Staked"
+  let phrase = app_id == ids.app.gard_staking ? "NL GARD Staked" : "NL GARDIAN Staked"
+  phrase = app_id == ids.app.gard_staking ? phrase : "NL Staked"
   const res = getLocalAppField(app_id, phrase)
   if (res === undefined) {
     return 0;
@@ -190,7 +191,7 @@ export default function StakeDetails() {
     const info = getWalletInfo()
     setNoLock(getNLStake())
     setNoLockGardian(getNLStake(ids.app.gardian_staking))
-    setNoLockGlitter([999999, 69])
+    setNoLockGlitter([getNLStake(ids), 69])
     setMaxStake(getTokenBalance(info, ids.asa.gard)/1e6);
     setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
     setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
