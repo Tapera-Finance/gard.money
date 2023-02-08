@@ -47,7 +47,7 @@ if (VERSION == "MAINNET") {
         gard_staking : 890604041,
         gardian_staking : 1007623298,
         glitter : {
-          xsol : 1033503778,
+          xsol : 1033538824,
         },
         treasury : 890603993,
         claimer : 890604040,
