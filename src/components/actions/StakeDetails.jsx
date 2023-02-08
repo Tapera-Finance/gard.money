@@ -198,7 +198,7 @@ export default function StakeDetails() {
     setGlitterAPY((81*23.09*6)/parseInt(dollarValueGlitter))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
-    setGlitterTVL(await dollarValueGlitter)
+    setGlitterTVL(dollarValueGlitter)
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
     console.log(GARDIAN_TVL)
