@@ -22,7 +22,7 @@ import xSolLogo from "../../assets/icons/xSOL.png"
 import PrimaryButton from "../PrimaryButton";
 import BinaryTextInToggle from "../BinaryTextInToggle";
 import { formatToDollars } from "../../utils";
-import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, getAccruedGardianRewards,  } from "../../transactions/stake"
+import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, GlitterStake, GlitterUnstake, getGlitterTVL,  } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
 import { size, device } from "../../styles/global"
 import { isMobile } from "../../utils"
@@ -75,9 +75,11 @@ export default function StakeDetails() {
   const [noLockGlitter, setNoLockGlitter] = useState([0, 0]);
   const [accruedGardian, setAccruedGardian] = useState(0)
   const dispatch = useDispatch();
-  const [NL_TVL, setNLTVL] = useState("...")
-  const [GARDIAN_TVL, setGARDIANTVL] = useState("0")
+  const [NL_TVL, setNLTVL] = useState("...");
+  const [GARDIAN_TVL, setGARDIANTVL] = useState("0");
+  const [glitterTVL, setGlitterTVL] = useState("0");
   const [NLAPY, setNLAPY] = useState(0)
+  const [glitterAPY, setGlitterAPY] = useState(0)
   const [NLGARDIANAPY, setNLGARDIANAPY] = useState(0);
   const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
@@ -177,11 +179,13 @@ export default function StakeDetails() {
 
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
+    const glitterTVLPromise = getGlitterTVL()
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
     const gardianTVLPromise = getAppField(ids.app.gardian_staking, "NL")
     const APYPromise = getStakingAPY("NL")
     const accruePromise = getAccruedRewards("NL")
     const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking)
+    const dollarValueGlitter = await glitterTVLPromise
     await infoPromise
     const info = getWalletInfo()
     setNoLock(getNLStake())
@@ -189,10 +193,12 @@ export default function StakeDetails() {
     setNoLockGlitter([999999, 69])
     setMaxStake(getTokenBalance(info, ids.asa.gard)/1e6);
     setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
-    setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter))
+    setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
     setNLAPY((await APYPromise))
+    setGlitterAPY((81*23.09*6)/parseInt(dollarValueGlitter))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
+    setGlitterTVL(await dollarValueGlitter)
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
     console.log(GARDIAN_TVL)
@@ -487,7 +493,7 @@ export default function StakeDetails() {
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
             <ThirdRow mobile={mobile}>
-              <Heading>{`0`}</Heading>
+              <Heading>{`$${glitterTVL.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
               <TypeCont>
                 <Img src={glitterLogo}></Img>
                 <Arrow src={arrowIcon}></Arrow>
@@ -499,7 +505,7 @@ export default function StakeDetails() {
                 />
               </TypeCont>
               <Heading>No-Lock</Heading>
-              <Heading>{`${(NLAPY*0).toFixed(2)}%`}</Heading>
+              <Heading>{`${(glitterAPY).toFixed(2)}%`}</Heading>
               {mobile ? <Heading>{maxGlitterStake.toFixed(2)} xGLI</Heading> : <></>}
               {mobile || (window.innerWidth < 760) ? (
                 <></>
@@ -567,8 +573,7 @@ export default function StakeDetails() {
                   }
                   setLoading(true)
                   try {
-                    const res = {alert: true, text: "method not implemented"}
-                    // const res = await GardianStake("NL", parseInt(stake2Amount))
+                    const res = await GlitterStake(parseFloat(stake3Amount))
                     if (res.alert) {
                       dispatch(setAlert(res.text));
                     }
@@ -585,8 +590,7 @@ export default function StakeDetails() {
                 }
                 setLoading(true)
                 try {
-                  const res = {alert: true, text: "method not implemented"}
-                  // const res = await GardianUnstake("NL", parseInt(stake2Amount))
+                  const res = await GlitterUnstake(parseFloat(stake3Amount))
                   if (res.alert) {
                     dispatch(setAlert(res.text));
                   }
