@@ -183,6 +183,7 @@ export default function StakeDetails() {
     const glitterTVLPromise = getGlitterTVL()
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
     const gardianTVLPromise = getAppField(ids.app.gardian_staking, "NL")
+    const xSolRewardPromise = getAppField(ids.app.glitter.xsol, "RewardBalance")
     const APYPromise = getStakingAPY("NL")
     const accruePromise = getAccruedRewards("NL")
     const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking)
@@ -191,15 +192,15 @@ export default function StakeDetails() {
     const info = getWalletInfo()
     setNoLock(getNLStake())
     setNoLockGardian(getNLStake(ids.app.gardian_staking))
-    setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), 69])
     setMaxStake(getTokenBalance(info, ids.asa.gard)/1e6);
     setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
     setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
     setNLAPY((await APYPromise))
-    setGlitterAPY((81*23.09*6)/dollarValueGlitter)
+    setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), (getNLStake(ids.app.glitter.xsol)/dollarValueGlitter[1] * (await xSolRewardPromise)/1e9).toFixed(5)])
+    setGlitterAPY((81*23.09*6)/dollarValueGlitter[0])
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
-    setGlitterTVL(dollarValueGlitter)
+    setGlitterTVL(dollarValueGlitter[0])
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
   }, []);
@@ -528,7 +529,7 @@ export default function StakeDetails() {
           <FourthRow mobile={mobile}>
             <Effect
               title="Your Stake"
-              val={`${noLockGlitter[0]} xGLI, ${noLockGlitter[1]} xSOL`}
+              val={`${noLockGlitter[0]} xGLI`}
               hasToolTip={true}
             />
             <Effect
@@ -538,7 +539,7 @@ export default function StakeDetails() {
             />
             <Effect
               title="New Rewards"
-              val={`${parseFloat(0).toFixed(4)}`}
+              val={`${noLockGlitter[1]} xSol`}
               hasToolTip={true}
             />
             <div

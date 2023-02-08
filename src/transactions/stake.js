@@ -473,5 +473,5 @@ export async function GlitterUnstake(amount){
 
 export async function getGlitterTVL(){
   const amount = await getAppField(ids.app.glitter.xsol, "NL")
-  return (amount * 0.00321601 / 1e6).toFixed(2)
+  return [(amount * 0.00321601 / 1e6).toFixed(2), amount]
 }
