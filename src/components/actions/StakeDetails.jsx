@@ -82,6 +82,7 @@ export default function StakeDetails() {
   const [NLAPY, setNLAPY] = useState(0)
   const [glitterAPY, setGlitterAPY] = useState(0)
   const [NLGARDIANAPY, setNLGARDIANAPY] = useState(0);
+  const [dailyGlitter, setDailyGlitter] = useState(0.000);
   const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
 
@@ -197,6 +198,7 @@ export default function StakeDetails() {
     setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
     setNLAPY((await APYPromise))
     setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), (getNLStake(ids.app.glitter.xsol)/dollarValueGlitter[1] * (await xSolRewardPromise)/1e9).toFixed(5)])
+    setDailyGlitter((getNLStake(ids.app.glitter.xsol)/dollarValueGlitter[1]) * 81/60)
     setGlitterAPY((81*23.09*6)/dollarValueGlitter[0])
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
@@ -534,7 +536,7 @@ export default function StakeDetails() {
             />
             <Effect
               title="Est. Rewards / Day"
-              val={`0 xSOL`}
+              val={`${dailyGlitter.toFixed(5)} xSOL`}
               hasToolTip={true}
             />
             <Effect
