@@ -332,7 +332,7 @@ export async function GlitterStake(amount){
     return {
       alert: true,
       text:
-        "Insufficient xGLI for transaction. Balance: " +
+        "Insufficient XGLI for transaction. Balance: " +
         (glitter_bal == null ? 0 : glitter_bal).toString() +
         "\n" +
         "Required: " +
@@ -406,7 +406,7 @@ export async function GlitterStake(amount){
 
   let response = await sendTxn(
     stxns,
-    "Successfully staked " + ((amount/1e6).toFixed(3)) + " xGLI. Any xSol rewards have been deposited into your account.",
+    "Successfully staked " + ((amount/1e6).toFixed(3)) + " XGLI. Any xSol rewards have been deposited into your account.",
   );
   setLoadingStage(null);
 
@@ -464,7 +464,7 @@ export async function GlitterUnstake(amount){
 
   let response = await sendTxn(
     stxns,
-    "Successfully unstaked " + (amount/1e6).toFixed(3) + " xGLI. Any xSol rewards have been deposited into your account.", 
+    "Successfully unstaked " + (amount/1e6).toFixed(3) + " XGLI. Any xSol rewards have been deposited into your account.", 
   );
   setLoadingStage(null);
 
@@ -473,5 +473,6 @@ export async function GlitterUnstake(amount){
 
 export async function getGlitterTVL(){
   const amount = await getAppField(ids.app.glitter.xsol, "NL")
-  return [(amount * 0.00321601 / 1e6).toFixed(2), amount]
+  const field2 = await getAppField(ids.app.glitter.xsol, "NL Return Rate")
+  return [(amount * 0.00321601 / 1e6).toFixed(2), amount, field2]
 }

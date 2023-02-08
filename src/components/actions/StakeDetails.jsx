@@ -39,8 +39,16 @@ function algosToMAlgos(num) {
 // Gets Active wallet Stake in simple no-lock pool
 export function getNLStake(app_id=ids.app.gard_staking) {
   let phrase = app_id == ids.app.gard_staking ? "NL GARD Staked" : "NL GARDIAN Staked"
-  phrase = app_id == ids.app.gard_staking ? phrase : "NL Staked"
+  phrase = (app_id == ids.app.gard_staking || app_id == ids.app.gardian_staking) ? phrase : "NL Staked"
   const res = getLocalAppField(app_id, phrase)
+  if (res === undefined) {
+    return 0;
+  }
+  return res
+}
+
+function getLocalIRR(app_id){
+  const res = getLocalAppField(app_id, "NL Initial Return Rate")
   if (res === undefined) {
     return 0;
   }
@@ -197,7 +205,7 @@ export default function StakeDetails() {
     setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
     setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
     setNLAPY((await APYPromise))
-    setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), (getNLStake(ids.app.glitter.xsol)/dollarValueGlitter[1] * (await xSolRewardPromise)/1e9).toFixed(5)])
+    setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), ((((getNLStake(ids.app.glitter.xsol)*dollarValueGlitter[2]/getLocalIRR(ids.app.glitter.xsol)) - getNLStake(ids.app.glitter.xsol))/7)/1e9).toFixed(5)])
     setDailyGlitter((getNLStake(ids.app.glitter.xsol)/dollarValueGlitter[1]) * 81/60)
     setGlitterAPY((81*23.09*6)/dollarValueGlitter[0])
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
@@ -536,12 +544,12 @@ export default function StakeDetails() {
             />
             <Effect
               title="Est. Rewards / Day"
-              val={`${dailyGlitter.toFixed(5)} xSOL`}
+              val={`${dailyGlitter.toFixed(5)} xSol`}
               hasToolTip={true}
             />
             <Effect
               title="New Rewards"
-              val={`${noLockGlitter[1]} xSOL`}
+              val={`${noLockGlitter[1]} xSol`}
               hasToolTip={true}
             />
             <div
