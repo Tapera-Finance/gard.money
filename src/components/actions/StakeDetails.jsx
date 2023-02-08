@@ -201,7 +201,6 @@ export default function StakeDetails() {
     setGlitterTVL(dollarValueGlitter)
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
-    console.log(GARDIAN_TVL)
   }, []);
 
   useEffect(() => {
