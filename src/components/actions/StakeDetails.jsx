@@ -191,7 +191,7 @@ export default function StakeDetails() {
     const info = getWalletInfo()
     setNoLock(getNLStake())
     setNoLockGardian(getNLStake(ids.app.gardian_staking))
-    setNoLockGlitter([getNLStake(ids), 69])
+    setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), 69])
     setMaxStake(getTokenBalance(info, ids.asa.gard)/1e6);
     setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
     setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
