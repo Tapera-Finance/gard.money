@@ -7,7 +7,7 @@ import styled, { css } from "styled-components";
 import Effect from "../Effect";
 import InputField from "../InputField";
 import { ids } from "../../transactions/ids";
-import { getAppField, getGardBalance, getLocalAppField, getGardianBalance } from "../../transactions/lib";
+import { getAppField, getLocalAppField, getTokenBalance } from "../../transactions/lib";
 import {
   getWallet,
   getWalletInfo,
@@ -17,9 +17,12 @@ import gardLogo from "../../assets/icons/gardlogo_icon_small.png";
 import gardianLogo from "../../assets/icons/gard-logo-white-square.png"
 import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
+import glitterLogo from "../../assets/icons/XGLI.png"
+import xSolLogo from "../../assets/icons/xSOL.png"
 import PrimaryButton from "../PrimaryButton";
+import BinaryTextInToggle from "../BinaryTextInToggle";
 import { formatToDollars } from "../../utils";
-import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, getAccruedGardianRewards,  } from "../../transactions/stake"
+import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, GlitterStake, GlitterUnstake, getGlitterTVL,  } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
 import { size, device } from "../../styles/global"
 import { isMobile } from "../../utils"
@@ -35,8 +38,17 @@ function algosToMAlgos(num) {
 
 // Gets Active wallet Stake in simple no-lock pool
 export function getNLStake(app_id=ids.app.gard_staking) {
-  const phrase = app_id == ids.app.gard_staking ? "NL GARD Staked" : "NL GARDIAN Staked"
+  let phrase = app_id == ids.app.gard_staking ? "NL GARD Staked" : "NL GARDIAN Staked"
+  phrase = (app_id == ids.app.gard_staking || app_id == ids.app.gardian_staking) ? phrase : "NL Staked"
   const res = getLocalAppField(app_id, phrase)
+  if (res === undefined) {
+    return 0;
+  }
+  return res
+}
+
+function getLocalIRR(app_id){
+  const res = getLocalAppField(app_id, "NL Initial Return Rate")
   if (res === undefined) {
     return 0;
   }
@@ -60,18 +72,25 @@ export default function StakeDetails() {
   const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
+  const [selectedTab, setSelectedTab] = useState("Protocol Pools");
   const [stakeAmount, setStakeAmount] = useState(null);
   const [stake2Amount, setStake2Amount] = useState(null);
+  const [stake3Amount, setStake3Amount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
   const [maxGARDIANStake, setMaxGardianStake] = useState(0);
+  const [maxGlitterStake, setMaxGlitterStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const [noLockGardian, setNoLockGardian] = useState(0);
+  const [noLockGlitter, setNoLockGlitter] = useState([0, 0]);
   const [accruedGardian, setAccruedGardian] = useState(0)
   const dispatch = useDispatch();
-  const [NL_TVL, setNLTVL] = useState("...")
-  const [GARDIAN_TVL, setGARDIANTVL] = useState("0")
+  const [NL_TVL, setNLTVL] = useState("...");
+  const [GARDIAN_TVL, setGARDIANTVL] = useState("0");
+  const [glitterTVL, setGlitterTVL] = useState("0");
   const [NLAPY, setNLAPY] = useState(0)
+  const [glitterAPY, setGlitterAPY] = useState(0)
   const [NLGARDIANAPY, setNLGARDIANAPY] = useState(0);
+  const [dailyGlitter, setDailyGlitter] = useState(0.000);
   const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
 
@@ -164,25 +183,36 @@ export default function StakeDetails() {
     setStake2Amount(e.target.value);
   }
 
+  const handleInput3 = (e) => {
+    setStake3Amount(e.target.value);
+  }
+
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
+    const glitterTVLPromise = getGlitterTVL()
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
     const gardianTVLPromise = getAppField(ids.app.gardian_staking, "NL")
+    const xSolRewardPromise = getAppField(ids.app.glitter.xsol, "RewardBalance")
     const APYPromise = getStakingAPY("NL")
     const accruePromise = getAccruedRewards("NL")
     const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking)
+    const dollarValueGlitter = await glitterTVLPromise
     await infoPromise
     const info = getWalletInfo()
     setNoLock(getNLStake())
     setNoLockGardian(getNLStake(ids.app.gardian_staking))
-    setMaxStake(getGardBalance(info));
-    setMaxGardianStake(getGardianBalance(info))
+    setMaxStake(getTokenBalance(info, ids.asa.gard)/1e6);
+    setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
+    setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
     setNLAPY((await APYPromise))
+    setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), ((((getNLStake(ids.app.glitter.xsol)*dollarValueGlitter[2]/getLocalIRR(ids.app.glitter.xsol)) - getNLStake(ids.app.glitter.xsol))/7)/1e9).toFixed(5)])
+    setDailyGlitter((getNLStake(ids.app.glitter.xsol)/dollarValueGlitter[1]) * 81/60)
+    setGlitterAPY(100*((81*23.09*6)/dollarValueGlitter[0]))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
+    setGlitterTVL(dollarValueGlitter[0])
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
-    console.log(GARDIAN_TVL)
   }, []);
 
   useEffect(() => {
@@ -253,8 +283,15 @@ export default function StakeDetails() {
             display: "flex",
             justifyContent: "center",
           }}
-        ></div>
+        >
+          <BinaryTextInToggle
+            optionA={"Protocol Pools"}
+            optionB={"Partner Pools"}
+            selectedOption={setSelectedTab}
+          />
+        </div>
         <Container style={{ maxWidth: `${mobile ? "95%" : ""}` }}>
+          {selectedTab === "Protocol Pools" ? ( <>
           <FirstRow>{"Staking Pools (Auto-Compounding)"}</FirstRow>
           <StakeTitle>
               <Heading>No-Lock GARD</Heading>
@@ -450,7 +487,133 @@ export default function StakeDetails() {
               <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={handleStake2} />
               <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={handleUnstake2} />
             </div>
+          </FourthRow> </>) : <>
+          <FirstRow>{"Glitter Pool (Auto-Compounding)"}</FirstRow>
+          <StakeTitle>
+              <Heading>No-Lock XGLI</Heading>
+              {mobile ? <></> : <Heading>You have {Math.trunc(maxGlitterStake*Math.pow(10, 2))/Math.pow(10, 2)} XGLI</Heading>}
+          </StakeTitle>
+          <SecondThirdCondensed mobile={mobile}>
+            <SecondRow mobile={mobile}>
+              <Heading>TVL</Heading>
+              <Heading>Type</Heading>
+              <Heading>Duration</Heading>
+              <Heading>APR</Heading>
+              {mobile ? <Heading>XGLI Balance</Heading> : <></>}
+              {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
+              <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
+            </SecondRow>
+            <ThirdRow mobile={mobile}>
+              <Heading>{`$${glitterTVL.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
+              <TypeCont>
+                <Img src={glitterLogo}></Img>
+                <Arrow src={arrowIcon}></Arrow>
+                <GardImg src={xSolLogo}></GardImg>
+                <AssetOptions
+                  open={optionsOpen}
+                  setAsset={setAssetType}
+                  setOpen={setOptionsOpen}
+                />
+              </TypeCont>
+              <Heading>No-Lock</Heading>
+              <Heading>{`${(glitterAPY).toFixed(2)}%`}</Heading>
+              {mobile ? <Heading>{maxGlitterStake.toFixed(2)} XGLI</Heading> : <></>}
+              {mobile || (window.innerWidth < 760) ? (
+                <></>
+              ) : (
+                <StakeBox>
+
+                  <StakeInput
+                    id="gltr-stake-amt"
+                    placeholder="Enter Amount"
+                    min="0.0"
+                    step=".01"
+                    type="number"
+                    value={stake3Amount}
+                    callback={handleInput3}
+                  />
+                </StakeBox>
+              )}
+            </ThirdRow>
+          </SecondThirdCondensed>
+          <FourthRow mobile={mobile}>
+            <Effect
+              title="Your Stake"
+              val={`${noLockGlitter[0]} XGLI`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="Est. Rewards / Day"
+              val={`${dailyGlitter.toFixed(5)} xSol`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="New Rewards"
+              val={`${noLockGlitter[1]} xSol`}
+              hasToolTip={true}
+            />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: `${mobile ? "column" : "row"}`,
+                margin: 10,
+                alignSelf: `${mobile || (window.innerWidth < 760)? "unset" : "baseline"}`,
+              }}
+            >
+              {mobile || (window.innerWidth < 760) ? (
+                <StakeBox style={{flexDirection: `${mobile ? "column" : "row"}`}}>
+                  {isMobile ? (<StakeHeading mobile={mobile}>Stake Amount</StakeHeading>) : (<></>)}
+                <StakeInput
+                  mobile={mobile}
+                  id="gltr-stake-amt"
+                  placeholder="Enter Amount"
+                  min="0.0"
+                  step=".01"
+                  type="number"
+                  value={stake3Amount}
+                  callback={handleInput3}
+                />
+              </StakeBox>
+              ) : (
+                <></>
+              )}
+              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={async () => {
+                  if (stake3Amount === null || !(stake3Amount > 0)) {
+                    dispatch(setAlert("You must enter a positive amount to Stake!"))
+                    return
+                  }
+                  setLoading(true)
+                  try {
+                    const res = await GlitterStake(parseFloat(stake3Amount))
+                    if (res.alert) {
+                      dispatch(setAlert(res.text));
+                    }
+                  } catch (e) {
+                    alert("Error attempting to stake XGLI: " + e)
+                    console.log(e)
+                  }
+                  setLoading(false)}}
+               />
+              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={async () => {
+                if (stake3Amount === null || !(stake3Amount > 0)) {
+                  dispatch(setAlert("You must enter a positive amount to Unstake!"))
+                  return
+                }
+                setLoading(true)
+                try {
+                  const res = await GlitterUnstake(parseFloat(stake3Amount))
+                  if (res.alert) {
+                    dispatch(setAlert(res.text));
+                  }
+                } catch (e) {
+                  alert("Error attempting to unstake: " + e)
+                  console.log(e)
+                }
+                setLoading(false)}} 
+            />
+            </div>
           </FourthRow>
+          </> }
         </Container>
       </div>
     </div>
@@ -647,7 +810,7 @@ const Container = styled.div`
   background: #0e1834;
   border-radius: 10px;
   justify-self: center;
-  margin-top: 25px;
+  margin-top: 12px;
   margin-bottom: 100px;
 `;
 
@@ -811,9 +974,9 @@ ${(props) => props.mobile && css`
 const globalMobile = isMobile();
 
 const StakeInput = styled(InputField)`
-  width: ${`${globalMobile? "52vw" : "8.75vw"};`};
+  width: ${`${globalMobile? "52vw" : "12.75vw"};`};
   height: 25px;
-  border: 1px transparent;
+  border: 1px solid white;
   text-decoration-color: #7c52ff;
   text-decoration-thickness: 1px;
   font-size: 16px;
@@ -824,14 +987,6 @@ const StakeInput = styled(InputField)`
   ${(props) => props.mobile && css`
     align-self: center;
   `}
-
-  &:active {
-    appearance: none;
-  }
-  &:focus {
-    appearance: none;
-  }
-  
 `;
 
 const EffectContainer = styled.div`
