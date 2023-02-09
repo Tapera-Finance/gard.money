@@ -207,7 +207,7 @@ export default function StakeDetails() {
     setNLAPY((await APYPromise))
     setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), ((((getNLStake(ids.app.glitter.xsol)*dollarValueGlitter[2]/getLocalIRR(ids.app.glitter.xsol)) - getNLStake(ids.app.glitter.xsol))/7)/1e9).toFixed(5)])
     setDailyGlitter((getNLStake(ids.app.glitter.xsol)/dollarValueGlitter[1]) * 81/60)
-    setGlitterAPY((81*23.09*6)/dollarValueGlitter[0])
+    setGlitterAPY(100*((81*23.09*6)/dollarValueGlitter[0]))
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
     setGlitterTVL(dollarValueGlitter[0])
