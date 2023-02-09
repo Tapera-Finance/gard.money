@@ -499,7 +499,7 @@ export default function StakeDetails() {
               <Heading>Type</Heading>
               <Heading>Duration</Heading>
               <Heading>APR</Heading>
-              {mobile ? <Heading>GARD Balance</Heading> : <></>}
+              {mobile ? <Heading>XGLI Balance</Heading> : <></>}
               {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
@@ -974,9 +974,9 @@ ${(props) => props.mobile && css`
 const globalMobile = isMobile();
 
 const StakeInput = styled(InputField)`
-  width: ${`${globalMobile? "52vw" : "8.75vw"};`};
+  width: ${`${globalMobile? "52vw" : "12.75vw"};`};
   height: 25px;
-  border: 1px transparent;
+  border: 1px solid white;
   text-decoration-color: #7c52ff;
   text-decoration-thickness: 1px;
   font-size: 16px;
@@ -987,14 +987,6 @@ const StakeInput = styled(InputField)`
   ${(props) => props.mobile && css`
     align-self: center;
   `}
-
-  &:active {
-    appearance: none;
-  }
-  &:focus {
-    appearance: none;
-  }
-  
 `;
 
 const EffectContainer = styled.div`
