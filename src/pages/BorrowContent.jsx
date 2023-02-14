@@ -589,6 +589,7 @@ const GardImg = styled.img`
   ${(props) => props.mobile && css`
   height: 30px
   margin: 17.5px 19.86px 17.5px 19.86px;
+  `}
 `;
 
 const Container = styled.div`
