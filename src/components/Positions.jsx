@@ -13,6 +13,7 @@ import PageToggle from "./PageToggle";
 import BorrowMore from "./BorrowMore";
 import SupplyMore from "./SupplyMore";
 import RepayPosition from "./RepayPosition";
+import ClosePosition from "./ClosePosition";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
 import { ids } from "../transactions/ids";
@@ -193,7 +194,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
   const tabs = {
     one: "Borrow More",
     two: "Supply More",
-    three: "Repay Position",
+    three: "Partial Repay",
     four: "Close Position",
   };
   useEffect(async () => {
@@ -250,7 +251,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         </div>
                       </Brr>
                     </PositionSupplyBorrow>
-                    <div
+                    {mobile ? <></> : <div
                       className="m_positions_item m-positions_box_2"
                       style={{ display: "flex", flexDirection: "column" }}
                     >
@@ -263,7 +264,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           {"  " + apr}%
                         </span>
                       </APRBox>
-                    </div>
+                    </div>}
                     <div
                       className="m_positions_item m-positions_box_3"
                       style={{ display: "flex", flexDirection: "column" }}
@@ -360,6 +361,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           maxMint={maxGARD}
                           apr={apr}
                           manageUpdate={setManageUpdate}
+                          mobile={mobile}
                         />
                       ) : selectedTab === "two" ? (
                         <SupplyMore
@@ -374,6 +376,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           maxSupply={maxSupply}
                           apr={apr}
                           manageUpdate={setManageUpdate}
+                          mobile={mobile}
                         />
                       ) : selectedTab === "three" ? (
                         <RepayPosition
@@ -384,26 +387,13 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           apr={apr}
                         />
                       ) : (
-                        <div style={{ marginTop: 40 }}>
-                          <PrimaryButton
-                            text="Close Position"
-                            positioned={true}
-                            blue={true}
-                            onClick={async () => {
-                              setLoading(true);
-                              try {
-                                let res = await closeCDP(cdp.id, cdp.asaID);
-                                if (res.alert) {
-                                  dispatch(setAlert(res.text));
-                                }
-                              } catch (e) {
-                                handleTxError(e, "Error minting from CDP");
-                              }
-                              setLoading(false);
-                              setCurrentCDP(null);
-                            }}
-                          />
-                        </div>
+                        <ClosePosition
+                          cdp={cdp}
+                          price={price}
+                          setCurrentCDP={setCurrentCDP}
+                          mobile={mobile}
+                          apr={apr}
+                        />
                       )}
                     </ToggleContainer>
                   ) : (
@@ -425,6 +415,7 @@ const Sply = styled.div`
   }
   ${(props) => props.mobile && css`
     flex-direction: row;
+    margin-bottom: 8px;
   `}
 `;
 
