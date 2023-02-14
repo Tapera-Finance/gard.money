@@ -40,7 +40,7 @@ export default function SystemMetrics() {
   const [tvl, setTvl] = useState(0);
   const [circulating, setCirculating] = useState(0);
   const [staked, setStaked] = useState(0);
-  var volume = 200000
+  var volume = 200000;
   var details = [
     {
         title: "Total Value Locked (TVL)",
@@ -57,13 +57,13 @@ export default function SystemMetrics() {
       val: (circulating.toFixed(2)).replace(/\B(?=(\d{3})+(?!\d))/g, ","),
       hasToolTip: true,
     },
-  ]
+  ];
 
   useEffect(async () => {
     let res = await fetchTvl();
-    let nl = await getAppField(ids.app.gard_staking, "NL")/1000000
-    let issued = await getAppField(ids.app.validator, "GARD_ISSUED")/1000000
-    let borrowed = await getBorrowed()
+    let nl = await getAppField(ids.app.gard_staking, "NL")/1000000;
+    let issued = await getAppField(ids.app.validator, "GARD_ISSUED")/1000000;
+    let borrowed = await getBorrowed();
     setStaked(nl);
     setCirculating(borrowed-nl);
     if (res) {
@@ -81,7 +81,7 @@ export default function SystemMetrics() {
                 <Item key={d.title}>
                         <Effect title={d.title} val={d.val} hasToolTip={d.hasToolTip} rewards={d.rewards} noMarginBottom={true}></Effect>
                     </Item>
-                )
+                );
             })
             : null}
         </AnalyticsDetails>
@@ -113,12 +113,12 @@ border: 1px solid white;
 background: #0E1834;
 margin-top: 50px;
 margin-bottom: 50px;
-`
+`;
 const Item = styled.div`
     display: flex;
     flex-direction: column;
     font-size: 15px;
-`
+`;
 const GraphContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -127,7 +127,7 @@ const GraphContainer = styled.div`
   ${(props) => props.mobile && css`
     justify-content: center;
   `}
-`
+`;
 
 /**
  * This renders all the given graph items in a single row
@@ -349,13 +349,13 @@ const Header = styled.div`
   ${(props) => !props.mobile && css`
     margin-left: 18px;
   `}
-`
+`;
 
 const BtnSet = styled.div`
   ${(props) => !props.mobile && css`
       margin-left: 18px;
     `}
-`
+`;
 
 const Title = styled.text`
   font-weight: bold;

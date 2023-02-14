@@ -10,7 +10,6 @@ import PageToggle from "../components/PageToggle";
 import { formatToDollars } from "../utils";
 import { getPrice } from "../transactions/cdp";
 import TransactionHistory from "../components/TransactionHistory";
-import AccountCard from "../components/AccountCard";
 import Holdings from "../components/Holdings";
 import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
@@ -29,9 +28,9 @@ function RefButton({navFunc}){
     return <PrimaryButton 
     text={"View Referrals"}
     blue={true}
-    onClick={navFunc}></PrimaryButton>
+    onClick={navFunc}></PrimaryButton>;
   }
-  return <></>
+  return <></>;
 }
 
 /**
@@ -91,16 +90,7 @@ export default function AccountContent() {
   if (!walletAddress) return <div></div>;
   return (
     <AcctPgCont>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          alignContent: "center",
-        }}
-      >
-      </div>
-      <AccountContainer>
+      <AccountContainer id="AccountContainer">
         <div
           style={{
             display: "flex",
@@ -155,6 +145,7 @@ export default function AccountContent() {
         style={{
           marginBottom: 8,
         }}
+        id="AccountTables"
       >
         <AcctPageToggle
           selectedTab={setSelectedTab}
@@ -175,7 +166,7 @@ export default function AccountContent() {
           marginBottom: "36px",
         }}
       >
-      <RefButton navFunc={() => navigate(`/referrals`)}/>
+      <RefButton navFunc={() => navigate("/referrals")}/>
       </div>
     </AcctPgCont>
   );
@@ -187,27 +178,20 @@ const AcctPgCont = styled.div`
   /* max-width: 90vw; */
   width: 95%;
   margin: auto;
-`
+`;
 
 const AcctPageToggle = styled(PageToggle)`
   @media (${device.tablet}) {
     max-width: fit-content;
   }
-`
+`;
 
 const AccountContainer = styled.div`
   background: rgba(13, 18, 39, 0.75);
   border: 1px solid white;
   padding: 5vw 4vw;
-  margin-top: 36px;
-  margin-bottom: 56px;
+  margin-bottom: 20px;
   border-radius: 10px;
-  @media (${device.mobileL}) {
-    max-width: 90vw;
-  }
-  @media (${device.tablet}) {
-    max-width: 90vw;
-  }
 `;
 const AccountTitle = styled.text`
   font-weight: 500;

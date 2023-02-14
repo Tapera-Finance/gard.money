@@ -31,22 +31,22 @@ export default function BorrowCDP({
   const walletAddress = useSelector((state) => state.wallet.address);
   const [balance, setBalance] = useState(0);
   const [supplyLimit, setSupplyLimit] = useState(0);
-  const [borrowLimit, setBorrowLimit] = useState(0)
+  const [borrowLimit, setBorrowLimit] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {debt} = cdp
+  const {debt} = cdp;
 
   const [additionalBorrow, setAdditionalBorrow] = useState("");
 
   const calcUtilization = (borrowed, maxBorrow) => {
-   return ((100 * borrowed ) / maxBorrow).toFixed(2)
-  }
+   return ((100 * borrowed ) / maxBorrow).toFixed(2);
+  };
 
   const handleAddBorrow = (event) => {
-    manageUpdate(true)
-    setUtilization(calcUtilization((event.target.value === "" ? mAlgosToAlgos(cdp.debt) : Number(event.target.value) + mAlgosToAlgos(cdp.debt)), mAlgosToAlgos(cdp.debt) + borrowLimit))
+    manageUpdate(true);
+    setUtilization(calcUtilization((event.target.value === "" ? mAlgosToAlgos(cdp.debt) : Number(event.target.value) + mAlgosToAlgos(cdp.debt)), mAlgosToAlgos(cdp.debt) + borrowLimit));
     setAdditionalBorrow(
       event.target.value === "" ? "" : Number(event.target.value),
     );
@@ -55,11 +55,11 @@ export default function BorrowCDP({
   };
 
   const handleMaxBorrow = (event) => {
-    manageUpdate(true)
-    minted(borrowLimit)
-    setAdditionalBorrow(borrowLimit)
-    setUtilization(calcUtilization(borrowLimit, borrowLimit))
-  }
+    manageUpdate(true);
+    minted(borrowLimit);
+    setAdditionalBorrow(borrowLimit);
+    setUtilization(calcUtilization(borrowLimit, borrowLimit));
+  };
 
   useEffect(async () => {
     await updateWalletInfo();
@@ -73,9 +73,9 @@ export default function BorrowCDP({
         (100 * ((price * cdp.collateral) / 1000000)) / 1.4 -
           (100 * cdp.debt) / 1000000,
       ) / 100,
-    )
-    setBorrowLimit(borrowMax)
-    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), mAlgosToAlgos(cdp.debt) + borrowMax))
+    );
+    setBorrowLimit(borrowMax);
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), mAlgosToAlgos(cdp.debt) + borrowMax));
   }, []);
 
   useEffect(() => {
@@ -162,7 +162,7 @@ export default function BorrowCDP({
             positioned={true}
             text="Borrow More"
             onClick={async () => {
-              if (additionalBorrow === "") return
+              if (additionalBorrow === "") return;
               setLoading(true);
               try {
                 let res = await mint(cdp.id, additionalBorrow, cdp.asaID);
@@ -191,14 +191,13 @@ const MoreContainer = styled.div`
   @media (${device.tablet}) {
     max-width: 90vw;
   }
-`
+`;
 
 const SubContainer = styled.div`
   position: relative;
   margin-bottom: 30px;
 `;
 const Background = styled.div`
-  margin-top: 30px;
   background: #1b2d65;
   border-radius: 10px;
 `;
@@ -240,7 +239,7 @@ const MaxButton = styled.button`
 
 const Text = styled.text`
   //
-`
+`;
 const Valuation = styled.div`
   margin-left: 25px;
   margin-top: 3px;

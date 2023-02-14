@@ -12,14 +12,13 @@ const Backdrop = styled.div`
   z-index: ${21};
 `;
 const Container = styled.div`
-  height: 270px;
   width: 400px;
   background: #0E1834;
   color: white;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  padding: 10px 20px;
+  padding: 10px 15px 15px 15px;
   border: 1px solid white;
 `;
 
@@ -75,20 +74,20 @@ export default function AlertOverlay({ text, requestClose }) {
           <div style={{marginTop: 10}}>{content}</div>
             <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
               <PrimaryButton blue={true} onClick={() => {
-                navigate("/stake")
-                requestClose()
+                navigate("/stake");
+                requestClose();
                 }} text="Go To Stake" />
               <PrimaryButton blue={true} onClick={() => {
-                navigate("/swap")
-                requestClose()
+                navigate("/swap");
+                requestClose();
                 }} text="Go To Swap"/>
               <PrimaryButton blue={true} onClick={() => {
-                navigate("/borrow")
-                requestClose()
+                navigate("/borrow");
+                requestClose();
             }} text="Go To Borrow"/>
             <PrimaryButton blue={true} onClick={() => {
-                navigate("/")
-                requestClose()
+                navigate("/");
+                requestClose();
             }} text="Back To Home"/>
             </div>
         </Container>
@@ -141,7 +140,6 @@ const CloseButton = styled.button`
   border: 0px;
   background: transparent;
   cursor: pointer;
-  margin-bottom: 10px;
 `;
 
 function textWithLink(text) {

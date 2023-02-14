@@ -13,7 +13,7 @@ import {
 } from "../wallets/wallets";
 import { setAlert } from "../redux/slices/alertSlice";
 import LoadingOverlay from "./LoadingOverlay";
-import {adjustedMax} from "../pages/BorrowContent"
+import {adjustedMax} from "../pages/BorrowContent";
 import Select from "./Select";
 import { commitmentPeriodEnd } from "../globals"; 
 import { ids } from "../transactions/ids";
@@ -42,7 +42,7 @@ export default function SupplyCDP({
   const walletAddress = useSelector((state) => state.wallet.address);
   const [balance, setBalance] = useState(0);
   const [supplyLimit, setSupplyLimit] = useState(0);
-  const [mintable, setMintable] = useState(0)
+  const [mintable, setMintable] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [isGAlgo, setIsGAlgo] = useState(false);
@@ -52,7 +52,7 @@ export default function SupplyCDP({
   const typeCDP = {
     galgo: "gALGO",
     algo: "ALGO"
-  }
+  };
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -60,8 +60,8 @@ export default function SupplyCDP({
   const [additionalSupply, setAdditionalSupply] = useState("");
 
   const calcUtilization = (borrowed, maxBorrow) => {
-    return ((100 * borrowed ) / maxBorrow).toFixed(2)
-   }
+    return ((100 * borrowed ) / maxBorrow).toFixed(2);
+   };
 
    const calcMaxIncrease = (supply) => {
     return Math.trunc(
@@ -71,7 +71,7 @@ export default function SupplyCDP({
           1.4 /
           1000000,
       ) / 100;
-   }
+   };
 
   //  const handleSelect = (e) => {
   //   if (e.target.value === "") {
@@ -85,9 +85,9 @@ export default function SupplyCDP({
   };
 
   const handleAddSupply = (event) => {
-    manageUpdate(true)
-    setMintable(calcMaxIncrease(event.target.value === "" ? "" : Number(event.target.value)))
-    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(event.target.value === "" ? "" : Number(event.target.value))))
+    manageUpdate(true);
+    setMintable(calcMaxIncrease(event.target.value === "" ? "" : Number(event.target.value)));
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(event.target.value === "" ? "" : Number(event.target.value))));
     setAdditionalSupply(
       event.target.value === "" ? "" : Number(event.target.value),
     );
@@ -95,20 +95,20 @@ export default function SupplyCDP({
   };
 
   const handleMaxSupply = (event) => {
-    setMintable(calcMaxIncrease(balance))
-    manageUpdate(true)
-    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(balance))))
-    collateral(Number(balance))
-    setAdditionalSupply(Number(balance))
-  }
+    setMintable(calcMaxIncrease(balance));
+    manageUpdate(true);
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(balance))));
+    collateral(Number(balance));
+    setAdditionalSupply(Number(balance));
+  };
 
   useEffect(async () => {
     await updateWalletInfo();
-    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(0))))
+    setUtilization(calcUtilization(mAlgosToAlgos(cdp.debt), calcMaxIncrease(Number(0))));
     let wallet = getWalletInfo();
     if (wallet !== null) {
       if (typeCDP[collateralType] === "gALGO"){
-        let walletInfo = getWalletInfo() && getWalletInfo()["assets"].length > 0 ? getWalletInfo()["assets"] : null
+        let walletInfo = getWalletInfo() && getWalletInfo()["assets"].length > 0 ? getWalletInfo()["assets"] : null;
         let max = (
           walletInfo &&
           walletInfo.filter((i) => i["asset-id"] === ids.asa.galgo).length > 0
@@ -117,7 +117,7 @@ export default function SupplyCDP({
               ] / 1000000
             : 0
         ); // hardcoded asa for now, should filter based on generic selected asset
-        setBalance((Math.trunc(max*1000)/1000).toFixed(3))
+        setBalance((Math.trunc(max*1000)/1000).toFixed(3));
       }
       else{
         setBalance(adjustedMax());
@@ -133,7 +133,7 @@ export default function SupplyCDP({
 
   useEffect(() => {
 
-  }, [additionalSupply])
+  }, [additionalSupply]);
 
   useEffect(() => {
     if (!walletAddress) navigate("/");
@@ -222,7 +222,7 @@ export default function SupplyCDP({
             positioned={true}
             text="Supply More"
             onClick={async () => {
-              if (additionalSupply === "") return
+              if (additionalSupply === "") return;
               setLoading(true);
               try {
                 let res = await addCollateral(cdp.id, additionalSupply, commitChecked, cdp.asaID);
@@ -252,7 +252,7 @@ const Container = styled.div`
 `;
 const Text = styled.text`
   //
-`
+`;
 const ExchangeSelect = styled(Select)`
   font-size: 14pt;
   margin: 0px 0px 0px 12px;
@@ -262,14 +262,13 @@ const ExchangeSelect = styled(Select)`
     border: 1px solid #1b2d65;
     background-color: #01d1ff;
   }
-`
+`;
 
 const SubContainer = styled.div`
   position: relative;
   margin-bottom: 30px;
 `;
 const Background = styled.div`
-  margin-top: 30px;
   background: #1b2d65;
   border-radius: 10px;
 `;

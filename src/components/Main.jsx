@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import styled, { keyframes, css } from "styled-components";
 import HomeContent from "../pages/HomeContent";
 import Drawer from "./Drawer";
-import Topbar from "./Topbar";
+import TopBar from "./Topbar";
 import { CONTENT_NAMES } from "../globals";
 //import AnalyticsContent from "../pages/AnalyticsContent";
 import AccountContent from "../pages/AccountContent";
@@ -17,8 +17,8 @@ import { useSelector } from "react-redux";
 import { hide } from "../redux/slices/alertSlice";
 import SwapDetails from "./actions/SwapDetails";
 import StakeDetails from "./actions/StakeDetails";
-import { size, device } from "../styles/global"
-import { isMobile } from "../utils"
+import { size, device } from "../styles/global";
+import { isMobile } from "../utils";
 
 async function googleStuff() {
   const script = document.createElement("script");
@@ -38,14 +38,14 @@ async function googleStuff() {
 }
 
 function debounce(fn, ms) {
-  let timer
+  let timer;
   return _ => {
-    clearTimeout(timer)
+    clearTimeout(timer);
     timer = setTimeout(_ => {
-      timer = null
-      fn.apply(this, arguments)
-    }, ms)
-  }
+      timer = null;
+      fn.apply(this, arguments);
+    }, ms);
+  };
 }
 
 /**
@@ -59,11 +59,11 @@ export default function Main(WrappedComponent, title) {
   const [dimmensions, setDimmensions] = useState({
     width: undefined,
     height: undefined
-  })
+  });
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function Main(WrappedComponent, title) {
         width: window.innerWidth,
         height: window.innerHeight,
       });
-    }, 1000)
+    }, 1000);
 
     // Add event listener
     window.addEventListener("resize", debouncedHandleResize);
@@ -96,7 +96,7 @@ export default function Main(WrappedComponent, title) {
     if (dimmensions && dimmensions.width > parseInt(size.tablet)) {
       // setIsOpen(true);
     }
-  }, [dimmensions])
+  }, [dimmensions]);
 
   const dispatch = useDispatch();
   const alertData = useSelector((state) => state.alert);
@@ -123,12 +123,12 @@ export default function Main(WrappedComponent, title) {
         allowAnimate={() => setCanAnimate(true)}
       />
       <MainContentDiv mobile={mobile} canAnimate={canAnimate} isOpen={isOpen}>
-        <Topbar
+        <TopBar
           contentName={title}
           style={{ background: "#172756" }}
         />
-        <ContentContainer isOpen={isOpen}>
-          <Wrapper mobile={mobile} style={{maxWidth: `${mobile ? "100%" : ""}`}} >
+        <ContentContainer>
+          <Wrapper mobile={mobile}>
             <WrappedComponent />
           </Wrapper>
         </ContentContainer>
@@ -148,38 +148,25 @@ const ContainedDrawer = styled(Drawer)`
         visibility: visible;
       `
     } */
-`
+`;
 
 const Wrapper = styled.div`
-  /* padding-left: 1.9444444444444vw;
-  padding-right: 1.9444444444444vw; */
-  padding-top: 40px;
   flex: 1;
   @media (min-width: ${size.tablet}) {
     padding-left: 6.9444444444444vw;
     padding-right: 6.9444444444444vw;
   }
-  @media (${device.mobileM}) {
-    padding-left: 0vw;
-    width: 100%;
-  }
   ${(props) => props.mobile && css`
     padding-top: 0px;
     max-width: 100%;
   `}
-`
+`;
 
 const ContentContainer = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
-  @media (${device.tablet}) {
-    margin-left: 0vw;
-  }
-  @media (min-width: ${size.tablet}) {
-    //
-  }
-`
+`;
 
 //animation to expand or retract the main content container, depending on if the drawer is open or closed
 const expandMainContentAnimation = keyframes`
@@ -219,7 +206,7 @@ const MainContentDiv = styled.div`
 
   @media (min-width: ${size.tablet}) {
     ${(props) => !props.mobile && css`
-      margin-left: 16.75vw;
+      margin-left: 250px;
     `}
   }
 `;
@@ -252,7 +239,7 @@ function MainContentHandler({ content, walletAddress }) {
     case CONTENT_NAMES.AUCTIONS:
       return <AuctionsContent />;
     case CONTENT_NAMES.SWAP:
-      return <SwapDetails />
+      return <SwapDetails />;
     case CONTENT_NAMES.STAKE:
       return <StakeDetails />;
     case CONTENT_NAMES.ACTIONS:

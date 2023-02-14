@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import SupplyCDP from "./SupplyCDP";
 import Details from "./Details";
-import { mAlgosToAlgos, algosToMAlgos} from "../pages/BorrowContent"
+import { mAlgosToAlgos, algosToMAlgos} from "../pages/BorrowContent";
 import { calcRatio } from "../transactions/cdp";
 
 export default function SupplyMore({ collateralType, supplyPrice, cAsset, collateral, minted, cdp, price, setCurrentCDP, maxSupply, manageUpdate, apr, mobile}) {
@@ -59,7 +59,7 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
           val: !cAsset ? calcRatio(cdp.collateral, cdp.debt / 1000000, cdp.asaID, true) : calcRatio((algosToMAlgos(cAsset) + cdp.collateral), cdp.debt / 1000000, cdp.asaID, true),
           hasToolTip: true,
         },
-      ]
+      ];
     // TODO: combine SupplyCDP & BorrowCDP
     return <div>
         <div style={{marginTop: 20}}>
@@ -68,6 +68,6 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
         <div style={{position:"relative", top:-57}}>
             <Details mobile={mobile} details={supplyDetails}/>
         </div>
-    </div>
+    </div>;
 }
 

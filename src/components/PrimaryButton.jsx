@@ -65,7 +65,7 @@ const Button = styled.button`
     props.underTable &&
     css`
       position: relative;
-      bottom: 50px;
+      bottom: 25px;
       margin: auto;
       border: none;
       z-index: 1;

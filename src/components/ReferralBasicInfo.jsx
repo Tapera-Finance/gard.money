@@ -8,34 +8,34 @@ import { searchAccounts } from "../pages/GovernContent";
 import algosdk from "algosdk";
 
 function DBtoAddresses(db){
-  return db.map((val) => val['_document'].key.path.segments[6]);
+  return db.map((val) => val["_document"].key.path.segments[6]);
 }
 
 async function getUserTotals(addresses, usersMintLpInfo){
-  let mintDict = usersMintLpInfo[0]
-  let lpDict = usersMintLpInfo[1]
-  const length = addresses.length
-  let mintedGARD = 0
-  let unstakedLP = 0
+  let mintDict = usersMintLpInfo[0];
+  let lpDict = usersMintLpInfo[1];
+  const length = addresses.length;
+  let mintedGARD = 0;
+  let unstakedLP = 0;
   for (let i = 0; i < length; i++){
     if (addresses[i] in mintDict){
-      mintedGARD += mintDict[addresses[i]]
+      mintedGARD += mintDict[addresses[i]];
     }
     if (addresses[i] in lpDict){
-      unstakedLP += 2.013*lpDict[addresses[i]]/1e6
+      unstakedLP += 2.013*lpDict[addresses[i]]/1e6;
     }
   }
-  return [(mintedGARD/1e6).toFixed(0), unstakedLP.toFixed(2)]
+  return [(mintedGARD/1e6).toFixed(0), unstakedLP.toFixed(2)];
 }
 
 async function getMintedDict() {
 
   let nexttoken;
   let response = null;
-  const mints = {}
-  const lp = {}
+  const mints = {};
+  const lp = {};
 
-  const validators = [ids.app.validator]
+  const validators = [ids.app.validator];
   for(var i = 0; i < validators.length; i++){
     do {
       // Find accounts that are opted into the GARD price validator application
@@ -45,20 +45,20 @@ async function getMintedDict() {
         limit: 1000,
         nexttoken,
       });
-      for (const account of response['accounts']) {
-          if(account['apps-local-state']){
-          let cdp_state = account['apps-local-state'][0]['key-value']
-          const owner = algosdk.encodeAddress(Buffer.from(getStateUint(cdp_state, btoa("OWNER"), 1), "base64"))
+      for (const account of response["accounts"]) {
+          if(account["apps-local-state"]){
+          let cdp_state = account["apps-local-state"][0]["key-value"];
+          const owner = algosdk.encodeAddress(Buffer.from(getStateUint(cdp_state, btoa("OWNER"), 1), "base64"));
           if (!(owner in mints)){
-            mints[owner] = getStateUint(cdp_state, btoa("Principal"))
+            mints[owner] = getStateUint(cdp_state, btoa("Principal"));
           }
           else {
-            mints[owner] += getStateUint(cdp_state, btoa("Principal"))
+            mints[owner] += getStateUint(cdp_state, btoa("Principal"));
           }
           }
         
       }
-      nexttoken = response['next-token']
+      nexttoken = response["next-token"];
     } while (nexttoken != null);
   }
   do {
@@ -70,33 +70,33 @@ async function getMintedDict() {
       asset: 1,
       nexttoken
     });
-    for (const account of response['accounts']) {
-          let assets = account['assets']
-          let holdings_length = account['assets'].length
+    for (const account of response["accounts"]) {
+          let assets = account["assets"];
+          let holdings_length = account["assets"].length;
           for (let i = 0; i < holdings_length; i++){
-            if (assets[i]['asset-id'] == 701250027){
-              lp[account['address']] = assets[i]["amount"]
+            if (assets[i]["asset-id"] == 701250027){
+              lp[account["address"]] = assets[i]["amount"];
             }
           }
     }
-    nexttoken = response['next-token']
+    nexttoken = response["next-token"];
   } while (nexttoken != null);
-  return [mints, lp]
+  return [mints, lp];
 }
 
 export default function ReferralBasicInfo({refIDs}){
-    const [refTotal, setRefTotal] = useState(-1)
-    const [mintedTotal, setMintedTotal] = useState(-1)
-    const [lpTotal, setLpTotal] = useState(-1)
+    const [refTotal, setRefTotal] = useState(-1);
+    const [mintedTotal, setMintedTotal] = useState(-1);
+    const [lpTotal, setLpTotal] = useState(-1);
 
     useEffect(async () => {
-        const dictPromise = getMintedDict()
-        let result = await getReferrerDB(refIDs)
-        setRefTotal(result.length)
-        const addresses = DBtoAddresses(result)
-        const usersInfo = await getUserTotals(addresses, await dictPromise)
-        setMintedTotal(usersInfo[0])
-        setLpTotal(usersInfo[1])
+        const dictPromise = getMintedDict();
+        let result = await getReferrerDB(refIDs);
+        setRefTotal(result.length);
+        const addresses = DBtoAddresses(result);
+        const usersInfo = await getUserTotals(addresses, await dictPromise);
+        setMintedTotal(usersInfo[0]);
+        setLpTotal(usersInfo[1]);
       }, []);
 
     return (
@@ -161,12 +161,12 @@ export default function ReferralBasicInfo({refIDs}){
             </div>
         </AccountContainer>
     </AcctPgCont>
-    )
+    );
 }
 
 const AcctPgCont = styled.div`
   /* max-width: 90vw; */
-`
+`;
 
 const AccountContainer = styled.div`
   background: rgba(13, 18, 39, 0.75);

@@ -1,28 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components";
-import Details from "../components/Details";
 import PrimaryButton from "../components/PrimaryButton";
-import RewardNotice from "../components/RewardNotice";
 import TextButton from "../components/TextButton";
 import Table from "../components/Table";
 import { CDPsToList } from "../components/Positions";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { cdpGen } from "../transactions/contracts";
-import { commitCDP, getPrice } from "../transactions/cdp";
+import { commitCDP } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
 import { commitmentPeriodEnd } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
-import { textAlign } from "@mui/system";
-import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
 import { getAlgoGovAPR } from "../components/Positions";
 import { isFirefox } from "../utils";
-import { device, size } from "../styles/global";
+import { device } from "../styles/global";
 import { voteCDPs } from "../transactions/cdp";
 import { isMobile } from "../utils";
 
@@ -30,56 +26,56 @@ const axios = require("axios");
 
 export async function searchAccounts({ appId, limit = 1000, asset=0, nexttoken, }) {
   const axiosObj = axios.create({
-    baseURL: 'https://mainnet-idx.algonode.cloud',
+    baseURL: "https://mainnet-idx.algonode.cloud",
     timeout: 300000,
-  })
+  });
   await new Promise((r) => setTimeout(r, 100));
-  const arg = asset ? 'asset-id' : 'application-id'
-  const response = (await axiosObj.get('/v2/accounts', {
+  const arg = asset ? "asset-id" : "application-id";
+  const response = (await axiosObj.get("/v2/accounts", {
     params: {
       [arg]: appId,
       limit,
       next: nexttoken
     }
-  }))
-  return response.data
+  }));
+  return response.data;
 }
 
 /* Get value locked in user-controlled smart contracts */
 async function getAlgoGovernanceAccountBals() {
 
-  const v2GardPriceValidatorId = 890603991
-  let nexttoken
-  let response = null
-  let totalCommitedAlgo = 0
-  let totalGovs = 0
+  const v2GardPriceValidatorId = 890603991;
+  let nexttoken;
+  let response = null;
+  let totalCommitedAlgo = 0;
+  let totalGovs = 0;
 
   const axiosObj = axios.create({
-    baseURL: 'https://governance.algorand.foundation/api/governors/',
+    baseURL: "https://governance.algorand.foundation/api/governors/",
     timeout: 300000,
-  })
+  });
   async function isGovernor(address) {
     try {
-        let response = (await axiosObj.get(address + '/status/', {}))
+        let response = (await axiosObj.get(address + "/status/", {}));
         if (response) {
-          totalCommitedAlgo += parseInt(response.data["committed_algo_amount"])
-          totalGovs += 1
+          totalCommitedAlgo += parseInt(response.data["committed_algo_amount"]);
+          totalGovs += 1;
         }
       }
       catch (error) {
         if (error.response) {
-          console.log(error.response)
+          console.log(error.response);
         } else if (error.request) {
           // This means the item does not exist
         } else {
           // This means that there was an unhandled error
-          console.error(error)
+          console.error(error);
         }
       }
   }
 
-  let promises = []
-  const validators = [v2GardPriceValidatorId]
+  let promises = [];
+  const validators = [v2GardPriceValidatorId];
   for(var i = 0; i < validators.length; i++){
     do {
       // Find accounts that are opted into the GARD price validator application
@@ -89,14 +85,14 @@ async function getAlgoGovernanceAccountBals() {
         limit: 1000,
         nexttoken,
       });
-      for (const account of response['accounts']) {
-        promises.push(isGovernor(account.address))
+      for (const account of response["accounts"]) {
+        promises.push(isGovernor(account.address));
       }
-      nexttoken = response['next-token']
+      nexttoken = response["next-token"];
     } while (nexttoken != null);
   }
   await Promise.allSettled(promises);
-  return [(totalCommitedAlgo/1e12).toFixed(2) + 'M Algo', totalGovs]
+  return [(totalCommitedAlgo/1e12).toFixed(2) + "M Algo", totalGovs];
 }
 
 function getGovernorPage(id) {
@@ -107,58 +103,55 @@ function getGovernorPage(id) {
 }
 
 export async function getCommDict(){
-  let res = {}
-  const cdps = CDPsToList()
+  let res = {};
+  const cdps = CDPsToList();
   if (cdps[0].id == "N/A"){
-    return {}
+    return {};
   }
-  const owner_address = getWallet().address
-  const addresses = cdps.filter(value => !value.asaID).map(value => cdpGen(owner_address, value.id).address)
+  const owner_address = getWallet().address;
+  const addresses = cdps.filter(value => !value.asaID).map(value => cdpGen(owner_address, value.id).address);
   try {
   const axiosObj = axios.create({
-    baseURL: 'https://governance.algorand.foundation/api/governors/',
+    baseURL: "https://governance.algorand.foundation/api/governors/",
     timeout: 300000,
-  })
+  });
   for (let k = 0; k < addresses.length; k++){
-    let response = (await axiosObj.get(addresses[k] + '/status/', {}))
+    let response = (await axiosObj.get(addresses[k] + "/status/", {}));
     if (response) {
-      res[addresses[k]] = parseInt(response.data["committed_algo_amount"])
+      res[addresses[k]] = parseInt(response.data["committed_algo_amount"]);
     } else {
-      res[addresses[k]] = 0
+      res[addresses[k]] = 0;
     }
   }} catch (error) {
     if (error.response) {
-      console.log(error.response)
+      console.log(error.response);
     } else if (error.request) {
       // This means the item does not exist
     } else {
       // This means that there was an unhandled error
-      console.error(error)
+      console.error(error);
     }}
-  return res
+  return res;
 }
 
 
 export default function Govern() {
   const [mobile, setMobile] = useState(isMobile());
-  const walletAddress = useSelector(state => state.wallet.address)
+  const walletAddress = useSelector(state => state.wallet.address);
   const [maxBal, setMaxBal] = useState("");
   const [commit, setCommit] = useState(0);
-  const [vote0, setVote0] = useState("Allocate 15 MM Algos to DeFi for Q1/2023")
-  const [vote1, setVote1] = useState("Yes")
-  const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants")
-  const [vote3, setVote3] = useState("Yes")
-  const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection")
+  const [vote0, setVote0] = useState("Allocate 15 MM Algos to DeFi for Q1/2023");
+  const [vote1, setVote1] = useState("Yes");
+  const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants");
+  const [vote3, setVote3] = useState("Yes");
+  const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection");
   const [selectedAccount, setSelectedAccount] = useState("");
   const [refresh, setRefresh] = useState(0);
-  const [commitDict, setCommitDict] = useState({})
+  const [commitDict, setCommitDict] = useState({});
   const [vaulted, setVaulted] = useState("Loading...");
-  const [shownAll, setAllVotes] = useState(true);
   const [governors, setGovernors] = useState("Loading...");
-  const [enrollmentEnd, setEnrollmentEnd] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
-  const [voteTableDisabled, setVoteTable] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
@@ -188,15 +181,15 @@ export default function Govern() {
   {
     "Allocate 600K Algos to seed the establishment of a Community-curated NFT collection": "a",
     "Allocate 300K Algos to seed the establishment of a Community-curated NFT collection": "b",
-  }]
+  }];
 
   useEffect(() => {
     if (!getWallet()) return navigate("/");
   }, []);
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   var sessionStorageSetHandler = function (e) {
     setLoadingText(JSON.parse(e.value));
@@ -224,7 +217,7 @@ export default function Govern() {
   }, []);
 
   useEffect(async () => {
-    const algoGovPromise = getAlgoGovernanceAccountBals()
+    const algoGovPromise = getAlgoGovernanceAccountBals();
     const gov_results = await algoGovPromise;
     setVaulted(gov_results[0]);
     setGovernors(gov_results[1]);
@@ -239,19 +232,19 @@ export default function Govern() {
     } else {
       setCommitDisabled(false);
     }
-  }, [])
+  }, []);
 
   useEffect(async () => {
-    let dict = await getCommDict()
-    setCommitDict(dict)
-  }, [])
+    let dict = await getCommDict();
+    setCommitDict(dict);
+  }, []);
 
   const owner_address = getWallet().address;
   let adjusted;
   if (!loadedCDPs.filter(value => !value.asaID).length){
-    adjusted = dummyCdps
+    adjusted = dummyCdps;
     if (!commitDisabled){
-      setCommitDisabled(true)
+      setCommitDisabled(true);
     }
   }
   else {
@@ -263,7 +256,7 @@ export default function Govern() {
           committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-6/governors">See external site</a>,
           id: value.id,
           collateral: value.collateral
-        }
+        };
       } else {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
@@ -274,10 +267,10 @@ export default function Govern() {
       }
     });
   }
-  let cdps = adjusted.map((value, index) => {
+  let cdps = adjusted.map((value,) => {
     let account_id = parseInt(value.id);
-    let commitBal = value.collateral
-    delete value.collateral
+    let commitBal = value.collateral;
+    delete value.collateral;
     delete value.id;
     return {
       ...value,
@@ -296,7 +289,7 @@ export default function Govern() {
               setModalVisible(true);
               setSelectedAccount(account_id);
               setMaxBal(value.balance);
-              setCommit(commitBal)
+              setCommit(commitBal);
             }}
 
             disabled={
@@ -318,7 +311,7 @@ export default function Govern() {
               setModalVisible(true);
               setSelectedAccount(account_id);
               setMaxBal(value.balance);
-              setCommit(commitBal)
+              setCommit(commitBal);
             }}
 
             disabled={(!(Date.now() < commitmentPeriodEnd)) || commitDisabled}
@@ -350,46 +343,6 @@ export default function Govern() {
       ) : (
         <></>
       )}
-{/*
-<Banner
-      >
-        <div
-          style={{
-            justifyContent: "center",
-            textAlign: "left",
-            alignItems: "center",
-            color: "#172756",
-          }}
-        >
-          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 21, 2022 EOD</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
-          }}
-        >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
-
-          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
-          </div>
-        </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <Link onClick={() => {
-            window.open("https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors")
-          }}>Learn More</Link>
-        </div>
-      </Banner>
-        */}
       <GovInfoContainer>
         <fieldset
           style={{
@@ -468,44 +421,15 @@ export default function Govern() {
             padding: "20px 20px 0px",
             margin: "auto",
         }}>
-      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} onClick={() => {
+      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={false} onClick={() => {
             navigate("/borrow");
           }}/>
-      <PrimaryButton text="Place Votes" blue={true} underTable={true} onClick={async () => {
-            setModal2CanAnimate(true)
-            setModal2Visible(true)
-            setModal2CanAnimate(false)
+      <PrimaryButton text="Place Votes" blue={true} underTable={false} onClick={async () => {
+            setModal2CanAnimate(true);
+            setModal2Visible(true);
+            setModal2CanAnimate(false);
           }} disabled={(Date.now() < 1670256000000 || Date.now() > 1671465600000) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps}/>
           </div>
-      {voteTableDisabled ? <></>:
-      <div>
-        <div
-          style={{
-            height: 70,
-            borderTopRightRadius: 10,
-            borderTopLeftRadius: 10,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            background: "#0E1834",
-            border: "1px solid white",
-            borderBottom: "none"
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
-            <div style={{ marginLeft: 25, marginRight: 8 }}>
-              <Title>Algorand Votes</Title>
-            </div>
-            <CountContainer>
-              <CountText>2 Votes Open, 1 Closed Vote</CountText>
-            </CountContainer>
-          </div>
-          <div style={{ display: "flex", marginRight: 20 }}>
-            <PrimaryButton text="Submit All Votes" blue={true}/>
-          </div>
-        </div>
-        <Table data={dummyVotes} />
-      </div>}
       <Modal
         title={"ALGOs to Commit"}
         close={() => setModalVisible(false)}
@@ -564,7 +488,7 @@ export default function Govern() {
               <text>Place your vote below for </text>
               <Link
               onClick={() => {
-                window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
+                window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
               }}
                 href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
               >
@@ -583,7 +507,7 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
                     }}
                       href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
@@ -601,7 +525,7 @@ export default function Govern() {
                   <Select
                     value={vote0}
                     onChange={(e) => {
-                      setVote0(e.target.value)
+                      setVote0(e.target.value);
                     }}
                   >
                     <option>
@@ -623,7 +547,7 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
                     }}
                       href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
@@ -641,7 +565,7 @@ export default function Govern() {
                   <Select
                     value={vote1}
                     onChange={(e) => {
-                      setVote1(e.target.value)
+                      setVote1(e.target.value);
                     }}
                   >
                     <option>
@@ -663,7 +587,7 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
                     }}
                       href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
@@ -681,7 +605,7 @@ export default function Govern() {
                   <Select
                     value={vote2}
                     onChange={(e) => {
-                      setVote2(e.target.value)
+                      setVote2(e.target.value);
                     }}
                   >
                     <option>
@@ -703,7 +627,7 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
                     }}
                       href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
@@ -721,7 +645,7 @@ export default function Govern() {
                   <Select
                     value={vote3}
                     onChange={(e) => {
-                      setVote3(e.target.value)
+                      setVote3(e.target.value);
                     }}
                   >
                     <option>
@@ -743,7 +667,7 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
                     }}
                       href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
@@ -761,7 +685,7 @@ export default function Govern() {
                   <Select
                     value={vote4}
                     onChange={(e) => {
-                      setVote4(e.target.value)
+                      setVote4(e.target.value);
                     }}
                   >
                     <option>
@@ -787,10 +711,10 @@ export default function Govern() {
                   setModal2Visible(false);
                   setLoading(true);
                   try {
-                    let votes = []
-                    const votearray = [vote0, vote1, vote2, vote3, vote4]
+                    let votes = [];
+                    const votearray = [vote0, vote1, vote2, vote3, vote4];
                     for (let i = 0; i < 5; i++){
-                      votes.push(voteMap[i][votearray[i]])
+                      votes.push(voteMap[i][votearray[i]]);
                     }
                     const res = await voteCDPs(
                       loadedCDPs.filter(value => !value.asaID),
@@ -820,7 +744,8 @@ export default function Govern() {
 }
 
 const CDPTable = styled(Table)`
-`
+  margin-bottom: 64;
+`;
 
 const PositionTableContainer = styled.div`
   height: 70px;
@@ -832,12 +757,12 @@ const PositionTableContainer = styled.div`
   background: #0E1834;
   border: 1px solid white;
   border-bottom: none;
-`
+`;
 
 const GovContainer = styled.div`
 margin: auto;
 width: 95%;
-`
+`;
 
 const GovInfoContainer = styled.div`
   margin-bottom: 30px;
@@ -846,7 +771,7 @@ const GovInfoContainer = styled.div`
     justify-content: center;
     align-items: center;
   }
-`
+`;
 
 
 const Link = styled.text`
@@ -860,20 +785,6 @@ const Link = styled.text`
   }
 `;
 
-const Banner = styled.div`
-  display: flex;
-  width: 100%;
-  border: 1px solid white;
-  align-content: center;
-  flex-direction: row;
-  border-radius: 10px;
-  justify-content: space-between;
-  text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-  margin-bottom: 14px;
-`
 const GovernDetails = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 30%);
@@ -931,74 +842,7 @@ const CountText = styled.text`
   font-size: 10px;
   `}
 `;
-const dummyCommits = [
-  {
-    Account: "123456",
-    Balance: "Dec 29, 2021",
-    APY: "4.5%",
-    "": <PrimaryButton blue={true} text="Commit" />,
-  },
-  {
-    Account: "123456",
-    Balance: "Closed",
-    APY: "4.5%",
-    "": <PrimaryButton blue={true} text="Commit" />,
-  },
-];
 
-const dummyVotes = [
-  {
-    nameOfProposal: "Lorem ippsum dol...",
-    votesCloses: "Dec 29, 2021",
-    votesInFavor: "59%",
-    votesOutstanding: "37%",
-    "": (
-      // <PrimaryButton
-      //   blue={true}
-      //   text="Vote"
-      // />
-      <div style={{ display: "flex" }}>
-        <div style={{ alignSelf: "center", color: "#01d1ff" }}>Yes</div>
-        <Switch />
-        <div style={{ alignSelf: "center", color: "grey" }}>No</div>
-      </div>
-    ),
-  },
-  {
-    nameOfProposal: "Lorem ippsum dol...",
-    votesCloses: "Dec 29, 2021",
-    votesInFavor: "59%",
-    votesOutstanding: "37%",
-    "": (
-      // <PrimaryButton
-      //   blue={true}
-      //   text="Vote"
-      // />
-      <div style={{ display: "flex" }}>
-        <div style={{ alignSelf: "center", color: "#01d1ff" }}>Yes</div>
-        <Switch />
-        <div style={{ alignSelf: "center", color: "grey" }}>No</div>
-      </div>
-    ),
-  },
-  {
-    nameOfProposal: "Lorem ippsum dol...",
-    votesCloses: "Closed",
-    votesInFavor: "59%",
-    votesOutstanding: "36%",
-    "": (
-      // <PrimaryButton
-      //   blue={true}
-      //   text="Vote"
-      // />
-      <div style={{ display: "flex" }}>
-        <div style={{ alignSelf: "center", color: "#01d1ff" }}>Yes</div>
-        <Switch />
-        <div style={{ alignSelf: "center", color: "grey" }}>No</div>
-      </div>
-    ),
-  },
-];
 const InputMandatory = styled.text`
   font-weight: bold;
   font-size: 16px;
@@ -1007,9 +851,6 @@ const InputMandatory = styled.text`
 const InputTitle = styled.text`
   font-weight: bold;
   font-size: 16px;
-`;
-const BoldText = styled.text`
-  font-weight: 700;
 `;
 const InputSubtitle = styled.text`
   font-weight: normal;

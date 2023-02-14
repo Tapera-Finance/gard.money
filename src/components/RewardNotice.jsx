@@ -3,7 +3,7 @@ import styled, {css} from "styled-components";
 
 
 export default function RewardNotice({className, program, timespan, estimatedRewards, action, link, linkText}){
-    const [showNotice, setShowNotice]= useState(true)
+    const [showNotice, setShowNotice]= useState(true);
     return <div className={className} >
         {showNotice ? <div>
         <div className={className} style={{
@@ -34,7 +34,7 @@ export default function RewardNotice({className, program, timespan, estimatedRew
         </div>
         <button
         onClick={() => {
-            setShowNotice(false)
+            setShowNotice(false);
         }}
          style={{
             background: "transparent",
@@ -48,12 +48,12 @@ export default function RewardNotice({className, program, timespan, estimatedRew
         </button>
         </div>:
         <></>}
-    </div>
+    </div>;
 }
 
 const TimeSpan = styled.text`
     font-size: 12px;
-`
+`;
 
 const Link = styled.a`
   text-decoration: none;

@@ -7,8 +7,8 @@ import chevron from "../assets/icons/tablePag_icon.png";
 import { loadDbActionAndMetrics, queryUser } from "./Firebase";
 import { onSnapshot } from "firebase/firestore";
 import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
-import gardLogo from "../assets/icons/gardlogo_icon_small.png"
-import { device } from "../styles/global"
+import gardLogo from "../assets/icons/gardlogo_icon_small.png";
+import { device } from "../styles/global";
 import { isMobile } from "../utils";
 
 function mAlgosToAlgos(num) {
@@ -20,7 +20,7 @@ function mAlgosToAlgosFixed(num) {
 }
 
 function totalVal(n1, n2) {
-  return formatToDollars(((n1 - n2) / 1e6).toString())
+  return formatToDollars(((n1 - n2) / 1e6).toString());
 }
 
 // only call db if wallet present
@@ -130,8 +130,8 @@ export default function TransactionHistory() {
     : ["No transaction history to display"];
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   useEffect(() => {
     if (typeof getWalletInfo() !== "undefined") {
@@ -186,7 +186,7 @@ export default function TransactionHistory() {
         </CountContainer>
       </div>
       </TableHeading>
-      <GridBox>
+      <div>
         <TableGrid>
           <tbody>
             <HeaderRow>
@@ -302,17 +302,13 @@ export default function TransactionHistory() {
         ) : (
           <TableBottom></TableBottom>
         )}
-      </GridBox>
+      </div>
     </TxnHistContainer>
   );
 }
 
-const GridBox = styled.div`
-  margin-bottom: 64px;
-`
-
 const TxnHistContainer = styled.div`
-`
+`;
 
 const PaginationDiv = styled.div`
   display: flex;
@@ -329,7 +325,7 @@ const TableHeading = styled.div`
   background: #0E1834;
   border: 1px solid white;
   border-bottom: none;
-`
+`;
 
 
 // styled components
@@ -368,11 +364,11 @@ const AlgoImg = styled.img`
   max-width: 100%;
   max-height: 100%;
   filter: invert();
-`
+`;
 const GardImg = styled.img`
  max-width: 100%;
   max-height: 100%;
-`
+`;
 
 const Title = styled.text`
   font-weight: 500;

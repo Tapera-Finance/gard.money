@@ -8,13 +8,13 @@ import daoIcon from "../assets/icons/dao_icon.png";
 import mintIcon from "../assets/icons/mint_icon.png";
 import repayIcon from "../assets/icons/repay_icon.png";
 import swapIcon from "../assets/icons/swap_icon.png";
-import stakeIcon from "../assets/icons/icons8-stake-block-64.png"
+import stakeIcon from "../assets/icons/icons8-stake-block-64.png";
 import walletIcon from "../assets/icons/wallet_icon.png";
 import logo from "../assets/new_gard_logo.png";
 import chevronDown from "../assets/chevron_down.png";
 import chevronUp from "../assets/chevron_up.png";
 import hamburguerIcon from "../assets/icons/hamburger_icon.png";
-import closeIcon from "../assets/icons/close_icon.png"
+import closeIcon from "../assets/icons/close_icon.png";
 import hamburguerPurpleIcon from "../assets/icons/hamburger-purple_icon.png";
 import { CONTENT_NAMES } from "../globals";
 import TwitterIcon from "../assets/icons/twitter_icon.png";
@@ -22,7 +22,7 @@ import RedditIcon from "../assets/icons/reddit_icon.png";
 import ALGOPrice from "./ALGOPrice";
 import TelegramIcon from "../assets/icons/telegram_icon.png";
 import DiscordIcon from "../assets/icons/discord_icon.png";
-import MediumIcon from "../assets/icons/icons8-medium-48.png"
+import MediumIcon from "../assets/icons/icons8-medium-48.png";
 import DocumentIcon from "../assets/icons/document_icon.png";
 import TutorialIcon from "../assets/icons/tutorial_icon.png";
 import { useNavigate } from "react-router-dom";
@@ -30,22 +30,22 @@ import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { useSelector } from "react-redux";
 import { device, size } from "../styles/global";
-import { px2vw, isMobile } from "../utils"
-import { useScreenOrientation } from "../hooks"
+import { px2vw, isMobile } from "../utils";
+import { useScreenOrientation } from "../hooks";
 import CountdownTimer from "../components/CountdownTimer";
 import { commitmentPeriodEnd } from "../globals";
 import syncIconWhite from "../assets/icons/sync_icon_white.png";
 
 
 function debounce(fn, ms) {
-  let timer
+  let timer;
   return _ => {
-    clearTimeout(timer)
+    clearTimeout(timer);
     timer = setTimeout(_ => {
-      timer = null
-      fn.apply(this, arguments)
-    }, ms)
-  }
+      timer = null;
+      fn.apply(this, arguments);
+    }, ms);
+  };
 }
 
 /**
@@ -66,7 +66,7 @@ export default function Drawer({
 }) {
   const [dev, setDev] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
-  const [mobile, setMobile] = useState(isMobile())
+  const [mobile, setMobile] = useState(isMobile());
   const [closeVisible, setCloseVisible] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -74,23 +74,23 @@ export default function Drawer({
   const [dimmensions, setDimmensions] = useState({
     width: undefined,
     height: undefined
-  })
+  });
 
   const toggleOpen = (close = false) => {
     if (close) {
       setIsOpen(false);
     }
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
 
   const closeDrawer = () => {
     toggleOpen(true);
-  }
+  };
 
 
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   useEffect(() => {
     // Handler to call on window resize
@@ -100,7 +100,7 @@ export default function Drawer({
         width: window.innerWidth,
         height: window.innerHeight,
       });
-    }, 1000)
+    }, 1000);
     // Add event listener
     window.addEventListener("resize", debouncedHandleResize);
     // Call handler right away so state gets updated with initial window size
@@ -417,118 +417,33 @@ const MobileDrawer = styled.div`
   align-content: center;
   width: 100vw;
   height: 9vh;
-
-  ${(props) => props.open &&
-      css`
-        margin-bottom: 0vh;
-        position: fixed;
-      `
-    }
-    ${(props) => !props.open &&
-      css`
-         margin-bottom: 7vh;
-      `
-    }
-  @media (min-width: ${size.tablet}) {
-    ${(props) => props.mobile && css`
-      ${(props) =>
-        props.open &&
-        css`
-          visibility: visible;
-          height: 9vh;
-          /* position: fixed; */
-        `}
-      ${(props) =>
-        !props.open &&
-        css`
-          visibility: visible;
-          height: 9vh;
-          /* position: fixed; */
-        `}
-    `}
-  }
-`
+  margin-bottom: 0vh;
+  position: fixed;
+  z-index: 15;
+`;
 
 const DrawerDiv = styled.div`
   background: linear-gradient(80deg, #172756 0%, #000000 100%);
   height: 101vh;
   z-index: 15;
   overflow-y: auto;
-  width: ${`${isMobile() ? `100%` : `250px`}`};
+  width: ${`${isMobile() ? "100%" : "250px"}`};
+  position: fixed;
 
-  ${(props) => props.mobile && props.open && css`
-    position: fixed;
+  ${(props) => props.mobile && !props.open && css`
+    display: none;
+  `}
+  ${(props) => props.mobile && css`
     top: 9vh;
     overflow-y: hidden;
   `}
 
-  /* ${(props) =>
-    props.mobile &&
-    css`
-      visibility: hidden;
-      width: 100vw;
-      overflow: scroll;
-      position: unset;
-      position: fixed;
-    `} */
-
-  /* ${(props) =>
-    props.open &&
-    css`
-      position: ${`${isMobile() ? `fixed` : `inherit`}`};
-      visibility: visible;
-    `} */
-  /* ${(props) =>
-    !props.open &&
-    css`
-      visibility: hidden;
-    `} */
-
-  // if screen is smaller than tablet, hide drawer until opened at full width
-
-  /* ${(props) => !props.mobile && css`
-    @media (${device.tablet}) {
-      visibility: hidden;
-      position: absolute;
-      ${(props) =>
-        props.open &&
-        css`
-          visibility: visible;
-          width: 100vw;
-          overflow: scroll;
-          position: unset;
-          position: fixed;
-        `}
-      ${(props) =>
-        !props.open &&
-        css`
-          height: 101vh;
-          margin-left: 0vw;
-        `}
-      }
-  `} */
-
   // if screen is larger than tablet, show drawer always
   @media (min-width: ${size.tablet}) {
     ${(props) => !props.mobile && css`
-      ${(props) =>
-        props.open &&
-        css`
           visibility: visible;
-          height: 101vh;
-          position: fixed;
-        `}
-      ${(props) =>
-        !props.open &&
-        css`
-          visibility: visible;
-          height: 101vh;
-          position: fixed;
-        `}
     `}
   }
-
-  // if screen is smaller than tablet, eliminate left margin
 `;
 const SocialMediaContainer = styled.div`
   width: 80%;
@@ -545,7 +460,7 @@ const TermLinkBox = styled.div`
   @media (max-width: 1246px) {
     width: 65%;
   }
-`
+`;
 
 export const SocialMediaButton = styled.div`
   cursor: pointer;
@@ -596,7 +511,7 @@ const PP = styled.text`
   :hover& {
     opacity: 0.5;
   }
-`
+`;
 
 /**
  * Renders a dropdown menu button for the drawer
@@ -746,7 +661,7 @@ const MobileNavLogo = styled.img`
   height: 25px;
   align-self: center;
   margin: auto;
-`
+`;
 const TopBarText = styled.text`
   color: white;
   font-weight: 500;

@@ -15,7 +15,7 @@ const prices = {
 export const convertToDollars = (amt, idx) =>
   formatToDollars(amt * prices[idx]);
 
-export const inverseToDollars = (amt, idx) => formatToDollars(amt / prices[idx])
+export const inverseToDollars = (amt, idx) => formatToDollars(amt / prices[idx]);
 
 export const formatPrice = (num) => {
   let cut = 3;
@@ -60,12 +60,6 @@ export const getBalances = () => {
 export const exchangeRatioAssetXtoAssetY = (assetX, assetY) => {
   return parseFloat(assetX / assetY).toFixed(4);
 };
-
-export const algoGardRatio = async () =>
-  exchangeRatioAssetXtoAssetY(
-    mAlgosToAlgos(gardpool.calculator.primaryAssetPrice),
-    mAlgosToAlgos(gardpool.calculator.secondaryAssetPrice),
-  );
 
 /**
  * Component Helpers

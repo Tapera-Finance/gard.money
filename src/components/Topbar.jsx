@@ -3,7 +3,6 @@ import styled, { css } from "styled-components";
 import syncIcon from "../assets/icons/sync_icon.png";
 import syncIconWhite from "../assets/icons/sync_icon_white.png";
 import AccountCard from "./AccountCard";
-import WalletConnect from "./WalletConnect";
 import {size, device} from "../styles/global";
 import { isMobile } from "../utils";
 /**
@@ -12,23 +11,23 @@ import { isMobile } from "../utils";
  * @param {{contentName: string}} props
  */
 
-export default function Topbar({ contentName }) {
+export default function TopBar({ contentName }) {
   const [mobile, setMobile] = useState(isMobile());
-  const accountPage = contentName == "Account"
+  const accountPage = contentName == "Account";
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   return (
-    <div style={{display: "flex", justifyContent: `${mobile ? "center" : ""}`}}>
-      <TopBar mobile={mobile} accountPage={accountPage}>
+      <TopBarDiv id="TopBar" mobile={mobile} accountPage={accountPage}>
         {mobile ? <></> : <div
           style={{
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
             height: "100%",
-            justifyContent: "flex-end"
+            justifyContent: "flex-end",
+            marginLeft: "5%",
           }}
         >
           <div style={{ marginRight: 9 }}>
@@ -41,13 +40,8 @@ export default function Topbar({ contentName }) {
             <img src={syncIconWhite} style={{ height: 24 }} alt="sync-white" />
           </SimplePressable>
         </div>}
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div>
-          <AccountCard contentName={contentName}/>
-          </div>
-        </div>
-      </TopBar>
-    </div>
+        <AccountCard contentName={contentName}/>
+      </TopBarDiv>
   );
 }
 
@@ -55,40 +49,25 @@ export default function Topbar({ contentName }) {
 
 
 
-const TopBar = styled.div`
-  height: 96px;
+const TopBarDiv = styled.div`
   background: #172756;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding-left: 36px;
-  padding-right: ${window.innerWidth * 0.057}px;
-
+  margin-top: 2%;
+  margin-bottom: 2.5%;
   ${(props) => props.mobile && css`
     flex-direction: column;
     padding: 0px;
-    height: 50px;
-    align-items: center;
-    margin-top: 10px;
   `}
-  ${(props) => props.mobile && props.accountPage && css`
-    height: 60px;
+  ${(props) => !props.mobile && css`
+    width: 100%;
   `}
-  @media (min-width: ${size.tablet}) {
-    width: 100%;
-    margin-left: 2.88vw;
-  }
-  @media (${device.tablet}) {
-    width: 100%;
-  }
 `;
 const TopBarText = styled.text`
   font-weight: 500;
   font-size: 20px;
-  @media (${device.tablet}) {
-    margin: 4px 0px 12px 0px;
-  }
 `;
 const SimplePressable = styled.div`
   cursor: pointer;
