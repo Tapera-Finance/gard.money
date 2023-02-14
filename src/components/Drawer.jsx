@@ -185,13 +185,13 @@ export default function Drawer({
             justifyContent: "space-between",
           }}
         >
-          <div style={{display: "flex", justifyContent: "space-evenly", height: `${mobile && isOpen ? 0 : ""}`}} >
+          <div style={{display: "flex", justifyContent: "space-evenly"}} >
+          {!mobile ?
           <LogoButton
             style={{
               display: "flex",
               margin: "auto",
-              marginTop: 48,
-              visibility: `${(mobile && isOpen) ? "collapse" : "visible"}`
+              marginTop: "35px",
             }}
             onClick={() => {
               if (window.innerWidth < 900) toggleOpen();
@@ -199,7 +199,7 @@ export default function Drawer({
             }}
           >
             <NavLogo src={logo} alt="logo" />
-          </LogoButton>
+          </LogoButton>:<></>}
         <CloseButton
           style={{visibility: `${mobile && isOpen ? "visible" : "collapse"}`}}
           onClick={() => {
@@ -296,7 +296,6 @@ export default function Drawer({
           <div style={{
             position: "relative",
             bottom: -15,
-            right: -5,
             textAlign: "center",
             fontSize: 12,
             color: "white",
@@ -307,19 +306,15 @@ export default function Drawer({
             <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
           </div> */
         ></div>
-        <div style={{
-          top: "85vh", left: 0, right: 0
-          }}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
               flexDirection: "column",
-              marginTop: 10,
               bottom: 0,
               width: "100%",
-              height: "2.5rem"
-
+              position: "absolute",
+              marginBottom: "10px"
             }}
           >
             <SocialMediaContainer
@@ -404,7 +399,6 @@ export default function Drawer({
               </SocialMediaButton>
             </SocialMediaContainer>
           </div>
-        </div>
       </DrawerDiv>
     </div>
   );
@@ -424,7 +418,6 @@ const MobileDrawer = styled.div`
 
 const DrawerDiv = styled.div`
   background: linear-gradient(80deg, #172756 0%, #000000 100%);
-  height: 101vh;
   z-index: 15;
   overflow-y: auto;
   width: ${`${isMobile() ? "100%" : "250px"}`};
@@ -436,14 +429,11 @@ const DrawerDiv = styled.div`
   ${(props) => props.mobile && css`
     top: 9vh;
     overflow-y: hidden;
+    height: 91vh;
   `}
-
-  // if screen is larger than tablet, show drawer always
-  @media (min-width: ${size.tablet}) {
-    ${(props) => !props.mobile && css`
-          visibility: visible;
-    `}
-  }
+  ${(props) => !props.mobile && css`
+    height: 100%;
+  `}
 `;
 const SocialMediaContainer = styled.div`
   width: 80%;
