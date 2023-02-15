@@ -1,7 +1,8 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
-import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField, getGardianBalance } from "./lib";
-import { accountInfo, getParams, signGroup, sendTxn } from "../wallets/wallets";
+import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField, getTokenBalance } from "./lib"
+import { accountInfo, getParams, signGroup, sendTxn, updateWalletInfo } from "../wallets/wallets";
+import { verifyOptIn, createOptInTxn } from "./cdp";
 
 const enc = new TextEncoder();
 let stakingRevenuePercent = .8; // TODO: Get this dynamically off the chain
@@ -185,7 +186,8 @@ export async function GardianStake(pool, amount) {
   let params = await getParams(1000);
   let info = await infoPromise;
   
-  const gardian_bal = getGardianBalance(info);
+
+  const gardian_bal = getTokenBalance(info, ids.asa.gardian)
   if (gardian_bal == null || gardian_bal < amount) {
     return {
       alert: true,
@@ -315,4 +317,163 @@ export async function GardianUnstake(pool, amount) {
   setLoadingStage(null);
 
   return response;
+}
+
+export async function GlitterStake(amount){
+  setLoadingStage("Loading...");
+  console.log(amount, typeof amount)
+  amount = parseInt(amount * 1e6)
+  let infoPromise = accountInfo();
+
+  let params = await getParams(1000);
+  let info = await infoPromise;
+  
+  const glitter_bal = getTokenBalance(info, ids.asa.glitter)
+  if (glitter_bal == null || glitter_bal < amount) {
+    return {
+      alert: true,
+      text:
+        "Insufficient XGLI for transaction. Balance: " +
+        (glitter_bal == null ? 0 : glitter_bal).toString() +
+        "\n" +
+        "Required: " +
+        (amount).toString(),
+    };
+  }
+  
+  let txns = [];
+  let optedIn = isOptedIn(ids.app.glitter.xsol, info);
+  if (!optedIn) {
+    // opt in txn
+    let txnOptIn = algosdk.makeApplicationOptInTxnFromObject({
+      from: info.address,
+      suggestedParams: params,
+      appIndex: ids.app.glitter.xsol,
+    });
+    txns.push(txnOptIn)
+  }
+  optedIn = verifyOptIn(info, ids.asa.xsol)
+  if (!optedIn) {
+    // opt in txn
+    let txnOptIn = createOptInTxn(params, info, ids.asa.xsol)
+    txns.push(txnOptIn)
+  }
+  // txn 0 - app call
+  params.fee = 3000;
+  let txn0 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: ids.app.glitter.xsol,
+    onComplete: 0,
+    appArgs: [enc.encode("enter_NL_pool")],
+    accounts: [],
+    foreignApps: [ids.app.dummy],
+    foreignAssets: [ids.asa.glitter, ids.asa.xsol],
+    suggestedParams: params,
+  });
+  txns.push(txn0)
+  // txn 1 - entrance transfer
+  params.fee = 1000;
+  let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(ids.app.glitter.xsol),
+    amount: amount,
+    suggestedParams: params,
+    assetIndex: ids.asa.glitter,
+  });
+  txns.push(txn1)
+  let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(ids.app.glitter.xsol),
+    amount: 1000,
+    suggestedParams: params,
+  });
+  txns.push(txn2)
+  
+  algosdk.assignGroupID(txns);
+  
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+  const signedGroup = await signGroup(info, txns);
+
+  setLoadingStage("Confirming Transaction...");
+
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
+  if (signedGroup.length == 4) {
+    stxns.push(signedGroup[3].blob)
+  }
+  else if (signedGroup.length == 5) {
+    stxns.push(signedGroup[3].blob)
+    stxns.push(signedGroup[4].blob)
+  }
+
+  let response = await sendTxn(
+    stxns,
+    "Successfully staked " + ((amount/1e6).toFixed(3)) + " XGLI. Any xSol rewards have been deposited into your account.",
+  );
+  setLoadingStage(null);
+
+  return response;
+}
+
+export async function GlitterUnstake(amount){
+  setLoadingStage("Loading...");
+  console.log(amount, typeof amount)
+  amount = parseInt(amount * 1e6)
+  let infoPromise = accountInfo();
+
+  // XXX: This could be more optimally set -
+  //      for locked pools if it's not a valid
+  //      withdrawal period, only needs to be 1000
+  let params = await getParams(4000);
+  let info = await infoPromise;
+  
+  // txn 0 - app call
+  let txn0 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: ids.app.glitter.xsol,
+    onComplete: 0,
+    appArgs: [enc.encode("exit_NL_pool"), algosdk.encodeUint64(amount)],
+    accounts: [],
+    foreignApps: [ids.app.dummy],
+    foreignAssets: [ids.asa.glitter, ids.asa.xsol], 
+    suggestedParams: params,
+  });
+  // txn 1 - useless transaction, required for structure
+  params.fee = 1000
+  let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(ids.app.glitter.xsol),
+    amount: 0,
+    suggestedParams: params,
+  });
+  // txn 2 - extra opcode budget
+  let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(ids.app.glitter.xsol),
+    amount: 1000,
+    suggestedParams: params,
+  });
+
+  let txns = [txn0, txn1, txn2];
+  algosdk.assignGroupID(txns);
+  
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+  const signedGroup = await signGroup(info, txns);
+
+  setLoadingStage("Confirming Transaction...");
+
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
+
+  let response = await sendTxn(
+    stxns,
+    "Successfully unstaked " + (amount/1e6).toFixed(3) + " XGLI. Any xSol rewards have been deposited into your account.", 
+  );
+  setLoadingStage(null);
+
+  return response;
+}
+
+export async function getGlitterTVL(){
+  const amount = await getAppField(ids.app.glitter.xsol, "NL")
+  const field2 = await getAppField(ids.app.glitter.xsol, "NL Return Rate")
+  return [(amount * 0.00321601 / 1e6).toFixed(2), amount, field2]
 }

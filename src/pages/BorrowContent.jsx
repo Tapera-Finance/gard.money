@@ -389,7 +389,7 @@ export default function BorrowContent() {
                     callback={handleSelect}
                   />
                   {/* ALGO */}
-                  <AlgoImg mobile={mobile} src={borrowIcon} isGAlgo={!isGAlgo} />
+                  <AssetImg src={borrowIcon} isGAlgo={!isGAlgo} />
                 </Title>
                 <InputContainer>
                   <div style={{ display: "flex" }}>
@@ -575,32 +575,11 @@ const AssetName = styled.div`
   justify-content: center;
 `;
 
-const AlgoImg = styled.img`
-  /* filter: invert(); */
-  height: 75px;
-  width: 75px;
-  right: --4px;
+const AssetImg = styled.img`
+  height: 50px;
+  width: 50px;
   position: relative;
-  ${(props) => !props.isGAlgo &&
-    css`
-      height: 50px;
-      width: 50px;
-      margin-left: 8px;
-      margin-top: 12.5px;
-      margin-bottom: 12.5px;
-    `
-  }
-  ${(props) => props.mobile && css`
-  height: 30px
-  width: 30px;
-  `}
 `;
-
-const gAlgoImg = styled.img`
-  height: 30px;
-  width: 30px;
-  position: relative;
-`
 
 const GardImg = styled.img`
   height: 40px;
@@ -664,10 +643,8 @@ const BorrowTitle = styled.div`
   font-size: 14pt;
   align-items: center;
   text-align: center;
-  padding: 20px 0px 20px;
-  ${(props) => props.mobile && css`
-  padding: 0px 0px 0px;
-  `}
+  padding: 10px 0px 10px;
+  gap: 10px
 `;
 
 const InputContainer = styled.div`

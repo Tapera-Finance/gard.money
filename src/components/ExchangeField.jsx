@@ -175,7 +175,7 @@ const InputContainer = styled.div`
 const ExchangeInput = styled(InputField)`
   width: ${`${isMobile() ? "28vw" : "8vw"}`};
   height: 4vh;
-  border: 1px transparent;
+  border: 1px solid white;
   text-decoration-color: #6430ff;
   text-decoration-thickness: 2px;
   font-size: 14pt;
@@ -183,16 +183,6 @@ const ExchangeInput = styled(InputField)`
   text-align: center;
   background: #0d122710;
   margin: 10px 10px 10px 10px;
-
-  &:active {
-    color: #999696;
-    background: #e8e8e8;
-  }
-  &:focus {
-    color: #999696;
-    background: #e8e8e8;
-    text-decoration: none;
-  }
   @media (${device.tablet}) {
     width: 16vw;
     font-size: small;

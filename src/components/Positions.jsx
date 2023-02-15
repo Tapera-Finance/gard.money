@@ -401,37 +401,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           apr={apr}
                         />
                       ) : (
-                        // : selectedTab === "three" ?
-                        //     <div>
-                        //         <SalesHeader>
-                        //             <b style={{textAlign:"left"}}>Position</b>
-                        //             <b>Sell for</b>
-                        //             <b style={{textAlign: "center"}}>Amount</b>
-                        //             <b style={{textAlign: "center"}}>Sale Discount</b>
-                        //         </SalesHeader>
-                        //         <SalesInfo>
-                        //             <div style={{display: "flex", flexDirection: "column", rowGap: 20}}>
-                        //                 <div>Supplied: {(microalgosToAlgos(cdp.collateral)).toFixed(2)} ALGOs</div>
-                        //                 <div>Borrowed: {mGardToGard(cdp.debt).toFixed(2)} GARD</div>
-                        //             </div>
-                        //             <PrimaryButton text="ALGO"/>
-                        //             <div style={{display: "flex", flexDirection: "column", alignSelf: "center"}}>
-                        //                 <Input
-                        //                 autoComplete="off"
-                        //                 display="none"
-                        //                 placeholder={"enter amount"}
-                        //                 type='number'
-                        //                 min="0.00"
-                        //                 id="salesPrice"
-                        //                 // value={salesPrice}
-                        //                 // onChange={handleSalesPrice}
-                        //                 />
-                        //                 <Valuation>Value: ${12.3}</Valuation>
-                        //             </div>
-                        //             <div style={{color: "grey", textAlign: "center"}}> 4.33%</div>
-                        //         </SalesInfo>
-                        //         <PrimaryButton text="List for Sale" purple={true} disabled={true} />
-                        // </div>
                         <ClosePosition
                           cdp={cdp}
                           price={price}
@@ -439,26 +408,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                           mobile={mobile}
                           apr={apr}
                         />
-                        // <div style={{ marginTop: 40 }}>
-                        //   <PrimaryButton
-                        //     text="Close Position"
-                        //     positioned={true}
-                        //     blue={true}
-                        //     onClick={async () => {
-                        //       setLoading(true);
-                        //       try {
-                        //         let res = await closeCDP(cdp.id, cdp.asaID);
-                        //         if (res.alert) {
-                        //           dispatch(setAlert(res.text));
-                        //         }
-                        //       } catch (e) {
-                        //         handleTxError(e, "Error minting from CDP");
-                        //       }
-                        //       setLoading(false);
-                        //       setCurrentCDP(null);
-                        //     }}
-                        //   />
-                        // </div>
                       )}
                     </ToggleContainer>
                   ) : (

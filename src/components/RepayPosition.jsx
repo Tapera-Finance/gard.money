@@ -223,12 +223,12 @@ const InputContainer = styled.div`
 `;
 
 const InputDetails = styled.div`
-display: grid;
-grid-template-columns:repeat(2, 49%);
-row-gap: 30px;
-justify-content: center;
-padding: 30px 0px 30px;
-border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 49%);
+  row-gap: 30px;
+  justify-content: center;
+  padding: 30px 0px 30px;
+  border-radius: 10px;
 `;
 
 const Item = styled.div`
