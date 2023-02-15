@@ -789,6 +789,7 @@ export default function Govern() {
                   text="Use GARD Node"
                   onClick={async () => {
                     setLoading(true);
+                    /*
                     setLoadingStage("Checking for existing, valid Participation Key...")
                     // async call
                     const endpoint = axios.create({
@@ -834,9 +835,13 @@ export default function Govern() {
                         key_exists = true
                       }
                     }
-                    }
+                    }*/
                     try {
-                      let res = await goOnlineCDP(selectedAccount, "hi", "test", 0, 1, 2);
+                      // let res = await goOnlineCDP(selectedAccount, "hi", "test", 0, 1, 2);
+                      let res = {
+                        alert: true,
+                        text: "Securing with GARD Node is in closed Beta!"
+                      }
                       if (res.alert) {
                         dispatch(setAlert(res.text));
                       }
