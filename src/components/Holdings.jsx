@@ -12,12 +12,13 @@ import { isMobile } from "../utils";
 import { getNLStake } from "./actions/StakeDetails";
 import { getAccruedRewards } from "../transactions/stake";
 import { algo } from "crypto-js";
+import InfoHover from "./InfoHover";
 
 function getAssets(alg_price) {
   var assets = [{name: "ALGO", amount: getWalletInfo().amount/1e6, value: parseFloat(alg_price*getWalletInfo().amount/1e6).toFixed(3)}];
   let x = getWalletInfo()["assets"];
   for (var i = 0, len = x.length; i < len; i++) {
-    if ([ids.asa.gard, ids.asa.gain, ids.asa.gardian, ids.asa.galgo].includes(x[i]["asset-id"])) {
+    if ([ids.asa.gard, ids.asa.gardian, ids.asa.galgo].includes(x[i]["asset-id"])) {
       let amnt = (x[i]["amount"] / 10 ** x[i]["decimals"]);
       let token_price = x[i]["asset-id"] == ids.asa.gard ? 1 : 0;
       token_price = x[i]["asset-id"] == ids.asa.galgo ? (0.98*alg_price) : token_price;
@@ -121,6 +122,7 @@ export default function Holdings() {
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title mobile={mobile}>Wallet {`(${formatToDollars(walletTotal.toString())} Total Value)`}</Title>
           </div>
+          <InfoHover infotext={"Assets shown here are only assets usable by the GARD Protocol and do not reflect all of the assets in your wallet."}></InfoHover>
           <CountContainer>
             <CountText mobile={mobile}>LP Tokens excluded</CountText>
           </CountContainer>
