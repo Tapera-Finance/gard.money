@@ -122,7 +122,7 @@ export default function Holdings() {
           <div style={{ marginLeft: 25, marginRight: 8 }}>
             <Title mobile={mobile}>Wallet {`(${formatToDollars(walletTotal.toString())} Total Value)`}</Title>
           </div>
-          <InfoHover infotext={"Assets shown here are only assets usable by the GARD Protocol and do not reflect all of the assets in your wallet."}></InfoHover>
+          <InfoHover infotext={"Only GARD-integrated assets are displayed; this does not reflect all assets in your wallet."}></InfoHover>
           <CountContainer>
             <CountText mobile={mobile}>LP Tokens excluded</CountText>
           </CountContainer>
