@@ -29,6 +29,7 @@ import { titleToToolTip } from "../../utils";
 import { VERSION } from "../../globals";
 import { size, device } from "../../styles/global";
 import { isMobile } from "../../utils";
+import { GoHomeIfNoWallet } from "../../pages/GovernContent";
 
 const initEffectState = {
   primaryAssetPriceAfterSwap: 0.0,
@@ -53,6 +54,11 @@ export default function SwapDetails() {
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState(1);
 
+  const navigate = useNavigate();
+
+  if (GoHomeIfNoWallet(navigate)){
+    return null
+  }
   // account
   const [balanceX, setBalanceX] = useState(getBalances()["algo"]);
   const [balanceY, setBalanceY] = useState(getBalances()["gard"]);
@@ -89,7 +95,6 @@ export default function SwapDetails() {
   const [disabled, setDisabled] = useState(true);
   const [getBal, setGetBal] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const assets = ["ALGO", "GARD"];
 

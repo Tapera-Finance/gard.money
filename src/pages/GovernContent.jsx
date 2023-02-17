@@ -25,6 +25,17 @@ import { setLoadingStage } from "../transactions/lib";
 
 const axios = require("axios");
 
+export function GoHomeIfNoWallet(navigate){
+  try{
+    getWallet().address
+    return false
+  }
+  catch {
+    navigate("/")
+    return true
+  }
+}
+
 export async function searchAccounts({ appId, limit = 1000, asset=0, nexttoken, }) {
   const axiosObj = axios.create({
     baseURL: "https://mainnet-idx.algonode.cloud",
@@ -244,6 +255,10 @@ export default function Govern() {
     let dict = await getCommDict();
     setCommitDict(dict);
   }, []);
+
+  if (GoHomeIfNoWallet(navigate)){
+    return null
+  }
 
   const owner_address = getWallet().address;
   let adjusted;

@@ -12,6 +12,7 @@ import {
 import { start_auction, liquidate } from "../transactions/liquidation";
 import { getAllCDPs } from "../transactions/cdp";
 import { setAlert } from "../redux/slices/alertSlice";
+import { GoHomeIfNoWallet } from "./GovernContent";
 
 let cdp_data_promise = loadDefaulted();
 let curr_price = await getCurrentAlgoUsd();
@@ -49,6 +50,10 @@ export default function AuctionsContent() {
     setLoadingText(JSON.parse(e.value));
   };
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
+
+  if (GoHomeIfNoWallet(navigate)){
+    return null
+  }
 
   let defaulted = cdp_data.map((cdp) => {
     return {

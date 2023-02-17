@@ -29,6 +29,7 @@ import { ids } from "../transactions/ids";
 import { device } from "../styles/global";
 import { isMobile } from "../utils";
 import { Banner } from "../components/Banner";
+import { GoHomeIfNoWallet } from "./GovernContent";
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
@@ -328,6 +329,10 @@ export default function BorrowContent() {
       hasToolTip: true,
     },
   ];
+
+  if (GoHomeIfNoWallet(navigate)){
+    return null
+  }
 
   var supplyDetails = [
     {
