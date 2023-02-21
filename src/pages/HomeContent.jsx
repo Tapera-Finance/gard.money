@@ -271,7 +271,7 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Governance APR",
+      title: "ALGO Governance APR",
       val: `${apr}%`,
       hasToolTip: true,
     },
