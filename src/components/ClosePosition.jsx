@@ -40,11 +40,6 @@ export default function ClosePosition({cdp, price, setCurrentCDP, details, mobil
         },
   ]
   : [
-        {
-            title: "Total Supplied (Asset)",
-            val: `${cdp.collateral/1e6}`,
-            hasToolTip: true,
-          },
           {
             title: "Total Supplied ($)",
             val: `${`$${(cdp.collateral/1e6 * price).toFixed(2)}`}`,
@@ -69,11 +64,6 @@ export default function ClosePosition({cdp, price, setCurrentCDP, details, mobil
             }`,
             hasToolTip: true,
           },
-          // {
-          //   title: "GARD Borrow APR",
-          //   val: 0,
-          //   hasToolTip: true,
-          // },
           {
             title: "ALGO Governance APR",
             val: `${apr}%`,

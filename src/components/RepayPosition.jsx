@@ -43,11 +43,6 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
         },
   ]
   : [
-        {
-            title: "Total Supplied (Asset)",
-            val: `${cdp.collateral/1e6}`,
-            hasToolTip: true,
-          },
           {
             title: "Total Supplied ($)",
             val: `${`$${(cdp.collateral/1e6 * price).toFixed(2)}`}`,

@@ -16,11 +16,6 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
       },
     ] : [
       {
-        title: "Total Supplied (Asset)",
-        val: `${mAlgosToAlgos(cdp.collateral + (collateral !== "" ? collateral : 0)).toFixed(2)}`,
-        hasToolTip: true,
-      },
-      {
         title: "Total Supplied ($)",
         val: `$${((Number(mAlgosToAlgos(cdp.collateral + (collateral !== "" ? collateral : 0 )) * supplyPrice))).toFixed(2)}`,
         hasToolTip: true,
