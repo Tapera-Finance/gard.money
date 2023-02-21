@@ -45,11 +45,6 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
           hasToolTip: true,
         },
         {
-          title: "Bonus Supply Rewards",
-          val: 0,
-          hasToolTip: true,
-        },
-        {
           title: "ALGO Governance APR",
           val: `${apr}%`,
           hasToolTip: true,

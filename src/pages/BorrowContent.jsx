@@ -312,11 +312,6 @@ export default function BorrowContent() {
       hasToolTip: true,
     },
     {
-      title: "Bonus Supply Rewards",
-      val: 0,
-      hasToolTip: true,
-    },
-    {
       title: "ALGO Governance APR",
       val: `${apr}%`,
       hasToolTip: true,
