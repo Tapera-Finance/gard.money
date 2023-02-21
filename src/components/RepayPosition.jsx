@@ -72,16 +72,6 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
             }`,
             hasToolTip: true,
           },
-          // {
-          //   title: "GARD Borrow APR",
-          //   val: 0,
-          //   hasToolTip: true,
-          // },
-          {
-            title: "ALGO Governance APR",
-            val: `${apr}%`,
-            hasToolTip: true,
-          },
           {
             title: "Collateralization Ratio",
             val: `${

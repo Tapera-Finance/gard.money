@@ -14,11 +14,6 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
         val: `$${mAsset == null || mAsset == "" ? ((1.15 * (mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral))).toFixed(4)) : ((1.15 * (mAlgosToAlgos(cdp.debt) + mAsset) / (mAlgosToAlgos(cdp.collateral))).toFixed(4))}`,
         hasToolTip: true,
       },
-      {
-        title: "ALGO Governance APR",
-        val: `${apr}%`,
-        hasToolTip: true,
-      },
     ] : [
       {
         title: "Total Supplied (Asset)",
@@ -43,11 +38,6 @@ export default function BorrowMore({ supplyPrice, collateral, mAsset, minted, cd
       {
         title: "Liquidation Price",
         val: `$${mAsset == null || mAsset == "" ? ((1.15 * (mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral))).toFixed(4)) : ((1.15 * (mAlgosToAlgos(cdp.debt) + mAsset) / (mAlgosToAlgos(cdp.collateral))).toFixed(4))}`,
-        hasToolTip: true,
-      },
-      {
-        title: "ALGO Governance APR",
-        val: `${apr}%`,
         hasToolTip: true,
       },
       {
