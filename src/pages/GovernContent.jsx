@@ -16,13 +16,25 @@ import { commitmentPeriodEnd } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
 import Modal from "../components/Modal";
-import { getAlgoGovAPR } from "../components/Positions";
+import { getAlgoGovAPR, getField } from "../components/Positions";
 import { isFirefox } from "../utils";
 import { device } from "../styles/global";
-import { voteCDPs } from "../transactions/cdp";
+import { voteCDPs, goOnlineCDP } from "../transactions/cdp";
 import { isMobile } from "../utils";
+import { setLoadingStage } from "../transactions/lib";
 
 const axios = require("axios");
+
+export function GoHomeIfNoWallet(navigate){
+  try{
+    getWallet().address
+    return false
+  }
+  catch {
+    navigate("/")
+    return true
+  }
+}
 
 export async function searchAccounts({ appId, limit = 1000, asset=0, nexttoken, }) {
   const axiosObj = axios.create({
@@ -146,6 +158,7 @@ export default function Govern() {
   const [vote3, setVote3] = useState("Yes");
   const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection");
   const [selectedAccount, setSelectedAccount] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState("")
   const [refresh, setRefresh] = useState(0);
   const [commitDict, setCommitDict] = useState({});
   const [vaulted, setVaulted] = useState("Loading...");
@@ -154,8 +167,12 @@ export default function Govern() {
   const [loadingText, setLoadingText] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
+  const [modal3Visible, setModal3Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [modal2CanAnimate, setModal2CanAnimate] = useState(false);
+  const [modal3CanAnimate, setModal3CanAnimate] = useState(false);
+  const [personal, setPersonal] = useState(false)
+  const [onlineStatus, setOnlineStatus] = useState(false)
   const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
   const dispatch = useDispatch();
@@ -239,6 +256,10 @@ export default function Govern() {
     setCommitDict(dict);
   }, []);
 
+  if (GoHomeIfNoWallet(navigate)){
+    return null
+  }
+
   const owner_address = getWallet().address;
   let adjusted;
   if (!loadedCDPs.filter(value => !value.asaID).length){
@@ -255,14 +276,16 @@ export default function Govern() {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-6/governors">See external site</a>,
           id: value.id,
-          collateral: value.collateral
+          collateral: value.collateral,
+          status: value.status
         };
       } else {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           committed: commitDict[cdp_address] == 0 || !commitDict[cdp_address] ? 0 : `${(commitDict[cdp_address] / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           id: value.id,
-          collateral: value.collateral
+          collateral: value.collateral,
+          status: value.status
         };
       }
     });
@@ -270,6 +293,8 @@ export default function Govern() {
   let cdps = adjusted.map((value,) => {
     let account_id = parseInt(value.id);
     let commitBal = value.collateral;
+    let status = value.status;
+    delete value.status
     delete value.collateral;
     delete value.id;
     return {
@@ -327,6 +352,22 @@ export default function Govern() {
               window.open(getGovernorPage(account_id));
             }}
             disabled={commitDisabled}
+            />
+        ),
+        "Consensus": (
+          <PrimaryButton
+            blue={true}
+            text={"Node Consensus"}
+            left_align={true}
+            tableShrink={mobile}
+            onClick={() => {
+              setSelectedAccount(account_id);
+              let temp = cdpGen(getWallet().address, account_id).address;
+              setSelectedAddress(temp)
+              setOnlineStatus(status !== "Offline")
+              setModal3CanAnimate(true)
+              setModal3Visible(true)
+            }}
             />
         ),
     };
@@ -739,6 +780,166 @@ export default function Govern() {
             </div>
           </div>
         </Modal>
+        <Modal
+          title={"Secure the Algorand Blockchain"}
+          subtitle={"Associate the Algos in your CDP with a consensus node"}
+          close={() => setModal3Visible(false)}
+          animate={modal3CanAnimate}
+          visible={modal3Visible}
+        >
+          {(
+              <div>
+                <div style={{justifyContent: "center", alignItems: "center", display: "flex", flexDirection:"row", marginBottom: 10,}}>
+                  Your ALGOs are currently:&nbsp; 
+                { onlineStatus ? (
+                <div style={{justifyContent: "center", alignItems: "center", color: "#228B22",}}>
+                  ONLINE
+                </div>) : (<div style={{justifyContent: "center", alignItems: "center", color: "#EE4B2B",}}>
+                  OFFLINE
+                </div>)}
+                </div>
+                <div style={{marginBottom: 10, display: "flex", flexDirection: "row"}}>
+                <PrimaryButton
+                  blue={true}
+                  text="Use GARD Node"
+                  onClick={async () => {
+                    setLoading(true);
+                    /*
+                    setLoadingStage("Checking for existing, valid Participation Key...")
+                    // async call
+                    const endpoint = axios.create({
+                      baseURL: "https://node1.gard.money",
+                      timeout: 300000,
+                    });
+                    let response;
+                    console.log(selectedAddress)
+                    try {
+                          response = (await endpoint.get("/", {
+                            params: {
+                              "Address": selectedAddress,
+                            }
+                          }));
+                          console.log(response)
+                          console.log(response.data)
+                        }
+                      catch (error) {
+                        if (error.response) {
+                          console.log(error.response);
+                        } else if (error.request) {
+                          // This means the item does not exist
+                          console.log("Item does not exist")
+                        } else {
+                          // This means that there was an unhandled error
+                          console.error(error);
+                        }
+                      }
+                    let key_exists = false;
+                    if (!key_exists){
+                      setLoadingStage("Generating Participation Keys (this will take at least 5 minutes, so feel free to check back soon; your keys will be saved)...")
+                    // another async call
+                    while(!key_exists) {
+                      await new Promise((r) => setTimeout(r, 2000));
+                      const response = (await endpoint.get("", {
+                        params: {
+                          "Address": selectedAddress,
+                        }
+                      }));
+                      console.log(response)
+                      console.log(response.data)
+                      if (Date.now() < 10000){
+                        key_exists = true
+                      }
+                    }
+                    }*/
+                    try {
+                      // let res = await goOnlineCDP(selectedAccount, "hi", "test", 0, 1, 2);
+                      let res = {
+                        alert: true,
+                        text: "Securing with GARD Node is in closed Beta!"
+                      }
+                      if (res.alert) {
+                        dispatch(setAlert(res.text));
+                      }
+                    } catch (e) {
+                      handleTxError(e, "Error going Online");
+                    }
+                    setLoading(false);
+                    // setRefresh(refresh + 1);
+                  }}
+                /><PrimaryButton
+                blue={true}
+                text="I run my own"
+                onClick={() => {
+                  setPersonal(!personal);
+                }}
+              /></div>
+              {personal ? (<>
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Vote Key"}
+                type='text'
+                id="voteKey"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Selection Key"}
+                type='text'
+                id="selKey"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"State Proof Key"}
+                type='text'
+                id="sprfKey"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Vote First Round"}
+                type='number'
+                min="0.00"
+                id="voteFirst"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Vote Last Round"}
+                type='number'
+                min="0.00"
+                id="voteLast"
+                />
+              <div style={{ display: "flex", flexDirection: "row", marginBottom: 5}}>
+                <PrimaryButton
+                  blue={true}
+                  text="Secure with personal node"
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      let res = await goOnlineCDP(selectedAccount, getField("voteKey"), getField("selKey"), getField("sprfKey"), parseInt(getField("voteFirst")), parseInt(getField("voteLast")));
+                      if (res.alert) {
+                        dispatch(setAlert(res.text));
+                      }
+                    } catch (e) {
+                      handleTxError(e, "Error going Online");
+                    }
+                    setLoading(false);
+                    // setRefresh(refresh + 1);
+                  }}
+                />
+                
+                <CancelButton style={{ marginLeft: 30 }} onClick={() => setModal3Visible(false)}>
+                  <CancelButtonText>
+                    Cancel
+                  </CancelButtonText>
+                </CancelButton>
+            </div>
+            </>) : <></>}
+          </div>
+          )}
+        </Modal>
     </GovContainer>
   );
 }
@@ -856,7 +1057,7 @@ const InputSubtitle = styled.text`
   font-weight: normal;
   font-size: 12px;
 `;
-const CancelButton = styled.button`
+export const CancelButton = styled.button`
   border: 0px;
   background: transparent;
   display: flex;
@@ -864,7 +1065,23 @@ const CancelButton = styled.button`
   height: "100%";
   cursor: pointer;
 `;
-const CancelButtonText = styled.text`
+const NodeInput = styled.input`
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 10px;
+  width: 80%;
+  height: 60%;
+  color: white;
+  text-decoration: none;
+  border: 2px solid white;
+  opacity: 100%;
+  font-size: 20px;
+  background: none;
+  &:focus {
+    outline-width: 0;
+  }
+`;
+export const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
   color: white;

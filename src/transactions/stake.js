@@ -188,7 +188,7 @@ export async function GardianStake(pool, amount) {
   
 
   const gardian_bal = getTokenBalance(info, ids.asa.gardian)
-  if (gardian_bal == null || gardian_bal < amount) {
+  if (gardian_bal == 0 || gardian_bal < amount) {
     return {
       alert: true,
       text:
@@ -329,7 +329,7 @@ export async function GlitterStake(amount){
   let info = await infoPromise;
   
   const glitter_bal = getTokenBalance(info, ids.asa.glitter)
-  if (glitter_bal == null || glitter_bal < amount) {
+  if (glitter_bal == 0 || glitter_bal < amount) {
     return {
       alert: true,
       text:

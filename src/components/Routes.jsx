@@ -1,4 +1,3 @@
-import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Referral from "./Referral";
 import GovernContent from "../pages/GovernContent";
@@ -14,8 +13,10 @@ import AccountContent from "../pages/AccountContent";
 import SwapDetails from "./actions/SwapDetails";
 import StakeDetails from "./actions/StakeDetails";
 import { CONTENT_NAMES } from "../globals";
+import { getWallet } from "../wallets/wallets";
 
 export default function AppRoutes() {
+
   return (
     <BrowserRouter>
       <Referral></Referral>

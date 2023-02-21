@@ -29,6 +29,7 @@ import { ids } from "../transactions/ids";
 import { device } from "../styles/global";
 import { isMobile } from "../utils";
 import { Banner } from "../components/Banner";
+import { GoHomeIfNoWallet } from "./GovernContent";
 
 export function displayRatio() {
   return calcRatio(algosToMAlgos(getCollateral()), getMinted(), 0, true); // TODO: Need to set the ASA ID Properly
@@ -329,6 +330,10 @@ export default function BorrowContent() {
     },
   ];
 
+  if (GoHomeIfNoWallet(navigate)){
+    return null
+  }
+
   var supplyDetails = [
     {
       title: "Supply Limit",
@@ -625,7 +630,6 @@ const Background = styled.div`
   background: #1b2d65;
   border-radius: 10px;
 `;
-
 const Title = styled.div`
   display: flex;
   justify-content: center;
@@ -762,4 +766,3 @@ const InputTitle = styled.text`
   font-size: 16px;
   margin: 0px 4px 0px 2px;
 `;
-

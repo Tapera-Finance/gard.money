@@ -27,7 +27,7 @@ module.exports = {
     "Minimum Received" : "The minimum amount of the asset you receive that you’re swapping into. This value is a function of your slippage tolerance, price impact, and other trades potentially happening simultaneously.",
     "New Rewards": "Rewards earned since last pool transaction",
     "No-Lock GARD APR" : "Annual interest rate (in GARD) paid to users staked in native no-lock pool.",
-    "Number of Users":"The number of protocol users is defined as the number of unique Algorand accounts currently borrowing or staking GARD",
+    "Number of Users":"The number of protocol users is defined as the number of unique Algorand accounts currently borrowing or staking with GARD",
     "Price Impact": "Percentage asset price will change as a result of this swap",
     "Slippage Tolerance": "Amount to adjust for price change between user input and transaction submission. Set at 0.05%",
     "Stability Fee" : "A v1 protocol fee",

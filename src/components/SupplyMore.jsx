@@ -5,7 +5,7 @@ import { mAlgosToAlgos, algosToMAlgos} from "../pages/BorrowContent";
 import { calcRatio } from "../transactions/cdp";
 
 export default function SupplyMore({ collateralType, supplyPrice, cAsset, collateral, minted, cdp, price, setCurrentCDP, maxSupply, manageUpdate, apr, mobile}) {
-    const [utilization, setUtilization] = useState(null)
+    const [utilization, setUtilization] = useState(null);
     const suppliedAmount = mAlgosToAlgos(cdp.collateral) + (cAsset !== "" ? cAsset : 0)
     let supplyDetails = mobile ? [
       {

@@ -141,7 +141,7 @@ export default function Drawer({
               marginLeft: "03.9583333333333vw",
             }}
             onClick={() => {
-              toggleOpen(true);
+              toggleOpen(false);
               navigate("/");
             }}
           >

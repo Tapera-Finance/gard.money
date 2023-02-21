@@ -148,7 +148,7 @@ export default function WalletConnect(contentName) {
                 navigate("/account");
               } else {
                 if(isSafari()){
-                  dispatch(setAlert("We noticed you are using safari. Please make sure to <a href=\"https://www.avast.com/c-allow-and-block-pop-ups-safari\">enable pop-ups</a> to use our web app properly!"));
+                  dispatch(setAlert("We noticed you are using Safari. Please make sure to <a href=\"https://www.avast.com/c-allow-and-block-pop-ups-safari\">enable pop-ups</a> to use the site properly!"));
                 }
                 reduceModalContent("terms");
                 setModalCanAnimate(true);

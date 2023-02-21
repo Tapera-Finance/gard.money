@@ -17,6 +17,7 @@ import { getAlgoGovAPR } from "../components/Positions";
 import { device } from "../styles/global";
 import { eligible } from "../assets/eligible_referrers";
 import PrimaryButton from "../components/PrimaryButton";
+import { GoHomeIfNoWallet } from "./GovernContent";
 
 const tabs = {
   one: <Holdings />,
@@ -86,6 +87,10 @@ export default function AccountContent() {
   }, [walletAddress]);
 
   // const algoLink = `https://algoexplorer.io/address/${getWallet().address}`;
+
+  if (GoHomeIfNoWallet(navigate)){
+    return null
+  }
 
   if (!walletAddress) return <div></div>;
   return (

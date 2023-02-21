@@ -32,12 +32,16 @@ export function getMicroGardBalance(info) {
 }
 
 export function getTokenBalance(info, id) {
+  try{
   for (var i = 0; i < info["assets"].length; i++) {
     if (info["assets"][i]["asset-id"] == id) {
       return info["assets"][i]["amount"];
     }
   }
-  return null;
+}
+catch {
+  return 0;
+}
 }
 
 export function getGardBalance(info) {

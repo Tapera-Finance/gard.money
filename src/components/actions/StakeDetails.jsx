@@ -283,6 +283,7 @@ export default function StakeDetails() {
           style={{
             display: "flex",
             justifyContent: "center",
+            marginTop: "12px",
           }}
         >
           <BinaryTextInToggle

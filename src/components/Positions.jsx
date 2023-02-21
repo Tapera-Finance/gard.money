@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { microalgosToAlgos } from "algosdk";
 import styled, { css } from "styled-components";
-import { getCDPs, getPrice, calcRatio, closeCDP } from "../transactions/cdp";
+import { getCDPs, getPrice, calcRatio, closeCDP, goOnlineCDP } from "../transactions/cdp";
 import { getWalletInfo, handleTxError } from "../wallets/wallets";
 import { Slider, ThemeProvider } from "@mui/material";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -19,7 +19,9 @@ import LoadingOverlay from "./LoadingOverlay";
 import { ids } from "../transactions/ids";
 import { device, size } from "../styles/global";
 import "../styles/mobile.css";
-import { isMobile } from "../utils";
+import { isMobile } from "../utils"
+import Modal from "../components/Modal";
+import {CancelButton, CancelButtonText} from "../pages/GovernContent"
 
 const axios = require("axios");
 
@@ -63,6 +65,7 @@ function _CDPsToList(CDPList) {
         debt: value["debt"],
         asaID: value["asaID"],
         committed: value.hasOwnProperty("committed") ? value["committed"] : 0,
+        status: value["status"],
       });
     }
   }
@@ -118,6 +121,15 @@ function getMinted() {
     return null;
   }
   return parseFloat(document.getElementById("borrowMore").value);
+}
+
+export function getField(id){
+  if (
+    document.getElementById(id) == null
+  ) {
+    return null;
+  }
+  return document.getElementById(id).value;
 }
 
 function getCollateral() {
@@ -229,7 +241,8 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
           ? loadedCDPs.map((cdp, idx) => {
               return (
                 <Position mobile={mobile} key={cdp.id.toString() + idx.toString()}>
-                  <PositionInfo mobile={mobile}>
+                <PositionBox mobile={mobile}>
+                <PositionInfo mobile={mobile}>
                     <PositionSupplyBorrow mobile={mobile} className="m_positions_item m-positions_box_1">
                       <b className="m-positions_row_1">Your Position</b>
                       <Sply mobile={mobile} >
@@ -326,6 +339,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                       </SliderRange>
                     </div>
                   </PositionInfo>
+                  </PositionBox>
                   <ManageCollapse
                     positioned={true}
                     text={
@@ -468,8 +482,7 @@ const PositionContainer = styled.div`
   flex-direction: column;
   align-items: center;
   /* flex: 1 1 0px; */
-  max-width: 90%;
-  margin: auto;
+  width: auto;
 `;
 
 const Header = styled.div`
@@ -510,12 +523,10 @@ const Position = styled.div`
 `;
 const PositionInfo = styled.div`
   display: grid;
-  border: 1px solid white;
+  padding-top: 10px;
   grid-template-columns: repeat(3, 30%);
   justify-content: center;
   align-content: center;
-  background: rgba(13, 18, 39, 0.75);
-  border-radius: 10px;
   font-size: 18px;
   padding: 40px 0px 40px;
   width: 100%;
@@ -533,27 +544,20 @@ const PositionInfo = styled.div`
     transform: scale(0.85);
   }
 `;
+const PositionBox = styled.div`
+  border: 1px solid white;
+  background: rgba(13, 18, 39, 0.75);
+  padding: 20px 0px 40px;
+  border-radius: 10px;
+  ${(props) => props.mobile && css`
+  padding-top: 10px;
+  width: 90%;
+  `}
+`
 const SliderRange = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-`;
-const Input = styled.input`
-  border-radius: 0;
-  height: 30px;
-  width: 80%;
-  color: white;
-  text-decoration: none;
-  border: none;
-  border-bottom: 2px solid #7c52ff;
-  text-align: center;
-  opacity: 100%;
-  font-size: 20px;
-  background: none;
-  margin-left: 25px;
-  &:focus {
-    outline-width: 0;
-  }
 `;
 const Valuation = styled.div`
   margin-left: 25px;
