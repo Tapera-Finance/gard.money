@@ -264,20 +264,6 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         </div>
                       </Brr>
                     </PositionSupplyBorrow>
-                    {mobile ? <></> : <div
-                      className="m_positions_item m-positions_box_2"
-                      style={{ display: "flex", flexDirection: "column" }}
-                    >
-                      <div>
-                        <b className="m-positions_row_2">Governance Rewards</b>
-                      </div>
-                      <APRBox>
-                        <div>APR: </div>
-                        <span style={{ color: "#01d1ff", marginLeft: 8 }}>
-                          {"  " + apr}%
-                        </span>
-                      </APRBox>
-                    </div>}
                     <div
                       className="m_positions_item m-positions_box_3"
                       style={{ display: "flex", flexDirection: "column" }}
@@ -524,18 +510,18 @@ const Position = styled.div`
 const PositionInfo = styled.div`
   display: grid;
   padding-top: 10px;
-  grid-template-columns: repeat(3, 30%);
+  grid-template-columns: repeat(2, 50%);
   justify-content: center;
   align-content: center;
   font-size: 18px;
-  padding: 40px 0px 40px;
-  width: 100%;
+  padding: 10px 20px 10px 20px;
   ${(props) => props.mobile && css`
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 4px 10px 4px 10px;
     max-width: 432px;
+    margin: auto;
   `}
   @media (${device.mobileM}) {
     transform: scale(0.9);
@@ -551,7 +537,7 @@ const PositionBox = styled.div`
   border-radius: 10px;
   ${(props) => props.mobile && css`
   padding-top: 10px;
-  width: 90%;
+  max-width: 90%;
   `}
 `
 const SliderRange = styled.div`
