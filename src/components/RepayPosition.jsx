@@ -49,11 +49,6 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
             hasToolTip: true,
           },
           {
-            title: "Collateral Factor",
-            val: `${(100 / 140).toFixed(2)}`,
-            hasToolTip: true,
-          },
-          {
             title: "Borrow Utilization",
             val: `${
               (100*(cdp.debt - parseInt(repayment*1e6)) / (cdp.collateral * price / 1.4)).toFixed(2)}

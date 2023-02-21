@@ -30,11 +30,6 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
           hasToolTip: true,
         },
         {
-          title: "Collateral Factor",
-          val: `${(100 / 140).toFixed(2)}`,
-          hasToolTip: true,
-        },
-        {
           title: "Borrow Utilization",
           val: `${!utilization ? "..." : utilization}%`,
           hasToolTip: true,
