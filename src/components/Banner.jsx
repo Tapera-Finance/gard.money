@@ -10,7 +10,7 @@ export const Banner = styled.div`
   border-radius: 10px;
   justify-content: space-between;
   text-align: center;
-  background: linear-gradient(to right, #019FFF 40%, #ffffff);
+  background: linear-gradient(to right, #E0B0FF 40%, #ffffff);
   padding: 10px 12px 10px 12px;
   margin: 0 8px 0 8px;
 `;

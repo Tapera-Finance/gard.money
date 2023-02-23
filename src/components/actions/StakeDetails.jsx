@@ -615,6 +615,136 @@ export default function StakeDetails() {
             />
             </div>
           </FourthRow>
+          <FirstRow>{"ASASTATS Pool (Auto-Compounding)"}</FirstRow>
+          <StakeTitle>
+              <Heading>No-Lock ASASTATS</Heading>
+              {mobile ? <></> : <Heading>You have {Math.trunc(0*Math.pow(10, 2))/Math.pow(10, 2)} ASASTATS</Heading>}
+          </StakeTitle>
+          <SecondThirdCondensed mobile={mobile}>
+            <SecondRow mobile={mobile}>
+              <Heading>TVL</Heading>
+              <Heading>Type</Heading>
+              <Heading>Duration</Heading>
+              <Heading>APR</Heading>
+              {mobile ? <Heading>ASASTATS Balance</Heading> : <></>}
+              {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
+              <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
+            </SecondRow>
+            <ThirdRow mobile={mobile}>
+              <Heading>{`$${(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
+              <TypeCont>
+                <Img src={glitterLogo}></Img>
+                <Arrow src={arrowIcon}></Arrow>
+                <GardImg src={xSolLogo}></GardImg>
+                <AssetOptions
+                  open={optionsOpen}
+                  setAsset={setAssetType}
+                  setOpen={setOptionsOpen}
+                />
+              </TypeCont>
+              <Heading>No-Lock</Heading>
+              <Heading>{`${(0).toFixed(2)}%`}</Heading>
+              {mobile ? <Heading>{maxGlitterStake.toFixed(2)} ASASTATS</Heading> : <></>}
+              {mobile || (window.innerWidth < 760) ? (
+                <></>
+              ) : (
+                <StakeBox>
+
+                  <StakeInput
+                    id="stats-stake-amt"
+                    placeholder="Enter Amount"
+                    min="0.0"
+                    step=".01"
+                    type="number"
+                    value={stake3Amount}
+                    callback={handleInput3}
+                  />
+                </StakeBox>
+              )}
+            </ThirdRow>
+          </SecondThirdCondensed>
+          <FourthRow mobile={mobile}>
+            <Effect
+              title="Your Stake"
+              val={`${0} ASASTATS`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="Est. Rewards / Day"
+              val={`${(0.0).toFixed(5)} ASASTATS`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="New Rewards"
+              val={`${(0.0)} ASASTATS`}
+              hasToolTip={true}
+            />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: `${mobile ? "column" : "row"}`,
+                margin: 10,
+                alignSelf: `${mobile || (window.innerWidth < 760)? "unset" : "baseline"}`,
+              }}
+            >
+              {mobile || (window.innerWidth < 760) ? (
+                <StakeBox style={{flexDirection: `${mobile ? "column" : "row"}`}}>
+                  {isMobile ? (<StakeHeading mobile={mobile}>Stake Amount</StakeHeading>) : (<></>)}
+                <StakeInput
+                  mobile={mobile}
+                  id="stats-stake-amt"
+                  placeholder="Enter Amount"
+                  min="0.0"
+                  step=".01"
+                  type="number"
+                  value={stake3Amount}
+                  callback={handleInput3}
+                />
+              </StakeBox>
+              ) : (
+                <></>
+              )}
+              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={async () => {
+                dispatch(setAlert("You must implement this method!"))
+                return
+                /*
+                  if (stake3Amount === null || !(stake3Amount > 0)) {
+                    dispatch(setAlert("You must enter a positive amount to Stake!"))
+                    return
+                  }
+                  setLoading(true)
+                  try {
+                    const res = await GlitterStake(parseFloat(stake3Amount))
+                    if (res.alert) {
+                      dispatch(setAlert(res.text));
+                    }
+                  } catch (e) {
+                    alert("Error attempting to stake ASASTATS: " + e)
+                    console.log(e)
+                  }
+                setLoading(false)*/}}
+               />
+              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={async () => {
+                dispatch(setAlert("You must implement this method!"))
+                return /*
+                if (stake3Amount === null || !(stake3Amount > 0)) {
+                  dispatch(setAlert("You must enter a positive amount to Unstake!"))
+                  return
+                }
+                setLoading(true)
+                try {
+                  const res = await GlitterUnstake(parseFloat(stake3Amount))
+                  if (res.alert) {
+                    dispatch(setAlert(res.text));
+                  }
+                } catch (e) {
+                  alert("Error attempting to unstake: " + e)
+                  console.log(e)
+                }
+              setLoading(false)*/}} 
+            />
+            </div>
+          </FourthRow>
           </> }
         </Container>
       </div>
