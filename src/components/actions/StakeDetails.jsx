@@ -19,10 +19,11 @@ import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import glitterLogo from "../../assets/icons/XGLI.png"
 import xSolLogo from "../../assets/icons/xSOL.png"
+import asastatsLogo from "../../assets/icons/ASASTATS.png"
 import PrimaryButton from "../PrimaryButton";
 import BinaryTextInToggle from "../BinaryTextInToggle";
 import { formatToDollars } from "../../utils";
-import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, GlitterStake, GlitterUnstake, getGlitterTVL,  } from "../../transactions/stake"
+import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, GlitterStake, GlitterUnstake, getGlitterTVL, PartnerStake, PartnerUnstake } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
 import { size, device } from "../../styles/global";
 import { isMobile } from "../../utils";
@@ -77,6 +78,7 @@ export default function StakeDetails() {
   const [stakeAmount, setStakeAmount] = useState(null);
   const [stake2Amount, setStake2Amount] = useState(null);
   const [stake3Amount, setStake3Amount] = useState(null);
+  const [stake4Amount, setStake4Amount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
   const [maxGARDIANStake, setMaxGardianStake] = useState(0);
   const [maxGlitterStake, setMaxGlitterStake] = useState(0);
@@ -186,6 +188,10 @@ export default function StakeDetails() {
 
   const handleInput3 = (e) => {
     setStake3Amount(e.target.value);
+  }
+
+  const handleInput4 = (e) => {
+    setStake4Amount(e.target.value);
   }
 
   useEffect(async () => {
@@ -633,9 +639,9 @@ export default function StakeDetails() {
             <ThirdRow mobile={mobile}>
               <Heading>{`$${(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
               <TypeCont>
-                <Img src={glitterLogo}></Img>
+                <Img src={asastatsLogo}></Img>
                 <Arrow src={arrowIcon}></Arrow>
-                <GardImg src={xSolLogo}></GardImg>
+                <GardImg src={asastatsLogo}></GardImg>
                 <AssetOptions
                   open={optionsOpen}
                   setAsset={setAssetType}
@@ -644,7 +650,7 @@ export default function StakeDetails() {
               </TypeCont>
               <Heading>No-Lock</Heading>
               <Heading>{`${(0).toFixed(2)}%`}</Heading>
-              {mobile ? <Heading>{maxGlitterStake.toFixed(2)} ASASTATS</Heading> : <></>}
+              {mobile ? <Heading>{(0).toFixed(2)} ASASTATS</Heading> : <></>}
               {mobile || (window.innerWidth < 760) ? (
                 <></>
               ) : (
@@ -656,8 +662,8 @@ export default function StakeDetails() {
                     min="0.0"
                     step=".01"
                     type="number"
-                    value={stake3Amount}
-                    callback={handleInput3}
+                    value={stake4Amount}
+                    callback={handleInput4}
                   />
                 </StakeBox>
               )}
@@ -671,7 +677,7 @@ export default function StakeDetails() {
             />
             <Effect
               title="Est. Rewards / Day"
-              val={`${(0.0).toFixed(5)} ASASTATS`}
+              val={`${(0.0).toFixed(2)} ASASTATS`}
               hasToolTip={true}
             />
             <Effect
@@ -697,24 +703,21 @@ export default function StakeDetails() {
                   min="0.0"
                   step=".01"
                   type="number"
-                  value={stake3Amount}
-                  callback={handleInput3}
+                  value={stake4Amount}
+                  callback={handleInput4}
                 />
               </StakeBox>
               ) : (
                 <></>
               )}
               <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={async () => {
-                dispatch(setAlert("You must implement this method!"))
-                return
-                /*
-                  if (stake3Amount === null || !(stake3Amount > 0)) {
+                  if (stake4Amount === null || !(stake4Amount > 0)) {
                     dispatch(setAlert("You must enter a positive amount to Stake!"))
                     return
                   }
                   setLoading(true)
                   try {
-                    const res = await GlitterStake(parseFloat(stake3Amount))
+                    const res = await PartnerStake(parseFloat(stake4Amount), ids.asa.asastats, ids.asa.asastats, ids.app.partner.asastats)
                     if (res.alert) {
                       dispatch(setAlert(res.text));
                     }
@@ -722,18 +725,16 @@ export default function StakeDetails() {
                     alert("Error attempting to stake ASASTATS: " + e)
                     console.log(e)
                   }
-                setLoading(false)*/}}
+                setLoading(false)}}
                />
               <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={async () => {
-                dispatch(setAlert("You must implement this method!"))
-                return /*
-                if (stake3Amount === null || !(stake3Amount > 0)) {
+                if (stake4Amount === null || !(stake4Amount > 0)) {
                   dispatch(setAlert("You must enter a positive amount to Unstake!"))
                   return
                 }
                 setLoading(true)
                 try {
-                  const res = await GlitterUnstake(parseFloat(stake3Amount))
+                  const res = await PartnerUnstake(parseFloat(stake4Amount), ids.asa.asastats, ids.asa.asastats, ids.app.partner.asastats)
                   if (res.alert) {
                     dispatch(setAlert(res.text));
                   }
@@ -741,7 +742,7 @@ export default function StakeDetails() {
                   alert("Error attempting to unstake: " + e)
                   console.log(e)
                 }
-              setLoading(false)*/}} 
+              setLoading(false)}} 
             />
             </div>
           </FourthRow>
