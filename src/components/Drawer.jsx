@@ -226,7 +226,7 @@ export default function Drawer({
             return (
               <div
                 style={{
-                  marginBottom: 8,
+                  marginBottom: 2,
                   display: "flex",
                   justifyContent: "center",
                 }}
