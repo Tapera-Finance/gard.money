@@ -55,14 +55,15 @@ const TopBarDiv = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-top: 2%;
   margin-bottom: 2.5%;
   ${(props) => props.mobile && css`
     flex-direction: column;
     padding: 0px;
+    margin-top: 2%;
   `}
   ${(props) => !props.mobile && css`
     width: 100%;
+    margin-top: 35px;
   `}
 `;
 const TopBarText = styled.text`

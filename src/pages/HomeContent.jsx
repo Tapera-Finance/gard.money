@@ -271,7 +271,7 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Governance APR",
+      title: "ALGO Governance APR",
       val: `${apr}%`,
       hasToolTip: true,
     },
@@ -386,6 +386,65 @@ export default function HomeContent() {
           alignItems: "center",
         }}
       >
+      <ToggleBox>
+          <BinaryToggle
+            optionA={"DeFi Expert"}
+            optionB={"Help Me Out"}
+            selectedOption={setDifficulty}
+          />
+        </ToggleBox>
+        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
+          { mobile ? <Items>
+            {alwaysShown.map((d) => {
+              return (
+                <Item key={d.title} notShown={false}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+            {additionalDetails.map((d) => {
+              return (
+                <Item key={d.title} notShown={!showMore}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+          </Items> :
+          <Items>
+          {homeDetails.length && homeDetails.length > 0
+            ? homeDetails.map((d) => {
+                return (
+                  <Item key={d.title}>
+                    <Effect
+                      title={d.title}
+                      val={d.val}
+                      hasToolTip={d.hasToolTip}
+                      rewards={d.rewards}
+                    ></Effect>
+                  </Item>
+                );
+              })
+            : null}
+        </Items>
+          }
+        </Container>
+        {mobile ? <ManageCollapse
+          positioned={true}
+          text={showMore ? "Collapse":  "Show More Details"}
+          onClick={() => {
+            setShowMore(!showMore);
+          }}
+        /> : <></>}
         <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
             <BoldText moible={mobile}>Quick Actions</BoldText>
             <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
@@ -406,13 +465,7 @@ export default function HomeContent() {
               })}
             </AccessBox>
           </div>
-          <ToggleBox>
-          <BinaryToggle
-            optionA={"DeFi Expert"}
-            optionB={"Help Me Out"}
-            selectedOption={setDifficulty}
-          />
-        </ToggleBox>
+          
         {difficulty === "Help Me Out" ? (
           <div>
           <StepContainer>
@@ -496,58 +549,6 @@ export default function HomeContent() {
         ) : (
           <></>
         )}
-        <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
-          { mobile ? <Items>
-            {alwaysShown.map((d) => {
-              return (
-                <Item key={d.title} notShown={false}>
-                  <Effect
-                    title={d.title}
-                    val={d.val}
-                    hasToolTip={d.hasToolTip}
-                    rewards={d.rewards}
-                  ></Effect>
-                </Item>
-              );
-            })}
-            {additionalDetails.map((d) => {
-              return (
-                <Item key={d.title} notShown={!showMore}>
-                  <Effect
-                    title={d.title}
-                    val={d.val}
-                    hasToolTip={d.hasToolTip}
-                    rewards={d.rewards}
-                  ></Effect>
-                </Item>
-              );
-            })}
-          </Items> :
-          <Items>
-          {homeDetails.length && homeDetails.length > 0
-            ? homeDetails.map((d) => {
-                return (
-                  <Item key={d.title}>
-                    <Effect
-                      title={d.title}
-                      val={d.val}
-                      hasToolTip={d.hasToolTip}
-                      rewards={d.rewards}
-                    ></Effect>
-                  </Item>
-                );
-              })
-            : null}
-        </Items>
-          }
-        </Container>
-        {mobile ? <ManageCollapse
-          positioned={true}
-          text={showMore ? "Collapse":  "Show More Details"}
-          onClick={() => {
-            setShowMore(!showMore);
-          }}
-        /> : <></>}
       </div>
     </HomeWrapper>
   );
@@ -576,7 +577,7 @@ const AccessBox = styled.div`
   justify-content: center;
   width: 95%;
   margin-top: 15px;
-  margin-bottom: 0;
+  margin-bottom: 15px;
   margin-left: auto;
   margin-right: auto;
   align-items: center;

@@ -43,19 +43,9 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
         },
   ]
   : [
-        {
-            title: "Total Supplied (Asset)",
-            val: `${cdp.collateral/1e6}`,
-            hasToolTip: true,
-          },
           {
             title: "Total Supplied ($)",
             val: `${`$${(cdp.collateral/1e6 * price).toFixed(2)}`}`,
-            hasToolTip: true,
-          },
-          {
-            title: "Collateral Factor",
-            val: `${(100 / 140).toFixed(2)}`,
             hasToolTip: true,
           },
           {
@@ -70,16 +60,6 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
             val: `$${
               (1.15*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
             }`,
-            hasToolTip: true,
-          },
-          // {
-          //   title: "GARD Borrow APR",
-          //   val: 0,
-          //   hasToolTip: true,
-          // },
-          {
-            title: "ALGO Governance APR",
-            val: `${apr}%`,
             hasToolTip: true,
           },
           {

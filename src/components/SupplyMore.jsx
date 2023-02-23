@@ -30,11 +30,6 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
           hasToolTip: true,
         },
         {
-          title: "Collateral Factor",
-          val: `${(100 / 140).toFixed(2)}`,
-          hasToolTip: true,
-        },
-        {
           title: "Borrow Utilization",
           val: `${!utilization ? "..." : utilization}%`,
           hasToolTip: true,
@@ -42,11 +37,6 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
         {
           title: "Liquidation Price",
           val: `$${cAsset == null || cAsset == "" ? ((1.15 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral))).toFixed(4) : ((1.15 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral) + cAsset)).toFixed(4)}`,
-          hasToolTip: true,
-        },
-        {
-          title: "Bonus Supply Rewards",
-          val: 0,
           hasToolTip: true,
         },
         {
