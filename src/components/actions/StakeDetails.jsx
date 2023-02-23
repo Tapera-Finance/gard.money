@@ -290,6 +290,7 @@ export default function StakeDetails() {
             optionA={"Protocol Pools"}
             optionB={"Partner Pools"}
             selectedOption={setSelectedTab}
+            header={"partnerpool"}
           />
         </div>
         <Container style={{ maxWidth: `${mobile ? "95%" : ""}` }}>

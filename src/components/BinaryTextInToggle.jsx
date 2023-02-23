@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
 
-export default function BinaryTextInToggle({ optionA, optionB, selectedOption }) {
-  const [a, setA] = useState(true);
-  const [b, setB] = useState(false);
+export default function BinaryTextInToggle({ optionA, optionB, selectedOption, header = null }) {
+  const A_is_default = header !== null ? !window.location.hash.toLowerCase().includes(header) : true;
+  const [a, setA] = useState(A_is_default);
+  const [b, setB] = useState(!A_is_default);
   return (
     <div
       style={{
