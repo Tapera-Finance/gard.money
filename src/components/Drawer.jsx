@@ -311,10 +311,9 @@ export default function Drawer({
               display: "flex",
               alignItems: "center",
               flexDirection: "column",
-              bottom: 0,
               width: "100%",
-              position: "absolute",
-              marginBottom: "10px"
+              marginBottom: "10px",
+              marginTop: "auto",
             }}
           >
             <SocialMediaContainer
@@ -410,7 +409,7 @@ const MobileDrawer = styled.div`
   justify-content: space-between;
   align-content: center;
   width: 100vw;
-  height: 9vh;
+  min-height: 9vh;
   margin-bottom: 0vh;
   position: fixed;
   z-index: 15;
@@ -422,17 +421,20 @@ const DrawerDiv = styled.div`
   overflow-y: auto;
   width: ${`${isMobile() ? "100%" : "250px"}`};
   position: fixed;
-
   ${(props) => props.mobile && !props.open && css`
     display: none;
   `}
   ${(props) => props.mobile && css`
     top: 9vh;
     overflow-y: hidden;
-    height: 91vh;
+    min-height: 91vh;
+    display: flex;
+    flex-direction: column;
   `}
   ${(props) => !props.mobile && css`
-    height: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
   `}
 `;
 const SocialMediaContainer = styled.div`
