@@ -421,18 +421,20 @@ const DrawerDiv = styled.div`
   overflow-y: auto;
   width: ${`${isMobile() ? "100%" : "250px"}`};
   position: fixed;
+  bottom: 0;
+  left: 0;
   ${(props) => props.mobile && !props.open && css`
     display: none;
   `}
   ${(props) => props.mobile && css`
     top: 9vh;
-    overflow-y: hidden;
     min-height: 91vh;
     display: flex;
     flex-direction: column;
   `}
   ${(props) => !props.mobile && css`
     min-height: 100%;
+    top: 0;
     display: flex;
     flex-direction: column;
   `}
