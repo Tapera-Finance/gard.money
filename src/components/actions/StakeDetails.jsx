@@ -87,16 +87,18 @@ export default function StakeDetails() {
   const [noLockGardian, setNoLockGardian] = useState(0);
   const [noLockGlitter, setNoLockGlitter] = useState([0, 0]);
   const [noLockAsa, setNoLockAsa] = useState(0)
-  const [accruedGardian, setAccruedGardian] = useState(0)
+  const [accrued, setAccrued] = useState(0);
+  const [accruedGardian, setAccruedGardian] = useState(0);
+  const [accruedAsa, setAccruedAsa] = useState(0);
   const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...");
   const [GARDIAN_TVL, setGARDIANTVL] = useState("0");
   const [glitterTVL, setGlitterTVL] = useState("0");
+  const [asaTVL, setAsaTVL] = useState("0");
   const [NLAPY, setNLAPY] = useState(0)
   const [glitterAPY, setGlitterAPY] = useState(0)
   const [NLGARDIANAPY, setNLGARDIANAPY] = useState(0);
   const [dailyGlitter, setDailyGlitter] = useState(0.000);
-  const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
 
   const handleInput = (e) => {
@@ -201,10 +203,12 @@ export default function StakeDetails() {
     const glitterTVLPromise = getGlitterTVL()
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
     const gardianTVLPromise = getAppField(ids.app.gardian_staking, "NL")
+    const asaStatsTVLProm = getAppField(ids.app.partner.asastats, "NL")
     const xSolRewardPromise = getAppField(ids.app.glitter.xsol, "RewardBalance")
     const APYPromise = getStakingAPY("NL")
     const accruePromise = getAccruedRewards("NL")
     const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking)
+    const accruedAsaProm = getAccruedRewards("NL", ids.app.partner.asastats)
     const dollarValueGlitter = await glitterTVLPromise
     await infoPromise
     const info = getWalletInfo()
@@ -222,8 +226,10 @@ export default function StakeDetails() {
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
     setGlitterTVL(dollarValueGlitter[0])
+    setAsaTVL((await asaStatsTVLProm) / 1000000)
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
+    setAccruedAsa(await accruedAsaProm)
   }, []);
 
   useEffect(() => {
@@ -641,7 +647,7 @@ export default function StakeDetails() {
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
             <ThirdRow mobile={mobile}>
-              <Heading>{`${(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
+              <Heading>{`${(asaTVL).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
               <TypeCont>
                 <Img src={asastatsLogo}></Img>
                 <Arrow src={arrowIcon}></Arrow>
@@ -653,8 +659,8 @@ export default function StakeDetails() {
                 />
               </TypeCont>
               <Heading>No-Lock</Heading>
-              <Heading>{`${(0).toFixed(2)}%`}</Heading>
-              {mobile ? <Heading>{(0).toFixed(2)} ASASTATS</Heading> : <></>}
+              <Heading>{`${(100*(40 * 1000000/asaTVL)).toFixed(2)}%`}</Heading>
+              {mobile ? <Heading>{(maxAsaStake).toFixed(2)} ASASTATS</Heading> : <></>}
               {mobile || (window.innerWidth < 760) ? (
                 <></>
               ) : (
@@ -681,12 +687,14 @@ export default function StakeDetails() {
             />
             <Effect
               title="Est. Rewards / Day"
-              val={`${(0.0).toFixed(2)} ASASTATS`}
+              val={`${(((40 * 1000000/asaTVL) * (noLockAsa + accruedAsa)) /
+              365
+              ).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ASASTATS`}
               hasToolTip={true}
             />
             <Effect
               title="New Rewards"
-              val={`${(0.0)} ASASTATS`}
+              val={`${parseFloat(accruedAsa).toFixed(4)} ASASTATS`}
               hasToolTip={true}
             />
             <div
