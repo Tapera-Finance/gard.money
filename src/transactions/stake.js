@@ -478,10 +478,10 @@ export async function getGlitterTVL(){
   return [(amount * 0.00321601 / 1e6).toFixed(2), amount, field2]
 }
 
-export async function PartnerStake(amount, stake_id, reward_id, app_id){
+export async function PartnerStake(amount, stake_id, reward_id, app_id, stake_decimals=6){
   setLoadingStage("Loading...");
   console.log(amount, typeof amount)
-  amount = parseInt(amount * 1e6)
+  amount = parseInt(amount * (10 ** stake_decimals))
   let infoPromise = accountInfo();
 
   let params = await getParams(1000);
@@ -496,7 +496,7 @@ export async function PartnerStake(amount, stake_id, reward_id, app_id){
         (glitter_bal == null ? 0 : glitter_bal).toString() +
         "\n" +
         "Required: " +
-        (amount).toString(),
+        (amount/(10 ** stake_decimals)).toString(),
     };
   }
   
@@ -566,17 +566,17 @@ export async function PartnerStake(amount, stake_id, reward_id, app_id){
 
   let response = await sendTxn(
     stxns,
-    "Successfully staked " + ((amount/1e6).toFixed(3)) + " tokens.",
+    "Successfully staked " + ((amount/(10 ** stake_decimals)).toFixed(3)) + " tokens.",
   );
   setLoadingStage(null);
 
   return response;
 }
 
-export async function PartnerUnstake(amount, stake_id, reward_id, app_id){
+export async function PartnerUnstake(amount, stake_id, reward_id, app_id, stake_decimals=6){
   setLoadingStage("Loading...");
   console.log(amount, typeof amount)
-  amount = parseInt(amount * 1e6)
+  amount = parseInt(amount * (10 ** stake_decimals))
   let infoPromise = accountInfo();
 
   // XXX: This could be more optimally set -
@@ -624,7 +624,7 @@ export async function PartnerUnstake(amount, stake_id, reward_id, app_id){
 
   let response = await sendTxn(
     stxns,
-    "Successfully unstaked " + (amount/1e6).toFixed(3) + " tokens.", 
+    "Successfully unstaked " + (amount/(10 ** stake_decimals)).toFixed(3) + " tokens.", 
   );
   setLoadingStage(null);
 

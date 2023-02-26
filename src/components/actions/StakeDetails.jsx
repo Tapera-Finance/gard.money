@@ -82,9 +82,11 @@ export default function StakeDetails() {
   const [maxStake, setMaxStake] = useState(0);
   const [maxGARDIANStake, setMaxGardianStake] = useState(0);
   const [maxGlitterStake, setMaxGlitterStake] = useState(0);
+  const [maxAsaStake, setMaxAsaStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const [noLockGardian, setNoLockGardian] = useState(0);
   const [noLockGlitter, setNoLockGlitter] = useState([0, 0]);
+  const [noLockAsa, setNoLockAsa] = useState(0)
   const [accruedGardian, setAccruedGardian] = useState(0)
   const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...");
@@ -208,9 +210,11 @@ export default function StakeDetails() {
     const info = getWalletInfo()
     setNoLock(getNLStake())
     setNoLockGardian(getNLStake(ids.app.gardian_staking))
+    setNoLockAsa(getNLStake(ids.app.partner.asastats)/1e6)
     setMaxStake(getTokenBalance(info, ids.asa.gard)/1e6);
     setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
     setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
+    setMaxAsaStake(getTokenBalance(info, ids.asa.asastats)/1e6)
     setNLAPY((await APYPromise))
     setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), ((((getNLStake(ids.app.glitter.xsol)*dollarValueGlitter[2]/getLocalIRR(ids.app.glitter.xsol)) - getNLStake(ids.app.glitter.xsol))/7)/1e9).toFixed(5)])
     setDailyGlitter((getNLStake(ids.app.glitter.xsol)/dollarValueGlitter[1]) * 81/60)
@@ -624,7 +628,7 @@ export default function StakeDetails() {
           <FirstRow>{"ASASTATS Pool (Auto-Compounding)"}</FirstRow>
           <StakeTitle>
               <Heading>No-Lock ASASTATS</Heading>
-              {mobile ? <></> : <Heading>You have {Math.trunc(0*Math.pow(10, 2))/Math.pow(10, 2)} ASASTATS</Heading>}
+              {mobile ? <></> : <Heading>You have {Math.trunc(maxAsaStake*Math.pow(10, 2))/Math.pow(10, 2)} ASASTATS</Heading>}
           </StakeTitle>
           <SecondThirdCondensed mobile={mobile}>
             <SecondRow mobile={mobile}>
@@ -637,7 +641,7 @@ export default function StakeDetails() {
               <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
             </SecondRow>
             <ThirdRow mobile={mobile}>
-              <Heading>{`$${(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
+              <Heading>{`${(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
               <TypeCont>
                 <Img src={asastatsLogo}></Img>
                 <Arrow src={arrowIcon}></Arrow>
@@ -672,7 +676,7 @@ export default function StakeDetails() {
           <FourthRow mobile={mobile}>
             <Effect
               title="Your Stake"
-              val={`${0} ASASTATS`}
+              val={`${noLockAsa.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ASASTATS`}
               hasToolTip={true}
             />
             <Effect

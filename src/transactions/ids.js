@@ -51,7 +51,7 @@ if (VERSION == "MAINNET") {
           xsol : 1033551458,
         },
         partner: {
-          asastats: 1,
+          asastats: 1047879402,
         },
         treasury : 890603993,
         claimer : 890604040,
