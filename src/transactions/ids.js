@@ -23,6 +23,7 @@ if (VERSION == "MAINNET") {
         galgo: 793124631,
         glitter: 607591690,
         xsol: 792313023,
+        asastats: 393537671,
     },
     app : {
         dao : {
@@ -48,6 +49,9 @@ if (VERSION == "MAINNET") {
         gardian_staking : 1007623298,
         glitter : {
           xsol : 1033551458,
+        },
+        partner: {
+          asastats: 1047879402,
         },
         treasury : 890603993,
         claimer : 890604040,

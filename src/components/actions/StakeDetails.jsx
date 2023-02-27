@@ -19,10 +19,11 @@ import arrowIcon from "../../assets/icons/icons8-arrow-64.png";
 import algoLogo from "../../assets/icons/algorand_logo_mark_black_small.png";
 import glitterLogo from "../../assets/icons/XGLI.png"
 import xSolLogo from "../../assets/icons/xSOL.png"
+import asastatsLogo from "../../assets/icons/ASASTATS.png"
 import PrimaryButton from "../PrimaryButton";
 import BinaryTextInToggle from "../BinaryTextInToggle";
 import { formatToDollars } from "../../utils";
-import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, GlitterStake, GlitterUnstake, getGlitterTVL,  } from "../../transactions/stake"
+import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, GardianUnstake, GlitterStake, GlitterUnstake, getGlitterTVL, PartnerStake, PartnerUnstake } from "../../transactions/stake"
 import LoadingOverlay from "../LoadingOverlay";
 import { size, device } from "../../styles/global";
 import { isMobile } from "../../utils";
@@ -77,22 +78,27 @@ export default function StakeDetails() {
   const [stakeAmount, setStakeAmount] = useState(null);
   const [stake2Amount, setStake2Amount] = useState(null);
   const [stake3Amount, setStake3Amount] = useState(null);
+  const [stake4Amount, setStake4Amount] = useState(null);
   const [maxStake, setMaxStake] = useState(0);
   const [maxGARDIANStake, setMaxGardianStake] = useState(0);
   const [maxGlitterStake, setMaxGlitterStake] = useState(0);
+  const [maxAsaStake, setMaxAsaStake] = useState(0);
   const [noLock, setNoLock] = useState(0);
   const [noLockGardian, setNoLockGardian] = useState(0);
   const [noLockGlitter, setNoLockGlitter] = useState([0, 0]);
-  const [accruedGardian, setAccruedGardian] = useState(0)
+  const [noLockAsa, setNoLockAsa] = useState(0)
+  const [accrued, setAccrued] = useState(0);
+  const [accruedGardian, setAccruedGardian] = useState(0);
+  const [accruedAsa, setAccruedAsa] = useState(0);
   const dispatch = useDispatch();
   const [NL_TVL, setNLTVL] = useState("...");
   const [GARDIAN_TVL, setGARDIANTVL] = useState("0");
   const [glitterTVL, setGlitterTVL] = useState("0");
+  const [asaTVL, setAsaTVL] = useState("0");
   const [NLAPY, setNLAPY] = useState(0)
   const [glitterAPY, setGlitterAPY] = useState(0)
   const [NLGARDIANAPY, setNLGARDIANAPY] = useState(0);
   const [dailyGlitter, setDailyGlitter] = useState(0.000);
-  const [accrued, setAccrued] = useState(0);
   const navigate = useNavigate();
 
   const handleInput = (e) => {
@@ -188,23 +194,31 @@ export default function StakeDetails() {
     setStake3Amount(e.target.value);
   }
 
+  const handleInput4 = (e) => {
+    setStake4Amount(e.target.value);
+  }
+
   useEffect(async () => {
     const infoPromise = updateWalletInfo();
     const glitterTVLPromise = getGlitterTVL()
     const TVLPromise = getAppField(ids.app.gard_staking, "NL")
     const gardianTVLPromise = getAppField(ids.app.gardian_staking, "NL")
+    const asaStatsTVLProm = getAppField(ids.app.partner.asastats, "NL")
     const xSolRewardPromise = getAppField(ids.app.glitter.xsol, "RewardBalance")
     const APYPromise = getStakingAPY("NL")
     const accruePromise = getAccruedRewards("NL")
     const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking)
+    const accruedAsaProm = getAccruedRewards("NL", ids.app.partner.asastats)
     const dollarValueGlitter = await glitterTVLPromise
     await infoPromise
     const info = getWalletInfo()
     setNoLock(getNLStake())
     setNoLockGardian(getNLStake(ids.app.gardian_staking))
+    setNoLockAsa(getNLStake(ids.app.partner.asastats)/1e6)
     setMaxStake(getTokenBalance(info, ids.asa.gard)/1e6);
     setMaxGardianStake(getTokenBalance(info, ids.asa.gardian))
     setMaxGlitterStake(getTokenBalance(info, ids.asa.glitter)/1e6)
+    setMaxAsaStake(getTokenBalance(info, ids.asa.asastats)/1e6)
     setNLAPY((await APYPromise))
     setNoLockGlitter([getNLStake(ids.app.glitter.xsol)/1e6.toFixed(0), ((((getNLStake(ids.app.glitter.xsol)*dollarValueGlitter[2]/getLocalIRR(ids.app.glitter.xsol)) - getNLStake(ids.app.glitter.xsol))/7)/1e9).toFixed(5)])
     setDailyGlitter((getNLStake(ids.app.glitter.xsol)/dollarValueGlitter[1]) * 81/60)
@@ -212,8 +226,10 @@ export default function StakeDetails() {
     setNLTVL(((await TVLPromise) / 1000000).toLocaleString())
     setGARDIANTVL((await gardianTVLPromise))
     setGlitterTVL(dollarValueGlitter[0])
+    setAsaTVL((await asaStatsTVLProm) / 1000000)
     setAccrued((await accruePromise) / 1000000)
     setAccruedGardian(await accruedGardianPromise)
+    setAccruedAsa(await accruedAsaProm)
   }, []);
 
   useEffect(() => {
@@ -613,6 +629,133 @@ export default function StakeDetails() {
                   console.log(e)
                 }
                 setLoading(false)}} 
+            />
+            </div>
+          </FourthRow>
+          <FirstRow>{"ASASTATS Pool (Auto-Compounding)"}</FirstRow>
+          <StakeTitle>
+              <Heading>No-Lock ASASTATS</Heading>
+              {mobile ? <></> : <Heading>You have {Math.trunc(maxAsaStake*Math.pow(10, 2))/Math.pow(10, 2)} ASASTATS</Heading>}
+          </StakeTitle>
+          <SecondThirdCondensed mobile={mobile}>
+            <SecondRow mobile={mobile}>
+              <Heading>TVL</Heading>
+              <Heading>Type</Heading>
+              <Heading>Duration</Heading>
+              <Heading>APR</Heading>
+              {mobile ? <Heading>ASASTATS Balance</Heading> : <></>}
+              {/* {isMobile ? (<></>) : (<StakeHeading>Stake Amount</StakeHeading>)} */}
+              <StakeHeading style={{visibility: `${isMobile() ? "hidden" : "visible"}`}} >Stake Amount</StakeHeading>
+            </SecondRow>
+            <ThirdRow mobile={mobile}>
+              <Heading>{`${(asaTVL).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}</Heading>
+              <TypeCont>
+                <Img src={asastatsLogo}></Img>
+                <Arrow src={arrowIcon}></Arrow>
+                <GardImg src={asastatsLogo}></GardImg>
+                <AssetOptions
+                  open={optionsOpen}
+                  setAsset={setAssetType}
+                  setOpen={setOptionsOpen}
+                />
+              </TypeCont>
+              <Heading>No-Lock</Heading>
+              <Heading>{`${(100*(40 * 1000000/asaTVL)).toFixed(2)}%`}</Heading>
+              {mobile ? <Heading>{(maxAsaStake).toFixed(2)} ASASTATS</Heading> : <></>}
+              {mobile || (window.innerWidth < 760) ? (
+                <></>
+              ) : (
+                <StakeBox>
+
+                  <StakeInput
+                    id="stats-stake-amt"
+                    placeholder="Enter Amount"
+                    min="0.0"
+                    step=".01"
+                    type="number"
+                    value={stake4Amount}
+                    callback={handleInput4}
+                  />
+                </StakeBox>
+              )}
+            </ThirdRow>
+          </SecondThirdCondensed>
+          <FourthRow mobile={mobile}>
+            <Effect
+              title="Your Stake"
+              val={`${noLockAsa.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ASASTATS`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="Est. Rewards / Day"
+              val={`${(((40 * 1000000/asaTVL) * (noLockAsa + accruedAsa)) /
+              365
+              ).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ASASTATS`}
+              hasToolTip={true}
+            />
+            <Effect
+              title="New Rewards"
+              val={`${parseFloat(accruedAsa).toFixed(4)} ASASTATS`}
+              hasToolTip={true}
+            />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: `${mobile ? "column" : "row"}`,
+                margin: 10,
+                alignSelf: `${mobile || (window.innerWidth < 760)? "unset" : "baseline"}`,
+              }}
+            >
+              {mobile || (window.innerWidth < 760) ? (
+                <StakeBox style={{flexDirection: `${mobile ? "column" : "row"}`}}>
+                  {isMobile ? (<StakeHeading mobile={mobile}>Stake Amount</StakeHeading>) : (<></>)}
+                <StakeInput
+                  mobile={mobile}
+                  id="stats-stake-amt"
+                  placeholder="Enter Amount"
+                  min="0.0"
+                  step=".01"
+                  type="number"
+                  value={stake4Amount}
+                  callback={handleInput4}
+                />
+              </StakeBox>
+              ) : (
+                <></>
+              )}
+              <StakeBtn mobile={mobile} text="Stake" blue={true} onClick={async () => {
+                  if (stake4Amount === null || !(stake4Amount > 0)) {
+                    dispatch(setAlert("You must enter a positive amount to Stake!"))
+                    return
+                  }
+                  setLoading(true)
+                  try {
+                    const res = await PartnerStake(parseFloat(stake4Amount), ids.asa.asastats, ids.asa.asastats, ids.app.partner.asastats)
+                    if (res.alert) {
+                      dispatch(setAlert(res.text));
+                    }
+                  } catch (e) {
+                    alert("Error attempting to stake ASASTATS: " + e)
+                    console.log(e)
+                  }
+                setLoading(false)}}
+               />
+              <UnstakeBtn mobile={mobile} text="Unstake" blue={true} onClick={async () => {
+                if (stake4Amount === null || !(stake4Amount > 0)) {
+                  dispatch(setAlert("You must enter a positive amount to Unstake!"))
+                  return
+                }
+                setLoading(true)
+                try {
+                  const res = await PartnerUnstake(parseFloat(stake4Amount), ids.asa.asastats, ids.asa.asastats, ids.app.partner.asastats)
+                  if (res.alert) {
+                    dispatch(setAlert(res.text));
+                  }
+                } catch (e) {
+                  alert("Error attempting to unstake: " + e)
+                  console.log(e)
+                }
+              setLoading(false)}} 
             />
             </div>
           </FourthRow>

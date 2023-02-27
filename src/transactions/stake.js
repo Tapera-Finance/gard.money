@@ -477,3 +477,156 @@ export async function getGlitterTVL(){
   const field2 = await getAppField(ids.app.glitter.xsol, "NL Return Rate")
   return [(amount * 0.00321601 / 1e6).toFixed(2), amount, field2]
 }
+
+export async function PartnerStake(amount, stake_id, reward_id, app_id, stake_decimals=6){
+  setLoadingStage("Loading...");
+  console.log(amount, typeof amount)
+  amount = parseInt(amount * (10 ** stake_decimals))
+  let infoPromise = accountInfo();
+
+  let params = await getParams(1000);
+  let info = await infoPromise;
+  
+  const glitter_bal = getTokenBalance(info, stake_id)
+  if (glitter_bal == 0 || glitter_bal < amount) {
+    return {
+      alert: true,
+      text:
+        "Insufficient tokens for transaction. Balance: " +
+        (glitter_bal == null ? 0 : glitter_bal).toString() +
+        "\n" +
+        "Required: " +
+        (amount/(10 ** stake_decimals)).toString(),
+    };
+  }
+  
+  let txns = [];
+  let optedIn = isOptedIn(app_id, info);
+  if (!optedIn) {
+    // opt in txn
+    let txnOptIn = algosdk.makeApplicationOptInTxnFromObject({
+      from: info.address,
+      suggestedParams: params,
+      appIndex: app_id,
+    });
+    txns.push(txnOptIn)
+  }
+  optedIn = verifyOptIn(info, reward_id)
+  if (!optedIn) {
+    // opt in txn
+    let txnOptIn = createOptInTxn(params, info, reward_id)
+    txns.push(txnOptIn)
+  }
+  // txn 0 - app call
+  params.fee = 3000;
+  let txn0 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: app_id,
+    onComplete: 0,
+    appArgs: [enc.encode("enter_NL_pool")],
+    accounts: [],
+    foreignApps: [ids.app.dummy],
+    foreignAssets: [stake_id, reward_id],
+    suggestedParams: params,
+  });
+  txns.push(txn0)
+  // txn 1 - entrance transfer
+  params.fee = 1000;
+  let txn1 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(app_id),
+    amount: amount,
+    suggestedParams: params,
+    assetIndex: stake_id,
+  });
+  txns.push(txn1)
+  let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(app_id),
+    amount: 1000,
+    suggestedParams: params,
+  });
+  txns.push(txn2)
+  
+  algosdk.assignGroupID(txns);
+  
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+  const signedGroup = await signGroup(info, txns);
+
+  setLoadingStage("Confirming Transaction...");
+
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
+  if (signedGroup.length == 4) {
+    stxns.push(signedGroup[3].blob)
+  }
+  else if (signedGroup.length == 5) {
+    stxns.push(signedGroup[3].blob)
+    stxns.push(signedGroup[4].blob)
+  }
+
+  let response = await sendTxn(
+    stxns,
+    "Successfully staked " + ((amount/(10 ** stake_decimals)).toFixed(3)) + " tokens.",
+  );
+  setLoadingStage(null);
+
+  return response;
+}
+
+export async function PartnerUnstake(amount, stake_id, reward_id, app_id, stake_decimals=6){
+  setLoadingStage("Loading...");
+  console.log(amount, typeof amount)
+  amount = parseInt(amount * (10 ** stake_decimals))
+  let infoPromise = accountInfo();
+
+  // XXX: This could be more optimally set -
+  //      for locked pools if it's not a valid
+  //      withdrawal period, only needs to be 1000
+  let params = await getParams(4000);
+  let info = await infoPromise;
+  
+  // txn 0 - app call
+  let txn0 = algosdk.makeApplicationCallTxnFromObject({
+    from: info.address,
+    appIndex: app_id,
+    onComplete: 0,
+    appArgs: [enc.encode("exit_NL_pool"), algosdk.encodeUint64(amount)],
+    accounts: [],
+    foreignApps: [ids.app.dummy],
+    foreignAssets: [stake_id, reward_id], 
+    suggestedParams: params,
+  });
+  // txn 1 - useless transaction, required for structure
+  params.fee = 1000
+  let txn1 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(app_id),
+    amount: 0,
+    suggestedParams: params,
+  });
+  // txn 2 - extra opcode budget
+  let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: info.address,
+    to: algosdk.getApplicationAddress(app_id),
+    amount: 1000,
+    suggestedParams: params,
+  });
+
+  let txns = [txn0, txn1, txn2];
+  algosdk.assignGroupID(txns);
+  
+  setLoadingStage("Awaiting Signature from Algorand Wallet...");
+  const signedGroup = await signGroup(info, txns);
+
+  setLoadingStage("Confirming Transaction...");
+
+  let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
+
+  let response = await sendTxn(
+    stxns,
+    "Successfully unstaked " + (amount/(10 ** stake_decimals)).toFixed(3) + " tokens.", 
+  );
+  setLoadingStage(null);
+
+  return response;
+}
