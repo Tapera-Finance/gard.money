@@ -12,7 +12,7 @@ import LoadingOverlay from "../components/LoadingOverlay";
 import { cdpGen } from "../transactions/contracts";
 import { commitCDP } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
-import { commitmentPeriodEnd } from "../globals";
+import { commitmentPeriodEnd, countdownEnd } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
 import Modal from "../components/Modal";
@@ -409,7 +409,7 @@ export default function Govern() {
             <h3>Algorand Governance Period #6</h3>
             <div style={{ fontSize: 11 }}>Governance Period Ends</div>
             <CountDownContainer>
-            <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
+            <CountdownTimer targetDate={countdownEnd} showZero={new Date().getTime() > countdownEnd} />
               {/* 1761180257000 */}
             </CountDownContainer>
             <div>
