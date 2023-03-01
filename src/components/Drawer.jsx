@@ -423,14 +423,14 @@ const DrawerDiv = styled.div`
   position: fixed;
   bottom: 0;
   left: 0;
-  ${(props) => props.mobile && !props.open && css`
-    display: none;
-  `}
   ${(props) => props.mobile && css`
     top: 9vh;
     min-height: 91vh;
     display: flex;
     flex-direction: column;
+  `}
+  ${(props) => props.mobile && !props.open && css`
+  display: none;
   `}
   ${(props) => !props.mobile && css`
     min-height: 100%;
