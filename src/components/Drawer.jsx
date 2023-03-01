@@ -135,14 +135,15 @@ export default function Drawer({
        {window.innerWidth < 900 ? <MobileDrawer mobile={mobile} open={isOpen}>
           <LogoButton
             style={{
-              display: "flex",
-              width: 50,
-              height: "100%",
-              marginLeft: "03.9583333333333vw",
+              flexDirection: "row",
+              alignItems: "center",
+              height: "9vh",
+              width: 30,
+              marginLeft: "1.9583333333333vw",
             }}
             onClick={() => {
-              toggleOpen(true);
               navigate("/");
+              setIsOpen(false);
             }}
           >
             <MobileNavLogo src={logo} alt="logo" />
