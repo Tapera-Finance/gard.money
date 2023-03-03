@@ -152,8 +152,8 @@ export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address);
   const [maxBal, setMaxBal] = useState("");
   const [commit, setCommit] = useState(0);
-  const [vote0, setVote0] = useState("Allocate 15 MM Algos to DeFi for Q1/2023");
-  const [vote1, setVote1] = useState("Yes");
+  const [vote0, setVote0] = useState("Boost DeFi rewards to 20MM ALGO");
+  const [vote1, setVote1] = useState("Yes, allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.");
   const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants");
   const [vote3, setVote3] = useState("Yes");
   const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection");
@@ -180,24 +180,12 @@ export default function Govern() {
   const navigate = useNavigate();
 
   const voteMap = [{
-    "Allocate 15 MM Algos to DeFi for Q1/2023": "a",
-    "Allocate 10 MM Algos to DeFi for Q1/2023": "b",
+    "Boost DeFi rewards to 20MM ALGO": "a",
+    "Keep DeFi rewards at 15MM ALGO": "b",
   },
   {
-    "Yes": "a",
-    "No": "b",
-  },
-  {
-    "Allocate 2MM Algos to xGov Community Grants": "a",
-    "Allocate 1MM Algos to xGov Community Grants": "b",
-  },
-  {   
-    "Yes": "a",
-    "No": "b",
-  },
-  {
-    "Allocate 600K Algos to seed the establishment of a Community-curated NFT collection": "a",
-    "Allocate 300K Algos to seed the establishment of a Community-curated NFT collection": "b",
+    "Yes, allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.": "a",
+    "No, do not allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.": "b",
   }];
 
   useEffect(() => {
@@ -354,7 +342,7 @@ export default function Govern() {
             disabled={commitDisabled}
             />
         ),
-        "Consensus": (
+        "Consensus": ( 
           <PrimaryButton
             blue={true}
             text={"Node Consensus"}
@@ -372,6 +360,12 @@ export default function Govern() {
         ),
     };
   });
+  if (mobile) {
+    cdps = cdps.map((value,) => {
+      delete value["Consensus"]
+      return value
+    })
+  }
   return ( !walletAddress ? navigate("/") :
     <GovContainer mobile={mobile}>
       {loading ? (
@@ -407,7 +401,7 @@ export default function Govern() {
 
           }}>
             <h3>Algorand Governance Period #6</h3>
-            <div style={{ fontSize: 11 }}>Governance Period Ends</div>
+            <div style={{ fontSize: 11 }}>Voting Period 1 Ends</div>
             <CountDownContainer>
             <CountdownTimer targetDate={countdownEnd} showZero={new Date().getTime() > countdownEnd} />
               {/* 1761180257000 */}
@@ -469,7 +463,7 @@ export default function Govern() {
             setModal2CanAnimate(true);
             setModal2Visible(true);
             setModal2CanAnimate(false);
-          }} disabled={(Date.now() < 1670256000000 || Date.now() > 1671465600000) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps}/>
+          }} disabled={(Date.now() < 1 || Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps}/>
           </div>
       <Modal
         title={"ALGOs to Commit"}
@@ -555,7 +549,7 @@ export default function Govern() {
                     >
                       Measure #1:
                     </Link>
-                    Allocating up to 15MM Algos to DeFi for the Next Governance Period
+                    Boost allocation to DeFi rewards by 5MM, from 15MM to 20MM ALGO
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -570,10 +564,10 @@ export default function Govern() {
                     }}
                   >
                     <option>
-                      Allocate 15 MM Algos to DeFi for Q1/2023
+                    Boost DeFi rewards to 20MM ALGO
                     </option>
                     <option>
-                      Allocate 10 MM Algos to DeFi for Q1/2023
+                    Keep DeFi rewards at 15MM ALGO
                     </option>
                   </Select>
                 </div>
@@ -595,7 +589,7 @@ export default function Govern() {
                     >
                       Measure #2:
                     </Link>
-                    Approving of up to 2MM Algos for a Community Funding pilot program via the xGov process
+                    Use up to 5MM of the “Boost” for Targeted DeFi Rewards
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -610,130 +604,10 @@ export default function Govern() {
                     }}
                   >
                     <option>
-                      Yes
+                    Yes, allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.
                     </option>
                     <option>
-                      No
-                    </option>
-                  </Select>
-                </div>
-                <div>
-                  <InputSubtitle>
-                    Select your vote from the drop down.
-                  </InputSubtitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <h3>
-                    <Link
-                    onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
-                    }}
-                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
-                      subtitle={true}
-                    >
-                      Measure #3:
-                    </Link>
-                    Allocating up to 2MM Algos for a Community Funding pilot program via the xGov process
-                  </h3>
-                  <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory>
-                    *
-                  </InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Select
-                    value={vote2}
-                    onChange={(e) => {
-                      setVote2(e.target.value);
-                    }}
-                  >
-                    <option>
-                      Allocate 2MM Algos to xGov Community Grants
-                    </option>
-                    <option>
-                      Allocate 1MM Algos to xGov Community Grants
-                    </option>
-                  </Select>
-                </div>
-                <div>
-                  <InputSubtitle>
-                    Select your vote from the drop down.
-                  </InputSubtitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <h3>
-                    <Link
-                    onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
-                    }}
-                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
-                      subtitle={true}
-                    >
-                      Measure #4:
-                    </Link>
-                    Approving of up to 600K Algos to seed a Community curated NFT Collection
-                  </h3>
-                  <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory>
-                    *
-                  </InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Select
-                    value={vote3}
-                    onChange={(e) => {
-                      setVote3(e.target.value);
-                    }}
-                  >
-                    <option>
-                      Yes
-                    </option>
-                    <option>
-                      No
-                    </option>
-                  </Select>
-                </div>
-                <div>
-                  <InputSubtitle>
-                    Select your vote from the drop down.
-                  </InputSubtitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <h3>
-                    <Link
-                    onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
-                    }}
-                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
-                      subtitle={true}
-                    >
-                      Measure #5:
-                    </Link>
-                    Allocating up to 600K Algos to seed a Community curated NFT Collection
-                  </h3>
-                  <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory>
-                    *
-                  </InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Select
-                    value={vote4}
-                    onChange={(e) => {
-                      setVote4(e.target.value);
-                    }}
-                  >
-                    <option>
-                    Allocate 600K Algos to seed the establishment of a Community-curated NFT collection
-                    </option>
-                    <option>
-                      Allocate 300K Algos to seed the establishment of a Community-curated NFT collection
+                    No, do not allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.
                     </option>
                   </Select>
                 </div>
@@ -753,12 +627,12 @@ export default function Govern() {
                   setLoading(true);
                   try {
                     let votes = [];
-                    const votearray = [vote0, vote1, vote2, vote3, vote4];
-                    for (let i = 0; i < 5; i++){
+                    const votearray = [vote0, vote1];
+                    for (let i = 0; i < 2; i++){
                       votes.push(voteMap[i][votearray[i]]);
                     }
                     const res = await voteCDPs(
-                      loadedCDPs.filter(value => !value.asaID),
+                      loadedCDPs.filter(value => !value.asaID).filter(value => commitDict[cdpGen(owner_address, value.id).address]),
                       votes
                     );
                     if (res.alert) {
