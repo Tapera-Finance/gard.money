@@ -68,13 +68,15 @@ const mobileView = () => {
 };
 
 export default function StakeDetails() {
+
+  const init_tab = window.location.hash.toLowerCase().includes("partner") ? 'Partner Pools' : 'Protocol Pools';
   const [mobile, setMobile] = useState(isMobile());
   const walletAddress = useSelector((state) => state.wallet.address);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assetType, setAssetType] = useState(0);
-  const [selectedTab, setSelectedTab] = useState("Protocol Pools");
+  const [selectedTab, setSelectedTab] = useState(init_tab);
   const [stakeAmount, setStakeAmount] = useState(null);
   const [stake2Amount, setStake2Amount] = useState(null);
   const [stake3Amount, setStake3Amount] = useState(null);
@@ -94,7 +96,7 @@ export default function StakeDetails() {
   const [NL_TVL, setNLTVL] = useState("...");
   const [GARDIAN_TVL, setGARDIANTVL] = useState("0");
   const [glitterTVL, setGlitterTVL] = useState("0");
-  const [asaTVL, setAsaTVL] = useState("0");
+  const [asaTVL, setAsaTVL] = useState(0);
   const [NLAPY, setNLAPY] = useState(0)
   const [glitterAPY, setGlitterAPY] = useState(0)
   const [NLGARDIANAPY, setNLGARDIANAPY] = useState(0);
