@@ -1,21 +1,43 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
 import { setLoadingStage, microGARD, getMicroGardBalance, getAppField, cdpInterest, getLocalAppField, getTokenBalance } from "./lib"
-import { accountInfo, getParams, signGroup, sendTxn, updateWalletInfo } from "../wallets/wallets";
+import { accountInfo, getParams, signGroup, sendTxn, getAppByID, updateWalletInfo } from "../wallets/wallets";
 import { verifyOptIn, createOptInTxn } from "./cdp";
 
 const enc = new TextEncoder();
 let stakingRevenuePercent = .8; // TODO: Get this dynamically off the chain
 
-export async function getAccruedRewards(pool, app_id=ids.app.gard_staking) {
-  const phrase = app_id === ids.app.gard_staking ? " GARD Staked" : " GARDIAN Staked";
+// Use only for pools with same ASA Staked as Paid Out
+export async function getAccruedRewards(pool, app_id=ids.app.gard_staking, reward_id=null, alt_phrase=null) {
+  let phrase = app_id === ids.app.gard_staking ? " GARD Staked" : " GARDIAN Staked";
+  if (alt_phrase !== null){
+    phrase = alt_phrase;
+  }
   const staked = getLocalAppField(app_id, pool + phrase);
   const initialReturn = getLocalAppField(app_id, pool + " Initial Return Rate");
   if (staked === undefined || initialReturn === undefined) {
     return 0;
   }
-  const currentReturn = await getAppField(app_id, pool + " Return Rate");
-  return (staked * currentReturn) / initialReturn - staked;
+  const app_address = algosdk.getApplicationAddress(app_id)
+  const current_assets = (await accountInfo(app_address)).assets
+  const current_bal = current_assets.filter( x => x["asset-id"] === reward_id)[0].amount
+
+  const global_state = (await getAppByID(app_id)).params["global-state"] 
+  const global_dict = Object.fromEntries(global_state.map(x => {
+    let ret_val = x.value.type === 2 ? x.value.uint : x.value.bytes
+    return [atob(x.key), ret_val]
+  }))
+
+  // This calculation needs to be redone when multiple pools are in use for GARD/GARDIAN staking
+  const accuracy = 1e9
+  const unclaimed = current_bal - global_dict[pool] === 0 ? global_dict[pool + " Return Rate"] : Math.floor((accuracy + Math.floor((accuracy*(current_bal - global_dict[pool])) / global_dict[pool])) * global_dict[pool + " Return Rate"] / accuracy)
+  console.log(unclaimed, app_id)
+  const currentReturn = unclaimed;
+
+  // Something is wrong for the asastats pool and IDK why
+  const divisor = app_id !== ids.app.partner.asastats ? 1 : 1e6
+
+  return ((staked * currentReturn) / initialReturn - staked)/divisor;
 }
 
 export async function getStakingAPY(pool) {

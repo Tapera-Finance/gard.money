@@ -208,9 +208,9 @@ export default function StakeDetails() {
     const asaStatsTVLProm = getAppField(ids.app.partner.asastats, "NL")
     const xSolRewardPromise = getAppField(ids.app.glitter.xsol, "RewardBalance")
     const APYPromise = getStakingAPY("NL")
-    const accruePromise = getAccruedRewards("NL")
-    const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking)
-    const accruedAsaProm = getAccruedRewards("NL", ids.app.partner.asastats)
+    const accruePromise = getAccruedRewards("NL", ids.app.gard_staking, ids.asa.gard)
+    const accruedGardianPromise = getAccruedRewards("NL", ids.app.gardian_staking, ids.asa.gardian)
+    const accruedAsaProm = getAccruedRewards("NL", ids.app.partner.asastats, ids.asa.asastats, " Staked")
     const dollarValueGlitter = await glitterTVLPromise
     await infoPromise
     const info = getWalletInfo()
