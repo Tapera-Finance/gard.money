@@ -18,26 +18,30 @@ export async function getAccruedRewards(pool, app_id=ids.app.gard_staking, rewar
   if (staked === undefined || initialReturn === undefined) {
     return 0;
   }
-  const app_address = algosdk.getApplicationAddress(app_id)
-  const current_assets = (await accountInfo(app_address)).assets
-  const current_bal = current_assets.filter( x => x["asset-id"] === reward_id)[0].amount
+  const app_address = algosdk.getApplicationAddress(app_id);
+  const current_assets = (await accountInfo(app_address)).assets;
+  const current_bal = current_assets.filter( x => x["asset-id"] === reward_id)[0].amount;
 
-  const global_state = (await getAppByID(app_id)).params["global-state"] 
+  const global_state = (await getAppByID(app_id)).params["global-state"] ;
   const global_dict = Object.fromEntries(global_state.map(x => {
-    let ret_val = x.value.type === 2 ? x.value.uint : x.value.bytes
-    return [atob(x.key), ret_val]
+    let ret_val = x.value.type === 2 ? x.value.uint : x.value.bytes;
+    return [atob(x.key), ret_val];
   }))
 
   // This calculation needs to be redone when multiple pools are in use for GARD/GARDIAN staking
-  const accuracy = 1e9
-  const unclaimed = current_bal - global_dict[pool] === 0 ? global_dict[pool + " Return Rate"] : Math.floor((accuracy + Math.floor((accuracy*(current_bal - global_dict[pool])) / global_dict[pool])) * global_dict[pool + " Return Rate"] / accuracy)
-  console.log(unclaimed, app_id)
-  const currentReturn = unclaimed;
+  const accuracy = 1e9;
+  let currentReturn = current_bal - global_dict[pool] === 0 ? global_dict[pool + " Return Rate"] : Math.floor((accuracy + Math.floor((accuracy*(current_bal - global_dict[pool])) / global_dict[pool])) * global_dict[pool + " Return Rate"] / accuracy);
 
   // Something is wrong for the asastats pool and IDK why
-  const divisor = app_id !== ids.app.partner.asastats ? 1 : 1e6
+  const divisor = app_id !== ids.app.partner.asastats ? 1 : 1e6;
 
-  return ((staked * currentReturn) / initialReturn - staked)/divisor;
+  let new_rewards = ((staked * currentReturn) / initialReturn - staked)/divisor;
+  if (app_id == ids.app.gard_staking && new_rewards < 1000)
+  {
+    new_rewards = 0;
+  }
+  console.log(app_id, new_rewards)
+  return new_rewards;
 }
 
 export async function getStakingAPY(pool) {
