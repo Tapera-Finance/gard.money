@@ -463,7 +463,8 @@ export default function Govern() {
             setModal2CanAnimate(true);
             setModal2Visible(true);
             setModal2CanAnimate(false);
-          }} disabled={(Date.now() < 1 || Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps}/>
+          }} disabled={(Date.now() < 1 || Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps || !(loadedCDPs.filter(value => !value.asaID).filter(value => commitDict[cdpGen(owner_address, value.id).address])).length
+        }/>
           </div>
       <Modal
         title={"ALGOs to Commit"}
