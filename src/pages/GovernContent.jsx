@@ -250,6 +250,7 @@ export default function Govern() {
 
   const owner_address = getWallet().address;
   let adjusted;
+  console.log(commitDict)
   if (!loadedCDPs.filter(value => !value.asaID).length){
     adjusted = dummyCdps;
     if (!commitDisabled){
@@ -463,7 +464,7 @@ export default function Govern() {
             setModal2CanAnimate(true);
             setModal2Visible(true);
             setModal2CanAnimate(false);
-          }} disabled={(Date.now() < 1 || Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps || !(loadedCDPs.filter(value => !value.asaID).filter(value => commitDict[cdpGen(owner_address, value.id).address])).length
+          }} disabled={(Date.now() < 1 || Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps
         }/>
           </div>
       <Modal
@@ -633,7 +634,7 @@ export default function Govern() {
                       votes.push(voteMap[i][votearray[i]]);
                     }
                     const res = await voteCDPs(
-                      loadedCDPs.filter(value => !value.asaID).filter(value => commitDict[cdpGen(owner_address, value.id).address]),
+                      loadedCDPs.filter(value => !value.asaID),
                       votes
                     );
                     if (res.alert) {
