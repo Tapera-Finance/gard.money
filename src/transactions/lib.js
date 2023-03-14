@@ -40,8 +40,9 @@ export function getTokenBalance(info, id) {
   }
 }
 catch {
-  return 0;
+  console.log(id, "Not present in wallet");
 }
+  return 0;
 }
 
 export function getGardBalance(info) {

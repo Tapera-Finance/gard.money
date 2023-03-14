@@ -8,7 +8,7 @@ const enc = new TextEncoder();
 let stakingRevenuePercent = .8; // TODO: Get this dynamically off the chain
 
 // Use only for pools with same ASA Staked as Paid Out
-export async function getAccruedRewards(pool, app_id=ids.app.gard_staking, reward_id=null, alt_phrase=null) {
+export async function getAccruedRewards(pool, app_id=ids.app.gard_staking, reward_id=ids.asa.gard, alt_phrase=null) {
   let phrase = app_id === ids.app.gard_staking ? " GARD Staked" : " GARDIAN Staked";
   if (alt_phrase !== null){
     phrase = alt_phrase;

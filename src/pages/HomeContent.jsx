@@ -74,7 +74,7 @@ async function getTotalUsers() {
   const users = new Set();
 
 
-  const validators = [ids.app.validator, ids.app.gard_staking, ids.app.gardian_staking, ids.app.glitter.xsol]
+  const validators = [ids.app.validator, ids.app.gard_staking, ids.app.gardian_staking, ids.app.glitter.xsol, ids.app.partner.asastats]
   for(var i = 0; i < validators.length; i++){
     do {
       // Find accounts that are opted into the GARD price validator application
