@@ -1190,7 +1190,7 @@ export async function commitCDP(account_id, amount, toWallet) {
   params.fee = 0;
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    to: "SAHBJDRHHRR72JHTWSXZR5VHQQUVC7S757TJZI656FWSDO3TZZWV3IGJV4",
+    to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
     amount: 0,
     note: note,
     suggestedParams: params,

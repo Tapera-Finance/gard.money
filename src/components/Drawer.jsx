@@ -292,8 +292,6 @@ export default function Drawer({
             );
           })}
         </div>
-        <div
-          /*
           <div style={{
             position: "relative",
             bottom: -15,
@@ -305,8 +303,7 @@ export default function Drawer({
           </div>
           <div style={{ position: "relative", "margin-left": "auto", "margin-right": "auto", maxWidth: "80%", transform: "scale(0.75)"}}>
             <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
-          </div> */
-        ></div>
+          </div>
           <div
             style={{
               display: "flex",
