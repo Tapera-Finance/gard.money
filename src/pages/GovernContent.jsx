@@ -401,7 +401,7 @@ export default function Govern() {
             transform: "rotate(180deg)",
 
           }}>
-            <h3>Algorand Governance Period #6</h3>
+            <h3>Algorand Governance Period #7</h3>
             <div style={{ fontSize: 11 }}>Commitment Period Ends</div>
             <CountDownContainer>
             <CountdownTimer targetDate={countdownEnd} showZero={new Date().getTime() > countdownEnd} />
@@ -459,12 +459,15 @@ export default function Govern() {
       <PrimaryButton text="Deposit ALGOs" blue={true} underTable={false} onClick={() => {
             navigate("/borrow");
           }}/>
+          
+      {/*
       <PrimaryButton text="Place Votes" blue={true} underTable={false} onClick={async () => {
             setModal2CanAnimate(true);
             setModal2Visible(true);
             setModal2CanAnimate(false);
           }} disabled={(Date.now() < 1 || Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps
         }/>
+        */}
           </div>
       <Modal
         title={"ALGOs to Commit"}
@@ -528,7 +531,7 @@ export default function Govern() {
               }}
                 href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
               >
-                Governance Period #6 Voting Session #1
+                Governance Period #7 Voting Session #1
               </Link>
             </div>
         }

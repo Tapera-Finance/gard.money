@@ -548,7 +548,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
     await new Promise(r => setTimeout(r, 1000));
     updateCommitmentFirestore(info.address, accountID, openingMicroAssetAmount);
     response.text =
-      response.text + "\nFull Balance committed to Governance Period #6!";
+      response.text + "\nFull Balance committed to Governance Period #7!";
   }
   
   setLoadingStage(null);
@@ -744,7 +744,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, govAlgos);
     response.text =
-      response.text + "\nFull Balance committed to Governance Period #6!";
+      response.text + "\nFull Balance committed to Governance Period #7!";
   }
   
   setLoadingStage(null);
