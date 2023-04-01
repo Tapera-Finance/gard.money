@@ -675,74 +675,7 @@ export default function Govern() {
                 </div>)}
                 </div>
                 <div style={{marginBottom: 10, display: "flex", flexDirection: "row"}}>
-                <PrimaryButton
-                  blue={true}
-                  text="Use GARD Node"
-                  onClick={async () => {
-                    setLoading(true);
-                    /*
-                    setLoadingStage("Checking for existing, valid Participation Key...")
-                    // async call
-                    const endpoint = axios.create({
-                      baseURL: "https://node1.gard.money",
-                      timeout: 300000,
-                    });
-                    let response;
-                    console.log(selectedAddress)
-                    try {
-                          response = (await endpoint.get("/", {
-                            params: {
-                              "Address": selectedAddress,
-                            }
-                          }));
-                          console.log(response)
-                          console.log(response.data)
-                        }
-                      catch (error) {
-                        if (error.response) {
-                          console.log(error.response);
-                        } else if (error.request) {
-                          // This means the item does not exist
-                          console.log("Item does not exist")
-                        } else {
-                          // This means that there was an unhandled error
-                          console.error(error);
-                        }
-                      }
-                    let key_exists = false;
-                    if (!key_exists){
-                      setLoadingStage("Generating Participation Keys (this will take at least 5 minutes, so feel free to check back soon; your keys will be saved)...")
-                    // another async call
-                    while(!key_exists) {
-                      await new Promise((r) => setTimeout(r, 2000));
-                      const response = (await endpoint.get("", {
-                        params: {
-                          "Address": selectedAddress,
-                        }
-                      }));
-                      console.log(response)
-                      console.log(response.data)
-                      if (Date.now() < 10000){
-                        key_exists = true
-                      }
-                    }
-                    }*/
-                    try {
-                      // let res = await goOnlineCDP(selectedAccount, "hi", "test", 0, 1, 2);
-                      let res = {
-                        alert: true,
-                        text: "Securing with GARD Node is in closed Beta!"
-                      }
-                      if (res.alert) {
-                        dispatch(setAlert(res.text));
-                      }
-                    } catch (e) {
-                      handleTxError(e, "Error going Online");
-                    }
-                    setLoading(false);
-                    // setRefresh(refresh + 1);
-                  }}
-                /><PrimaryButton
+              <PrimaryButton
                 blue={true}
                 text="I run my own"
                 onClick={() => {
