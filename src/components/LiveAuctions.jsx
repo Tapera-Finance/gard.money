@@ -1,16 +1,20 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState, useEffect } from "react";
+import styled, { css } from "styled-components";
 import Table from "./Table";
+import { isMobile } from "../utils";
 
 export default function LiveAuctions({
-  OPTIONS,
   open_defaulted,
-  selected,
   liveAuctions,
   dummyBids,
   dummyMarketHistory,
   dummyLiveAuctions
 }) {
+  const [mobile, setMobile] = useState(isMobile());
+  useEffect(() => {
+    setMobile(isMobile());
+  }, []);
+
   return (
     <div
       style={{
@@ -18,7 +22,7 @@ export default function LiveAuctions({
         overflow: "auto",
         display: "flex",
         flexDirection: "column",
-        margin: 'auto',
+        margin: "auto",
       }}
     >
       <div
@@ -34,27 +38,21 @@ export default function LiveAuctions({
           borderBottom: "none"
         }}
       >
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <div style={{ marginLeft: 25, marginRight: 8 }}>
-            <Title>
-              {selected === OPTIONS.LIVE_AUCTIONS
-                ? "Live Auctions"
-                : selected === OPTIONS.BIDS
-                ? "Bids"
-                : "Auction Marketplace Transaction History"}
+            <Title mobile={mobile}>
+              {"Live Auctions"}
             </Title>
           </div>
           <CountContainer>
-            <CountText>
-              {selected === OPTIONS.LIVE_AUCTIONS
-                ? `${
+            <CountText mobile={mobile}>
+              {
+                `${
                     open_defaulted == dummyLiveAuctions
                       ? 0
                       : open_defaulted.length
                   } ${"Live Auctions"}`
-                : selected === OPTIONS.BIDS
-                ? `${dummyBids.length} ${"Bids"}`
-                : `${dummyMarketHistory.length} ${"Auctions"}`}
+              }
             </CountText>
           </CountContainer>
         </div>
@@ -62,11 +60,7 @@ export default function LiveAuctions({
       <AuctionsDiv>
         <AuctionsTable
           data={
-            selected === OPTIONS.LIVE_AUCTIONS
-              ? liveAuctions
-              : selected === OPTIONS.BIDS
-              ? dummyBids
-              : dummyMarketHistory
+            liveAuctions
           }
         />
       </AuctionsDiv>
@@ -92,6 +86,9 @@ const AuctionsTable = styled(Table)`
 const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
+  ${(props) => props.mobile && css`
+  font-size: 16px;
+  `}
 `;
 
 const CountContainer = styled.div`
@@ -105,4 +102,7 @@ const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: white;
+  ${(props) => props.mobile && css`
+  font-size: 10px;
+  `}  
 `;

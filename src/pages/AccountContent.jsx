@@ -10,7 +10,6 @@ import PageToggle from "../components/PageToggle";
 import { formatToDollars } from "../utils";
 import { getPrice } from "../transactions/cdp";
 import TransactionHistory from "../components/TransactionHistory";
-import AccountCard from "../components/AccountCard";
 import Holdings from "../components/Holdings";
 import algoLogo from "../assets/icons/algorand_logo_mark_black_small.png";
 import gardLogo from "../assets/icons/gardlogo_icon_small.png";
@@ -18,6 +17,7 @@ import { getAlgoGovAPR } from "../components/Positions";
 import { device } from "../styles/global";
 import { eligible } from "../assets/eligible_referrers";
 import PrimaryButton from "../components/PrimaryButton";
+import { GoHomeIfNoWallet } from "./GovernContent";
 
 const tabs = {
   one: <Holdings />,
@@ -29,9 +29,9 @@ function RefButton({navFunc}){
     return <PrimaryButton 
     text={"View Referrals"}
     blue={true}
-    onClick={navFunc}></PrimaryButton>
+    onClick={navFunc}></PrimaryButton>;
   }
-  return <></>
+  return <></>;
 }
 
 /**
@@ -88,55 +88,61 @@ export default function AccountContent() {
 
   // const algoLink = `https://algoexplorer.io/address/${getWallet().address}`;
 
+  if (GoHomeIfNoWallet(navigate)){
+    return null
+  }
+
   if (!walletAddress) return <div></div>;
   return (
     <AcctPgCont>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          alignContent: "center",
-        }}
-      >
-      </div>
-      <AccountContainer>
+      <AccountContainer id="AccountContainer">
         <div
           style={{
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
-            alignItems: "start",
-            marginBottom: 10,
           }}
         >
-          <div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <Label>Wallet</Label>
             <br></br>
-            <AccountNumber>
-              {getWallet() == null
-                ? "N/A"
-                : getWallet().address.slice(0, 10) + "..."}
-            </AccountNumber>
-            <AccountButton
-              onClick={() => navigator.clipboard.writeText(getWallet().address)}
-            >
-              <img src={copyIconDark} />
-            </AccountButton>
+            <div style={{display: "flex", alignItems: "start"}}>
+              <AccountNumber>
+                {getWallet() == null
+                  ? "N/A"
+                  : getWallet().address.slice(0, 10) + "..."}
+              </AccountNumber>
+              <AccountButton
+                onClick={() => navigator.clipboard.writeText(getWallet().address)}
+              >
+                <img src={copyIconDark} />
+              </AccountButton>
+            </div>
           </div>
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              marginBottom: window.innerWidth < 900 ? 5 : 15,
             }}
           >
             <Label>Total Balance</Label>
             <br></br>
-            <AccountInfoData>
-              {getWallet() == null ? "N/A" : `${balance} Algos`}
-            </AccountInfoData>
-            <Dollars>{convertToDollars(balance, "algo")}</Dollars>
+            <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+            >
+              <AccountInfoData>
+                {getWallet() == null ? "N/A" : `${balance} ALGO`}
+              </AccountInfoData>
+              <Dollars>{convertToDollars(balance, "algo")}</Dollars>
+            </div>
           </div>
         </div>
       </AccountContainer>
@@ -144,6 +150,7 @@ export default function AccountContent() {
         style={{
           marginBottom: 8,
         }}
+        id="AccountTables"
       >
         <AcctPageToggle
           selectedTab={setSelectedTab}
@@ -151,10 +158,21 @@ export default function AccountContent() {
           style={{
             marginBottom: 12
           }}
+          pageHeader={false}
         />
         {tabs[selectedTab]}
       </div>
-      <RefButton navFunc={() => navigate(`/referrals`)}/>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+          alignContent: "center",  
+          marginBottom: "36px",
+        }}
+      >
+      <RefButton navFunc={() => navigate("/referrals")}/>
+      </div>
     </AcctPgCont>
   );
 }
@@ -163,27 +181,22 @@ export default function AccountContent() {
 
 const AcctPgCont = styled.div`
   /* max-width: 90vw; */
-`
+  width: 95%;
+  margin: auto;
+`;
 
 const AcctPageToggle = styled(PageToggle)`
   @media (${device.tablet}) {
     max-width: fit-content;
   }
-`
+`;
 
 const AccountContainer = styled.div`
   background: rgba(13, 18, 39, 0.75);
   border: 1px solid white;
   padding: 5vw 4vw;
-  margin-top: 36px;
-  margin-bottom: 56px;
+  margin-bottom: 20px;
   border-radius: 10px;
-  @media (${device.mobileL}) {
-    max-width: 90vw;
-  }
-  @media (${device.tablet}) {
-    max-width: 90vw;
-  }
 `;
 const AccountTitle = styled.text`
   font-weight: 500;
@@ -191,10 +204,10 @@ const AccountTitle = styled.text`
 `;
 
 const Label = styled.label`
-  font-size: 22px;
+  font-size: 20px;
   color: #ffffff;
   text-decoration: underline;
-  margin-bottom: -20px;
+  margin-bottom: -15px;
   /* margin-bottom: */
 `;
 
@@ -220,8 +233,8 @@ const AccountInfoTitle = styled.text`
 `;
 
 const AccountInfoData = styled.text`
-  font-weight: normal;
-  font-size: 20px;
+  font-weight: bold;
+  font-size: 16px;
 `;
 const LinkButton = styled.button`
   height: 20px;

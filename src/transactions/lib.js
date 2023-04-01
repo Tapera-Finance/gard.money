@@ -5,13 +5,13 @@ export let cdpInterest = .02; // XXX: This should be kept close to the actual in
 
 export async function getInterest() {
   // TODO: cache interest
-  const interestInfo = await getAppField(ids.app.dao.interest, "interest_rate")
-  cdpInterest = interestInfo / 1000
-  return cdpInterest
+  const interestInfo = await getAppField(ids.app.dao.interest, "interest_rate");
+  cdpInterest = interestInfo / 1000;
+  return cdpInterest;
 }
 
 // We immeadiately update the interest in a background thread
-getInterest()
+getInterest();
 
 export function microGARD(GARD) {
   // Helper function so we don't type the number of zeros anytime
@@ -31,8 +31,22 @@ export function getMicroGardBalance(info) {
   return null;
 }
 
+export function getTokenBalance(info, id) {
+  try{
+  for (var i = 0; i < info["assets"].length; i++) {
+    if (info["assets"][i]["asset-id"] == id) {
+      return info["assets"][i]["amount"];
+    }
+  }
+}
+catch {
+  console.log(id, "Not present in wallet");
+}
+  return 0;
+}
+
 export function getGardBalance(info) {
-  return getMicroGardBalance(info)/1000000
+  return getMicroGardBalance(info)/1000000;
 }
 
 export function getLocalAppField(appId, field) {
@@ -58,21 +72,21 @@ export function getLocalAppField(appId, field) {
 export async function getAppField(appId, field, appInfo = undefined){
   // XXX: Currently only works for uints
   if (!appInfo) {
-    appInfo = (await getAppByID(appId)).params
+    appInfo = (await getAppByID(appId)).params;
   }
   for (let i = 0; i < appInfo["global-state"].length; i++) {
     if (appInfo["global-state"][i]["key"] == btoa(field)) {
       return appInfo["global-state"][i]["value"]["uint"];
     }
   }
-  throw "getAppField: field not present"
+  throw "getAppField: field not present";
 }
 
 export async function getAppFields(appId, fields) {
-  let res = []
-  const appInfo = (await getAppByID(appId)).params
+  let res = [];
+  const appInfo = (await getAppByID(appId)).params;
   fields.forEach(async (field) => {
-    res.push(await getAppField(appId, field, appInfo))
-  })
-  return res
+    res.push(await getAppField(appId, field, appInfo));
+  });
+  return res;
 }

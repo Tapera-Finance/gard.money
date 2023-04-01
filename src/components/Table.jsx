@@ -4,7 +4,7 @@ import copyIconSmall from "../assets/icons/copy_icon_small.png";
 import { camelToWords } from "../utils";
 import PrimaryButton from "./PrimaryButton";
 import chevron from "../assets/icons/tablePag_icon.png";
-import "../styles/table.css"
+import "../styles/table.css";
 import { isMobile } from "../utils";
 
 /**
@@ -31,15 +31,18 @@ export default function Table({
   const [shownRows, setShownRows] = useState(data.slice(0, 10));
   const [currentPageStart, setCurrentPageStart] = useState(1);
   const keys = Object.keys(data[0]);
+  const [mobile, setMobile] = useState(isMobile());
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    setMobile(isMobile());
+  }, []);
+
+  useEffect(() => {
     setShownRows(data.slice(0, rowsPerPage));
     setCurrentPageStart(1);
   }, [rowsPerPage]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     setShownRows(
       data.slice(currentPageStart - 1, currentPageStart + rowsPerPage - 1),
     );
@@ -76,20 +79,20 @@ export default function Table({
       ) : (
         <></>
       )}
-      <div style={{ marginBottom: 64 }}>
+      <div>
         <TableGrid>
           <tbody>
             <HeaderRow
             >
               {columns
                 ? columns.map((value, index) => {
-                    return <HeaderElement key={index}>{value}</HeaderElement>;
+                    return <HeaderElement mobile={mobile} key={index}>{value}</HeaderElement>;
                   })
                 : keys.map((value, index) => {
                     if (value === "button") return;
                     if (value === "id" && noID) return;
                     return (
-                      <HeaderElement key={index}>
+                      <HeaderElement mobile={mobile} key={index}>
                         {camelToWords(value)}
                       </HeaderElement>
                     );
@@ -104,9 +107,9 @@ export default function Table({
                   {keys.map((keyVal, keyIndex) => {
                     if (keyVal == "id" && noID) return;
                     if (keyVal === "name" || keyVal === "id") {
-                      <Cell key={keyIndex} className="left-column-cell">{value[keyVal]}</Cell>
+                      <Cell  mobile={mobile} key={keyIndex} className="left-column-cell">{value[keyVal]}</Cell>;
                     }
-                    return <Cell key={keyIndex}>{value[keyVal]}</Cell>;
+                    return <Cell mobile={mobile} key={keyIndex}>{value[keyVal]}</Cell>;
                   })}
                 </TableRow>
               );
@@ -203,7 +206,7 @@ const TableGrid = styled.table`
   border-top: none;
   background: #0f1733;
   overflow-x: auto;
-`
+`;
 
 // styled components
 const Title = styled.text`
@@ -214,7 +217,7 @@ const Title = styled.text`
 const Total = styled.text`
   font-weight: 600;
   /* font */
-`
+`;
 
 const CountContainer = styled.div`
   background: #ffffff;
@@ -233,7 +236,7 @@ const HeaderRow = styled.tr`
   background: #172756;
   height: 44px;
   border-radius: 10px;
-`
+`;
 const HeaderElement = styled.th`
   font-weight: 500;
   font-size: 14px;
@@ -244,6 +247,11 @@ const HeaderElement = styled.th`
   :first-child {
     padding-left: 25px;
   }
+  ${(props) =>
+    props.mobile &&
+    css`
+    font-size: 12px;
+  `}
 `;
 const TableRow = styled.tr`
   height: 60px;
@@ -269,6 +277,11 @@ const Cell = styled.td`
     margin-right: 20px;
     border-bottom-right-radius: 10px;
   }
+  ${(props) =>
+    props.mobile &&
+    css`
+    font-size: 12px;
+  `}
 `;
 const PaginationBar = styled.div`
   background: #fcfcfd;

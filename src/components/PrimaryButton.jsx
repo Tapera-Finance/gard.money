@@ -6,15 +6,15 @@ import styled, { css } from "styled-components";
  * @prop {function} onClick - Handles the action to be taken when the button is clicked
  * @param {{text: string, onClick: function}} props
  */
-export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, underTable, toggle, blue, className, left_align=false }) {
+export default function PrimaryButton({ text, onClick, variant, disabled, positioned, exit, underTable, toggle, blue, className, left_align=false, uniform, tableShrink }) {
 
-  return left_align ? (<LeftButton className={className} variant={variant} disabled={disabled} positioned={positioned} exit={exit} underTable={underTable} toggle={toggle} blue={blue} onClick={() => onClick()}>
-  <ButtonText variant={variant} disabled={disabled}>
+  return left_align ? (<LeftButton className={className} variant={variant} disabled={disabled} positioned={positioned} exit={exit} underTable={underTable} toggle={toggle} blue={blue} tableShrink={tableShrink} onClick={() => onClick()}>
+  <ButtonText variant={variant} disabled={disabled} tableShrink={tableShrink}>
     {text}
   </ButtonText>
   </LeftButton> ) : (
-    <Button className={className} variant={variant} disabled={disabled} positioned={positioned} exit={exit} underTable={underTable} toggle={toggle} blue={blue} onClick={() => onClick()}>
-      <ButtonText variant={variant} disabled={disabled}>
+    <Button className={className} variant={variant} disabled={disabled} positioned={positioned} exit={exit} underTable={underTable} toggle={toggle} blue={blue} uniform={uniform} tableShrink={tableShrink} onClick={() => onClick()}>
+      <ButtonText variant={variant} disabled={disabled} tableShrink={tableShrink}>
         {text}
       </ButtonText>
     </Button>
@@ -65,7 +65,7 @@ const Button = styled.button`
     props.underTable &&
     css`
       position: relative;
-      bottom: 50px;
+      bottom: 25px;
       margin: auto;
       border: none;
       z-index: 1;
@@ -96,6 +96,12 @@ const Button = styled.button`
         background-color: transparent;
       }
     `}
+    ${(props) =>
+      props.uniform &&
+      css`
+        padding: 8px 0px;
+        width: 80px;
+    `}
 `;
 const ButtonText = styled.text`
   color: #ffffff;
@@ -104,6 +110,11 @@ const ButtonText = styled.text`
   ${Button}:hover & {
     color: #ffffff;
   }
+  ${(props) =>
+    props.tableShrink &&
+    css`
+    font-size: 12px;
+    `}
 `;
 const LeftButton = styled.button`
 margin: auto;
@@ -179,4 +190,9 @@ ${(props) =>
       background-color: transparent;
     }
   `}
+  ${(props) =>
+    props.tableShrink &&
+    css`
+    padding: 8px 10px;
+    `}
 `;

@@ -1,58 +1,93 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../redux/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import Details from "../components/Details";
+import styled, { css } from "styled-components";
 import PrimaryButton from "../components/PrimaryButton";
-import RewardNotice from "../components/RewardNotice";
 import TextButton from "../components/TextButton";
 import Table from "../components/Table";
 import { CDPsToList } from "../components/Positions";
-import { loadFireStoreCDPs } from "../components/Firebase";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { cdpGen } from "../transactions/contracts";
-import { commitCDP, getPrice } from "../transactions/cdp";
+import { commitCDP } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
-import { commitmentPeriodEnd } from "../globals";
+import { commitmentPeriodEnd, countdownEnd } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
-import { textAlign } from "@mui/system";
-import { Switch } from "@mui/material";
 import Modal from "../components/Modal";
-import { getAlgoGovAPR } from "../components/Positions";
+import { getAlgoGovAPR, getField } from "../components/Positions";
 import { isFirefox } from "../utils";
-import { device, size } from "../styles/global";
-import { voteCDPs } from "../transactions/cdp";
+import { device } from "../styles/global";
+import { voteCDPs, goOnlineCDP } from "../transactions/cdp";
+import { isMobile } from "../utils";
+import { setLoadingStage } from "../transactions/lib";
 
 const axios = require("axios");
 
-export async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
+export function GoHomeIfNoWallet(navigate){
+  try{
+    getWallet().address
+    return false
+  }
+  catch {
+    navigate("/")
+    return true
+  }
+}
+
+export async function searchAccounts({ appId, limit = 1000, asset=0, nexttoken, }) {
   const axiosObj = axios.create({
-    baseURL: 'https://mainnet-idx.algonode.cloud',
+    baseURL: "https://mainnet-idx.algonode.cloud",
     timeout: 300000,
-  })
+  });
   await new Promise((r) => setTimeout(r, 100));
-  const response = (await axiosObj.get('/v2/accounts', {
+  const arg = asset ? "asset-id" : "application-id";
+  const response = (await axiosObj.get("/v2/accounts", {
     params: {
-      'application-id': appId,
+      [arg]: appId,
       limit,
       next: nexttoken
     }
-  }))
-  return response.data
+  }));
+  return response.data;
 }
 
 /* Get value locked in user-controlled smart contracts */
 async function getAlgoGovernanceAccountBals() {
 
-  const v2GardPriceValidatorId = 890603991
-  let nexttoken
-  let response = null
-  let totalContractAlgo = 0
+  const v2GardPriceValidatorId = 890603991;
+  let nexttoken;
+  let response = null;
+  let totalCommitedAlgo = 0;
+  let totalGovs = 0;
 
-  const validators = [v2GardPriceValidatorId]
+  const axiosObj = axios.create({
+    baseURL: "https://governance.algorand.foundation/api/governors/",
+    timeout: 300000,
+  });
+  async function isGovernor(address) {
+    try {
+        let response = (await axiosObj.get(address + "/status/", {}));
+        if (response) {
+          totalCommitedAlgo += parseInt(response.data["committed_algo_amount"]);
+          totalGovs += 1;
+        }
+      }
+      catch (error) {
+        if (error.response) {
+          console.log(error.response);
+        } else if (error.request) {
+          // This means the item does not exist
+        } else {
+          // This means that there was an unhandled error
+          console.error(error);
+        }
+      }
+  }
+
+  let promises = [];
+  const validators = [v2GardPriceValidatorId];
   for(var i = 0; i < validators.length; i++){
     do {
       // Find accounts that are opted into the GARD price validator application
@@ -62,91 +97,82 @@ async function getAlgoGovernanceAccountBals() {
         limit: 1000,
         nexttoken,
       });
-      for (const account of response['accounts']) {
-        totalContractAlgo += (account['amount'] / Math.pow(10, 6))
+      for (const account of response["accounts"]) {
+        promises.push(isGovernor(account.address));
       }
-      nexttoken = response['next-token']
+      nexttoken = response["next-token"];
     } while (nexttoken != null);
   }
-  return totalContractAlgo
+  await Promise.allSettled(promises);
+  return [(totalCommitedAlgo/1e12).toFixed(2) + "M Algo", totalGovs];
 }
 
 function getGovernorPage(id) {
   return (
-    "https://governance.algorand.foundation/governance-period-5/governors/" +
+    "https://governance.algorand.foundation/governance-period-6/governors/" +
     cdpGen(getWallet().address, id).address
   );
 }
 
-export async function getGovernanceInfo() {
-  let response;
-  try {
-    response = await axios.get(
-      "https://governance.algorand.foundation/api/periods/statistics/",
-    );
-  } catch (ex) {
-    response = null;
-    console.log(ex);
-  }
-  if (response) {
-    const governorCount = parseInt(response["data"].unique_governors_count);
-    const enrollmentEnd =
-      response["data"]["periods"][0].registration_end_datetime;
-    return [governorCount, enrollmentEnd];
-  }
-  return null;
-}
-
 export async function getCommDict(){
-  let res = {}
-  const cdps = CDPsToList()
+  let res = {};
+  const cdps = CDPsToList();
   if (cdps[0].id == "N/A"){
-    return {}
+    return {};
   }
-  const owner_address = getWallet().address
-  const addresses = cdps.filter(value => !value.asaID).map(value => cdpGen(owner_address, value.id).address)
+  const owner_address = getWallet().address;
+  const addresses = cdps.filter(value => !value.asaID).map(value => cdpGen(owner_address, value.id).address);
   try {
   const axiosObj = axios.create({
-    baseURL: 'https://governance.algorand.foundation/api/governors/',
+    baseURL: "https://governance.algorand.foundation/api/governors/",
     timeout: 300000,
-  })
+  });
   for (let k = 0; k < addresses.length; k++){
-    let response = (await axiosObj.get(addresses[k] + '/status/', {}))
+    let response = (await axiosObj.get(addresses[k] + "/status/", {}));
     if (response) {
-      res[addresses[k]] = parseInt(response.data["committed_algo_amount"])
+      res[addresses[k]] = parseInt(response.data["committed_algo_amount"]);
     } else {
-      res[addresses[k]] = 0
+      res[addresses[k]] = 0;
     }
-  }} catch (e) {
-    console.log("Error", e)
-  }
-  return res
+  }} catch (error) {
+    if (error.response) {
+      console.log(error.response);
+    } else if (error.request) {
+      // This means the item does not exist
+    } else {
+      // This means that there was an unhandled error
+      console.error(error);
+    }}
+  return res;
 }
 
 
 export default function Govern() {
-  const walletAddress = useSelector(state => state.wallet.address)
-  const [commitment, setCommitment] = useState(undefined);
+  const [mobile, setMobile] = useState(isMobile());
+  const walletAddress = useSelector(state => state.wallet.address);
   const [maxBal, setMaxBal] = useState("");
-  const [vote0, setVote0] = useState("Allocate 15 MM Algos to DeFi for Q1/2023")
-  const [vote1, setVote1] = useState("Yes")
-  const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants")
-  const [vote3, setVote3] = useState("Yes")
-  const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection")
+  const [commit, setCommit] = useState(0);
+  const [vote0, setVote0] = useState("Boost DeFi rewards to 20MM ALGO");
+  const [vote1, setVote1] = useState("Yes, allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.");
+  const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants");
+  const [vote3, setVote3] = useState("Yes");
+  const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection");
   const [selectedAccount, setSelectedAccount] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState("")
   const [refresh, setRefresh] = useState(0);
-  const [commitDict, setCommitDict] = useState({})
+  const [commitDict, setCommitDict] = useState({});
   const [vaulted, setVaulted] = useState("Loading...");
-  const [shownAll, setAllVotes] = useState(true);
-  const [governors, setGovernors] = useState("...");
-  const [enrollmentEnd, setEnrollmentEnd] = useState("");
+  const [governors, setGovernors] = useState("Loading...");
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(null);
-  const [voteTableDisabled, setVoteTable] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
+  const [modal3Visible, setModal3Visible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
-  const [toWallet, setToWallet] = useState(true);
+  const [modal2CanAnimate, setModal2CanAnimate] = useState(false);
+  const [modal3CanAnimate, setModal3CanAnimate] = useState(false);
+  const [personal, setPersonal] = useState(false)
+  const [onlineStatus, setOnlineStatus] = useState(false)
   const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
   const dispatch = useDispatch();
@@ -154,33 +180,21 @@ export default function Govern() {
   const navigate = useNavigate();
 
   const voteMap = [{
-    "Allocate 15 MM Algos to DeFi for Q1/2023": "a",
-    "Allocate 10 MM Algos to DeFi for Q1/2023": "b",
+    "Boost DeFi rewards to 20MM ALGO": "a",
+    "Keep DeFi rewards at 15MM ALGO": "b",
   },
   {
-    "Yes": "a",
-    "No": "b",
-  },
-  {
-    "Allocate 2MM Algos to xGov Community Grants": "a",
-    "Allocate 1MM Algos to xGov Community Grants": "b",
-  },
-  {   
-    "Yes": "a",
-    "No": "b",
-  },
-  {
-    "Allocate 600K Algos to seed the establishment of a Community-curated NFT collection": "a",
-    "Allocate 300K Algos to seed the establishment of a Community-curated NFT collection": "b",
-  }]
+    "Yes, allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.": "a",
+    "No, do not allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.": "b",
+  }];
 
   useEffect(() => {
     if (!getWallet()) return navigate("/");
   }, []);
 
-  const handleCheckboxChange1 = () => {
-    setToWallet(!toWallet);
-  };
+  useEffect(() => {
+    setMobile(isMobile());
+  }, []);
 
   var sessionStorageSetHandler = function (e) {
     setLoadingText(JSON.parse(e.value));
@@ -188,7 +202,7 @@ export default function Govern() {
   document.addEventListener("itemInserted", sessionStorageSetHandler, false);
   var details = [
     {
-      title: "Total Vaulted",
+      title: "Total Committed",
       val: vaulted,
       hasToolTip: true,
     },
@@ -198,20 +212,20 @@ export default function Govern() {
       hasToolTip: true,
     },
     {
-      title: "Total Governors", // We want this to be GARD governors later
-      val: `${governors} Governors`,
-      hasToolTip: false,
+      title: "GARD Governors",
+      val: `${governors}`,
+      hasToolTip: true,
     },
   ];
   useEffect(async () => {
-    const govInfo = await getGovernanceInfo();
     setAPR(await getAlgoGovAPR());
-    setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
   }, []);
 
   useEffect(async () => {
-    setVaulted((await getAlgoGovernanceAccountBals()/1000000).toFixed(2) + `M Algo`);
-    setCommitment(await loadFireStoreCDPs());
+    const algoGovPromise = getAlgoGovernanceAccountBals();
+    const gov_results = await algoGovPromise;
+    setVaulted(gov_results[0]);
+    setGovernors(gov_results[1]);
   }, [refresh]);
 
 
@@ -223,19 +237,24 @@ export default function Govern() {
     } else {
       setCommitDisabled(false);
     }
-  }, [])
+  }, []);
 
   useEffect(async () => {
-    let dict = await getCommDict()
-    setCommitDict(dict)
-  }, [])
+    let dict = await getCommDict();
+    setCommitDict(dict);
+  }, []);
+
+  if (GoHomeIfNoWallet(navigate)){
+    return null
+  }
 
   const owner_address = getWallet().address;
   let adjusted;
+  console.log(commitDict)
   if (!loadedCDPs.filter(value => !value.asaID).length){
-    adjusted = dummyCdps
+    adjusted = dummyCdps;
     if (!commitDisabled){
-      setCommitDisabled(true)
+      setCommitDisabled(true);
     }
   }
   else {
@@ -244,20 +263,28 @@ export default function Govern() {
       if (isFirefox()) {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
-          committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-5/governors">See external site</a>,
-          id: value.id
-        }
+          committed: <a target="_blank" rel="noreferrer" style={{"text-decoration": "none", "color": "#019fff"}} href="https://governance.algorand.foundation/governance-period-6/governors">See external site</a>,
+          id: value.id,
+          collateral: value.collateral,
+          status: value.status
+        };
       } else {
         return {
           balance: value.collateral == "N/A" ? "N/A" : `${(value.collateral / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           committed: commitDict[cdp_address] == 0 || !commitDict[cdp_address] ? 0 : `${(commitDict[cdp_address] / 1000000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
           id: value.id,
+          collateral: value.collateral,
+          status: value.status
         };
       }
     });
   }
-  let cdps = adjusted.map((value, index) => {
+  let cdps = adjusted.map((value,) => {
     let account_id = parseInt(value.id);
+    let commitBal = value.collateral;
+    let status = value.status;
+    delete value.status
+    delete value.collateral;
     delete value.id;
     return {
       ...value,
@@ -267,6 +294,7 @@ export default function Govern() {
           blue={true}
             text={value.balance === value.committed ? "Committed" : "Commit More"}
             left_align={true}
+            tableShrink={mobile}
             onClick={() => {
               if (value.id == "N/A") {
                 return;
@@ -275,6 +303,7 @@ export default function Govern() {
               setModalVisible(true);
               setSelectedAccount(account_id);
               setMaxBal(value.balance);
+              setCommit(commitBal);
             }}
 
             disabled={
@@ -287,6 +316,7 @@ export default function Govern() {
             text={"Commit"}
             blue={true}
             left_align={true}
+            tableShrink={mobile}
             onClick={() => {
               if (value.id == "N/A") {
                 return;
@@ -295,6 +325,7 @@ export default function Govern() {
               setModalVisible(true);
               setSelectedAccount(account_id);
               setMaxBal(value.balance);
+              setCommit(commitBal);
             }}
 
             disabled={(!(Date.now() < commitmentPeriodEnd)) || commitDisabled}
@@ -305,16 +336,39 @@ export default function Govern() {
             blue={true}
             text={"Governor Page"}
             left_align={true}
+            tableShrink={mobile}
             onClick={() => {
               window.open(getGovernorPage(account_id));
             }}
             disabled={commitDisabled}
             />
         ),
+        "Consensus": ( 
+          <PrimaryButton
+            blue={true}
+            text={"Node Consensus"}
+            left_align={true}
+            tableShrink={mobile}
+            onClick={() => {
+              setSelectedAccount(account_id);
+              let temp = cdpGen(getWallet().address, account_id).address;
+              setSelectedAddress(temp)
+              setOnlineStatus(status !== "Offline")
+              setModal3CanAnimate(true)
+              setModal3Visible(true)
+            }}
+            />
+        ),
     };
   });
+  if (mobile) {
+    cdps = cdps.map((value,) => {
+      delete value["Consensus"]
+      return value
+    })
+  }
   return ( !walletAddress ? navigate("/") :
-    <GovContainer>
+    <GovContainer mobile={mobile}>
       {loading ? (
         <LoadingOverlay
           text={loadingText}
@@ -325,46 +379,6 @@ export default function Govern() {
       ) : (
         <></>
       )}
-{/*
-<Banner
-      >
-        <div
-          style={{
-            justifyContent: "center",
-            textAlign: "left",
-            alignItems: "center",
-            color: "#172756",
-          }}
-        >
-          <div style={{ fontSize: "10pt", }}>Algorand Governance Enrollment</div>
-          <div style={{ fontSize: "8pt" }}>Now - October 21, 2022 EOD</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            marginLeft: "0px",
-          }}
-        >
-          <div style={{
-            display: "flex",
-            textAlign: "left",
-            flexDirection: "column"
-          }}>
-
-          <div style={{ color: "#172756", fontSize: "10pt" }}>7M Algo bonus rewards when participating via DeFi protocols</div>
-          </div>
-        </div>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
-
-        <Link onClick={() => {
-            window.open("https://www.algorand.foundation/news/algorand-community-governance-allocating-7m-algos-from-the-q4-2022-governance-rewards-to-defi-governors")
-          }}>Learn More</Link>
-        </div>
-      </Banner>
-        */}
       <GovInfoContainer>
         <fieldset
           style={{
@@ -382,19 +396,18 @@ export default function Govern() {
             justifyContent: "space-between",
             textAlign: "center",
             background: "#0E1834",
-            padding: "20px 20px 0px",
+            padding: `${mobile ? "0px 0px 0px": "20px 20px 0px"}`,
             margin: "auto",
             transform: "rotate(180deg)",
 
           }}>
-            <h3>Algorand Governance Period #5</h3>
-            <div style={{ fontSize: 11 }}>Registration Ends</div>
+            <h3>Algorand Governance Period #6</h3>
+            <div style={{ fontSize: 11 }}>Commitment Period Ends</div>
             <CountDownContainer>
-            <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
-              {/* 1761180257000 */}
+            <CountdownTimer targetDate={countdownEnd} showZero={new Date().getTime() > countdownEnd} />
             </CountDownContainer>
             <div>
-              <GovernDetails>
+              <GovernDetails mobile={mobile}>
                 {details.length && details.length > 0
                   ? details.map((d) => {
                       return (
@@ -413,24 +426,28 @@ export default function Govern() {
             </div>
           </div>
 
-          <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on Foundation Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-5")}/></legend>
+          <legend style={{margin: "auto", transform: "rotate(180deg)" }}> <TextButton text="Learn More on Foundation Site →" onClick={() => window.open("https://governance.algorand.foundation/governance-period-6")}/></legend>
         </fieldset>
       </GovInfoContainer>
-      <PositionTableContainer
-      >
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <div style={{ marginLeft: 25, marginRight: 8 }}>
-            <Title>Algorand Positions</Title>
+      {/* <TableContainer mobile={mobile}> */}
+        <PositionTableContainer
+        mobile={mobile}
+        >
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
+            <div style={{ marginLeft: 25, marginRight: 8 }}>
+              <Title mobile={mobile}>Algorand Positions</Title>
+            </div>
+            <CountContainer>
+              <CountText mobile={mobile}>{cdps.length}{cdps.length == 1 ? " Position": " Positions" }</CountText>
+            </CountContainer>
           </div>
-          <CountContainer>
-            <CountText>{cdps.length}{cdps.length == 1 ? " Position": " Positions" }</CountText>
-          </CountContainer>
-        </div>
-        <div style={{ marginRight: 20 }}>
-          <PrimaryButton text="Commit All" blue={true} disabled={true}/>
-        </div>
-      </PositionTableContainer>
-      <CDPTable data={cdps} />
+          <div style={{ margin: `${mobile ? "0px 5px 0px" : "0px 20px 0px"}`}}>
+            <PrimaryButton text="Commit All" blue={true} disabled={true} tableShrink={mobile}/>
+          </div>
+        </PositionTableContainer>
+        <CDPTable data={cdps} mobile={mobile}/>
+      {/* </TableContainer> */}
+
       <div style={{
             display: "flex",
             flexDirection: "row",
@@ -439,44 +456,16 @@ export default function Govern() {
             padding: "20px 20px 0px",
             margin: "auto",
         }}>
-      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={true} onClick={() => {
+      <PrimaryButton text="Deposit ALGOs" blue={true} underTable={false} onClick={() => {
             navigate("/borrow");
           }}/>
-      <PrimaryButton text="View Vote Proposals" blue={true} underTable={true} onClick={async () => {
-            setModalCanAnimate(true)
-            setModal2Visible(true)
-            setModalCanAnimate(false)
-          }} disabled={(Date.now() < 1670256000000 || Date.now() > 1671465600000) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps}/>
+      <PrimaryButton text="Place Votes" blue={true} underTable={false} onClick={async () => {
+            setModal2CanAnimate(true);
+            setModal2Visible(true);
+            setModal2CanAnimate(false);
+          }} disabled={(Date.now() < 1 || Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps
+        }/>
           </div>
-      {voteTableDisabled ? <></>:
-      <div>
-        <div
-          style={{
-            height: 70,
-            borderTopRightRadius: 10,
-            borderTopLeftRadius: 10,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            background: "#0E1834",
-            border: "1px solid white",
-            borderBottom: "none"
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <div style={{ marginLeft: 25, marginRight: 8 }}>
-              <Title>Algorand Votes</Title>
-            </div>
-            <CountContainer>
-              <CountText>2 Votes Open, 1 Closed Vote</CountText>
-            </CountContainer>
-          </div>
-          <div style={{ display: "flex", marginRight: 20 }}>
-            <PrimaryButton text="Submit All Votes" blue={true}/>
-          </div>
-        </div>
-        <Table data={dummyVotes} />
-      </div>}
       <Modal
         title={"ALGOs to Commit"}
         close={() => setModalVisible(false)}
@@ -493,32 +482,6 @@ export default function Govern() {
               <div style={{ marginBottom: 16 }}>
                 <InputSubtitle>{`${maxBal} Algos will be committed`}</InputSubtitle>
               </div>
-              <div style={{ marginBottom: 8 }}>
-                <InputTitle>
-                  Optional: Send governance rewards directly to your ALGO
-                  wallet?
-                </InputTitle>
-              </div>
-              <div>
-                <label
-                  style={{
-                    display: "flex",
-                    alignContent: "center",
-                  }}
-                >
-                  <input
-                    type={"checkbox"}
-                    checked={toWallet}
-                    onChange={handleCheckboxChange1}
-                  />
-                  <InputSubtitle>
-                    Governance rewards will be sent to your{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      {toWallet ? "ALGO Wallet" : "CDP"}
-                    </span>
-                  </InputSubtitle>
-                </label>
-              </div>
             </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
               <PrimaryButton
@@ -531,8 +494,8 @@ export default function Govern() {
                   try {
                     const res = await commitCDP(
                       selectedAccount,
-                      maxBal,
-                      toWallet,
+                      commit,
+                      true,
                     );
                     if (res.alert) {
                       dispatch(setAlert(res.text));
@@ -545,7 +508,7 @@ export default function Govern() {
                   setRefresh(refresh + 1);
                 }}
               />
-              <CancelButton style={{ marginLeft: 30 }}>
+              <CancelButton style={{ marginLeft: 30 }} onClick={() => setModalVisible(false)}>
                 <CancelButtonText>
                   Cancel
                 </CancelButtonText>
@@ -561,16 +524,16 @@ export default function Govern() {
               <text>Place your vote below for </text>
               <Link
               onClick={() => {
-                window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
               }}
-                href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
               >
-                Governance Period #5 Voting Session #1
+                Governance Period #6 Voting Session #1
               </Link>
             </div>
         }
         close={() => setModal2Visible(false)}
-        animate={modalCanAnimate}
+        animate={modal2CanAnimate}
         visible={modal2Visible}
       >
       <div>
@@ -580,14 +543,14 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #1:
                     </Link>
-                    Allocating up to 15MM Algos to DeFi for the Next Governance Period
+                    Boost allocation to DeFi rewards by 5MM, from 15MM to 20MM ALGO
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -598,14 +561,14 @@ export default function Govern() {
                   <Select
                     value={vote0}
                     onChange={(e) => {
-                      setVote0(e.target.value)
+                      setVote0(e.target.value);
                     }}
                   >
                     <option>
-                      Allocate 15 MM Algos to DeFi for Q1/2023
+                    Boost DeFi rewards to 20MM ALGO
                     </option>
                     <option>
-                      Allocate 10 MM Algos to DeFi for Q1/2023
+                    Keep DeFi rewards at 15MM ALGO
                     </option>
                   </Select>
                 </div>
@@ -620,14 +583,14 @@ export default function Govern() {
                   <h3>
                     <Link
                     onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
+                      window.open("https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1");
                     }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
+                      href="https://governance.algorand.foundation/governance-period-6/period-6-voting-session-1"
                       subtitle={true}
                     >
                       Measure #2:
                     </Link>
-                    Approving of up to 2MM Algos for a Community Funding pilot program via the xGov process
+                    Use up to 5MM of the “Boost” for Targeted DeFi Rewards
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -638,134 +601,14 @@ export default function Govern() {
                   <Select
                     value={vote1}
                     onChange={(e) => {
-                      setVote1(e.target.value)
+                      setVote1(e.target.value);
                     }}
                   >
                     <option>
-                      Yes
+                    Yes, allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.
                     </option>
                     <option>
-                      No
-                    </option>
-                  </Select>
-                </div>
-                <div>
-                  <InputSubtitle>
-                    Select your vote from the drop down.
-                  </InputSubtitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <h3>
-                    <Link
-                    onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
-                    }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
-                      subtitle={true}
-                    >
-                      Measure #3:
-                    </Link>
-                    Allocating up to 2MM Algos for a Community Funding pilot program via the xGov process
-                  </h3>
-                  <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory>
-                    *
-                  </InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Select
-                    value={vote2}
-                    onChange={(e) => {
-                      setVote2(e.target.value)
-                    }}
-                  >
-                    <option>
-                      Allocate 2MM Algos to xGov Community Grants
-                    </option>
-                    <option>
-                      Allocate 1MM Algos to xGov Community Grants
-                    </option>
-                  </Select>
-                </div>
-                <div>
-                  <InputSubtitle>
-                    Select your vote from the drop down.
-                  </InputSubtitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <h3>
-                    <Link
-                    onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
-                    }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
-                      subtitle={true}
-                    >
-                      Measure #4:
-                    </Link>
-                    Approving of up to 600K Algos to seed a Community curated NFT Collection
-                  </h3>
-                  <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory>
-                    *
-                  </InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Select
-                    value={vote3}
-                    onChange={(e) => {
-                      setVote3(e.target.value)
-                    }}
-                  >
-                    <option>
-                      Yes
-                    </option>
-                    <option>
-                      No
-                    </option>
-                  </Select>
-                </div>
-                <div>
-                  <InputSubtitle>
-                    Select your vote from the drop down.
-                  </InputSubtitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <h3>
-                    <Link
-                    onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1")
-                    }}
-                      href="https://governance.algorand.foundation/governance-period-5/period-5-voting-session-1"
-                      subtitle={true}
-                    >
-                      Measure #5:
-                    </Link>
-                    Allocating up to 600K Algos to seed a Community curated NFT Collection
-                  </h3>
-                  <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory>
-                    *
-                  </InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Select
-                    value={vote4}
-                    onChange={(e) => {
-                      setVote4(e.target.value)
-                    }}
-                  >
-                    <option>
-                    Allocate 600K Algos to seed the establishment of a Community-curated NFT collection
-                    </option>
-                    <option>
-                      Allocate 300K Algos to seed the establishment of a Community-curated NFT collection
+                    No, do not allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.
                     </option>
                   </Select>
                 </div>
@@ -780,14 +623,14 @@ export default function Govern() {
               <PrimaryButton
                 text="Confirm Vote"
                 onClick={async () => {
-                  setModalCanAnimate(true);
+                  setModal2CanAnimate(true);
                   setModal2Visible(false);
                   setLoading(true);
                   try {
-                    let votes = []
-                    const votearray = [vote0, vote1, vote2, vote3, vote4]
-                    for (let i = 0; i < 5; i++){
-                      votes.push(voteMap[i][votearray[i]])
+                    let votes = [];
+                    const votearray = [vote0, vote1];
+                    for (let i = 0; i < 2; i++){
+                      votes.push(voteMap[i][votearray[i]]);
                     }
                     const res = await voteCDPs(
                       loadedCDPs.filter(value => !value.asaID),
@@ -799,7 +642,7 @@ export default function Govern() {
                   } catch (e) {
                     handleTxError(e, "Error sending vote");
                   }
-                  setModalCanAnimate(false);
+                  setModal2CanAnimate(false);
                   setLoading(false);
                 }}
                 blue={true}
@@ -812,34 +655,109 @@ export default function Govern() {
             </div>
           </div>
         </Modal>
+        <Modal
+          title={"Secure the Algorand Blockchain"}
+          subtitle={"Associate the Algos in your CDP with a consensus node"}
+          close={() => setModal3Visible(false)}
+          animate={modal3CanAnimate}
+          visible={modal3Visible}
+        >
+          {(
+              <div>
+                <div style={{justifyContent: "center", alignItems: "center", display: "flex", flexDirection:"row", marginBottom: 10,}}>
+                  Your ALGOs are currently:&nbsp; 
+                { onlineStatus ? (
+                <div style={{justifyContent: "center", alignItems: "center", color: "#228B22",}}>
+                  ONLINE
+                </div>) : (<div style={{justifyContent: "center", alignItems: "center", color: "#EE4B2B",}}>
+                  OFFLINE
+                </div>)}
+                </div>
+                <div style={{marginBottom: 10, display: "flex", flexDirection: "row"}}>
+              <PrimaryButton
+                blue={true}
+                text="I run my own"
+                onClick={() => {
+                  setPersonal(!personal);
+                }}
+              /></div>
+              {personal ? (<>
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Vote Key"}
+                type='text'
+                id="voteKey"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Selection Key"}
+                type='text'
+                id="selKey"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"State Proof Key"}
+                type='text'
+                id="sprfKey"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Vote First Round"}
+                type='number'
+                min="0.00"
+                id="voteFirst"
+                />
+                <NodeInput
+                autoComplete="off"
+                display="none"
+                placeholder={"Vote Last Round"}
+                type='number'
+                min="0.00"
+                id="voteLast"
+                />
+              <div style={{ display: "flex", flexDirection: "row", marginBottom: 5}}>
+                <PrimaryButton
+                  blue={true}
+                  text="Secure with personal node"
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      let res = await goOnlineCDP(selectedAccount, getField("voteKey"), getField("selKey"), getField("sprfKey"), parseInt(getField("voteFirst")), parseInt(getField("voteLast")));
+                      if (res.alert) {
+                        dispatch(setAlert(res.text));
+                      }
+                    } catch (e) {
+                      handleTxError(e, "Error going Online");
+                    }
+                    setLoading(false);
+                    // setRefresh(refresh + 1);
+                  }}
+                />
+                
+                <CancelButton style={{ marginLeft: 30 }} onClick={() => setModal3Visible(false)}>
+                  <CancelButtonText>
+                    Cancel
+                  </CancelButtonText>
+                </CancelButton>
+            </div>
+            </>) : <></>}
+          </div>
+          )}
+        </Modal>
     </GovContainer>
   );
 }
 
 const CDPTable = styled(Table)`
-  @media (${device.mobileL}) {
-    transform: scale(0.9);
-    margin-top: -9px;
-  }
-  @media (max-width: 391px) {
-    margin-top: -16px;
-    transform: scale(0.81) translateX(-2px) translateY(-6px);
-  }
-  @media (${device.mobileM}) {
-    margin-top: -16px;
-    transform: scale(0.71) translateX(-22px) translateY(-16px);
-  }
-  @media (${device.mobileS}) {
-    transform: scale(0.61) translateX(-48px) translateY(-16px);
-  }
-
-  @media (max-width: 245px) {
-    transform: scale(0.51) translateX(-68px) translateY(-16px);
-  }
-`
+  margin-bottom: 64;
+`;
 
 const PositionTableContainer = styled.div`
-  height: 70;
+  height: 70px;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
   display: flex;
@@ -848,21 +766,12 @@ const PositionTableContainer = styled.div`
   background: #0E1834;
   border: 1px solid white;
   border-bottom: none;
-  @media (${device.tablet}) {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-  @media (${device.mobileL}) {
-    transform: scale(0.9);
-  }
-  @media (max-width: 391px) {
-    transform: scale(0.8)
-  }
-`
+`;
 
 const GovContainer = styled.div`
-
-`
+margin: auto;
+width: 95%;
+`;
 
 const GovInfoContainer = styled.div`
   margin-bottom: 30px;
@@ -871,17 +780,7 @@ const GovInfoContainer = styled.div`
     justify-content: center;
     align-items: center;
   }
-  @media (${device.mobileL}) {
-    transform: scale(0.9);
-
-  }
-  @media (max-width: 391px) {
-    transform: scale(0.8)
-  }
-  @media (${device.mobileS}) {
-    transform: scale(0.7);
-  }
-`
+`;
 
 
 const Link = styled.text`
@@ -895,20 +794,6 @@ const Link = styled.text`
   }
 `;
 
-const Banner = styled.div`
-  display: flex;
-  width: 100%;
-  border: 1px solid white;
-  align-content: center;
-  flex-direction: row;
-  border-radius: 10px;
-  justify-content: space-between;
-  text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-  margin-bottom: 14px;
-`
 const GovernDetails = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 30%);
@@ -919,6 +804,10 @@ const GovernDetails = styled.div`
   border-radius: 10px;
   background: #0e1834;
   align-items: flex-end;
+  ${(props) => props.mobile && css`
+  grid-template-columns: 1fr;
+  padding: 0px 0px 30px;
+`}
 `;
 const Item = styled.div`
   display: flex;
@@ -936,6 +825,9 @@ const CountDownContainer = styled.div`
 const Title = styled.text`
   font-weight: 500;
   font-size: 18px;
+  ${(props) => props.mobile && css`
+  font-size: 16px;
+  `}
 `;
 const Select = styled.select`
   width: 24.3055555555556vw;
@@ -955,75 +847,11 @@ const CountText = styled.text`
   font-weight: 500;
   font-size: 12px;
   color: white;
+  ${(props) => props.mobile && css`
+  font-size: 10px;
+  `}
 `;
-const dummyCommits = [
-  {
-    Account: "123456",
-    Balance: "Dec 29, 2021",
-    APY: "4.5%",
-    "": <PrimaryButton blue={true} text="Commit" />,
-  },
-  {
-    Account: "123456",
-    Balance: "Closed",
-    APY: "4.5%",
-    "": <PrimaryButton blue={true} text="Commit" />,
-  },
-];
 
-const dummyVotes = [
-  {
-    nameOfProposal: "Lorem ippsum dol...",
-    votesCloses: "Dec 29, 2021",
-    votesInFavor: "59%",
-    votesOutstanding: "37%",
-    "": (
-      // <PrimaryButton
-      //   blue={true}
-      //   text="Vote"
-      // />
-      <div style={{ display: "flex" }}>
-        <div style={{ alignSelf: "center", color: "#01d1ff" }}>Yes</div>
-        <Switch />
-        <div style={{ alignSelf: "center", color: "grey" }}>No</div>
-      </div>
-    ),
-  },
-  {
-    nameOfProposal: "Lorem ippsum dol...",
-    votesCloses: "Dec 29, 2021",
-    votesInFavor: "59%",
-    votesOutstanding: "37%",
-    "": (
-      // <PrimaryButton
-      //   blue={true}
-      //   text="Vote"
-      // />
-      <div style={{ display: "flex" }}>
-        <div style={{ alignSelf: "center", color: "#01d1ff" }}>Yes</div>
-        <Switch />
-        <div style={{ alignSelf: "center", color: "grey" }}>No</div>
-      </div>
-    ),
-  },
-  {
-    nameOfProposal: "Lorem ippsum dol...",
-    votesCloses: "Closed",
-    votesInFavor: "59%",
-    votesOutstanding: "36%",
-    "": (
-      // <PrimaryButton
-      //   blue={true}
-      //   text="Vote"
-      // />
-      <div style={{ display: "flex" }}>
-        <div style={{ alignSelf: "center", color: "#01d1ff" }}>Yes</div>
-        <Switch />
-        <div style={{ alignSelf: "center", color: "grey" }}>No</div>
-      </div>
-    ),
-  },
-];
 const InputMandatory = styled.text`
   font-weight: bold;
   font-size: 16px;
@@ -1033,14 +861,11 @@ const InputTitle = styled.text`
   font-weight: bold;
   font-size: 16px;
 `;
-const BoldText = styled.text`
-  font-weight: 700;
-`;
 const InputSubtitle = styled.text`
   font-weight: normal;
   font-size: 12px;
 `;
-const CancelButton = styled.button`
+export const CancelButton = styled.button`
   border: 0px;
   background: transparent;
   display: flex;
@@ -1048,7 +873,23 @@ const CancelButton = styled.button`
   height: "100%";
   cursor: pointer;
 `;
-const CancelButtonText = styled.text`
+const NodeInput = styled.input`
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 10px;
+  width: 80%;
+  height: 60%;
+  color: white;
+  text-decoration: none;
+  border: 2px solid white;
+  opacity: 100%;
+  font-size: 20px;
+  background: none;
+  &:focus {
+    outline-width: 0;
+  }
+`;
+export const CancelButtonText = styled.text`
   font-weight: 500;
   font-size: 16px;
   color: white;

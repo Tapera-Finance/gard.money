@@ -1,18 +1,17 @@
 import algosdk from "algosdk";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
-import WalletConnect from "@walletconnect/client";
-import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import { PeraWalletConnect } from "@perawallet/connect";
+import { DeflyWalletConnect } from "@blockshake/defly-connect";
 import { psToken } from "./keys";
 import { updateCDPs } from "../transactions/cdp";
 import { ids } from "../transactions/ids";
 import { VERSION } from "../globals";
-import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 // Partial fix from https://github.com/randlabs/myalgo-connect/issues/27
 import buffer from "buffer";
 const { Buffer } = buffer;
-let nfd_updated = 0
+let nfd_updated = 0;
 const peraWallet = new PeraWalletConnect();
+const deflyWallet = new DeflyWalletConnect();
 
 function sleep(seconds) {
   return new Promise((resolve) => setTimeout(resolve, 1000 * seconds));
@@ -26,8 +25,6 @@ function rerun(e) {
   return false; // We can iterate on this as we identify cases where we don't want it to rerun
 }
 
-// DEBUG SWITCH
-const debug = true;
 let _testnet = true;
 if (VERSION == "MAINNET") {
   _testnet = false;
@@ -40,17 +37,13 @@ var activeWalletInfo;
 
 // Sets up algosdk client
 let _nodeServer = "https://testnet-algorand.api.purestake.io/ps2";
-let _indexerServer = "https://testnet-algorand.api.purestake.io/idx2";
 if (!testnet) {
   _nodeServer = "https://mainnet-algorand.api.purestake.io/ps2";
-  _indexerServer = "https://mainnet-algorand.api.purestake.io/idx2";
 }
 const nodeServer = _nodeServer;
-const indexerServer = _indexerServer
 export const algodClient = new algosdk.Algodv2(psToken, nodeServer, "");
-export const indexerClient = new algosdk.Indexer(psToken, indexerServer, "");
 
-export async function accountInfo(address = null) {
+export async function accountInfo(address = null, retry = 0) {
   // XXX: Assumes the wallet is set
   // XXX: Could eventually cache for quicker/more effecient usage
   if (address == null) {
@@ -61,21 +54,21 @@ export async function accountInfo(address = null) {
     .do()
     .catch(async (e) => {
       if (rerun(e)) {
-        await sleep(1);
-        return await accountInfo(address);
+        await sleep(1 + retry);
+        return await accountInfo(address, retry + 1);
       }
       throw e;
     });
 }
 
-export async function appInfo(appId) {
+export async function appInfo(appId, retry = 0) {
   return algodClient
     .getApplicationByID(appId)
     .do()
     .catch(async (e) => {
       if (rerun(e)) {
-        await sleep(1);
-        return await appInfo(appId);
+        await sleep(1 + retry);
+        return await appInfo(appId, retry + 1);
       }
       throw e;
     });
@@ -83,32 +76,32 @@ export async function appInfo(appId) {
 
 
 async function getNFD(address) {
-  const res = await fetch('https://api.nf.domains/nfd/address?address=' + address + '&limit=1&view=thumbnail')
+  const res = await fetch("https://api.nf.domains/nfd/address?address=" + address + "&limit=1&view=thumbnail");
   if (res.status != 404) {
-    const entry = (await res.json())[0]
-    console.log(entry)
+    const entry = (await res.json())[0];
+    console.log(entry);
     if (entry.caAlgo.find(i => i == address)) {
-      return entry.name
+      return entry.name;
     }
   }
-  return null
+  return null;
 }
 
 
 async function updateNFD() {
   if ((Date.now() - nfd_updated)/1000 > 600){
-    nfd_updated = Date.now()
+    nfd_updated = Date.now();
   }
   else{
-    return
+    return;
   }
   if (activeWallet.address) {
-    const nfd = await getNFD(activeWallet.address)
+    const nfd = await getNFD(activeWallet.address);
     if (nfd) {
-      activeWallet.name = nfd
+      activeWallet.name = nfd;
     }
   }
-  return
+  return;
 }
 
 
@@ -118,7 +111,7 @@ export async function updateWalletInfo() {
   updateCDPs(activeWallet.address);
   let idx = -1;
   let promises = [];
-  promises.push(updateNFD())
+  promises.push(updateNFD());
   for (let i = 0; i < info["assets"].length; i++) {
     const j = i;
     if (
@@ -154,13 +147,21 @@ const myAlgoConnect = new MyAlgoConnect({ disableLedgerNano: false });
 
 export function disconnectWallet() {
   if (peraWallet.isConnected) {
-    peraWallet.disconnect()
+    peraWallet.disconnect();
   }
   activeWallet = undefined;
   activeWalletInfo = undefined;
   localStorage.removeItem("wallet");
-  window.history.pushState({}, "", window.location.origin + "/")
-  window.location.reload()
+  window.history.pushState({}, "", window.location.origin + "/");
+  window.location.reload();
+}
+
+
+async function reconnect(conector) {
+  await conector.reconnectSession(); // Ensures pera can reconnect
+  conector.connector?.on("disconnect", disconnectWallet);
+  await updateWalletInfo();
+  return;
 }
 
 
@@ -168,17 +169,17 @@ export function disconnectWallet() {
 const storedWallet = localStorage.getItem("wallet");
 if (!(storedWallet === null) && !(storedWallet === "undefined")) {
   activeWallet = JSON.parse(storedWallet);
-  console.log(activeWallet)
+  console.log(activeWallet);
   if (activeWallet.type == "Pera") {
-    let peraAccounts = await peraWallet.reconnectSession() // Ensures pera can reconnect
-    peraWallet.connector?.on("disconnect", disconnectWallet)
-    await updateWalletInfo()
+    await reconnect(peraWallet);
+  } else if (activeWallet.type == "Defly") {
+    await reconnect(deflyWallet);
   } else if (activeWallet.type == "AlgorandWallet") {
-    disconnectWallet() // Old Pera Wallet - drop that
+    disconnectWallet(); // Old Pera Wallet - drop that
   } else if (activeWallet.type != "Exodus" || window.exodus.algorand.isConnected) {
     await updateWalletInfo(); // Could optimize by setting a promise and doing promise.all at the end of the page
   } else {
-    disconnectWallet()
+    disconnectWallet();
   }
 }
 
@@ -248,7 +249,27 @@ function isiOS() {
   );
 }
 
-export async function connectWallet(type, address) {
+async function connectHelper(connector, type) {
+  let accounts;
+  // Actually getting the connection
+  try {
+    accounts = await connector.connect();
+  } catch(error) {
+    if (error?.data?.type == "SESSION_CONNECT") {
+      connector.disconnect();
+      accounts = await connector.connect();
+    } else {
+      console.log(error?.data?.type);
+      throw error; // TODO better error handling
+    }
+  }
+  activeWallet = {};
+  activeWallet.address = accounts[0];
+  activeWallet.type = type;
+  return;
+}
+
+export async function connectWallet(type) {
   // XXX: Only MyAlgoConnect should be used for testing other functionality at present
   // XXX: A future improvement would allow users to select a specific wallet based upon some displayed info, rather than limiting them to one
   let interval;
@@ -282,7 +303,7 @@ export async function connectWallet(type, address) {
           activeWallet.type = "Exodus";
           // XXX: Does not set name
         } catch (e) {
-          console.error(e)
+          console.error(e);
           // TODO: Graceful error handling
         }
       } else {
@@ -296,7 +317,7 @@ export async function connectWallet(type, address) {
     case "AlgoSigner": {
       if (typeof AlgoSigner !== "undefined") {
         try {
-          let instance = await AlgoSigner.connect();
+          await AlgoSigner.connect();
           let ledger = "TestNet";
           if (!testnet) {
             ledger = "MainNet";
@@ -319,22 +340,11 @@ export async function connectWallet(type, address) {
       break;
     }
     case "Pera": {
-      let accounts;
-      // Actually getting the connection
-      try {
-        accounts = await peraWallet.connect()
-      } catch(error) {
-        if (error?.data?.type == "SESSION_CONNECT") {
-          peraWallet.disconnect()
-          accounts = await peraWallet.connect()
-        } else {
-          console.log(error?.data?.type)
-          throw error; // TODO better error handling
-        }
-      }
-      activeWallet = {};
-      activeWallet.address = accounts[0];
-      activeWallet.type = "Pera";
+      await connectHelper(peraWallet, "Pera");
+      break;
+    }
+    case "Defly": {
+      await connectHelper(deflyWallet, "Defly");
       break;
     }
     default:
@@ -372,7 +382,7 @@ function sameSender(sender1, sender2) {
 function fixSet(senderAddressObj, txnarray, signed) {
   let res = [];
   let sIndex = 0;
-  for (const [index, txn] of txnarray.entries()) {
+  for (const [, txn] of txnarray.entries()) {
     if (sameSender(txn["from"], senderAddressObj)) {
       res.push(signed[sIndex]);
       sIndex++;
@@ -380,7 +390,7 @@ function fixSet(senderAddressObj, txnarray, signed) {
       res.push(null);
     }
   }
-  return res
+  return res;
 }
 
 async function signSet(signer, senderAddressObj, txnarray) {
@@ -398,20 +408,20 @@ export async function signGroup(info, txnarray) {
   const senderAddressObj = algosdk.decodeAddress(info.address);
   switch (activeWallet.type) {
     case "Exodus": {
-      const signedTxns = await signSet(window.exodus.algorand, senderAddressObj, txnarray)
-      console.log(signedTxns)
+      const signedTxns = await signSet(window.exodus.algorand, senderAddressObj, txnarray);
+      console.log(signedTxns);
       const parsedResults = signedTxns.map((element) => {
         return element
           ? { blob: new Uint8Array(Buffer.from(element, "base64")) }
           : null;
       });
-      return parsedResults
+      return parsedResults;
     }
     case "MyAlgoConnect": {
-      return await signSet(myAlgoConnect, senderAddressObj, txnarray)
+      return await signSet(myAlgoConnect, senderAddressObj, txnarray);
     }
+    case "Defly":
     case "Pera": {
-      
       const txnsToSign = txnarray.map((txn) => {
         if (!sameSender(txn["from"], senderAddressObj)) {
           return {
@@ -426,8 +436,12 @@ export async function signGroup(info, txnarray) {
         };
       });
       
-      
-      const result = await peraWallet.signTransaction([txnsToSign])
+      let result;
+      if (activeWallet.type === "Pera") {
+        result = await peraWallet.signTransaction([txnsToSign]);
+      } else {
+        result = await deflyWallet.signTransaction([txnsToSign]);
+      }
       
       const signed = result.map((element) => {
         return element
@@ -519,10 +533,10 @@ export async function sendTxn(txn, confirmMessage = null, commitment = false) {
         alert: true,
         text:
           confirmMessage +
-          '\nTransaction ID: <a href="' +
+          "\nTransaction ID: <a href=\"" +
           explorer +
           tx.txId +
-          '">' +
+          "\">" +
           tx.txId.substring(0, 15) +
           "...</a>" +
           "\nConfirmed in round: " +
@@ -547,7 +561,7 @@ export function handleTxError(e, text) {
   if (e.toString() == "Error: Operation cancelled") {
     return;
   }
-  console.error(e)
+  console.error(e);
   alert(text + ": \n" + e);
 }
 

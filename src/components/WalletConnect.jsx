@@ -7,7 +7,8 @@ import { connectWallet } from "../wallets/wallets";
 import AlgoSignerLogo from "../wallets/logos/algosigner.svg";
 import MyAlgoLogo from "../wallets/logos/myalgowallet.png";
 import PeraLogo from "../wallets/logos/pera.png";
-import ExodusLogo from "../wallets/logos/exodus.png"
+import ExodusLogo from "../wallets/logos/exodus.png";
+import DeflyLogo from "../wallets/logos/defly.png";
 import arrow from "../assets/arrow.png";
 import LoadingOverlay from "./LoadingOverlay";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,11 +18,11 @@ import { userInDB, addUserToFireStore, addReferrerToFirestore, userInTotals, add
 import { getCDPs } from "../transactions/cdp";
 import { cdpGen } from "../transactions/contracts";
 import { useNavigate } from "react-router-dom";
-import { ids } from "../transactions/ids"
-import { size, device } from "../styles/global"
-import { isMobile } from "../utils";
+import { ids } from "../transactions/ids";
+import { size, device } from "../styles/global";
+import { isMobile, isSafari } from "../utils";
 
-const instantiateUser = async (address) => {
+const instantiateUser = (address) => {
   let accountCDPs = getCDPs()[address];
   let addrs = Object.keys(accountCDPs[0]);
   addrs = addrs.concat(Object.keys(accountCDPs[ids.asa.galgo]));
@@ -48,18 +49,14 @@ const instantiateUser = async (address) => {
   return user;
 };
 
-export default function WalletConnect() {
+export default function WalletConnect(contentName) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const walletAddress = useSelector((state) => state.wallet.address);
-  const [mobile, setMobile] = useState(isMobile());
-
-  useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+  const accountPage = contentName?.contentName?.contentName == "Account";
 
   const [modalContent, reduceModalContent] = useReducer(
     (state, action) => {
@@ -70,78 +67,35 @@ export default function WalletConnect() {
           body: (
             <WalletOptions
               onClick={async (type) => {
-                if (type === "Pera") {
-                  try {
-                    const wallet = await connectWallet(type);
-                    if (!wallet.alert) {
-                      dispatch(setWallet({ address: displayWallet() }));
-                      const owner_address = getWallet().address;
-                      let inTotalsPromise = userInTotals(owner_address);
-                      let in_DB = await userInDB(owner_address);
-                      if (!in_DB) {
-                        const user = await instantiateUser(owner_address);
-                        addUserToFireStore(user, owner_address);
-                      }
-                      let in_Totals = await inTotalsPromise;
-                      console.log(in_Totals)
-                      if (!in_Totals) {
-                        var initialTotals = {
-                          id: owner_address,
-                          totalCommitted: 0,
-                          totalMinted: 0,
-                          totalStaked: 0,
-                        };
-                        addUserToTotals(initialTotals, owner_address);
-                        if (localStorage.getItem("gleamCommitComplete") == null){
-                          localStorage.setItem("gleamCommitComplete", JSON.stringify([]))
-                          localStorage.setItem("gleamMintComplete", JSON.stringify([]))
-                          localStorage.setItem("gleamStakeComplete", JSON.stringify([]))
-                        }
-                      }
-                    } else {
-                      dispatch(setAlert(wallet.text));
-                    }
-                  } catch (e) {
-                    console.log("error connecting wallet: ", e);
+                  if (type !== "Pera" && type !== "Defly") {
+                    setModalCanAnimate(true);
+                    setLoading(true);
                   }
-                  setModalCanAnimate(true);
                   setModalVisible(false);
-                  setLoading(false);
-                } else {
-                  setModalCanAnimate(true);
-                  setModalVisible(false);
-                  setLoading(true);
                   try {
                     const wallet = await connectWallet(type);
                     if (!wallet.alert) {
                       dispatch(setWallet({ address: displayWallet() }));
                       const owner_address = getWallet().address;
                       let in_DB = await userInDB(owner_address);
-                      let in_Totals = await userInTotals(owner_address);
                       if (!in_DB) {
                         const user = instantiateUser(owner_address);
                         addUserToFireStore(user, owner_address);
                       }
-                      if (!in_Totals) {
-                        var initialTotals = {
-                          id: owner_address,
-                          totalCommitted: 0,
-                          totalMinted: 0,
-                          totalStaked: 0,
-                        };
-                        addUserToTotals(initialTotals, owner_address);
-                      }
                     } else {
                       dispatch(setAlert(wallet.text));
                     }
                   } catch (e) {
                     console.log("error connecting wallet: ", e);
                   }
-                  setModalCanAnimate(false);
+                  let referrerPromise = addReferrerToFirestore(getWallet().address);
+                  if (modalVisible) {
+                    setModalVisible(false);
+                  }
                   setLoading(false);
+                  await referrerPromise;
                 }
-                await addReferrerToFirestore(getWallet().address)
-              }}
+              }
             />
           ),
         };
@@ -178,13 +132,13 @@ export default function WalletConnect() {
   );
 
   return (
-    <div>
+    <div id="WalletConnect">
       {loading ? (
         <LoadingOverlay text={"Waiting for Wallet connection..."} />
       ) : (
         <></>
       )}
-      <WalletConnectDiv mobile={mobile}>
+      <WalletConnectDiv id="WalletConnectButtons" mobile={isMobile()} accountPage={accountPage}>
         <BtnBox>
           <WalletBarButton
             text={walletAddress || "Connect Wallet"}
@@ -193,6 +147,9 @@ export default function WalletConnect() {
               if (walletAddress) {
                 navigate("/account");
               } else {
+                if(isSafari()){
+                  dispatch(setAlert("We noticed you are using Safari. Please make sure to <a href=\"https://www.avast.com/c-allow-and-block-pop-ups-safari\">enable pop-ups</a> to use the site properly!"));
+                }
                 reduceModalContent("terms");
                 setModalCanAnimate(true);
                 setModalVisible(true);
@@ -202,14 +159,21 @@ export default function WalletConnect() {
         </BtnBox>
         {walletAddress ? (
           <BtnBox>
-            <WalletBarButton
+            {isMobile() ? (accountPage ?  <WalletBarButton
               text="Disconnect Wallet"
               blue={true}
               onClick={() => {
                 disconnectWallet();
                 dispatch(setWallet({ address: "" }));
               }}
-            />
+            /> :<></>) : <WalletBarButton
+            text="Disconnect Wallet"
+            blue={true}
+            onClick={() => {
+              disconnectWallet();
+              dispatch(setWallet({ address: "" }));
+            }}
+          />}
           </BtnBox>
         ) : (
           <></>
@@ -221,8 +185,10 @@ export default function WalletConnect() {
         title={modalContent.title}
         subtitle={modalContent.subtitle}
         close={() => {
-          setModalCanAnimate(true);
-          setModalVisible(false);
+          if (modalVisible) {
+            setModalCanAnimate(true);
+            setModalVisible(false);
+          }
         }}
       >
         {modalContent.body}
@@ -237,7 +203,7 @@ const WalletBarButton = styled(PrimaryButton)`
     width: 100%;
     margin: 2px 0px 2px 0px;
   }
-`
+`;
 
 const BtnBox = styled.div`
     margin: 4px 0px 4px 0px;
@@ -245,29 +211,22 @@ const BtnBox = styled.div`
   @media (${device.mobileL}) {
     margin: 4px 0px 4px 0px;
   }
-`
+`;
 
 const WalletConnectDiv = styled.div`
-  height: 96px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
 
-  ${(props) => props.mobile && css`
+  ${(props) => props.accountPage && props.mobile && css`
     flex-direction: column;
   `}
-
-  @media (${device.mobileL}) {
-    flex-direction: column;
-    margin: 2px 0px 2px 0px;
-    align-items: initial;
-  }
-`
+`;
 
 const StyledModal = styled(Modal)`
   background: #172756;
-`
+`;
 
 const WalletOption = styled.button`
   width: ${window.innerWidth < 900 ? "80vw" : "327px"};
@@ -323,14 +282,30 @@ function WalletOptions({ onClick }) {
       <WalletOption
         style={{ marginBottom: 17 }}
         onClick={() => {
-          onClick("AlgoSigner");
+          onClick("Pera");
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
-          <img src={AlgoSignerLogo} style={{ width: 60 }} />
+          <img src={PeraLogo} style={{ width: 40 }} />
         </div>
         <div>
-          <WalletOptionText>AlgoSigner</WalletOptionText>
+          <WalletOptionText>Pera Wallet</WalletOptionText>
+        </div>
+        <div>
+          <img src={arrow} />
+        </div>
+      </WalletOption>
+      <WalletOption
+        style={{ marginBottom: 17 }}
+        onClick={() => {
+          onClick("Defly");
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img src={DeflyLogo} style={{ width: 40 }} />
+        </div>
+        <div>
+          <WalletOptionText>Defly Wallet</WalletOptionText>
         </div>
         <div>
           <img src={arrow} />
@@ -355,22 +330,6 @@ function WalletOptions({ onClick }) {
       <WalletOption
         style={{ marginBottom: 17 }}
         onClick={() => {
-          onClick("Pera");
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <img src={PeraLogo} style={{ width: 40 }} />
-        </div>
-        <div>
-          <WalletOptionText>Pera Wallet</WalletOptionText>
-        </div>
-        <div>
-          <img src={arrow} />
-        </div>
-      </WalletOption>
-      <WalletOption
-        style={{ marginBottom: 17 }}
-        onClick={() => {
           onClick("Exodus");
         }}
       >
@@ -379,6 +338,22 @@ function WalletOptions({ onClick }) {
         </div>
         <div>
           <WalletOptionText>Exodus Wallet</WalletOptionText>
+        </div>
+        <div>
+          <img src={arrow} />
+        </div>
+      </WalletOption>
+      <WalletOption
+        style={{ marginBottom: 17 }}
+        onClick={() => {
+          onClick("AlgoSigner");
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img src={AlgoSignerLogo} style={{ width: 60 }} />
+        </div>
+        <div>
+          <WalletOptionText>AlgoSigner</WalletOptionText>
         </div>
         <div>
           <img src={arrow} />
@@ -424,7 +399,7 @@ function TermsOfService({ closeModal, accept }) {
           }}
         />
         <CancelButton style={{ marginLeft: 30 }} onClick={() => closeModal()}>
-          <CancelButtonText>I don't accept</CancelButtonText>
+          <CancelButtonText>I do not accept</CancelButtonText>
         </CancelButton>
       </div>
     </div>

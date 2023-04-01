@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import styled, { keyframes, css } from "styled-components";
 import closeIcon from "../assets/icons/close_icon.png";
 import PrimaryButton from "./PrimaryButton";
-import celebration from "../assets/icons/celebration.png"
-import celebration2 from "../assets/icons/celebration2.png"
 
 const Backdrop = styled.div`
   position: fixed;
@@ -14,14 +12,13 @@ const Backdrop = styled.div`
   z-index: ${21};
 `;
 const Container = styled.div`
-  height: 270px;
   width: 400px;
   background: #0E1834;
   color: white;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  padding: 10px 20px;
+  padding: 10px 15px 15px 15px;
   border: 1px solid white;
 `;
 
@@ -74,24 +71,23 @@ export default function AlertOverlay({ text, requestClose }) {
               <img src={closeIcon} />
             </CloseButton>
           </div>
-          {celebrate ? Math.round(Math.random()) == 0 ? <img style={{borderRadius: 10, objectFit:"cover",}} src={celebration} />: <img style={{borderRadius: 10, objectFit:"cover",}} src={celebration2} />: <></>}
           <div style={{marginTop: 10}}>{content}</div>
             <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
               <PrimaryButton blue={true} onClick={() => {
-                navigate("/stake")
-                requestClose()
+                navigate("/stake");
+                requestClose();
                 }} text="Go To Stake" />
               <PrimaryButton blue={true} onClick={() => {
-                navigate("/swap")
-                requestClose()
+                navigate("/swap");
+                requestClose();
                 }} text="Go To Swap"/>
               <PrimaryButton blue={true} onClick={() => {
-                navigate("/borrow")
-                requestClose()
+                navigate("/borrow");
+                requestClose();
             }} text="Go To Borrow"/>
             <PrimaryButton blue={true} onClick={() => {
-                navigate("/")
-                requestClose()
+                navigate("/");
+                requestClose();
             }} text="Back To Home"/>
             </div>
         </Container>
@@ -144,7 +140,6 @@ const CloseButton = styled.button`
   border: 0px;
   background: transparent;
   cursor: pointer;
-  margin-bottom: 10px;
 `;
 
 function textWithLink(text) {

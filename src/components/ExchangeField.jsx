@@ -4,7 +4,7 @@ import Select from "./Select";
 import InputField from "./InputField";
 import Effect from "./Effect";
 import chevronDown from "../assets/chevron_down.png";
-import { size, device } from "../styles/global"
+import { size, device } from "../styles/global";
 import { isMobile } from "../utils";
 
 // entire container for currency select, input field, text for displaying vals
@@ -66,7 +66,7 @@ export default function ExchangeField({
           </div>
         ) : (
           <div>
-            <Span htmlFor={ids[0]}>You'll Receive</Span>
+            <Span htmlFor={ids[0]}>You will Receive</Span>
             <Container>
               <SelectContainer>
                 <ExchangeSelect
@@ -141,7 +141,7 @@ const TextContainer = styled.div`
   @media (${device.tablet}) {
     align-items: center;
   }
-`
+`;
 
 const DollarEffect = styled(Effect)`
   color: #999696;
@@ -175,7 +175,7 @@ const InputContainer = styled.div`
 const ExchangeInput = styled(InputField)`
   width: ${`${isMobile() ? "28vw" : "8vw"}`};
   height: 4vh;
-  border: 1px transparent;
+  border: 1px solid white;
   text-decoration-color: #6430ff;
   text-decoration-thickness: 2px;
   font-size: 14pt;
@@ -183,16 +183,6 @@ const ExchangeInput = styled(InputField)`
   text-align: center;
   background: #0d122710;
   margin: 10px 10px 10px 10px;
-
-  &:active {
-    color: #999696;
-    background: #e8e8e8;
-  }
-  &:focus {
-    color: #999696;
-    background: #e8e8e8;
-    text-decoration: none;
-  }
   @media (${device.tablet}) {
     width: 16vw;
     font-size: small;

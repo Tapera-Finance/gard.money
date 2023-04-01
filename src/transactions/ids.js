@@ -4,11 +4,11 @@ import { VERSION } from "../globals";
 let _usdcID = 31566704;
 
 // pact pool ids
-let _pactUSDCGARDID = 701249684
+let _pactUSDCGARDID = 701249684;
 let _pactALGOGARDID = 801613881;
 let _pactALGOUSDID = 620995314;
 
-let _ids
+let _ids;
 
 // swap recipients
 let _pactAlgoGardPoolAddress =
@@ -21,6 +21,9 @@ if (VERSION == "MAINNET") {
         gard : 684649988,
         gardian : 692432647,
         galgo: 793124631,
+        glitter: 607591690,
+        xsol: 792313023,
+        asastats: 393537671,
     },
     app : {
         dao : {
@@ -43,10 +46,17 @@ if (VERSION == "MAINNET") {
           793124631: 908941119,
         },
         gard_staking : 890604041,
+        gardian_staking : 1007623298,
+        glitter : {
+          xsol : 1033551458,
+        },
+        partner: {
+          asastats: 1047879402,
+        },
         treasury : 890603993,
         claimer : 890604040,
     }
- }
+ };
   // ASAs
   // _gainID = 684649672;
   // _gardID = 684649988;
@@ -54,7 +64,7 @@ if (VERSION == "MAINNET") {
   _usdcID = 31566704;
 
 // pact app ids
-  _pactUSDCGARDID = 701249684
+  _pactUSDCGARDID = 701249684;
   _pactALGOGARDID = 801613881;
   _pactALGOUSDID = 620995314;
   // App ids
@@ -93,11 +103,11 @@ if (VERSION == "MAINNET") {
          treasury : 113908111,
          claimer : 113908141,
      }
-  }
+  };
 }
 
 // IDs object
-export const ids = _ids
+export const ids = _ids;
 
 // ASAs
 export const usdcID = _usdcID;
@@ -105,7 +115,7 @@ export const usdcID = _usdcID;
 // pact pool ids
 export const pactUSDCGARD = _pactUSDCGARDID;
 export const pactALGOGARDID = _pactALGOGARDID;
-export const pactALGOUSDID = _pactALGOUSDID
+export const pactALGOUSDID = _pactALGOUSDID;
 
 // swap AlgoGardPoolAddress
 export const pactAlgoGardPoolAddress = _pactAlgoGardPoolAddress;

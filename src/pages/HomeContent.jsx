@@ -1,31 +1,28 @@
 import React, { useState, useEffect } from "react";
 import algosdk from "algosdk";
 import styled, {css} from "styled-components";
-import Details from "../components/Details";
 import { ids } from "../transactions/ids";
-import CountdownTimer from "../components/CountdownTimer";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getAlgoGovAPR } from "../components/Positions";
-import { getCurrentAlgoUsd, getChainData } from "../prices/prices";
 import WalletConnect from "../components/WalletConnect";
 import Step from "../components/Step";
 import BinaryToggle from "../components/BinaryToggle";
 import { setAlert } from "../redux/slices/alertSlice";
-import { getGovernanceInfo } from "./GovernContent";
 import Effect from "../components/Effect";
-import { cdpInterest } from "../transactions/lib"
-import { getStakingAPY } from "../transactions/stake"
+import { cdpInterest } from "../transactions/lib";
+import { getStakingAPY } from "../transactions/stake";
 import { searchAccounts } from "./GovernContent";
 import { getWalletInfo } from "../wallets/wallets";
-import { getCDPs } from "../transactions/cdp";
-import { CDPsToList } from "../components/Positions"
+import { CDPsToList } from "../components/Positions";
 import { checkStaked } from "../components/actions/StakeDetails";
-import { commitmentPeriodEnd } from "../globals";
 import { device } from "../styles/global";
-import { isMobile } from "../utils"
+import { isMobile } from "../utils";
+import TextButton from "../components/TextButton";
+import { LinkText, SocialMediaButton } from "../components/Drawer";
+import { Banner } from "../components/Banner";
 
 const fetchTvl = async () => {
   try {
@@ -39,24 +36,24 @@ const fetchTvl = async () => {
   }
 };
 
-function getStateUint(state, key, byte_switch = 0) {
+export function getStateUint(state, key, byte_switch = 0) {
   const val = state.find((entry) => {
     if (entry.key === key) {
       return entry;
     }
-  })
-  return byte_switch ? val.value.bytes : val.value.uint
+  });
+  return byte_switch ? val.value.bytes : val.value.uint;
 }
 
 export async function getBorrowed() {
-  const v2GardPriceValidatorId = 890603991
-  const sgardGardId = 890603920
+  const v2GardPriceValidatorId = 890603991;
+  const sgardGardId = 890603920;
   async function lookupApplications(appId) {
     const axiosObj = axios.create({
-      baseURL: 'https://mainnet-idx.algonode.cloud',
+      baseURL: "https://mainnet-idx.algonode.cloud",
       timeout: 300000,
-    })
-    return (await axiosObj.get(`/v2/applications/${appId}`)).data
+    });
+    return (await axiosObj.get(`/v2/applications/${appId}`)).data;
   }
   async function getAppState(appId) {
     const res = await lookupApplications(appId);
@@ -64,10 +61,10 @@ export async function getBorrowed() {
   }
 
   const validatorState = await getAppState(v2GardPriceValidatorId);
-  const SGardDebt = getStateUint(validatorState, btoa('SGARD_OWED'))
+  const SGardDebt = getStateUint(validatorState, btoa("SGARD_OWED"));
   const sgardState = await getAppState(sgardGardId);
-  const SGardConversion = getStateUint(sgardState, btoa('conversion_rate'))
-  return (SGardDebt * SGardConversion / 1e10)/1e6
+  const SGardConversion = getStateUint(sgardState, btoa("conversion_rate"));
+  return (SGardDebt * SGardConversion / 1e10)/1e6;
 }
 
 async function getTotalUsers() {
@@ -76,7 +73,8 @@ async function getTotalUsers() {
   let response = null;
   const users = new Set();
 
-  const validators = [ids.app.validator, ids.app.gard_staking]
+
+  const validators = [ids.app.validator, ids.app.gard_staking, ids.app.gardian_staking, ids.app.glitter.xsol, ids.app.partner.asastats]
   for(var i = 0; i < validators.length; i++){
     do {
       // Find accounts that are opted into the GARD price validator application
@@ -86,27 +84,80 @@ async function getTotalUsers() {
         limit: 1000,
         nexttoken,
       });
-      for (const account of response['accounts']) {
+      for (const account of response["accounts"]) {
         if (i){
           users.add(account.address);
         }
         else {
-          if(account['apps-local-state']){
-          let cdp_state = account['apps-local-state'][0]['key-value']
-          users.add(algosdk.encodeAddress(Buffer.from(getStateUint(cdp_state, btoa("OWNER"), 1), "base64")))
+          if(account["apps-local-state"]){
+          let cdp_state = account["apps-local-state"][0]["key-value"];
+          users.add(algosdk.encodeAddress(Buffer.from(getStateUint(cdp_state, btoa("OWNER"), 1), "base64")));
           }
         }
       }
-      nexttoken = response['next-token']
+      nexttoken = response["next-token"];
     } while (nexttoken != null);
   }
-  return users.size
+  return users.size;
+}
+
+export async function getTotalGardGovs() {
+
+  const v2GardPriceValidatorId = 890603991;
+  let nexttoken;
+  let response = null;
+  let total = 0;
+
+  const validators = [v2GardPriceValidatorId];
+  const axiosObj = axios.create({
+    baseURL: "https://governance.algorand.foundation/api/governors/",
+    timeout: 300000,
+  });
+  async function isGovernor(address) {
+        try {
+            let response = (await axiosObj.get(address + "/status/", {}));
+            if (response) {
+              total += 1;
+            }
+          }
+          catch (error) {
+            if (error.response) {
+              console.log(error.response);
+            } else if (error.request) {
+              // This means the item does not exist
+            } else {
+              // This means that there was an unhandled error
+              console.error(error);
+            }
+          }
+      }
+  
+  let promises = [];
+  
+  for(var i = 0; i < validators.length; i++){
+    do {
+      // Find accounts that are opted into the GARD price validator application
+      // These accounts correspond to CDP opened on the GARD protocol
+      response = await searchAccounts({
+        appId: validators[i],
+        limit: 1000,
+        nexttoken,
+      });
+      
+      for (const account of response["accounts"]) {
+        promises.push(isGovernor(account.address));
+      }
+      nexttoken = response["next-token"];
+    } while (nexttoken != null);
+  }
+  await Promise.allSettled(promises);
+  return total;
 }
 
 const buttons = [
+  "Borrow",
   "Swap",
   "Stake",
-  "Borrow",
   "Govern",
   "Auctions",
   // "Analytics",
@@ -114,7 +165,7 @@ const buttons = [
   // "Pool",
   // "Stake",
   // "Trade CDP",
-]
+];
 
 /**
  * Content found on home
@@ -127,52 +178,60 @@ export default function HomeContent() {
   const [borrowed, setBorrowed] = useState("...");
   const [backed, setBacked] = useState(0);
   const [apr, setApr] = useState(0);
-  const [users, setUsers] = useState("Loading...")
-  const [chainData, setChainData] = useState("");
-  const [governors, setGovernors] = useState("...");
+  const [users, setUsers] = useState("Loading...");
+  const [governors, setGovernors] = useState("Loading...");
   const [allOpen, setAllOpen] = useState(true);
-  const [difficulty, setDifficulty] = useState("Help Me Out");
+  const [difficulty, setDifficulty] = useState("DeFi Expert");
   const [gardInWallet, setGardInWallet] = useState(false);
   const [gaining, setGaining] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
+  const [showMore, setShowMore] = useState(false);
+
+  const [step2open, setStep2] = useState(true);
+  const [step3open, setStep3] = useState(true);
+
+  const handleStep2 = () => {
+    setStep2(!step2open);
+  };
+  const handleStep3 = () => {
+    setStep3(!step3open);
+  };
+
+  useEffect(()=> {
+    setAllOpen(step2open && step3open);
+    console.log("triggered", step2open, step3open);
+
+  },[step2open, step3open]);
 
   useEffect(async () => {
     console.log("isMobile ?", isMobile());
-    const chainDataResponse = await getChainData();
-    setChainData(chainDataResponse);
   }, []);
 
   useEffect(async () => {
     if (walletAddress) {
-     let info = await getWalletInfo()
-     let gardInfo = info["assets"].filter((asset) => asset["asset-id"] === ids.asa.gard)
+     let info = await getWalletInfo();
+     let gardInfo = info["assets"].filter((asset) => asset["asset-id"] === ids.asa.gard);
       if (gardInfo.length > 0 && gardInfo[0]["amount"] > 0) {
-        setGardInWallet(true)
+        setGardInWallet(true);
       }
     }
     if (walletAddress) {
-      let stakePromise = await checkStaked()
+      let stakePromise = await checkStaked();
       let cdps = CDPsToList();
       if (cdps.length > 0 || stakePromise === true) {
-        setGaining(true)
+        setGaining(true);
       }
     }
-  }, [])
-
-  const circulating = "TBD"
-  /* const circulating = JSON.parse(
-    chainData ? chainData["circulating-gard"][8064 - 1] : 0,
-  ) */
+  }, []);
 
   useEffect(async () => {
-    const apyPromise = getStakingAPY("NL")
-    const govInfo = await getGovernanceInfo();
-    setApr(await getAlgoGovAPR())
-    setGovernors(parseInt(govInfo[0]).toLocaleString("en-US"));
-    console.log("2", govInfo[1]);
-    setApy((await apyPromise).toFixed(2))
+    const govsPromise = getTotalGardGovs();
+    const apyPromise = getStakingAPY("NL");
+    setApr(await getAlgoGovAPR());
+    setApy((await apyPromise).toFixed(2));
+    setGovernors(await govsPromise);
   }, []);
 
   const homeDetails = [
@@ -197,7 +256,7 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "GARD Overcollateralization",
+      title: "GARD System Collateralization",
       val: `${backed}%`,
       hasToolTip: true,
     },
@@ -207,20 +266,23 @@ export default function HomeContent() {
       hasToolTip: true,
     },
     {
-      title: "Total Governors", // GARD Governors later
-      val: `${governors} Governors`,
-      hasToolTip: false,
+      title: "GARD Governors",
+      val: `${governors}`,
+      hasToolTip: true,
     },
     {
-      title: "GARD Governance APR",
+      title: "ALGO Governance APR",
       val: `${apr}%`,
       hasToolTip: true,
     },
   ];
 
+  const alwaysShown = homeDetails.slice(0, 4);
+  const additionalDetails = homeDetails.slice(4);
+
   useEffect(() => {
-    setMobile(isMobile())
-  }, [])
+    setMobile(isMobile());
+  }, []);
 
   useEffect(async () => {
     let res = await fetchTvl();
@@ -267,7 +329,7 @@ export default function HomeContent() {
               color: "#172756",
             }}
           >
-            <div style={{ fontSize: "10pt" }}>GARD Staking Rewards!</div>
+            <div style={{ fontSize: "12pt" }}>GARD Staking Rewards!</div>
           </div>
           <div
             style={{
@@ -285,9 +347,8 @@ export default function HomeContent() {
                 flexDirection: "column",
               }}
             >
-              <div style={{ color: "#172756", fontSize: "10pt" }}>
-                Earn protocol rewards boosted by the Algorand Foundation via
-                Aeneas grant!
+              <div style={{ color: "#172756", fontSize: "10pt", textAlign: "center" }}>
+              Earn protocol revenues boosted by the Algorand Foundation!
               </div>
             </div>
           </div>
@@ -299,6 +360,7 @@ export default function HomeContent() {
             }}
           >
             <Link
+              mobile={mobile}
               onClick={() => {
                 walletAddress
                   ? navigate("/stake")
@@ -321,68 +383,123 @@ export default function HomeContent() {
           justifyContent: "center",
           flexDirection: "column",
           textAlign: "center",
-          marginTop: "18px",
-          marginBottom: "18px",
           alignItems: "center",
         }}
       >
-        <ToggleBox>
+      <ToggleBox>
           <BinaryToggle
-            optionA="Help Me Out"
-            optionB="DeFi Expert"
+            optionA={"DeFi Expert"}
+            optionB={"Help Me Out"}
             selectedOption={setDifficulty}
           />
         </ToggleBox>
         <Container mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
+          { mobile ? <Items>
+            {alwaysShown.map((d) => {
+              return (
+                <Item key={d.title} notShown={false}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+            {additionalDetails.map((d) => {
+              return (
+                <Item key={d.title} notShown={!showMore}>
+                  <Effect
+                    title={d.title}
+                    val={d.val}
+                    hasToolTip={d.hasToolTip}
+                    rewards={d.rewards}
+                  ></Effect>
+                </Item>
+              );
+            })}
+          </Items> :
           <Items>
-            {homeDetails.length && homeDetails.length > 0
-              ? homeDetails.map((d) => {
-                  return (
-                    <Item key={d.title}>
-                      <Effect
-                        title={d.title}
-                        val={d.val}
-                        hasToolTip={d.hasToolTip}
-                        rewards={d.rewards}
-                      ></Effect>
-                    </Item>
-                  );
-                })
-              : null}
-          </Items>
+          {homeDetails.length && homeDetails.length > 0
+            ? homeDetails.map((d) => {
+                return (
+                  <Item key={d.title}>
+                    <Effect
+                      title={d.title}
+                      val={d.val}
+                      hasToolTip={d.hasToolTip}
+                      rewards={d.rewards}
+                    ></Effect>
+                  </Item>
+                );
+              })
+            : null}
+        </Items>
+          }
         </Container>
-        <div>
-          {/* <Text
-            style={{
-              color: "#7c52ff",
-              textAlign: "center",
-              fontWeight: "bolder",
-            }}
-            // onClick={() => navigate("/analytics")}
-          >
-            {`See More Metrics ${">"}`}
-          </Text> */}
-        </div>
-      </div>
-      <div>
+        {mobile ? <ManageCollapse
+          positioned={true}
+          text={showMore ? "Collapse":  "Show More Details"}
+          onClick={() => {
+            setShowMore(!showMore);
+          }}
+        /> : <></>}
+        <div style={{display: "flex", flexDirection: "column", width:"100%"}}>
+            <BoldText moible={mobile}>Quick Actions</BoldText>
+            <AccessBox expert={difficulty == "DeFi Expert" ? true : false} mobile={mobile}>
+              {buttons.map((action) => {
+                return (
+                  <div 
+                  key={Math.random()}
+                  >
+                    <PrimaryButton
+                      disabled={!walletAddress}
+                      text={action}
+                      blue={true}
+                      uniform={true}
+                      onClick={() => navigate(`/${action.toLowerCase()}`)}
+                    />
+                  </div>
+                );
+              })}
+            </AccessBox>
+          </div>
+          
         {difficulty === "Help Me Out" ? (
+          <div>
           <StepContainer>
+            <SocialMediaButton
+                style={{marginBottom: "10px"}}
+                onClick={() =>
+                  window.open(
+                    "https://youtu.be/b1nzF6uzwNY",
+                  )
+                }
+              >
+                <LinkText>
+                Be sure to check out the tutorial!
+                </LinkText>
+            </SocialMediaButton>
             <Text
               style={{ color: "#80edff" }}
-              onClick={() => setAllOpen(!allOpen)}
+              onClick={() => {
+                setStep2(!allOpen);
+                setStep3(!allOpen);
+              }}
             >
-              {allOpen ? `Collapse` : `Expand`} All
+              {allOpen ? "Collapse" : "Expand"} All
             </Text>
 
             <ConnectStep mobile={mobile}>
               <div style={{
                 display: "flex",
-                width: "100%",
+                width: "90%",
                 justifyContent: "space-between",
                 padding: "0px 10px 0px 10px",
               }}>
                 <Text>
-                  {walletAddress ? `  √` : ""} Step 1: Connect Your Wallet
+                  {walletAddress ? <span style={{color: "green"}}>√ </span> : ""} Step 1: Connect Your Wallet
                 </Text>
                 <div>
                   <WalletConnect style={{ alignSelf: "flex-end" }} />
@@ -400,8 +517,9 @@ export default function HomeContent() {
               linkText="How to get GARD"
               goTo="Swap"
               secondGoTo="Borrow"
-              allOpen={allOpen}
               mobile={mobile}
+              onClick={handleStep2}
+              expanded={step2open}
             />
             <Step
               header="Step 3: Gain Rewards"
@@ -422,27 +540,14 @@ export default function HomeContent() {
               linkText="What is needed to participate?"
               goTo="Stake"
               secondGoTo="Govern"
-              allOpen={allOpen}
               mobile={mobile}
+              onClick={handleStep3}
+              expanded={step3open}
             />
           </StepContainer>
-        ) : (
-          <div style={{display: "flex", flexDirection: "column"}}>
-            <BoldText>Quick Actions</BoldText>
-            <AccessBox expert={difficulty == "DeFi Expert" ? true : false}>
-              {buttons.map((action) => {
-                return (
-                  <PrimaryButton
-                    disabled={!walletAddress}
-                    text={action}
-                    blue={true}
-                    onClick={() => navigate(`/${action.toLowerCase()}`)}
-                    key={Math.random()}
-                  />
-                );
-              })}
-            </AccessBox>
           </div>
+        ) : (
+          <></>
         )}
       </div>
     </HomeWrapper>
@@ -450,11 +555,8 @@ export default function HomeContent() {
 }
 
 const ToggleBox = styled.div`
-  margin: 0px 0px 30px 0px;
-  @media (${device.tablet}) {
-
-  }
-`
+  margin: 15px 0px 15px 0px;
+`;
 
 const HomeWrapper = styled.div`
   display: flex;
@@ -467,14 +569,17 @@ const HomeWrapper = styled.div`
       /* margin-right: 30px; */
     `
   }
-`
+`;
 
 const AccessBox = styled.div`
+  gap: 25px;
   display: flex;
   justify-content: center;
-  width: 100%;
-  margin-top: 20px;
-  margin-bottom: 100px;
+  width: 95%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-left: auto;
+  margin-right: auto;
   align-items: center;
   ${(props) =>
     props.expert &&
@@ -482,18 +587,12 @@ const AccessBox = styled.div`
       /* margin-right: 30px; */
     `
   }
-  @media (${device.tablet}) {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+  ${(props) => props.mobile && css`
+    flex-wrap: wrap;
     row-gap: 10px;
-  }
-  @media (${device.mobileM}) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-  }
-`
+    height: 100%;
+  `}
+`;
 
 const Link = styled(PrimaryButton)`
   text-decoration: none;
@@ -503,69 +602,31 @@ const Link = styled(PrimaryButton)`
   &:hover {
     background-color: #455278
   }
-`;
-
-const Banner = styled.div`
-  display: flex;
-  width: 100%; 
-  flex-direction: row;
-  border: 1px solid white;
-  align-content: center;
-  border-radius: 10px;
-  justify-content: space-between;
-  text-align: center;
-  background: linear-gradient(to right, #80deff 65%, #ffffff);
-  padding: 8px 6px 10px 8px;
-  margin: 8px;
-  @media (${device.tablet}) {
-    width: 100%;
-    ${(props) =>
-    props.expert &&
-    css`
-      /* margin-left: 60px; */
-      /* width: 100%; */
-    `
-    }
-  }
-  ${(props) =>
-    props.expert &&
-    css`
-      /* margin-right: 30px; */
-    `
-  }
   ${(props) => props.mobile && css`
-    width: 90%;
+    margin-right: 0px;
+    margin-left: 5px;
   `}
-`
-
+`;
 
 const Container = styled.div`
   background: #0E1834;
   padding-top: 30px;
-  width: 100%;
+  width: 90%;
   padding-bottom: 30px;
   border: 1px solid white;
   border-radius: 10px;
 
-  ${(props) => props.mobile && css`
-    width: 90%;
-  `}
-
-  @media (${device.tablet}) {
-    /* width: 100%; */
-    ${(props) =>
-    props.expert &&
-    css`
-      margin-left: 70px;
-    `
-  }
-  }
   ${(props) =>
     props.expert &&
     css`
       /* margin-right: 30px; */
     `
   }
+  ${(props) => props.mobile && css`
+    width: 90%;
+    padding-bottom: 60px;
+  `}
+
 `;
 
 const Items = styled.div`
@@ -578,13 +639,20 @@ const Items = styled.div`
     grid-template-columns: repeat(2, 40%);
   }
   @media (max-width: 422px) {
-    grid-template-columns: repeat(1, 40%)
+    grid-template-columns: repeat(2, 40%);
   }
 `;
 
 const Item = styled.div`
   display: flex;
   flex-direction: column;
+  ${(props) =>
+    props.notShown &&
+    css`
+      display: none;
+  `}
+`;
+const ManageCollapse = styled(TextButton)`
 `;
 
 // styled components
@@ -594,7 +662,7 @@ const StepContainer = styled.div`
   justify-content: space-evenly;
   align-content: center;
   align-items: center;
-  margin-bottom: 50px;
+  margin-bottom: 15px;
 `;
 
 const ConnectStep = styled.div`
@@ -603,7 +671,7 @@ const ConnectStep = styled.div`
   font-size: large;
   text-align: left;
   align-items: center;
-  width: 100%;
+  width: 90%;
   border: 1px solid #019fff;
   background: #0f1733;
   color: #019fff;
@@ -630,9 +698,6 @@ const ConnectStep = styled.div`
       }
 
     }
-    @media (${device.mobileL}) {
-      //
-    }
     ${(props) => props.mobile && css`
     width: 90%;
     `}
@@ -649,21 +714,12 @@ const Text = styled.text`
 const BoldText = styled.text`
   font-weight: bold;
   cursor: pointer;
-  margin: 0px 30px 0px 0px;
   text-align: center;
   align-self: center;
+  margin-top: 15px;
 `;
 
-const EnrollButton = styled(PrimaryButton)`
-  appearance: none;
-  border: none;
-  color: unset;
-  margin: 6px 0px 10px 80px;
-  padding: 0px 14px 0px 14px;
-  &:hover {
-    color: #019fff;
-  }
-`;
+
 
 
 /**
@@ -752,3 +808,5 @@ const EnrollButton = styled(PrimaryButton)`
         </div>
       </Banner>
  */
+ 
+

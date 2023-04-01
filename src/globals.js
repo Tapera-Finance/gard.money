@@ -7,7 +7,7 @@ export const CONTENT_NAMES = {
   SWAP: "Swap",
   STAKE: "Stake",
   DAO: "DAO",
-  GOVERN: "ALGO Governance",
+  GOVERN: "Governance",
   ANALYTICS: "Analytics",
 };
 
@@ -23,10 +23,11 @@ export function setReferrer(arg){
 
 export var referrer = null;
 
-export const commitmentPeriodEnd = 1666368000000;
+export const commitmentPeriodEnd = 1682092800000;
+export const countdownEnd = 1682092800000;
 
 export const VERSION = "MAINNET";
-const UPDATE = 3;
+const UPDATE = 4;
 // TESTNET1 = initial testnet release
 // TESTNET2 = testnet w/ updated backend code
 // MAINNET = mainnet
