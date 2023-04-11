@@ -334,7 +334,7 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     params.fee = 0;
     txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: cdp.address,
-      to: "SAHBJDRHHRR72JHTWSXZR5VHQQUVC7S757TJZI656FWSDO3TZZWV3IGJV4",
+      to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
       amount: 0,
       note: note,
       suggestedParams: params,
@@ -708,7 +708,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
     params.fee = 0;
     txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: cdp.address,
-      to: "SAHBJDRHHRR72JHTWSXZR5VHQQUVC7S757TJZI656FWSDO3TZZWV3IGJV4",
+      to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
       amount: 0,
       note: note,
       suggestedParams: params,
@@ -1235,7 +1235,7 @@ export async function voteCDPs(cdpArray, voteArray) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
-  const stringVal = "af/gov1:j[9,\"" + voteArray[0] + "\",\"" + voteArray[1] + "\"]";
+  const stringVal = "af/gov1:j[10,\"" + voteArray[0] + "\",\"" + voteArray[1] + "\"]";
   
   const note = enc.encode(stringVal);
 
@@ -1268,7 +1268,7 @@ export async function voteCDPs(cdpArray, voteArray) {
       params.fee = 0;
       let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: cdp.address,
-        to: "SAHBJDRHHRR72JHTWSXZR5VHQQUVC7S757TJZI656FWSDO3TZZWV3IGJV4",
+        to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
         amount: 0,
         note: note,
         suggestedParams: params,
@@ -1314,7 +1314,7 @@ export async function voteCDPs(cdpArray, voteArray) {
   params.fee = 0;
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    to: "UD33QBPIM4ZO4B2WK5Y5DYT5J5LYY5FA3IF3G4AVYSCWLCSMS5NYDRW6GE",
+    to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
     amount: 0,
     note: note,
     suggestedParams: params,
