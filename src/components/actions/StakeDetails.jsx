@@ -537,7 +537,7 @@ export default function StakeDetails() {
                 />
               </TypeCont>
               <Heading>No-Lock</Heading>
-              <Heading>{`${(glitterAPY).toFixed(2)}%`}</Heading>
+              <Heading>{`${(0).toFixed(2)}%`}</Heading>
               {mobile ? <Heading>{maxGlitterStake.toFixed(2)} XGLI</Heading> : <></>}
               {mobile || (window.innerWidth < 760) ? (
                 <></>
@@ -565,7 +565,7 @@ export default function StakeDetails() {
             />
             <Effect
               title="Est. Rewards / Day"
-              val={`${dailyGlitter.toFixed(5)} xSol`}
+              val={`${(0).toFixed(5)} xSol`}
               hasToolTip={true}
             />
             <Effect
