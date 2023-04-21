@@ -438,7 +438,7 @@ export default function StakeDetails() {
                 />
               </TypeCont>
               <Heading>No-Lock</Heading>
-              <Heading>{`${(100*(100 * 1000000/GARDIAN_TVL)).toFixed(2)}%`}</Heading>
+              <Heading>{`${(0).toFixed(2)}%`}</Heading>
               {mobile ? <Heading>{maxGARDIANStake} GARDIAN</Heading> : <></>}
               {mobile || (window.innerWidth < 760) ? (
                 <></>
@@ -468,9 +468,7 @@ export default function StakeDetails() {
             />
             <Effect
               title="Est. Rewards / Day"
-              val={`${(((100 * 1000000/GARDIAN_TVL) * (noLockGardian + accruedGardian)) /
-              365
-              ).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} GARDIAN`}
+              val={`0 GARDIAN`}
               hasToolTip={true}
             />
             <Effect

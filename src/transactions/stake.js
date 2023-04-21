@@ -46,7 +46,7 @@ export async function getAccruedRewards(pool, app_id=ids.app.gard_staking, rewar
 
 export async function getStakingAPY(pool) {
   // TODO: In the future this will need to be more granular
-  const expectedBonus = 1000 * 52 * 1000000;
+  const expectedBonus = 0; // 1000 * 52 * 1000000;
   const nltvlpromise = getAppField(ids.app.gard_staking, pool);
   const gardIssued = await getAppField(ids.app.validator, "GARD_ISSUED");
   return 100 * (stakingRevenuePercent * cdpInterest * gardIssued + expectedBonus) / (await nltvlpromise);
