@@ -152,11 +152,12 @@ export default function Govern() {
   const walletAddress = useSelector(state => state.wallet.address);
   const [maxBal, setMaxBal] = useState("");
   const [commit, setCommit] = useState(0);
-  const [vote0, setVote0] = useState("Boost DeFi rewards to 20MM ALGO");
-  const [vote1, setVote1] = useState("Yes, allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.");
-  const [vote2, setVote2] = useState("Allocate 2MM Algos to xGov Community Grants");
-  const [vote3, setVote3] = useState("Yes");
-  const [vote4, setVote4] = useState("Allocate 600K Algos to seed the establishment of a Community-curated NFT collection");
+  const [vote0, setVote0] = useState("Yes");
+  const [vote1, setVote1] = useState("Allocate a higher amount (25MM ALGO) to DeFi rewards.");
+  const [vote2, setVote2] = useState("Yes");
+  const [vote3, setVote3] = useState("Allocate 7.5MM through the Targeted DeFi Rewards program.");
+  const [vote4, setVote4] = useState("Yes");
+  const [vote5, setVote5] = useState("Allocate 500K ALGO to the NFT Rewards program pilot");
   const [selectedAccount, setSelectedAccount] = useState("");
   const [selectedAddress, setSelectedAddress] = useState("")
   const [refresh, setRefresh] = useState(0);
@@ -180,13 +181,29 @@ export default function Govern() {
   const navigate = useNavigate();
 
   const voteMap = [{
-    "Boost DeFi rewards to 20MM ALGO": "a",
-    "Keep DeFi rewards at 15MM ALGO": "b",
+    "Yes": "a",
+    "No": "b",
   },
   {
-    "Yes, allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.": "a",
-    "No, do not allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.": "b",
-  }];
+    "Allocate a higher amount (25MM ALGO) to DeFi rewards.": "a",
+    "Allocate the same amount (20MM ALGO) to DeFi rewards as GP7.": "b",
+  },
+  {
+    "Yes": "a",
+    "No": "b",
+  },
+  {
+    "Allocate 7.5MM through the Targeted DeFi Rewards program.": "a",
+    "Allocate 5MM through the Targeted DeFi Rewards program.": "b",
+  },
+  {
+    "Yes": "a",
+    "No": "b",
+  },
+  {
+    "Allocate 500K ALGO to the NFT Rewards program pilot": "a",
+    "Allocate 250K ALGO to the NFT Rewards program pilot": "b",
+  },];
 
   useEffect(() => {
     if (!getWallet()) return navigate("/");
@@ -460,14 +477,14 @@ export default function Govern() {
             navigate("/borrow");
           }}/>
           
-      {/*
+      {
       <PrimaryButton text="Place Votes" blue={true} underTable={false} onClick={async () => {
             setModal2CanAnimate(true);
             setModal2Visible(true);
             setModal2CanAnimate(false);
-          }} disabled={(Date.now() < 1 || Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps
+          }} disabled={!(Date.now() < 1686772800000 && Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps
         }/>
-        */}
+        }
           </div>
       <Modal
         title={"ALGOs to Commit"}
@@ -553,7 +570,7 @@ export default function Govern() {
                     >
                       Measure #1:
                     </Link>
-                    Boost allocation to DeFi rewards by 5MM, from 15MM to 20MM ALGO
+                    Liquidity Provision to DeFi Protocols
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -568,10 +585,10 @@ export default function Govern() {
                     }}
                   >
                     <option>
-                    Boost DeFi rewards to 20MM ALGO
+                    Yes
                     </option>
                     <option>
-                    Keep DeFi rewards at 15MM ALGO
+                    No
                     </option>
                   </Select>
                 </div>
@@ -593,7 +610,7 @@ export default function Govern() {
                     >
                       Measure #2:
                     </Link>
-                    Use up to 5MM of the “Boost” for Targeted DeFi Rewards
+                    DeFi Rewards Q3 Allocation
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -608,10 +625,170 @@ export default function Govern() {
                     }}
                   >
                     <option>
-                    Yes, allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.
+                    Allocate a higher amount (25MM ALGO) to DeFi rewards.
                     </option>
                     <option>
-                    No, do not allocate the 5MM ALGO “Boost” from Measure 1 to the Target DeFi Rewards Program.
+                    Allocate the same amount (20MM ALGO) to DeFi rewards as GP7.
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-7/period-7-voting-session-1");
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-7/period-7-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #3:
+                    </Link>
+                    Repeat of Targeted DeFi Rewards Boost Approval in Q3-Q4/2023
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={vote2}
+                    onChange={(e) => {
+                      setVote2(e.target.value);
+                    }}
+                  >
+                    <option>
+                    Yes
+                    </option>
+                    <option>
+                    No
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-7/period-7-voting-session-1");
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-7/period-7-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #4:
+                    </Link>
+                    Targeted DeFi Rewards Boost Allocation
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={vote3}
+                    onChange={(e) => {
+                      setVote3(e.target.value);
+                    }}
+                  >
+                    <option>
+                    Allocate 7.5MM through the Targeted DeFi Rewards program.
+                    </option>
+                    <option>
+                    Allocate 5MM through the Targeted DeFi Rewards program.
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-7/period-7-voting-session-1");
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-7/period-7-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #5:
+                    </Link>
+                    NFT Rewards Program Approval
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={vote4}
+                    onChange={(e) => {
+                      setVote4(e.target.value);
+                    }}
+                  >
+                    <option>
+                    Yes
+                    </option>
+                    <option>
+                    No
+                    </option>
+                  </Select>
+                </div>
+                <div>
+                  <InputSubtitle>
+                    Select your vote from the drop down.
+                  </InputSubtitle>
+                </div>
+              </div>
+              <div style={{ marginBottom: 13 }}>
+                <div style={{ marginBottom: 8 }}>
+                  <h3>
+                    <Link
+                    onClick={() => {
+                      window.open("https://governance.algorand.foundation/governance-period-7/period-7-voting-session-1");
+                    }}
+                      href="https://governance.algorand.foundation/governance-period-7/period-7-voting-session-1"
+                      subtitle={true}
+                    >
+                      Measure #6:
+                    </Link>
+                    NFT Rewards Program Initial Allocation
+                  </h3>
+                  <InputTitle>Your Vote</InputTitle>
+                  <InputMandatory>
+                    *
+                  </InputMandatory>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Select
+                    value={vote5}
+                    onChange={(e) => {
+                      setVote5(e.target.value);
+                    }}
+                  >
+                    <option>
+                    Allocate 500K ALGO to the NFT Rewards program pilot
+                    </option>
+                    <option>
+                    Allocate 250K ALGO to the NFT Rewards program pilot
                     </option>
                   </Select>
                 </div>
@@ -631,8 +808,8 @@ export default function Govern() {
                   setLoading(true);
                   try {
                     let votes = [];
-                    const votearray = [vote0, vote1];
-                    for (let i = 0; i < 2; i++){
+                    const votearray = [vote0, vote1, vote2, vote3, vote4, vote5];
+                    for (let i = 0; i < 6; i++){
                       votes.push(voteMap[i][votearray[i]]);
                     }
                     const res = await voteCDPs(
