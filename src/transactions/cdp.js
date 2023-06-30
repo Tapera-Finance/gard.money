@@ -334,7 +334,7 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     params.fee = 0;
     txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: cdp.address,
-      to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
+      to: "FONC4XH5QPJNUPZPHCMFGPDQ43J3VWYJ7ECI43AVGAGDIHKVBHPOH7YEXA",
       amount: 0,
       note: note,
       suggestedParams: params,
@@ -548,7 +548,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
     await new Promise(r => setTimeout(r, 1000));
     updateCommitmentFirestore(info.address, accountID, openingMicroAssetAmount);
     response.text =
-      response.text + "\nFull Balance committed to Governance Period #7!";
+      response.text + "\nFull Balance committed to Governance Period #8!";
   }
   
   setLoadingStage(null);
@@ -708,7 +708,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
     params.fee = 0;
     txn8 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: cdp.address,
-      to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
+      to: "FONC4XH5QPJNUPZPHCMFGPDQ43J3VWYJ7ECI43AVGAGDIHKVBHPOH7YEXA",
       amount: 0,
       note: note,
       suggestedParams: params,
@@ -744,7 +744,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
     await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, govAlgos);
     response.text =
-      response.text + "\nFull Balance committed to Governance Period #7!";
+      response.text + "\nFull Balance committed to Governance Period #8!";
   }
   
   setLoadingStage(null);
@@ -1190,7 +1190,7 @@ export async function commitCDP(account_id, amount, toWallet) {
   params.fee = 0;
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
+    to: "FONC4XH5QPJNUPZPHCMFGPDQ43J3VWYJ7ECI43AVGAGDIHKVBHPOH7YEXA",
     amount: 0,
     note: note,
     suggestedParams: params,
@@ -1214,7 +1214,7 @@ export async function commitCDP(account_id, amount, toWallet) {
     stxns,
     "Succesfully committed your algos to governance! You may verify" +
       " <a href=\"" +
-      "https://governance.algorand.foundation/governance-period-6/governors/" +
+      "https://governance.algorand.foundation/governance-period-8/governors/" +
       cdp.address +
       "\">here</a>.\n",
     true,
@@ -1268,7 +1268,7 @@ export async function voteCDPs(cdpArray, voteArray) {
       params.fee = 0;
       let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: cdp.address,
-        to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
+        to: "FONC4XH5QPJNUPZPHCMFGPDQ43J3VWYJ7ECI43AVGAGDIHKVBHPOH7YEXA",
         amount: 0,
         note: note,
         suggestedParams: params,
@@ -1314,7 +1314,7 @@ export async function voteCDPs(cdpArray, voteArray) {
   params.fee = 0;
   let txn2 = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
     from: cdp.address,
-    to: "RFKCBRTPO76KTY7KSJ3HVWCH5HLBPNBHQYDC52QH3VRS2KIM7N56AS44M4",
+    to: "FONC4XH5QPJNUPZPHCMFGPDQ43J3VWYJ7ECI43AVGAGDIHKVBHPOH7YEXA",
     amount: 0,
     note: note,
     suggestedParams: params,
