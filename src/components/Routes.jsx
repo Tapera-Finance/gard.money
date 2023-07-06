@@ -26,7 +26,7 @@ export default function AppRoutes() {
         <Route path="/borrow" element={Main(BorrowContent, CONTENT_NAMES.BORROW)} />
         <Route path="/auctions" element={Main(AuctionsContent, CONTENT_NAMES.AUCTIONS)} />
         {/* <Route path="/actions" element={Main(ActionsContent, "Actions")} /> */}
-        <Route path="/swap" element={Main(SwapDetails, CONTENT_NAMES.SWAP)} />
+        {/* <Route path="/swap" element={Main(SwapDetails, CONTENT_NAMES.SWAP)} /> */}
         <Route path="/stake" element={Main(StakeDetails, CONTENT_NAMES.STAKE)} />
         {/* <Route path="/dao" element={Main(DaoContent, "DAO")} /> */}
         <Route

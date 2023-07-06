@@ -251,7 +251,7 @@ export default function Drawer({
                           // "Manage CDPs",
                           "Borrow",
                           "Governance",
-                          "Swap",
+                          // "Swap",
                           "Stake",
                           "Govern",
                           "Auctions",
@@ -675,12 +675,12 @@ const menuItems = [
     subOptions: [],
     route: "/borrow",
   },
-  {
-    name: CONTENT_NAMES.SWAP,
-    icon: swapIcon,
-    subOptions: [],
-    route: "/swap",
-  },
+  // {
+  //   name: CONTENT_NAMES.SWAP,
+  //   icon: swapIcon,
+  //   subOptions: [],
+  //   route: "/swap",
+  // },
   {
     name: CONTENT_NAMES.STAKE,
     icon: stakeIcon,

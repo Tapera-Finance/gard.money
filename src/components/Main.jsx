@@ -238,8 +238,8 @@ function MainContentHandler({ content, walletAddress }) {
       return <BorrowContent />;
     case CONTENT_NAMES.AUCTIONS:
       return <AuctionsContent />;
-    case CONTENT_NAMES.SWAP:
-      return <SwapDetails />;
+    // case CONTENT_NAMES.SWAP:
+    //   return <SwapDetails />;
     case CONTENT_NAMES.STAKE:
       return <StakeDetails />;
     case CONTENT_NAMES.ACTIONS:

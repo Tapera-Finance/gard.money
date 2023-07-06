@@ -156,7 +156,7 @@ export async function getTotalGardGovs() {
 
 const buttons = [
   "Borrow",
-  "Swap",
+  // "Swap",
   "Stake",
   "Govern",
   "Auctions",
@@ -318,7 +318,6 @@ export default function HomeContent() {
           alignItems: "center",
         }}
       >
-
         <Banner mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
           <div
             style={{
@@ -329,28 +328,7 @@ export default function HomeContent() {
               color: "#172756",
             }}
           >
-            <div style={{ fontSize: "12pt" }}>GARD Staking Rewards!</div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              textAlign: "center",
-              marginLeft: "0px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                textAlign: "left",
-                flexDirection: "column",
-              }}
-            >
-              <div style={{ color: "#172756", fontSize: "10pt", textAlign: "center" }}>
-              Earn protocol revenues boosted by the Algorand Foundation!
-              </div>
-            </div>
+            <div style={{ fontSize: "12pt" }}>Buy & Sell GARD on Alammex</div>
           </div>
           <div
             style={{
@@ -362,20 +340,12 @@ export default function HomeContent() {
             <Link
               mobile={mobile}
               onClick={() => {
-                walletAddress
-                  ? navigate("/stake")
-                  : dispatch(
-                      setAlert(
-                        "You cannot enter without first connecting a Wallet",
-                      ),
-                    );
+                window.open("https://app.alammex.com/?asset_in=0&asset_out=684649988", "_blank", "noopener");
               }}
-            
-              text="Stake"
+              text="Swap"
             />
           </div>
         </Banner>
-
       </div>
       <div
         style={{
@@ -512,11 +482,11 @@ export default function HomeContent() {
               badges={[]}
               checked={gardInWallet}
               subtitle=""
-              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD go to the swap page. To borrow GARD go to the borrow page."
-              link="https://docs.algogard.com/how-to/get-gard"
+              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD check the banner above. To borrow GARD go to the borrow page."              link="https://docs.algogard.com/how-to/get-gard"
               linkText="How to get GARD"
-              goTo="Swap"
-              secondGoTo="Borrow"
+              // goTo="Swap"
+              goTo="Borrow"
+              secondGoTo=""
               mobile={mobile}
               onClick={handleStep2}
               expanded={step2open}
@@ -535,7 +505,6 @@ export default function HomeContent() {
               ]}
               checked={gaining}
               subtitle=""
-              text="To gain additional rewards via the GARD Protocol a user may stake their GARD or participate in Algorand governance. Staking GARD entitles users to their share of revenues earned by the protocol in real time. Participating in Algorand Governace via the GARD Protocol entitles users to leverage their committed ALGOs to borrow GARD as well as their share of a 7M ALGO boost paid out quarterly by the Algorand Foundation."
               link="https://gard.gitbook.io/gard-system-guide/how-to/participate-in-algorand-governance-via-gard-protocol"
               linkText="What is needed to participate?"
               goTo="Stake"

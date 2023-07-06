@@ -77,10 +77,10 @@ export default function AlertOverlay({ text, requestClose }) {
                 navigate("/stake");
                 requestClose();
                 }} text="Go To Stake" />
-              <PrimaryButton blue={true} onClick={() => {
+              {/* <PrimaryButton blue={true} onClick={() => {
                 navigate("/swap");
                 requestClose();
-                }} text="Go To Swap"/>
+                }} text="Go To Swap"/> */}
               <PrimaryButton blue={true} onClick={() => {
                 navigate("/borrow");
                 requestClose();
