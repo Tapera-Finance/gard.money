@@ -27,7 +27,6 @@ import { stake, unstake, getStakingAPY, getAccruedRewards, GardianStake, Gardian
 import LoadingOverlay from "../LoadingOverlay";
 import { size, device } from "../../styles/global";
 import { isMobile } from "../../utils";
-import { Banner } from "../Banner";
 
 // asset types: 0 === GARD, 1 === ALGO
 
@@ -262,41 +261,6 @@ export default function StakeDetails() {
           alignItems: "center",
         }}
       >
-        <Banner>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              textAlign: "left",
-              alignItems: "center",
-              color: "#172756",
-            }}
-          >
-            <div style={{ fontSize: "12pt" }}>GARD Staking Rewards!</div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              textAlign: "center",
-              marginLeft: "0px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                textAlign: "left",
-                flexDirection: "column",
-                marginLeft: "10px",
-              }}
-            >
-              <div style={{ color: "#172756", fontSize: "10pt" }}>
-                1k - 2k extra GARD being paid out WEEKLY for users staking GARD!
-              </div>
-            </div>
-          </div>
-        </Banner>
         <div
           style={{
             display: "flex",
