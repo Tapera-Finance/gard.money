@@ -22,6 +22,7 @@ import { device } from "../styles/global";
 import { isMobile } from "../utils";
 import TextButton from "../components/TextButton";
 import { LinkText, SocialMediaButton } from "../components/Drawer";
+import { Banner } from "../components/Banner";
 
 const fetchTvl = async () => {
   try {
@@ -317,7 +318,34 @@ export default function HomeContent() {
           alignItems: "center",
         }}
       >
-
+        <Banner mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              textAlign: "left",
+              alignItems: "center",
+              color: "#172756",
+            }}
+          >
+            <div style={{ fontSize: "12pt" }}>Buy & Sell GARD on Alammex</div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Link
+              mobile={mobile}
+              onClick={() => {
+                window.open("https://app.alammex.com/?asset_in=0&asset_out=684649988", "_blank", "noopener");
+              }}
+              text="Swap"
+            />
+          </div>
+        </Banner>
       </div>
       <div
         style={{
@@ -454,8 +482,7 @@ export default function HomeContent() {
               badges={[]}
               checked={gardInWallet}
               subtitle=""
-              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To borrow GARD go to the borrow page."
-              link="https://docs.algogard.com/how-to/get-gard"
+              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD check the banner above. To borrow GARD go to the borrow page."              link="https://docs.algogard.com/how-to/get-gard"
               linkText="How to get GARD"
               // goTo="Swap"
               goTo="Borrow"
