@@ -22,7 +22,6 @@ import { device } from "../styles/global";
 import { isMobile } from "../utils";
 import TextButton from "../components/TextButton";
 import { LinkText, SocialMediaButton } from "../components/Drawer";
-import { Banner } from "../components/Banner";
 
 const fetchTvl = async () => {
   try {
@@ -319,63 +318,6 @@ export default function HomeContent() {
         }}
       >
 
-        <Banner mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              textAlign: "left",
-              alignItems: "center",
-              color: "#172756",
-            }}
-          >
-            <div style={{ fontSize: "12pt" }}>GARD Staking Rewards!</div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              textAlign: "center",
-              marginLeft: "0px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                textAlign: "left",
-                flexDirection: "column",
-              }}
-            >
-              <div style={{ color: "#172756", fontSize: "10pt", textAlign: "center" }}>
-              Earn protocol revenues boosted by the Algorand Foundation!
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-            }}
-          >
-            <Link
-              mobile={mobile}
-              onClick={() => {
-                walletAddress
-                  ? navigate("/stake")
-                  : dispatch(
-                      setAlert(
-                        "You cannot enter without first connecting a Wallet",
-                      ),
-                    );
-              }}
-            
-              text="Stake"
-            />
-          </div>
-        </Banner>
-
       </div>
       <div
         style={{
@@ -535,7 +477,6 @@ export default function HomeContent() {
               ]}
               checked={gaining}
               subtitle=""
-              text="To gain additional rewards via the GARD Protocol a user may stake their GARD or participate in Algorand governance. Staking GARD entitles users to their share of revenues earned by the protocol in real time. Participating in Algorand Governace via the GARD Protocol entitles users to leverage their committed ALGOs to borrow GARD as well as their share of a 7M ALGO boost paid out quarterly by the Algorand Foundation."
               link="https://gard.gitbook.io/gard-system-guide/how-to/participate-in-algorand-governance-via-gard-protocol"
               linkText="What is needed to participate?"
               goTo="Stake"
