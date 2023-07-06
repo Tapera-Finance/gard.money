@@ -16,8 +16,8 @@ export default function ActionsContainer() {
   const [selectedTab, setSelectedTab] = useState("two");
 
   const Tabs = {
-    one: <SwapDetails />,
-    two: <StakeDetails />
+    // one: <SwapDetails />,
+    one: <StakeDetails />
     // two: <PoolDetails />,
   };
 
@@ -32,8 +32,8 @@ export default function ActionsContainer() {
       <PageToggle
         selectedTab={setSelectedTab}
         tabs={{
-          one: "Swap",
-          two: "Stake"
+          // one: "Swap",
+          one: "Stake"
           // three: "Pool"
         }}
       ></PageToggle>

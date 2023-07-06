@@ -4,7 +4,7 @@ export const CONTENT_NAMES = {
   ACTIONS: "Actions",
   BORROW: "Borrow",
   AUCTIONS: "Auctions",
-  SWAP: "Swap",
+  // SWAP: "Swap",
   STAKE: "Stake",
   DAO: "DAO",
   GOVERN: "Governance",

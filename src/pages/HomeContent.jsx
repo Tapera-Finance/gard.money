@@ -155,7 +155,7 @@ export async function getTotalGardGovs() {
 
 const buttons = [
   "Borrow",
-  "Swap",
+  // "Swap",
   "Stake",
   "Govern",
   "Auctions",
@@ -454,11 +454,12 @@ export default function HomeContent() {
               badges={[]}
               checked={gardInWallet}
               subtitle=""
-              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To swap GARD go to the swap page. To borrow GARD go to the borrow page."
+              text="To get GARD and use it to participate in the services offered by the GARD Protocol a user may either swap their ALGOs for it or borrow it against their ALGOs/ALGO derivatives. To borrow GARD go to the borrow page."
               link="https://docs.algogard.com/how-to/get-gard"
               linkText="How to get GARD"
-              goTo="Swap"
-              secondGoTo="Borrow"
+              // goTo="Swap"
+              goTo="Borrow"
+              secondGoTo=""
               mobile={mobile}
               onClick={handleStep2}
               expanded={step2open}
