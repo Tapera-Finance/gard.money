@@ -1348,6 +1348,8 @@ export async function voteCDPs(cdpArray, voteArray) {
 }
 
 function getCDPVal(cdp, key, isInt) {
+  if (!cdp["apps-local-state"][0]["key-value"])
+    return -1;
   for (const kv of cdp["apps-local-state"][0]["key-value"]) {
     if (kv.key == btoa(key)) {
       if (isInt) {
