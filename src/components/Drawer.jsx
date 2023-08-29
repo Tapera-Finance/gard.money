@@ -16,7 +16,7 @@ import chevronUp from "../assets/chevron_up.png";
 import hamburguerIcon from "../assets/icons/hamburger_icon.png";
 import closeIcon from "../assets/icons/close_icon.png";
 import hamburguerPurpleIcon from "../assets/icons/hamburger-purple_icon.png";
-import { CONTENT_NAMES } from "../globals";
+import { CONTENT_NAMES, endVotingPeriod, startVotingPeriod } from "../globals";
 import TwitterIcon from "../assets/icons/twitter_icon.png";
 import RedditIcon from "../assets/icons/reddit_icon.png";
 import ALGOPrice from "./ALGOPrice";
@@ -76,6 +76,11 @@ export default function Drawer({
     height: undefined
   });
 
+  const [targetDate, setTargetDate]=useState(commitmentPeriodEnd);
+  const [countDownTitle, setCountDownTitle]=useState("Governance Enrollment Countdown");
+
+
+  
   const toggleOpen = (close = false) => {
     if (close) {
       setIsOpen(false);
@@ -87,6 +92,23 @@ export default function Drawer({
     toggleOpen(true);
   };
 
+  useEffect(()=>{
+    const now = new Date().getTime();
+    if(now<=commitmentPeriodEnd) {
+      setTargetDate(commitmentPeriodEnd);
+      setCountDownTitle("Governance Enrollment Countdown");
+    }
+    if(now>commitmentPeriodEnd && now<startVotingPeriod){
+      setTargetDate(startVotingPeriod);
+      setCountDownTitle("Voting starts in");
+    }
+
+    if(now>startVotingPeriod && now <=endVotingPeriod){
+      setTargetDate(endVotingPeriod);
+      setCountDownTitle("Voting ends in");
+    }
+   
+  },[]);
 
   useEffect(() => {
     setMobile(isMobile());
@@ -299,10 +321,10 @@ export default function Drawer({
             fontSize: 12,
             color: "white",
           }}>
-            Governance Enrollment Countdown
+            {countDownTitle}
           </div>
           <div style={{ position: "relative", "margin-left": "auto", "margin-right": "auto", maxWidth: "80%", transform: "scale(0.75)"}}>
-            <CountdownTimer targetDate={commitmentPeriodEnd} showZero={new Date().getTime() > commitmentPeriodEnd} />
+            <CountdownTimer targetDate={targetDate} showZero={new Date().getTime() > targetDate} />
           </div>
           <div
             style={{
