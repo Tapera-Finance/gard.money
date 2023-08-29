@@ -12,7 +12,7 @@ import LoadingOverlay from "../components/LoadingOverlay";
 import { cdpGen } from "../transactions/contracts";
 import { commitCDP } from "../transactions/cdp";
 import { handleTxError, getWallet } from "../wallets/wallets";
-import { commitmentPeriodEnd, countdownEnd } from "../globals";
+import { commitmentPeriodEnd, countdownEnd, startVotingPeriod, endVotingPeriod } from "../globals";
 import CountdownTimer from "../components/CountdownTimer";
 import Effect from "../components/Effect";
 import Modal from "../components/Modal";
@@ -27,12 +27,12 @@ const axios = require("axios");
 
 export function GoHomeIfNoWallet(navigate){
   try{
-    getWallet().address
-    return false
+    getWallet().address;
+    return false;
   }
   catch {
-    navigate("/")
-    return true
+    navigate("/");
+    return true;
   }
 }
 
@@ -153,13 +153,11 @@ export default function Govern() {
   const [maxBal, setMaxBal] = useState("");
   const [commit, setCommit] = useState(0);
   const [vote0, setVote0] = useState("Yes");
-  const [vote1, setVote1] = useState("Allocate a higher amount (25MM ALGO) to DeFi rewards.");
+  const [vote1, setVote1] = useState("Add up to 2M Algo per quarter.");
   const [vote2, setVote2] = useState("Yes");
-  const [vote3, setVote3] = useState("Allocate 7.5MM through the Targeted DeFi Rewards program.");
-  const [vote4, setVote4] = useState("Yes");
-  const [vote5, setVote5] = useState("Allocate 500K ALGO to the NFT Rewards program pilot");
+  const [vote3, setVote3] = useState("Allocate 1M Algo.");
   const [selectedAccount, setSelectedAccount] = useState("");
-  const [selectedAddress, setSelectedAddress] = useState("")
+  const [selectedAddress, setSelectedAddress] = useState("");
   const [refresh, setRefresh] = useState(0);
   const [commitDict, setCommitDict] = useState({});
   const [vaulted, setVaulted] = useState("Loading...");
@@ -172,8 +170,8 @@ export default function Govern() {
   const [modalCanAnimate, setModalCanAnimate] = useState(false);
   const [modal2CanAnimate, setModal2CanAnimate] = useState(false);
   const [modal3CanAnimate, setModal3CanAnimate] = useState(false);
-  const [personal, setPersonal] = useState(false)
-  const [onlineStatus, setOnlineStatus] = useState(false)
+  const [personal, setPersonal] = useState(false);
+  const [onlineStatus, setOnlineStatus] = useState(false);
   const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
   const dispatch = useDispatch();
@@ -185,25 +183,17 @@ export default function Govern() {
     "No": "b",
   },
   {
-    "Allocate a higher amount (25MM ALGO) to DeFi rewards.": "a",
-    "Allocate the same amount (20MM ALGO) to DeFi rewards as GP7.": "b",
+    "Add up to 2M Algo per quarter.": "a",
+    "Add up to 1M Algo per quarter.": "b",
   },
   {
     "Yes": "a",
     "No": "b",
   },
   {
-    "Allocate 7.5MM through the Targeted DeFi Rewards program.": "a",
-    "Allocate 5MM through the Targeted DeFi Rewards program.": "b",
-  },
-  {
-    "Yes": "a",
-    "No": "b",
-  },
-  {
-    "Allocate 500K ALGO to the NFT Rewards program pilot": "a",
-    "Allocate 250K ALGO to the NFT Rewards program pilot": "b",
-  },];
+    "Allocate 1M Algo.": "a",
+    "Allocate 500K Algo.": "b",
+  }];
 
   useEffect(() => {
     if (!getWallet()) return navigate("/");
@@ -262,12 +252,12 @@ export default function Govern() {
   }, []);
 
   if (GoHomeIfNoWallet(navigate)){
-    return null
+    return null;
   }
 
   const owner_address = getWallet().address;
   let adjusted;
-  console.log(commitDict)
+  console.log(commitDict);
   if (!loadedCDPs.filter(value => !value.asaID).length){
     adjusted = dummyCdps;
     if (!commitDisabled){
@@ -300,7 +290,7 @@ export default function Govern() {
     let account_id = parseInt(value.id);
     let commitBal = value.collateral;
     let status = value.status;
-    delete value.status
+    delete value.status;
     delete value.collateral;
     delete value.id;
     return {
@@ -369,10 +359,10 @@ export default function Govern() {
             onClick={() => {
               setSelectedAccount(account_id);
               let temp = cdpGen(getWallet().address, account_id).address;
-              setSelectedAddress(temp)
-              setOnlineStatus(status !== "Offline")
-              setModal3CanAnimate(true)
-              setModal3Visible(true)
+              setSelectedAddress(temp);
+              setOnlineStatus(status !== "Offline");
+              setModal3CanAnimate(true);
+              setModal3Visible(true);
             }}
             />
         ),
@@ -380,9 +370,9 @@ export default function Govern() {
   });
   if (mobile) {
     cdps = cdps.map((value,) => {
-      delete value["Consensus"]
-      return value
-    })
+      delete value["Consensus"];
+      return value;
+    });
   }
   return ( !walletAddress ? navigate("/") :
     <GovContainer mobile={mobile}>
@@ -482,7 +472,7 @@ export default function Govern() {
             setModal2CanAnimate(true);
             setModal2Visible(true);
             setModal2CanAnimate(false);
-          }} disabled={!(Date.now() < 1686772800000 && Date.now() > countdownEnd) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps
+          }} disabled={ !(Date.now() > startVotingPeriod && Date.now() < endVotingPeriod) || loadedCDPs[0].id == "N/A" || loadedCDPs == dummyCdps
         }/>
         }
           </div>
@@ -570,7 +560,7 @@ export default function Govern() {
                     >
                       Measure #1:
                     </Link>
-                    Liquidity Provision to DeFi Protocols
+                    Approval of xGov pilot program allocation top-up mechanism
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -610,7 +600,7 @@ export default function Govern() {
                     >
                       Measure #2:
                     </Link>
-                    DeFi Rewards Q3 Allocation
+                    xGov top up allocation
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -625,10 +615,10 @@ export default function Govern() {
                     }}
                   >
                     <option>
-                    Allocate a higher amount (25MM ALGO) to DeFi rewards.
+                    Add up to 2M Algo per quarter.
                     </option>
                     <option>
-                    Allocate the same amount (20MM ALGO) to DeFi rewards as GP7.
+                    Add up to 1M Algo per quarter.
                     </option>
                   </Select>
                 </div>
@@ -650,7 +640,7 @@ export default function Govern() {
                     >
                       Measure #3:
                     </Link>
-                    Repeat of Targeted DeFi Rewards Boost Approval in Q3-Q4/2023
+                    NFT Rewards Q4 Allocation
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -690,7 +680,7 @@ export default function Govern() {
                     >
                       Measure #4:
                     </Link>
-                    Targeted DeFi Rewards Boost Allocation
+                    Increase NFT Rewards Q4 allocation to 1M
                   </h3>
                   <InputTitle>Your Vote</InputTitle>
                   <InputMandatory>
@@ -705,90 +695,10 @@ export default function Govern() {
                     }}
                   >
                     <option>
-                    Allocate 7.5MM through the Targeted DeFi Rewards program.
+                    Allocate 1M Algo.
                     </option>
                     <option>
-                    Allocate 5MM through the Targeted DeFi Rewards program.
-                    </option>
-                  </Select>
-                </div>
-                <div>
-                  <InputSubtitle>
-                    Select your vote from the drop down.
-                  </InputSubtitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <h3>
-                    <Link
-                    onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-8/period-8-voting-session-1");
-                    }}
-                      href="https://governance.algorand.foundation/governance-period-8/period-8-voting-session-1"
-                      subtitle={true}
-                    >
-                      Measure #5:
-                    </Link>
-                    NFT Rewards Program Approval
-                  </h3>
-                  <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory>
-                    *
-                  </InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Select
-                    value={vote4}
-                    onChange={(e) => {
-                      setVote4(e.target.value);
-                    }}
-                  >
-                    <option>
-                    Yes
-                    </option>
-                    <option>
-                    No
-                    </option>
-                  </Select>
-                </div>
-                <div>
-                  <InputSubtitle>
-                    Select your vote from the drop down.
-                  </InputSubtitle>
-                </div>
-              </div>
-              <div style={{ marginBottom: 13 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <h3>
-                    <Link
-                    onClick={() => {
-                      window.open("https://governance.algorand.foundation/governance-period-8/period-8-voting-session-1");
-                    }}
-                      href="https://governance.algorand.foundation/governance-period-8/period-8-voting-session-1"
-                      subtitle={true}
-                    >
-                      Measure #6:
-                    </Link>
-                    NFT Rewards Program Initial Allocation
-                  </h3>
-                  <InputTitle>Your Vote</InputTitle>
-                  <InputMandatory>
-                    *
-                  </InputMandatory>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Select
-                    value={vote5}
-                    onChange={(e) => {
-                      setVote5(e.target.value);
-                    }}
-                  >
-                    <option>
-                    Allocate 500K ALGO to the NFT Rewards program pilot
-                    </option>
-                    <option>
-                    Allocate 250K ALGO to the NFT Rewards program pilot
+                    Allocate 500K Algo.
                     </option>
                   </Select>
                 </div>
@@ -808,8 +718,8 @@ export default function Govern() {
                   setLoading(true);
                   try {
                     let votes = [];
-                    const votearray = [vote0, vote1, vote2, vote3, vote4, vote5];
-                    for (let i = 0; i < 6; i++){
+                    const votearray = [vote0, vote1, vote2, vote3];
+                    for (let i = 0; i < votearray.length; i++){
                       votes.push(voteMap[i][votearray[i]]);
                     }
                     const res = await voteCDPs(

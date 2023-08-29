@@ -26,6 +26,9 @@ export var referrer = null;
 export const commitmentPeriodEnd = 1689264000000;
 export const countdownEnd = 1689264000000;
 
+export const startVotingPeriod = 1693497600000
+export const endVotingPeriod = 1694707200000
+
 export const VERSION = "MAINNET";
 const UPDATE = 4;
 // TESTNET1 = initial testnet release
