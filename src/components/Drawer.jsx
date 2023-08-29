@@ -76,8 +76,8 @@ export default function Drawer({
     height: undefined
   });
 
-  const [targetDate, setTargetDate]=useState(commitmentPeriodEnd);
-  const [countDownTitle, setCountDownTitle]=useState("Governance Enrollment Countdown");
+  const [targetDate, setTargetDate]=useState();
+  const [countDownTitle, setCountDownTitle]=useState("Voting ends in");
 
 
   

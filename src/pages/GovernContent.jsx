@@ -174,6 +174,8 @@ export default function Govern() {
   const [onlineStatus, setOnlineStatus] = useState(false);
   const [commitDisabled, setCommitDisabled] = useState(false);
   const [apr, setAPR] = useState("...");
+  const [targetDate, setTargetDate]=useState();
+  const [countDownTitle, setCountDownTitle]=useState("Voting ends in");
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -250,6 +252,24 @@ export default function Govern() {
     let dict = await getCommDict();
     setCommitDict(dict);
   }, []);
+
+  useEffect(()=>{
+    const now = new Date().getTime();
+    if(now<=commitmentPeriodEnd) {
+      setTargetDate(commitmentPeriodEnd);
+      setCountDownTitle("Governance Enrollment Countdown");
+    }
+    if(now>commitmentPeriodEnd && now<startVotingPeriod){
+      setTargetDate(startVotingPeriod);
+      setCountDownTitle("Voting starts in");
+    }
+
+    if(now>startVotingPeriod && now <=endVotingPeriod){
+      setTargetDate(endVotingPeriod);
+      setCountDownTitle("Voting ends in");
+    }
+   
+  },[]);
 
   if (GoHomeIfNoWallet(navigate)){
     return null;
@@ -409,9 +429,9 @@ export default function Govern() {
 
           }}>
             <h3>Algorand Governance Period #8</h3>
-            <div style={{ fontSize: 11 }}>Commitment Period Ends</div>
+            <div style={{ fontSize: 11 }}>{countDownTitle}</div>
             <CountDownContainer>
-            <CountdownTimer targetDate={countdownEnd} showZero={new Date().getTime() > countdownEnd} />
+            <CountdownTimer targetDate={targetDate} showZero={new Date().getTime > targetDate} />
             </CountDownContainer>
             <div>
               <GovernDetails mobile={mobile}>

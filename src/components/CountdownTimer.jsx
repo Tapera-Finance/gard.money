@@ -25,17 +25,27 @@ const ShowCounter = ({ days, hours, minutes, seconds }) => {
 };
 
 const CountdownTimer = ({ targetDate, showZero }) => {
-  const [days, hours, minutes, seconds] = useCountdown(targetDate);
+  
+  if(!targetDate) {
+    return <div>
+        <ShowCounter
+          days={0}
+          hours={0}
+          minutes={0}
+          seconds={0}
+        />
+    </div>;}
 
-  if (days + hours + minutes + seconds <= 0) {
-    return <div>{showZero ? (
+  const [days, hours, minutes, seconds] = useCountdown(targetDate);
+  if (days + hours + minutes + seconds <= 0 ) {
+    return <div>
           <ShowCounter
           days={0}
           hours={0}
           minutes={0}
           seconds={0}
           />
-        ) : (<ExpiredNotice />)}</div>;
+      </div>;
   } else {
     return (
       <div>
