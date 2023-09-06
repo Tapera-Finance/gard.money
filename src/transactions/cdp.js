@@ -342,7 +342,7 @@ async function openAlgoCDP(
       appArgs: [
         enc.encode("OwnerCheck"),
         algosdk.encodeUint64(accountID),
-      ], // Duplicate parameter pos 1 and 2
+      ],
       accounts: [cdp.address],
       foreignApps: [],
       foreignAssets: [],
