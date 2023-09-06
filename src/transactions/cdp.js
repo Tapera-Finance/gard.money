@@ -1,13 +1,14 @@
 import algosdk from "algosdk";
 import { ids } from "./ids";
 import { cdpGen } from "./contracts";
-import { setLoadingStage, getMicroGardBalance, microGARD, getAppField, cdpInterest, } from "./lib";
 import {
-  accountInfo,
-  getParams,
-  sendTxn,
-  signGroup,
-} from "../wallets/wallets";
+  setLoadingStage,
+  getMicroGardBalance,
+  microGARD,
+  getAppField,
+  cdpInterest,
+} from "./lib";
+import { accountInfo, getParams, sendTxn, signGroup } from "../wallets/wallets";
 import {
   updateCommitmentFirestore,
   addCDPToFireStore,
@@ -20,7 +21,7 @@ var $ = require("jquery");
 
 const enc = new TextEncoder();
 const MINRATIO = 140;
-export let currentPrice = 0.30; // XXX: This should be kept close to the actual price - it is updated on initialization though
+export let currentPrice = 0.3; // XXX: This should be kept close to the actual price - it is updated on initialization though
 
 // XXX: All of these assume accountInfo has already been set! We should improve the UX of this after getting core functionality done
 // XXX: All of these assume the user signs all transactions, we don't currently catch when a user doesn't do so!
@@ -57,16 +58,14 @@ export function getCDPs() {
   return CDPs;
 }
 
-
 getCDPs();
-
 
 export function calcRatio(collateral, minted, asaID, string = false) {
   // collateral: Microalgos
   // minted: GARD
   let mul = 1;
   if (asaID != 0) {
-    mul = .98; // XXX: Only works for galgos
+    mul = 0.98; // XXX: Only works for galgos
     // XXX: Should get this dynamically
   }
   const ratio = (mul * 100 * collateral * currentPrice) / minted / 1000000;
@@ -104,7 +103,9 @@ function getCDPState(cdpInfo, asaID) {
           for (let n = 0; n < validatorInfo["key-value"].length; n++) {
             if (validatorInfo["key-value"][n]["key"] == btoa("Principal")) {
               res.principal = validatorInfo["key-value"][n]["value"]["uint"];
-            } else if (validatorInfo["key-value"][n]["key"] == btoa("SGARD_DEBT")) {
+            } else if (
+              validatorInfo["key-value"][n]["key"] == btoa("SGARD_DEBT")
+            ) {
               res.debt = validatorInfo["key-value"][n]["value"]["uint"];
             }
           }
@@ -115,15 +116,17 @@ function getCDPState(cdpInfo, asaID) {
       }
     }
   }
-  
+
   return res;
 }
 
-
 function cdpIsCached(accountCDPs, asaID, id) {
-  return accountCDPs && accountCDPs.hasOwnProperty(asaID) && accountCDPs[asaID].hasOwnProperty(id);
+  return (
+    accountCDPs &&
+    accountCDPs.hasOwnProperty(asaID) &&
+    accountCDPs[asaID].hasOwnProperty(id)
+  );
 }
-
 
 async function updateTypeCDPs(address, accountCDPs, asaID) {
   const mins_to_refresh = 15;
@@ -134,8 +137,10 @@ async function updateTypeCDPs(address, accountCDPs, asaID) {
     .map((_, i) => i + MINID)) {
     if (
       !cdpIsCached(accountCDPs, asaID, x) ||
-      accountCDPs[asaID]["checked"] + mins_to_refresh * 60 * 1000 < Date.now()
-    || old) {
+      accountCDPs[asaID]["checked"] + mins_to_refresh * 60 * 1000 <
+        Date.now() ||
+      old
+    ) {
       updateCDP(address, asaID, x);
       webcalls += 1;
     }
@@ -145,7 +150,6 @@ async function updateTypeCDPs(address, accountCDPs, asaID) {
   }
   old = false;
 }
-
 
 export async function updateCDPs(address) {
   // Checks all CDPs by an address
@@ -161,15 +165,15 @@ async function findOpenID(address, asaID) {
   for (const x of Array(MAXID - MINID)
     .fill()
     .map((_, i) => i + MINID)) {
-      if (
-        !cdpIsCached(accountCDPs, asaID, x) ||
-        typeCDPs[x]["state"] == "closed"
-      ) {
-        const used = await updateCDP(address, asaID, x);
-        if (!used) {
-          return x;
-        }
+    if (
+      !cdpIsCached(accountCDPs, asaID, x) ||
+      typeCDPs[x]["state"] == "closed"
+    ) {
+      const used = await updateCDP(address, asaID, x);
+      if (!used) {
+        return x;
       }
+    }
   }
   console.error("findOpenID: No open IDs!");
   return null;
@@ -226,7 +230,9 @@ function makeOptInTxns(info, params) {
   let optedInGard = verifyOptIn(info, ids.asa.gard);
   let optedInGain = verifyOptIn(info, ids.asa.gain);
   let optedInGardian =
-    VERSION.slice(0,7) != "TESTNET" ? verifyOptIn(info, ids.asa.gardian) : true; //no testnet id for Gardian so this should only verify opt in if hit on mainnet
+    VERSION.slice(0, 7) != "TESTNET"
+      ? verifyOptIn(info, ids.asa.gardian)
+      : true; //no testnet id for Gardian so this should only verify opt in if hit on mainnet
   // Sets fee to 1000 for potential opt ins
   params.fee = 1000;
   // txn 1 = opt in to gard
@@ -250,16 +256,22 @@ function makeOptInTxns(info, params) {
   return txns;
 }
 
-async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet, info, accountID, cdp) {
+async function openAlgoCDP(
+  openingMicroALGOs,
+  microOpeningGard,
+  commit,
+  toWallet,
+  info,
+  accountID,
+  cdp,
+) {
   // Setting up promises
   const paramsPromise = getParams(2000);
 
   // Part 1: Opting in, creating needed info, etc.
 
   if (
-    307000 +
-      openingMicroALGOs +
-      100000 * (info["assets"].length + 4) >
+    307000 + openingMicroALGOs + 100000 * (info["assets"].length + 4) >
     info["amount"]
   ) {
     return {
@@ -267,9 +279,7 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
       text:
         "Depositing this much collateral will put you below your minimum balance.\n" +
         "Your Maximum deposit is: " +
-        (info["amount"] -
-          307000 -
-          100000 * (info["assets"].length + 4)) /
+        (info["amount"] - 307000 - 100000 * (info["assets"].length + 4)) /
           1000000 +
         " Algos",
     };
@@ -295,7 +305,9 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
   let txn5 = algosdk.makeApplicationOptInTxnFromObject({
     from: cdp.address,
     suggestedParams: params,
+    appArgs: [algosdk.encodeUint64(accountID)],
     appIndex: ids.app.validator,
+    foreignAssets: [],
   });
   txns.push(txn5);
   // txn 6 = new position
@@ -303,7 +315,11 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     from: info.address,
     appIndex: ids.app.validator,
     onComplete: 0,
-    appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(microOpeningGard), algosdk.encodeUint64(accountID)],
+    appArgs: [
+      enc.encode("NewPosition"),
+      algosdk.encodeUint64(microOpeningGard),
+      algosdk.encodeUint64(accountID),
+    ],
     accounts: [cdp.address],
     foreignApps: [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest],
     foreignAssets: [ids.asa.gard],
@@ -315,7 +331,7 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
   if (commit) {
     const stringVal = toWallet
       ? `af/gov1:j{"com":${openingMicroALGOs},"bnf":"${info.address}"}`
-      : "af/gov1:j{\"com\":" + (openingMicroALGOs).toString() + "}";
+      : 'af/gov1:j{"com":' + openingMicroALGOs.toString() + "}";
     const note = enc.encode(stringVal);
     // txn 7: owner check
     params.fee = 2000;
@@ -323,7 +339,10 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
       from: info.address,
       appIndex: ids.app.validator,
       onComplete: 0,
-      appArgs: [enc.encode("OwnerCheck"), algosdk.encodeUint64(accountID)],
+      appArgs: [
+        enc.encode("OwnerCheck"),
+        algosdk.encodeUint64(accountID),
+      ],
       accounts: [cdp.address],
       foreignApps: [],
       foreignAssets: [],
@@ -341,12 +360,12 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     });
     txns.push(txn8);
   }
-  
+
   // Signing transactions
   algosdk.assignGroupID(txns);
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   let _stxns = await signGroup(info, txns);
-  
+
   setLoadingStage("Finalizing Transactions...");
   let stxns = [];
   // stxn 0-2 (opt ins)
@@ -371,14 +390,21 @@ async function openAlgoCDP(openingMicroALGOs, microOpeningGard, commit, toWallet
     let stxn8 = algosdk.signLogicSigTransactionObject(txn8, lsig);
     stxns.push(stxn8.blob);
   }
-  
+
   return stxns;
 }
 
-async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info, accountID, cdp) {
+async function openASACDP(
+  openingMicroAssetAmount,
+  microOpeningGard,
+  asaID,
+  info,
+  accountID,
+  cdp,
+) {
   const cdpInfoPromise = accountInfo(cdp.address);
   const paramsPromise = getParams(2000);
-  
+
   // Part 1: Opting in, creating needed info, etc.
 
   /*
@@ -422,7 +448,7 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
     extraTxns += 1;
     params.fee = 0;
   }
-  
+
   // txn 4 = update interest rate
   let txn4 = makeUpdateInterestTxn(info, params);
   txns.push(txn4);
@@ -445,6 +471,7 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
     suggestedParams: params,
     appIndex: ids.app.validator,
     appArgs: [algosdk.encodeUint64(accountID)],
+    foreignAssets: [asaID],
   });
   txns.push(txn7);
   // txn 8 = new position
@@ -452,19 +479,28 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
     from: info.address,
     appIndex: ids.app.validator,
     onComplete: 0,
-    appArgs: [enc.encode("NewPosition"), algosdk.encodeUint64(microOpeningGard), algosdk.encodeUint64(accountID)],
+    appArgs: [
+      enc.encode("NewPosition"),
+      algosdk.encodeUint64(microOpeningGard),
+      algosdk.encodeUint64(accountID),
+    ],
     accounts: [cdp.address],
-    foreignApps: [ids.app.oracle[0], ids.app.oracle[asaID], ids.app.sgard_gard, ids.app.dao.interest],
+    foreignApps: [
+      ids.app.oracle[0],
+      ids.app.oracle[asaID],
+      ids.app.sgard_gard,
+      ids.app.dao.interest,
+    ],
     foreignAssets: [ids.asa.gard, asaID],
     suggestedParams: params,
   });
   txns.push(txn8);
-  
+
   // Signing transactions
   algosdk.assignGroupID(txns);
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   let _stxns = await signGroup(info, txns);
-  
+
   setLoadingStage("Finalizing Transactions...");
   let stxns = [];
   // stxn 0-3 (opt ins + funding)
@@ -485,12 +521,17 @@ async function openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info
   stxns.push(stxn7.blob);
   // stxn 8
   stxns.push(_stxns[4 + extraTxns].blob);
-  
+
   return stxns;
 }
 
-export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = false, toWallet = true) {
-
+export async function openCDP(
+  openingAssetAmount,
+  openingGARD,
+  asaID,
+  commit = false,
+  toWallet = true,
+) {
   const openingMicroAssetAmount = parseInt(openingAssetAmount * 1000000); // XXX: This works for algos and galgos, but potentially not other assets
 
   // Setting up promises
@@ -507,7 +548,7 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
         openingGARD,
     };
   }
-  
+
   const ratio = calcRatio(openingMicroAssetAmount, openingGARD, asaID);
   if (ratio < MINRATIO) {
     return {
@@ -520,39 +561,50 @@ export async function openCDP(openingAssetAmount, openingGARD, asaID, commit = f
         calcRatio(openingMicroAssetAmount, openingGARD, asaID, true),
     };
   }
-  
-  
+
   const microOpeningGard = microGARD(openingGARD);
   const info = await infoPromise;
   const accountID = await findOpenID(info.address, asaID);
   const cdp = cdpGen(info.address, accountID, asaID);
   let stxns;
   if (asaID == 0) {
-    stxns = await openAlgoCDP(openingMicroAssetAmount, microOpeningGard, commit, toWallet, info, accountID, cdp);
+    stxns = await openAlgoCDP(
+      openingMicroAssetAmount,
+      microOpeningGard,
+      commit,
+      toWallet,
+      info,
+      accountID,
+      cdp,
+    );
   } else {
-    stxns = await openASACDP(openingMicroAssetAmount, microOpeningGard, asaID, info, accountID, cdp);
+    stxns = await openASACDP(
+      openingMicroAssetAmount,
+      microOpeningGard,
+      asaID,
+      info,
+      accountID,
+      cdp,
+    );
   }
-  
+
   setLoadingStage("Confirming Transactions...");
-  
-  let response = await sendTxn(
-    stxns,
-    "Successfully opened a new CDP.",
-  );
-  
+
+  let response = await sendTxn(stxns, "Successfully opened a new CDP.");
+
   updateCDP(info.address, asaID, accountID);
-  
+
   addCDPToFireStore(accountID, -openingMicroAssetAmount, microOpeningGard, 0);
 
   if (commit) {
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 1000));
     updateCommitmentFirestore(info.address, accountID, openingMicroAssetAmount);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #8!";
   }
-  
+
   setLoadingStage(null);
-  
+
   return response;
 }
 
@@ -582,7 +634,12 @@ export async function mint(accountID, newGARD, asaID) {
   let apps = [ids.app.oracle[0], ids.app.sgard_gard, ids.app.dao.interest];
   let assets = [ids.asa.gard];
   if (asaID != 0) {
-    apps = [ids.app.oracle[0], ids.app.oracle[asaID], ids.app.sgard_gard, ids.app.dao.interest];
+    apps = [
+      ids.app.oracle[0],
+      ids.app.oracle[asaID],
+      ids.app.sgard_gard,
+      ids.app.dao.interest,
+    ];
     assets = [ids.asa.gard, asaID];
   }
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
@@ -601,14 +658,14 @@ export async function mint(accountID, newGARD, asaID) {
     txns.shift(); // Removes first txn
   }
   algosdk.assignGroupID(txns);
-  
+
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
   const signedGroup = await signGroup(info, txns);
 
   setLoadingStage("Confirming Transaction...");
 
   let stxns = [signedGroup[0].blob, signedGroup[1].blob];
-  if (asaID){
+  if (asaID) {
     stxns = stxns.concat([signedGroup[2].blob]);
   }
 
@@ -617,10 +674,10 @@ export async function mint(accountID, newGARD, asaID) {
     "Successfully minted " + newGARD + " GARD.",
   );
   updateCDP(info.address, asaID, accountID);
-  
+
   // DB Updates
   updateDBWebActions(3, accountID, 0, microNewGARD, 0, 0, 0);
-  
+
   setLoadingStage(null);
   return response;
 }
@@ -649,7 +706,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
   // Core info
   let info = await accountInfo();
   let microNewAlgos = parseInt(newAlgos * 1000000);
-  
+
   if (asaID == 0) {
     if (info["amount"] - microNewAlgos - 4000 < info["min-balance"]) {
       return {
@@ -658,11 +715,11 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
           "Depositing this much collateral will put you below your minimum balance.\n" +
           "Your Maximum deposit is: " +
           (info["amount"] - info["min-balance"] - 4000) / 1000000 +
-          " Algos", 
+          " Algos",
       };
     }
   }
-  
+
   let cdp = cdpGen(info.address, accountID, asaID);
 
   let params = await getParams(1000);
@@ -683,7 +740,7 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
   }
   let txn2 = makeUpdateInterestTxn(info, params);
   let txns = [txn1, txn2];
-  
+
   let govAlgos = microNewAlgos;
   let txn8;
   if (commit && asaID == 0) {
@@ -715,9 +772,9 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
     });
     txns.push(txn8);
   }
-  
+
   setLoadingStage("Awaiting Signature from Algorand Wallet...");
-  
+
   algosdk.assignGroupID(txns);
 
   const signedGroup = await signGroup(info, txns);
@@ -734,19 +791,21 @@ export async function addCollateral(accountID, newAlgos, commit, asaID) {
 
   const response = await sendTxn(
     stxns,
-    `Successfully added ${newAlgos} ${asaID == 793124631 ? " gALGO": " ALGO"} as collateral.`,
+    `Successfully added ${newAlgos} ${
+      asaID == 793124631 ? " gALGO" : " ALGO"
+    } as collateral.`,
   );
 
   updateCDP(info.address, asaID, accountID);
   updateDBWebActions(2, accountID, -microNewAlgos, 0, 0, 0, 2000);
-  
+
   if (commit && asaID == 0) {
-    await new Promise(r => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
+    await new Promise((r) => setTimeout(r, 1000)); // TODO: More elegant fix (do it in the firestore library)
     updateCommitmentFirestore(info.address, accountID, govAlgos);
     response.text =
       response.text + "\nFull Balance committed to Governance Period #8!";
   }
-  
+
   setLoadingStage(null);
 
   return response;
@@ -761,17 +820,14 @@ async function sgardToGard(amt, force_update = false) {
     conversionRate = await getAppField(ids.app.sgard_gard, "conversion_rate");
     conversionRateUpdated = Date.now();
   }
-  return conversionRate * amt / (10 ** 10);
+  return (conversionRate * amt) / 10 ** 10;
 }
-
 
 async function totalDebt(cdpInfo) {
   return await sgardToGard(getCDPState(cdpInfo).debt, true);
 }
 
-
 export async function repayCDP(accountID, repayGARD, asaID) {
-
   // Promise setup
   setLoadingStage("Loading...");
 
@@ -781,24 +837,25 @@ export async function repayCDP(accountID, repayGARD, asaID) {
   let cdp = cdpGen(info.address, accountID, asaID);
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
-  
+
   let microRepayGARD = microGARD(repayGARD);
-  
+
   let gard_debt = await totalDebt(cdpInfo);
   if (gard_debt - microRepayGARD < 1000000) {
     return {
       alert: true,
       text: "You must maintain a balance of 1 GARD to keep a CDP open!",
     };
-  } 
-  else if (getMicroGardBalance(info) < microRepayGARD){
+  } else if (getMicroGardBalance(info) < microRepayGARD) {
     return {
       alert: true,
-      text: "You have insufficient GARD to complete the transaction. You need " + 
-      ((microRepayGARD/1000000).toFixed(3)).toString() + " GARD."
+      text:
+        "You have insufficient GARD to complete the transaction. You need " +
+        (microRepayGARD / 1000000).toFixed(3).toString() +
+        " GARD.",
     };
   }
-  
+
   // txn 0 - updated interest
   let txn0 = makeUpdateInterestTxn(info, params);
   // THROUGH HERE
@@ -823,7 +880,6 @@ export async function repayCDP(accountID, repayGARD, asaID) {
     assetIndex: ids.asa.gard,
   });
 
-
   let txns = [txn0, txn1, txn2];
   algosdk.assignGroupID(txns);
 
@@ -837,19 +893,14 @@ export async function repayCDP(accountID, repayGARD, asaID) {
 
   let stxns = [signedGroup[0].blob, signedGroup[1].blob, signedGroup[2].blob];
 
-  let response = await sendTxn(
-    stxns,
-    "Successfully repayed your cdp.",
-  );
+  let response = await sendTxn(stxns, "Successfully repayed your cdp.");
   setLoadingStage(null);
   updateCDP(info.address, asaID, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
 
-
 export async function closeCDP(accountID, asaID) {
-
   // Promise setup
   setLoadingStage("Loading...");
 
@@ -859,13 +910,18 @@ export async function closeCDP(accountID, asaID) {
   let cdp = cdpGen(info.address, accountID, asaID);
   let cdpInfo = await accountInfo(cdp.address);
   let params = await paramsPromise;
-  let microRepayGARD = Math.trunc((await totalDebt(cdpInfo)) * (1 + (5000 * cdpInterest)/365/24/60)) + 3000; // Adds a safe amount of extra repay to ensure the txn goes through (5000 mins of interest) and 3000 microalgo
-  
+  let microRepayGARD =
+    Math.trunc(
+      (await totalDebt(cdpInfo)) * (1 + (5000 * cdpInterest) / 365 / 24 / 60),
+    ) + 3000; // Adds a safe amount of extra repay to ensure the txn goes through (5000 mins of interest) and 3000 microalgo
+
   let gard_bal = getMicroGardBalance(info);
   if (gard_bal == null || gard_bal < microRepayGARD) {
     let mod = 0;
-    if ((gard_bal / 1000000).toFixed(2) == (microRepayGARD / 1000000).toFixed(2)) {
-      mod = .01;
+    if (
+      (gard_bal / 1000000).toFixed(2) == (microRepayGARD / 1000000).toFixed(2)
+    ) {
+      mod = 0.01;
     }
     return {
       alert: true,
@@ -877,7 +933,7 @@ export async function closeCDP(accountID, asaID) {
         (microRepayGARD / 1000000 + mod).toFixed(2).toString(),
     };
   }
-  
+
   // txn 0 - updated interest
   let txn0 = makeUpdateInterestTxn(info, params);
   // txn 1 - closing check
@@ -921,7 +977,6 @@ export async function closeCDP(accountID, asaID) {
     lsigNum = 0;
   }
 
-
   let txns = [txn0, txn1, txn2, txn3];
   algosdk.assignGroupID(txns);
 
@@ -936,28 +991,36 @@ export async function closeCDP(accountID, asaID) {
 
   setLoadingStage("Confirming Transaction...");
 
-  let stxns = [signedGroup[0].blob, stxn1.blob, signedGroup[2].blob, stxn3.blob];
+  let stxns = [
+    signedGroup[0].blob,
+    stxn1.blob,
+    signedGroup[2].blob,
+    stxn3.blob,
+  ];
 
-  let response = await sendTxn(
-    stxns,
-    "Successfully closed your cdp.",
-  );
+  let response = await sendTxn(stxns, "Successfully closed your cdp.");
   setLoadingStage(null);
   updateCDP(info.address, asaID, accountID);
   // updateDBWebActions(1, accountID, cdpBal - fee, -microRepayGARD, 0, 0, fee); TODO: Fix this
   return response;
 }
 
-export async function goOnlineCDP(accountID, voteKey, selKey, sprfKey, first_rd, last_rd) {
-
+export async function goOnlineCDP(
+  accountID,
+  voteKey,
+  selKey,
+  sprfKey,
+  first_rd,
+  last_rd,
+) {
   // Promise setup
   setLoadingStage("Loading Transactions...");
 
   if (typeof accountID !== "number") {
     return {
       alert: true,
-      text: "Error. accountID must be passed into goOnlineCDP as a number."
-    }
+      text: "Error. accountID must be passed into goOnlineCDP as a number.",
+    };
   }
   const accountInfoPromise = accountInfo();
   const paramsPromise = getParams(2000);
@@ -966,19 +1029,31 @@ export async function goOnlineCDP(accountID, voteKey, selKey, sprfKey, first_rd,
   let cdpInfo = await accountInfo(cdp.address);
 
   // input checking
-  if (typeof voteKey !== "string" || typeof selKey !== "string" || typeof sprfKey !== "string")
-  return {
-    alert: true,
-    text: "At least one entered key is invalid.",
-  };
+  if (
+    typeof voteKey !== "string" ||
+    typeof selKey !== "string" ||
+    typeof sprfKey !== "string"
+  )
+    return {
+      alert: true,
+      text: "At least one entered key is invalid.",
+    };
 
-  if (typeof first_rd !== "number" || typeof last_rd !== "number" || isNaN(first_rd) || isNaN(last_rd) || first_rd < cdpInfo.round || last_rd - first_rd > 3e6 || last_rd - first_rd < 10)
-  return {
-    alert: true,
-    text: "At least one entered round is invalid.",
-  };
+  if (
+    typeof first_rd !== "number" ||
+    typeof last_rd !== "number" ||
+    isNaN(first_rd) ||
+    isNaN(last_rd) ||
+    first_rd < cdpInfo.round ||
+    last_rd - first_rd > 3e6 ||
+    last_rd - first_rd < 10
+  )
+    return {
+      alert: true,
+      text: "At least one entered round is invalid.",
+    };
 
-  console.log(last_rd, first_rd)
+  console.log(last_rd, first_rd);
   let params = await paramsPromise;
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
     from: info.address,
@@ -1017,25 +1092,31 @@ export async function goOnlineCDP(accountID, voteKey, selKey, sprfKey, first_rd,
   let response = await sendTxn(
     stxns,
     "Consensus participation enabled! You may verify" +
-      " <a href=\"" +
+      ' <a href="' +
       "https://algoexplorer.io/address/" +
       cdp.address +
-      "\">here</a>.\n",
+      '">here</a>.\n',
     true,
   );
   setLoadingStage(null);
-  return response
+  return response;
 }
 
-export async function goOfflineCDP(accountID, voteKey, selKey, sprfKey, first_rd, last_rd) {
-
+export async function goOfflineCDP(
+  accountID,
+  voteKey,
+  selKey,
+  sprfKey,
+  first_rd,
+  last_rd,
+) {
   // Promise setup
   setLoadingStage("Loading...");
   if (typeof accountID !== "number") {
     return {
       alert: true,
-      text: "Error. accountID must be passed into goOnlineCDP as a number."
-    }
+      text: "Error. accountID must be passed into goOnlineCDP as a number.",
+    };
   }
 
   const accountInfoPromise = accountInfo();
@@ -1045,17 +1126,26 @@ export async function goOfflineCDP(accountID, voteKey, selKey, sprfKey, first_rd
   let cdpInfo = await accountInfo(cdp.address);
 
   // input checking
-  if (typeof voteKey !== "string" || typeof selKey !== "string" || typeof sprfKey !== "string")
-  return {
-    alert: true,
-    text: "At least one entered key is invalid.",
-  };
+  if (
+    typeof voteKey !== "string" ||
+    typeof selKey !== "string" ||
+    typeof sprfKey !== "string"
+  )
+    return {
+      alert: true,
+      text: "At least one entered key is invalid.",
+    };
 
-  if (typeof first_rd !== "number" || typeof last_rd !== "number" || first_rd < cdpInfo.round || last_rd - first_rd > 3e6)
-  return {
-    alert: true,
-    text: "At least one entered round is invalid.",
-  };
+  if (
+    typeof first_rd !== "number" ||
+    typeof last_rd !== "number" ||
+    first_rd < cdpInfo.round ||
+    last_rd - first_rd > 3e6
+  )
+    return {
+      alert: true,
+      text: "At least one entered round is invalid.",
+    };
 
   let params = await paramsPromise;
   let txn1 = algosdk.makeApplicationCallTxnFromObject({
@@ -1091,23 +1181,18 @@ export async function goOfflineCDP(accountID, voteKey, selKey, sprfKey, first_rd
   let response = await sendTxn(
     stxns,
     "Consensus participation will be disabled in 320 rounds (~20 minutes). You may verify" +
-      " <a href=\"" +
+      ' <a href="' +
       "https://algoexplorer.io/address/" +
       cdp.address +
-      "\">here</a>.\n",
+      '">here</a>.\n',
     true,
   );
   setLoadingStage(null);
-  return response
+  return response;
 }
 
 // TODO: add commitment
-async function updateCDP(
-  address,
-  asaID,
-  id,
-) {
-
+async function updateCDP(address, asaID, id) {
   const cdp = cdpGen(address, id, asaID);
   const infoPromise = accountInfo(cdp.address);
 
@@ -1124,14 +1209,14 @@ async function updateCDP(
   if (typeCDPs == null) {
     typeCDPs = {};
   }
-  
+
   // Setting vals
   const info = await infoPromise;
   const state = getCDPState(info, asaID);
   let _collateral = 0;
   let _principal = 0;
   let _debt = 0;
-  
+
   if (state.state == "borked") {
     _collateral = state.collateral;
   } else if (state.state == "opened") {
@@ -1139,8 +1224,7 @@ async function updateCDP(
     _principal = state.principal;
     _debt = await sgardToGard(state.debt);
   }
-  
-  
+
   typeCDPs[id] = {
     collateralType: _collateralType,
     asaID: asaID,
@@ -1154,13 +1238,12 @@ async function updateCDP(
   accountCDPs[asaID] = typeCDPs;
   CDPs[address] = accountCDPs;
   localStorage.setItem("CDPs", JSON.stringify(CDPs));
-  
+
   if (state.state !== "closed") {
     return true;
   }
   return false;
 }
-
 
 export async function commitCDP(account_id, amount, toWallet) {
   // Setting up promises
@@ -1172,7 +1255,7 @@ export async function commitCDP(account_id, amount, toWallet) {
 
   const stringVal = toWallet
     ? `af/gov1:j{"com":${parseInt(amount)},"bnf":"${info.address}"}`
-    : "af/gov1:j{\"com\":" + parseInt(amount).toString() + "}";
+    : 'af/gov1:j{"com":' + parseInt(amount).toString() + "}";
 
   const note = enc.encode(stringVal);
 
@@ -1213,10 +1296,10 @@ export async function commitCDP(account_id, amount, toWallet) {
   let response = await sendTxn(
     stxns,
     "Succesfully committed your algos to governance! You may verify" +
-      " <a href=\"" +
+      ' <a href="' +
       "https://governance.algorand.foundation/governance-period-8/governors/" +
       cdp.address +
-      "\">here</a>.\n",
+      '">here</a>.\n',
     true,
   );
   setLoadingStage(null);
@@ -1235,8 +1318,17 @@ export async function voteCDPs(cdpArray, voteArray) {
   const infoPromise = accountInfo();
   const paramsPromise = getParams(2000);
 
-  const stringVal = "af/gov1:j[11,\"" + voteArray[0] + "\",\"" + voteArray[1] + "\",\"" + voteArray[2] + "\",\"" + voteArray[3] + "\"]";
-  
+  const stringVal =
+    'af/gov1:j[11,"' +
+    voteArray[0] +
+    '","' +
+    voteArray[1] +
+    '","' +
+    voteArray[2] +
+    '","' +
+    voteArray[3] +
+    '"]';
+
   const note = enc.encode(stringVal);
 
   const info = await infoPromise;
@@ -1244,14 +1336,14 @@ export async function voteCDPs(cdpArray, voteArray) {
 
   let loops = cdpArray.length;
   let offset = 0;
-  let response = {alert: false, text: ""};
+  let response = { alert: false, text: "" };
 
-  while (loops - offset > 0){
+  while (loops - offset > 0) {
     setLoadingStage("Loading...");
     let txns = [];
     let lsigs = [];
     let group_size = Math.min(loops - offset, 8);
-    for (let i = 0; i < group_size; i++){
+    for (let i = 0; i < group_size; i++) {
       let account_id = parseInt(cdpArray[offset + i].id);
       let cdp = cdpGen(info.address, account_id, 0);
       params.fee = 2000;
@@ -1281,22 +1373,24 @@ export async function voteCDPs(cdpArray, voteArray) {
     console.log(group_size);
     const signedGroupPromise = signGroup(info, txns);
     let s_lsig = [];
-    for (let j = 0; j < group_size; j++){
-      s_lsig.push(algosdk.signLogicSigTransactionObject(txns[(2*j)+1], lsigs[j]));
+    for (let j = 0; j < group_size; j++) {
+      s_lsig.push(
+        algosdk.signLogicSigTransactionObject(txns[2 * j + 1], lsigs[j]),
+      );
     }
     const signedGroup = await signedGroupPromise;
     setLoadingStage("Sending Votes For " + group_size.toString() + " CDP(s).");
-  
+
     let stxns = [];
-    for (let k = 0; k < group_size; k++){
-      stxns.push(signedGroup[2*k].blob);
+    for (let k = 0; k < group_size; k++) {
+      stxns.push(signedGroup[2 * k].blob);
       stxns.push(s_lsig[k].blob);
     }
     response = await sendTxn(
       stxns,
       "Successfully voted for options " +
         voteArray.toString() +
-        " on all CDPs "
+        " on all CDPs ",
     );
 
     setLoadingStage(null);
@@ -1348,8 +1442,7 @@ export async function voteCDPs(cdpArray, voteArray) {
 }
 
 function getCDPVal(cdp, key, isInt) {
-  if (!cdp["apps-local-state"][0]["key-value"])
-    return -1;
+  if (!cdp["apps-local-state"][0]["key-value"]) return -1;
   for (const kv of cdp["apps-local-state"][0]["key-value"]) {
     if (kv.key == btoa(key)) {
       if (isInt) {
@@ -1374,17 +1467,19 @@ export async function getAllCDPs() {
       limit: 1000,
       nexttoken,
     });
-    
+
     for (const account of response["accounts"]) {
       optedIn.push(account);
     }
     nexttoken = response["next-token"];
   } while (nexttoken != null);
 
-  const withState = optedIn.filter(account => "apps-local-state" in account);
-  const rightApp = withState.filter(account => account["apps-local-state"][0].id == ids.app.validator);
+  const withState = optedIn.filter((account) => "apps-local-state" in account);
+  const rightApp = withState.filter(
+    (account) => account["apps-local-state"][0].id == ids.app.validator,
+  );
   const unixtime = Math.floor(Date.now() / 1000);
-  let withDebt = rightApp.filter(account => {
+  let withDebt = rightApp.filter((account) => {
     return getCDPVal(account, "SGARD_DEBT", true) > 0;
   });
   for (let cdp of withDebt) {
@@ -1397,13 +1492,34 @@ export async function getAllCDPs() {
     }
     cdp.sgard_debt = getCDPVal(cdp, "SGARD_DEBT", true);
     cdp.gard_owed = (await sgardToGard(cdp.sgard_debt)) / 1000000;
-    cdp.ratio = calcRatio(cdp.collateralAmount, cdp.gard_owed, cdp.collateralID);
-    cdp.owner = algosdk.encodeAddress(Buffer.from(getCDPVal(cdp, "OWNER", false), "base64"));
-    cdp.creator = algosdk.encodeAddress(Buffer.from(getCDPVal(cdp, "CREATOR", false), "base64"));
+    cdp.ratio = calcRatio(
+      cdp.collateralAmount,
+      cdp.gard_owed,
+      cdp.collateralID,
+    );
+    cdp.owner = algosdk.encodeAddress(
+      Buffer.from(getCDPVal(cdp, "OWNER", false), "base64"),
+    );
+    cdp.creator = algosdk.encodeAddress(
+      Buffer.from(getCDPVal(cdp, "CREATOR", false), "base64"),
+    );
     cdp.id = getCDPVal(cdp, "account_id", true);
     cdp.activeAuction = getCDPVal(cdp, "UNIX_START", true) % 2 == 1;
-    cdp.premium = cdp.activeAuction ? Math.max(0, (Math.floor((23*cdp.gard_owed*1e6)/20) - Math.floor(cdp.gard_owed*1e6*(unixtime - getCDPVal(cdp, "UNIX_START", true))/2400))/1e6 - cdp.gard_owed): 0;
-    if (cdp.activeAuction){
+    cdp.premium = cdp.activeAuction
+      ? Math.max(
+          0,
+          (Math.floor((23 * cdp.gard_owed * 1e6) / 20) -
+            Math.floor(
+              (cdp.gard_owed *
+                1e6 *
+                (unixtime - getCDPVal(cdp, "UNIX_START", true))) /
+                2400,
+            )) /
+            1e6 -
+            cdp.gard_owed,
+        )
+      : 0;
+    if (cdp.activeAuction) {
       console.log(cdp.premium);
     }
   }
