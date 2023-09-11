@@ -8,7 +8,7 @@ import {
   getAppField,
   cdpInterest,
 } from "./lib";
-import { accountInfo, getParams, sendTxn, signGroup } from "../wallets/wallets";
+import { accountInfo, algodClient, getParams, sendTxn, signGroup } from "../wallets/wallets";
 import {
   updateCommitmentFirestore,
   addCDPToFireStore,
@@ -28,10 +28,14 @@ export let currentPrice = 0.3; // XXX: This should be kept close to the actual p
 
 export async function getPrice() {
   // TODO: cache price
-  const currentPriceJSON = await $.getJSON(
-    "https://storage.googleapis.com/algo-pricing-data-2022/latest_pricing.json",
-  );
-  currentPrice = currentPriceJSON.float_price;
+  const res = await algodClient
+    .getApplicationByID(ids.app.oracle[0])
+    .do()
+
+  const decimals = res.params['global-state'][0]['value']['uint']
+  const price = res.params['global-state'][1]['value']['uint']
+
+  currentPrice = price / 10 ** decimals;
   return currentPrice;
 }
 // We immeadiately update the price in a background thread
