@@ -332,7 +332,9 @@ export default function HomeContent() {
             }}
           >
             <div style={{ fontSize: "18pt", fontWeight: 600 }}>
-              The GARD protocol will shut down soon.
+              <p style={{ margin: 0}}>GARD Protocol will be sunsetting.</p>
+              <p style={{ margin: 0}}>Please ensure you withdraw any assets.</p>
+              <p style={{ margin: 0}}>Read more <a href="https://algogard.com/news/gard-sunset-updates.html" target="_blank" rel="noopener noreferrer" style={{ color: "#ffffff" }}>here</a>.</p>
             </div>
           </div>
         </ShutDownBanner>
@@ -542,7 +544,11 @@ export default function HomeContent() {
 }
 
 const ShutDownBanner = styled(Banner)`
-  background: #CA21FF;
+  background: linear-gradient(
+    130deg,
+    rgba(202, 33, 255, 1) 0%,
+    rgba(1, 159, 255, 1) 100%
+  );
   padding: 15px 20px 15px 20px;
 `;
 
