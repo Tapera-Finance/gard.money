@@ -70,7 +70,7 @@ export default function BorrowCDP({
     let borrowMax = Math.max(
       0,
       Math.trunc(
-        (100 * ((price * cdp.collateral) / 1000000)) / 1.4 -
+        (100 * ((price * cdp.collateral) / 1000000)) / 1.1 -
           (100 * cdp.debt) / 1000000,
       ) / 100,
     );
@@ -96,7 +96,7 @@ export default function BorrowCDP({
       val: `${Math.max(
         0,
         Math.trunc(
-          (100 * ((price * cdp.collateral) / 1000000)) / 1.4 -
+          (100 * ((price * cdp.collateral) / 1000000)) / 1.1 -
             (100 * cdp.debt) / 1000000,
         ) / 100,
       )} GARD`,

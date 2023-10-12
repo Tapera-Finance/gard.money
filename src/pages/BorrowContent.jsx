@@ -174,7 +174,7 @@ export default function BorrowContent() {
         (100 *
           ((algosToMAlgos(price) * algosToMAlgos(Number(event.target.value))) /
             1000000)) /
-          1.4 /
+          1.1 /
           1000000,
       ) / 100;
     setMaxGARD(max);
@@ -190,7 +190,7 @@ export default function BorrowContent() {
       Math.trunc(
         (100 *
           ((algosToMAlgos(price) * algosToMAlgos(maxCollateral)) / 1000000)) /
-          1.4 /
+          1.1 /
           1000000,
       ) / 100;
     setMaxGARD(max);
