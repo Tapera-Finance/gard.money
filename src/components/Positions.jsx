@@ -298,7 +298,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         <Slider
                           color={
                             calcRatio(cdp.collateral, cdp.debt / 1e6, false) <
-                            140
+                            110
                               ? "danger"
                               : calcRatio(
                                   cdp.collateral,
