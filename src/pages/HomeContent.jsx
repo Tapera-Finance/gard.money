@@ -74,7 +74,7 @@ async function getTotalUsers() {
   const users = new Set();
 
 
-  const validators = [ids.app.validator, ids.app.gard_staking, ids.app.gardian_staking, ids.app.glitter.xsol, ids.app.partner.asastats]
+  const validators = [ids.app.validator, ids.app.gard_staking, ids.app.gardian_staking, ids.app.glitter.xsol, ids.app.partner.asastats];
   for(var i = 0; i < validators.length; i++){
     do {
       // Find accounts that are opted into the GARD price validator application
@@ -316,8 +316,28 @@ export default function HomeContent() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
+          gap: "15px"
         }}
       >
+        <ShutDownBanner
+          mobile={mobile}
+          expert={difficulty == "DeFi Expert" ? true : false}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "#ffffff",
+            }}
+          >
+            <div style={{ fontSize: "18pt", fontWeight: 600 }}>
+              <p style={{ margin: 0}}>GARD Protocol will be sunsetting.</p>
+              <p style={{ margin: 0}}>Please ensure you withdraw any assets.</p>
+              <p style={{ margin: 0}}>Read more <a href="https://algogard.com/news/gard-sunset-updates.html" target="_blank" rel="noopener noreferrer" style={{ color: "#ffffff" }}>here</a>.</p>
+            </div>
+          </div>
+        </ShutDownBanner>
         <Banner mobile={mobile} expert={difficulty == "DeFi Expert" ? true : false}>
           <div
             style={{
@@ -522,6 +542,15 @@ export default function HomeContent() {
     </HomeWrapper>
   );
 }
+
+const ShutDownBanner = styled(Banner)`
+  background: linear-gradient(
+    130deg,
+    rgba(202, 33, 255, 1) 0%,
+    rgba(1, 159, 255, 1) 100%
+  );
+  padding: 15px 20px 15px 20px;
+`;
 
 const ToggleBox = styled.div`
   margin: 15px 0px 15px 0px;
