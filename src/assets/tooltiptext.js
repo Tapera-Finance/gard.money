@@ -22,7 +22,7 @@ module.exports = {
     "GARD Governance APR" : "Annual percentage yield recieved from participating in governance (excluding DeFi bonus)",
     "GARD Staking APR" : "The current annual return (in GARD) given current borrows, stakes, and incentives",
     "Liquidation Price" : "Price point at which you loan will be liquidated",
-    "Collateralization Ratio" : "Ratio must be above 140%",
+    "Collateralization Ratio" : "Ratio must be above 110%",
     "Liquidity Fee": "Fee from change to pool liquidity",
     "Minimum Received" : "The minimum amount of the asset you receive that you’re swapping into. This value is a function of your slippage tolerance, price impact, and other trades potentially happening simultaneously.",
     "New Rewards": "Rewards earned since last pool transaction",
