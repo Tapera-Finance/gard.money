@@ -68,7 +68,7 @@ export default function SupplyCDP({
         (100 *
           ((algosToMAlgos(price) * algosToMAlgos(mAlgosToAlgos(cdp.collateral) + supply)) /
             1000000)) /
-          1.4 /
+          1.1 /
           1000000,
       ) / 100;
    };

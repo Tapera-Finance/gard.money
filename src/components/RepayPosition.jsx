@@ -30,7 +30,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
         {
           title: "Liquidation Price",
           val: `$${
-            (1.15*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
+            (1.05*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
           }`,
           hasToolTip: true,
         },
@@ -51,14 +51,14 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
           {
             title: "Borrow Utilization",
             val: `${
-              (100*(cdp.debt - parseInt(repayment*1e6)) / (cdp.collateral * price / 1.4)).toFixed(2)}
+              (100*(cdp.debt - parseInt(repayment*1e6)) / (cdp.collateral * price / 1.1)).toFixed(2)}
             %`,
             hasToolTip: true,
           },
           {
             title: "Liquidation Price",
             val: `$${
-              (1.15*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
+              (1.05*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
             }`,
             hasToolTip: true,
           },
@@ -81,7 +81,7 @@ export default function RepayPosition({cdp, price, setCurrentCDP, details, mobil
         val: `${Math.max(
           0,
           Math.trunc(
-            (100 * ((price * cdp.collateral) / 1000000)) / 1.4 -
+            (100 * ((price * cdp.collateral) / 1000000)) / 1.1 -
               (100 * cdp.debt) / 1000000,
           ) / 100,
         )} GARD`,

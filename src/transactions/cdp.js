@@ -20,7 +20,7 @@ import { searchAccounts } from "../pages/GovernContent";
 var $ = require("jquery");
 
 const enc = new TextEncoder();
-const MINRATIO = 140;
+const MINRATIO = 110;
 export let currentPrice = 0.3; // XXX: This should be kept close to the actual price - it is updated on initialization though
 
 // XXX: All of these assume accountInfo has already been set! We should improve the UX of this after getting core functionality done
