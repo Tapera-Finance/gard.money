@@ -57,7 +57,7 @@ function _CDPsToList(CDPList) {
       res.push({
         id: cdpID,
         liquidationPrice: (
-          (1.15 * value["debt"]) /
+          (1.20 * value["debt"]) /
           value["collateral"]
         ).toFixed(4),
         collateral: value["collateral"],
@@ -110,7 +110,7 @@ function algosToMAlgos(num) {
 }
 
 function displayLiquidationPrice() {
-  return "$" + ((1.15 * getMinted()) / getCollateral()).toFixed(4);
+  return "$" + ((1.20 * getMinted()) / getCollateral()).toFixed(4);
 }
 
 function getMinted() {
@@ -288,7 +288,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         <div>
                           Liquidation Price ($
                           {(
-                            (1.15 * mAlgosToAlgos(cdp.debt)) /
+                            (1.20 * mAlgosToAlgos(cdp.debt)) /
                             mAlgosToAlgos(cdp.collateral)
                           ).toFixed(4)}
                           )
@@ -309,7 +309,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                               ? "moderate"
                               : "healthy"
                           }
-                          min={115}
+                          min={120}
                           max={600}
                           value={calcRatio(
                             cdp.collateral,
@@ -320,7 +320,7 @@ export default function Positions({cdp, maxGARD, maxSupply}) {
                         />
                       </ThemeProvider>
                       <SliderRange>
-                        <div>minimum: 115%</div>
+                        <div>minimum: 120%</div>
                         <div>max: 600+%</div>
                       </SliderRange>
                     </div>

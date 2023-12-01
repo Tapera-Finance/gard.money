@@ -27,7 +27,7 @@ export default function ClosePosition({cdp, price, setCurrentCDP, details, mobil
         {
           title: "Liquidation Price",
           val: `$${
-            (1.15*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
+            (1.20*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
           }`,
           hasToolTip: true,
         },
@@ -55,7 +55,7 @@ export default function ClosePosition({cdp, price, setCurrentCDP, details, mobil
           {
             title: "Liquidation Price",
             val: `$${
-              (1.15*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
+              (1.20*(cdp.debt-parseInt(repayment*1e6))/cdp.collateral).toFixed(3)
             }`,
             hasToolTip: true,
           },
