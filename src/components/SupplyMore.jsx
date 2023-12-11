@@ -10,7 +10,7 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
     let supplyDetails = mobile ? [
       {
         title: "Liquidation Price",
-        val: `$${cAsset == null || cAsset == "" ? ((1.20 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral))).toFixed(4) : ((1.20 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral) + cAsset)).toFixed(4)}`,
+        val: `$${cAsset == null || cAsset == "" ? ((1.30 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral))).toFixed(4) : ((1.30 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral) + cAsset)).toFixed(4)}`,
         hasToolTip: true,
       },
       {
@@ -36,7 +36,7 @@ export default function SupplyMore({ collateralType, supplyPrice, cAsset, collat
         },
         {
           title: "Liquidation Price",
-          val: `$${cAsset == null || cAsset == "" ? ((1.20 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral))).toFixed(4) : ((1.20 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral) + cAsset)).toFixed(4)}`,
+          val: `$${cAsset == null || cAsset == "" ? ((1.30 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral))).toFixed(4) : ((1.30 * mAlgosToAlgos(cdp.debt)) / (mAlgosToAlgos(cdp.collateral) + cAsset)).toFixed(4)}`,
           hasToolTip: true,
         },
         {
