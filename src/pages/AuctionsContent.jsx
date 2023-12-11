@@ -20,7 +20,7 @@ let cdp_data = await cdp_data_promise;
 
 async function loadDefaulted() {
   const allCDPs = await getAllCDPs();
-  return allCDPs.filter(cdp => (cdp.ratio <= 120 || cdp.activeAuction));
+  return allCDPs.filter(cdp => (cdp.ratio <= 130 || cdp.activeAuction));
 }
 
 /**
