@@ -43,7 +43,7 @@ export function algosToMAlgos(num) {
 }
 
 export function displayLiquidationPrice() {
-  return "$" + ((1.30 * getMinted()) / getCollateral()).toFixed(4);
+  return "$" + ((1.45 * getMinted()) / getCollateral()).toFixed(4);
 }
 
 export const adjustedMax = () => {
