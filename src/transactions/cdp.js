@@ -1512,7 +1512,7 @@ export async function getAllCDPs() {
     cdp.premium = cdp.activeAuction
       ? Math.max(
           0,
-          (Math.floor((23 * cdp.gard_owed * 1e6) / 20) -
+          (Math.floor((29 * cdp.gard_owed * 1e6) / 20) -
             Math.floor(
               (cdp.gard_owed *
                 1e6 *
