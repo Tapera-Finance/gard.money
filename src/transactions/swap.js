@@ -18,7 +18,7 @@ import pactsdk from "@pactfi/pactsdk";
 import { formatAmt, mAlgosToAlgos } from "../components/actions/swapHelpers";
 
 // TODO: ONLY USING MAINNET, FIX THIS
-export const pactClient = new pactsdk.PactClient(new algosdk.Algodv2(psToken, "https://mainnet-algorand.api.purestake.io/ps2", ""));
+export const pactClient = new pactsdk.PactClient(new algosdk.Algodv2("", "https://mainnet-api.algonode.cloud", ""));
 export const gardpool = await pactClient.fetchPoolById(pactALGOGARDID);
 
 export async function previewPoolSwap(

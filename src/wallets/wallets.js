@@ -36,12 +36,12 @@ var activeWallet;
 var activeWalletInfo;
 
 // Sets up algosdk client
-let _nodeServer = "https://testnet-algorand.api.purestake.io/ps2";
+let _nodeServer = "https://testnet-api.algonode.cloud";
 if (!testnet) {
-  _nodeServer = "https://mainnet-algorand.api.purestake.io/ps2";
+  _nodeServer = "https://mainnet-api.algonode.cloud";
 }
 const nodeServer = _nodeServer;
-export const algodClient = new algosdk.Algodv2(psToken, nodeServer, "");
+export const algodClient = new algosdk.Algodv2("", nodeServer, "");
 
 export async function accountInfo(address = null, retry = 0) {
   // XXX: Assumes the wallet is set
